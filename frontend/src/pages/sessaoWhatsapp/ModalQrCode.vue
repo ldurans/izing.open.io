@@ -1,0 +1,81 @@
+<template>
+  <q-dialog
+    :value="abrirModalQR"
+    @show="fetchSession(whatsAppId)"
+    @hide="fecharModalQrModal"
+    persistent
+  >
+    <q-card>
+      <q-card-section>
+        <div class="text-h6 text-primary">
+          Leia o QrCode para iniciar a sessão
+        </div>
+      </q-card-section>
+      <q-card-section>
+        <QrcodeVue
+          v-if="qrCode"
+          :value="qrCode"
+          :size="300"
+          level="H"
+        />
+        <span v-else>
+          Aguardando o Qr Code
+        </span>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
+</template>
+
+<script>
+import { GetWhatSession } from 'src/service/sessoesWhatsapp'
+import QrcodeVue from 'qrcode.vue'
+import openSocket from 'socket.io-client'
+const socket = openSocket(process.env.API)
+
+export default {
+  name: 'ModalQrCode',
+  components: {
+    QrcodeVue
+  },
+  props: {
+    abrirModalQR: {
+      type: Boolean,
+      default: false
+    },
+    whatsAppId: {
+      type: Number,
+      default: 0
+    }
+  },
+  data () {
+    return {
+      qrCode: null
+    }
+  },
+  methods: {
+    fecharModalQrModal () {
+      this.$emit('update:abrirModalQR', false)
+    },
+    async fetchSession (whatsAppId) {
+      const { data } = await GetWhatSession(whatsAppId)
+      this.qrCode = data.qrcode
+      this.handlerModalQrCode()
+    },
+    handlerModalQrCode () {
+      socket.on('whatsappSession', data => {
+        if (data.action === 'update' && data.session.id === this.whatsAppId) {
+          this.qrCode = data.session.qrcode
+        }
+
+        if (data.action === 'update' && data.session.qrcode === '') {
+          this.fecharModalQrModal()
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+</style>

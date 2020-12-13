@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "restart": true,
+      "name": "Debug TypeScript in Node.js",
+      "preLaunchTask": "tsc: watch - backend/tsconfig.json",
+      "program": "${workspaceFolder}/backend/src/server.ts",
+      "cwd": "${workspaceFolder}/backend",
+      "protocol": "inspector",
+      "outFiles": [
+        "${workspaceFolder}/backend/dist/**/*.js"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"vetur.validation.template": false,
+		"vetur.format.enable": false,
+		"vetur.experimental.templateInterpolationService": true
+	}
+}

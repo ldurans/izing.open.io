@@ -1,0 +1,392 @@
+<template>
+  <div
+    padding
+    class="row"
+  >
+    <div :class="{'col-xs-12 col-md-8 col-lg-9': exibirContato, 'col-12': !exibirContato }">
+      <q-card
+        :style="styleCard"
+        square
+        bordered
+        flat
+      >
+        <q-card-section
+          class="q-pa-none"
+          :style="`min-height: calc(100vh - ${replyingMessage ? '22.4vh' : '22.4vh'}); max-height: calc(100vh - ${replyingMessage ? '22.4vh' : '22.4vh'})`"
+        >
+          <InforCabecalhoChat
+            @updateTicket:resolver="atualizarStatusTicket('closed')"
+            @updateTicket:retornar="atualizarStatusTicket('pending')"
+            @updateTicket:info-contato="exibirContato = !exibirContato"
+            class="bg-white"
+          />
+          <q-separator />
+          <div
+            ref="scrollTarget"
+            id="infinite-list"
+            class="q-pa-sm q-pa-lg scroll "
+            style="height: calc(100vh - 28vh); max-height: calc(100vh - 28vh)"
+          >
+            <q-infinite-scroll
+              reverse
+              :disable="!hasMore"
+              @load="onLoadMore"
+              :scroll-target="$refs.scrollTarget"
+            >
+              <MensagemChat
+                :replyingMessage.sync="replyingMessage"
+                :mensagensAgrupadas="cGroupDateMessage"
+                v-if="Object.keys(cGroupDateMessage).length"
+              />
+            </q-infinite-scroll>
+            <q-page-sticky
+              position="bottom-right"
+              :offset="[exibirContato ? 290: 40, replyingMessage ? 235 : 135]"
+              style="z-index: 99"
+            >
+              <q-btn
+                @click="scrollToBottom"
+                icon="keyboard_arrow_down"
+                round
+                color="grey-3"
+                push
+                text-color="black"
+                dense
+                style="z-index: 99"
+              >
+                <q-tooltip>
+                  Ir para mensagem atual
+                </q-tooltip>
+              </q-btn>
+            </q-page-sticky>
+          </div>
+          <q-separator />
+        </q-card-section>
+        <q-card-section
+          v-if="replyingMessage"
+          class="absolute q-pa-none q-pt-md bg-grey-3"
+          :style="`border-top: 1px solid #; bottom: 120px; height: 120px; max-height: 120px; width: 100%;`"
+        >
+          <q-list class="row col justify-center full-width">
+            <q-item
+              class="q-card--bordered shadow-10"
+              :style="`
+              width: 460px;
+              min-width: 460px;
+              max-width: 460px;
+              background-color: ${replyingMessage.fromMe ? '#a5d6a7' : '#ffffff'};
+            `"
+            >
+              <q-item-section>
+                <q-item-label
+                  v-if="!replyingMessage.fromMe"
+                  overline
+                >
+                  {{ replyingMessage.contact.name }}
+                </q-item-label>
+                <q-item-label lines="4">
+                  {{ farmatarMensagemWhatsapp(replyingMessage.body) }}
+                </q-item-label>
+              </q-item-section>
+              <q-btn
+                @click="replyingMessage=null"
+                dense
+                flat
+                round
+                icon="close"
+                class="float-right"
+                :disabled="loading || ticketFocado.status !== 'open'"
+              />
+            </q-item>
+          </q-list>
+        </q-card-section>
+        <InputMensagem :replyingMessage.sync="replyingMessage" />
+        <q-inner-loading :showing="loading">
+          <q-spinner-comment
+            size="80px"
+            color="primary"
+          />
+        </q-inner-loading>
+      </q-card>
+    </div>
+    <div
+      v-show="exibirContato"
+      class="col-md-4 col-lg-3 bg-grey-3 q-card--bordered"
+    >
+      <div
+        class="full-width no-border-radius q-pa-sm"
+        style="height:55px;"
+      >
+        <q-btn
+          flat
+          round
+          icon="close"
+          @click="exibirContato = false"
+        />
+        <span class="q-ml-md text-h6">
+          Dados Contato
+        </span>
+      </div>
+      <q-separator />
+      <div class="q-pa-sm">
+        <q-card
+          class="bg-white"
+          style="width: 100%"
+          bordered
+          flat
+          square
+        >
+          <q-card-section class="text-center">
+            <q-avatar style="border: 1px solid #9e9e9ea1 !important; width: 160px; height: 160px">
+              <q-icon
+                name="mdi-account"
+                style="width: 160px; height: 160px"
+                size="6em"
+                color="grey-5"
+                v-if="!ticketFocado.contact.profilePicUrl"
+              />
+              <q-img
+                :src="ticketFocado.contact.profilePicUrl"
+                style="width: 160px; height: 160px"
+              >
+                <template v-slot:error>
+                  <q-icon
+                    name="mdi-account"
+                    size="1.5em"
+                    color="grey-5"
+                  />
+                </template>
+              </q-img>
+            </q-avatar>
+            <div
+              class="text-caption q-mt-md"
+              style="font-size: 16px"
+            >
+              {{ ticketFocado.contact.name  }}
+            </div>
+            <div
+              class="text-caption q-mt-sm"
+              style="font-size: 16px"
+            >
+              {{ ticketFocado.contact.number  }}
+            </div>
+            <q-btn
+              color="primary"
+              outline
+              class="q-mt-md"
+              label="Editar Contato"
+              @click="editContact(ticketFocado.contact.id)"
+            />
+
+          </q-card-section>
+        </q-card>
+        <q-card
+          class="bg-white q-mt-sm"
+          style="width: 100%"
+          bordered
+          flat
+          square
+        >
+          <q-card-section class="text-bold">
+            Outras Informações
+          </q-card-section>
+          <q-card-section class="q-pa-none">
+            <q-list>
+              <q-item
+                v-for="(info, idx) in ticketFocado.contact.extraInfo"
+                :key="idx"
+              >
+                <q-item-section>
+                  <q-item-label caption>{{info.name}}</q-item-label>
+                  <q-item-label>{{info.value}}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+    <ContatoModal
+      :contactId="selectedContactId"
+      :modalContato.sync="modalContato"
+      @contatoModal:contato-editado="contatoEditado"
+    />
+
+  </div>
+</template>
+<script>
+import ContatoModal from 'src/pages/contatos/ContatoModal'
+import mixinCommon from './mixinCommon'
+import InforCabecalhoChat from './InforCabecalhoChat'
+import { format, parseISO } from 'date-fns'
+import pt from 'date-fns/locale/pt-BR'
+// import parser from 'vdata-parser'
+import { groupBy, orderBy } from 'lodash'
+import whatsBackground from 'src/assets/wa-background.png'
+import MensagemChat from './MensagemChat'
+import InputMensagem from './InputMensagem'
+import mixinAtualizarStatusTicket from './mixinAtualizarStatusTicket'
+import mixinSockets from './mixinSockets'
+export default {
+  name: 'Chat',
+  mixins: [mixinCommon, mixinAtualizarStatusTicket, mixinSockets],
+  components: {
+    InforCabecalhoChat,
+    MensagemChat,
+    InputMensagem,
+    ContatoModal
+  },
+  data () {
+    return {
+      exibirContato: false,
+      selectedContactId: null,
+      modalContato: false,
+      styleCard: {
+        minHeight: 'calc(100vh - 8.3vh)',
+        height: 'calc(100vh - 8.3vh)',
+        backgroundImage: `url(${whatsBackground}) !important`
+      },
+      params: {
+        ticketId: null,
+        pageNumber: 1
+      },
+      replyingMessage: null
+    }
+  },
+  computed: {
+    cGroupDateMessage () {
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.replyingMessage = null
+      const messages = [...this.mensagensTicket]
+      const dateFormat = message => format(parseISO(message.createdAt), 'dd/MM/yyyy', { locale: pt })
+      const messageOrdered = orderBy(messages, (obj) => parseISO(obj.createdAt), ['asc'])
+      const result = groupBy(messageOrdered, dateFormat)
+
+      return result
+    }
+  },
+  methods: {
+    editContact (contactId) {
+      this.selectedContactId = contactId
+      this.modalContato = true
+    },
+    async onLoadMore (i, done) {
+      if (!this.hasMore || !this.ticketFocado.id || this.loading) {
+        done()
+        return
+      }
+      try {
+        this.loading = true
+        this.params.ticketId = this.ticketFocado.id
+        this.params.pageNumber += 1
+        await this.$store.dispatch('LocalizarMensagensTicket', this.params).then(r => { this.loading = false; done() })
+        this.loading = false
+        done()
+      } catch (error) {
+        done()
+      }
+    },
+    contatoEditado (contato) {
+      this.$store.commit('UPDATE_TICKET_FOCADO_CONTACT', contato)
+      this.$store.commit('UPDATE_TICKET_CONTACT', contato)
+    }
+  },
+  created () {
+    this.socketTicket()
+  },
+  mounted () {
+    this.socketMessagesList()
+  }
+}
+</script>
+
+<style lang="scss">
+audio {
+  height: 40px;
+  width: 264px;
+}
+
+.mostar-btn-opcoes-chat {
+  display: none;
+  transition: width 2s transform 2s;
+}
+
+.q-message-text:hover .mostar-btn-opcoes-chat {
+  display: block;
+  float: right;
+  position: absolute;
+  z-index: 999;
+}
+
+.hr-text {
+  line-height: 1em;
+  position: relative;
+  outline: 0;
+  border: 0;
+  color: black;
+  text-align: center;
+  height: 1.5em;
+  opacity: 0.5;
+  &:before {
+    content: "";
+    // use the linear-gradient for the fading effect
+    // use a solid background color for a solid bar
+    background: linear-gradient(to right, transparent, #818078, transparent);
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+  }
+  &:after {
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 0.5em;
+    line-height: 1.5em;
+    background-color: #fcfcfa;
+    border-radius: 15px;
+  }
+}
+
+.textContentItem {
+  overflow-wrap: break-word;
+  padding: 3px 80px 6px 6px;
+}
+
+.textContentItemDeleted {
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.36);
+  overflow-wrap: break-word;
+  padding: 3px 80px 6px 6px;
+}
+
+.replyginContactMsgSideColor {
+  flex: none;
+  width: 4px;
+  background-color: #35cd96;
+}
+
+.replyginSelfMsgSideColor {
+  flex: none;
+  width: 4px;
+  background-color: #6bcbef;
+}
+
+.replyginMsgBody {
+  padding: 10;
+  height: auto;
+  display: block;
+  white-space: pre-wrap;
+  overflow: hidden;
+}
+
+.messageContactName {
+  display: flex;
+  color: #6bcbef;
+  font-weight: 500;
+}
+</style>

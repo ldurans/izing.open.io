@@ -1,0 +1,23 @@
+{
+	"tasks": [
+		{
+			"type": "typescript",
+			"tsconfig": "backend/tsconfig.json",
+			"option": "watch",
+			"problemMatcher": [
+				"$tsc-watch"
+			],
+			"group": "build",
+			"label": "tsc: watch - backend/tsconfig.json"
+		},
+		{
+			"type": "npm",
+			"script": "watch",
+			"path": "backend/",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: watch - backend",
+			"detail": "tsc -w"
+		}
+	]
+}
