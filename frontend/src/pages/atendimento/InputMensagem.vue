@@ -177,7 +177,6 @@ export default {
     },
     prepararMensagemTexto () {
       if (this.textChat.trim() === '') return
-      const username = this.ticketFocado.user.name
       const message = {
         read: 1,
         fromMe: true,
