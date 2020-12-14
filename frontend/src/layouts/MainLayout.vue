@@ -39,6 +39,28 @@
             </span>
           </q-tooltip>
         </q-icon>
+        <q-icon
+          v-if="cQrCode"
+          name="mdi-qrcode-scan"
+          color="positive"
+          size="2.5em"
+        >
+          <span class="q-ml-md text-weight-medium text-center text-caption text-white ">
+            Necessário ler o QrCode em conexões.
+          </span>
+          <q-tooltip content-class="bg-light-blue-1 text-black q-pa-sm shadow-4">
+            <span class="text-weight-medium"> Ação: </span>
+            <span class="row col">
+              1 - Acesse o menu Conexões;
+            </span>
+            <span class="row col">
+              2 - Clique no botão azul "QR Code";
+            </span>
+            <span class="row col">
+              3 - Leia o QrCode gerado com o aplicativo do Whatsapp do celular e aguarde a conexão ser estabelecida.
+            </span>
+          </q-tooltip>
+        </q-icon>
         <q-space />
         <q-btn
           class="bg-grey"
@@ -212,6 +234,10 @@ export default {
       const idx = this.whatsapps.findIndex(w => ['PAIRING', 'TIMEOUT', 'DISCONNECTED'].includes(w.status))
       return (idx !== -1)
     },
+    cQrCode () {
+      const idx = this.whatsapps.findIndex(w => w.status === 'qrcode')
+      return (idx !== -1)
+    },
     cObjMenu () {
       if (this.cProblemaConexao) {
         return objMenu.map(menu => {
@@ -260,6 +286,7 @@ export default {
     async dadosUsuario () {
       const { data } = await DadosUsuario(userId)
       this.usuario = data
+      localStorage.setItem('usuario', JSON.stringify(data))
       localStorage.setItem('queues', JSON.stringify(data.queues))
     },
     async abrirModalUsuario () {

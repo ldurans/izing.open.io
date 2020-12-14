@@ -15,6 +15,7 @@
           color="primary"
           label="Adicionar"
           @click="whatsappSelecionado = {}; modalWhatsapp = true"
+          v-if="$user.isSuporte(userLogado)"
         />
       </template>
       <template v-slot:body-cell-status="props">
@@ -166,6 +167,8 @@ import pt from 'date-fns/locale/pt-BR/index'
 import ModalQrCode from './ModalQrCode'
 import { mapGetters } from 'vuex'
 import ModalWhatsapp from './ModalWhatsapp'
+const userLogado = JSON.parse(localStorage.getItem('usuario'))
+console.log('userLogado', userLogado)
 export default {
   name: 'IndexSessoesWhatsapp',
   components: {
@@ -174,6 +177,7 @@ export default {
   },
   data () {
     return {
+      userLogado,
       abrirModalQR: false,
       modalWhatsapp: false,
       whatsappSelecionado: {},

@@ -375,12 +375,16 @@ export default {
       'hasMoreBusca'
     ]),
     cUserQueues () {
-      const filasUsuario = JSON.parse(UserQueues).map(q => {
-        if (q.isActive) {
-          return q.id
-        }
-      })
-      return this.filas.filter(f => filasUsuario.includes(f.id)) || []
+      try {
+        const filasUsuario = JSON.parse(UserQueues).map(q => {
+          if (q.isActive) {
+            return q.id
+          }
+        })
+        return this.filas.filter(f => filasUsuario.includes(f.id)) || []
+      } catch (error) {
+        return this.filas
+      }
     }
 
   },

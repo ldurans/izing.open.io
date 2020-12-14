@@ -65,7 +65,7 @@ export default {
       }
 
       socket.on('ticket', data => {
-        if (data.action === 'updateQueue') {
+        if (data.action === 'updateQueue' || data.action === 'create') {
           this.$store.commit('UPDATE_TICKET', data.ticket)
         }
 

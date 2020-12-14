@@ -110,6 +110,7 @@ import mixinCommon from './mixinCommon'
 import { EnviarMensagemTexto } from 'src/service/tickets'
 import { VEmojiPicker } from 'v-emoji-picker'
 import { mapGetters } from 'vuex'
+const usuario = JSON.parse(localStorage.getItem('usuario'))
 
 export default {
   name: 'InputMensagem',
@@ -181,7 +182,7 @@ export default {
         read: 1,
         fromMe: true,
         mediaUrl: '',
-        body: `*${username}*: ${this.textChat.trim()}`,
+        body: `*${usuario.username}*: ${this.textChat.trim()}`,
         quotedMsg: this.replyingMessage
       }
       return message

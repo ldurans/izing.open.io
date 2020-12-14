@@ -11,7 +11,7 @@
           class="card q-pa-md shadow-10"
           square
         >
-          <div class="row">
+          <!-- <div class="row">
             <div class="col text-center q-ma-lg">
               <q-img
                 height="50px"
@@ -21,7 +21,7 @@
               />
 
             </div>
-          </div>
+          </div> -->
 
           <q-card-section class="text-primary">
             <div class="text-h6">Bem vindo!</div>
@@ -39,7 +39,7 @@
               error-message="Deve ser um e-mail válido."
               outlined
             >
-            <template v-slot:prepend>
+              <template v-slot:prepend>
                 <q-icon
                   name="mdi-email-outline"
                   class="cursor-pointer"
@@ -112,8 +112,8 @@ export default {
       modalEsqueciSenha: false,
       emailRedefinicao: null,
       form: {
-        email: 'lumardyelson@gmail.com',
-        password: 'durans@3105'
+        email: null,
+        password: null
       },
       contasCliente: {},
       isPwd: true,

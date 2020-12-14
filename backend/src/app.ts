@@ -16,22 +16,22 @@ Sentry.init({ dsn: process.env.SENTRY_DSN });
 const app = express();
 
 // em produção estou usando assim:
-// app.use(
-//   (req, res, next) => {
-//     next();
-//   },
-//   cors({
-//     credentials: true,
-//     origin: true // process.env.FRONTEND_URL
-//   })
-// );
-
 app.use(
+  (req, res, next) => {
+    next();
+  },
   cors({
     credentials: true,
     origin: true // process.env.FRONTEND_URL
   })
 );
+
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: true // process.env.FRONTEND_URL
+//   })
+// );
 app.use(cookieParser());
 app.use(express.json());
 app.use(Sentry.Handlers.requestHandler());
