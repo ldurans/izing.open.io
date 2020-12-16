@@ -235,6 +235,7 @@
                 size="24px"
                 :name="props.value ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline'"
                 :color="props.value ? 'positive' : 'negative'"
+                class=""
               />
             </q-td>
           </template>
@@ -329,7 +330,7 @@ export default {
       columnsEtapas: [
         { name: 'expand', label: '', field: 'expand', align: 'left' },
         { name: 'id', label: 'ID', field: 'id', align: 'center', sortable: true, sort: (a, b, rowA, rowB) => parseInt(a, 10) - parseInt(b, 10) },
-        { name: 'reply', label: 'Mensagem', field: 'reply', align: 'left' },
+        { name: 'reply', label: 'Mensagem', field: 'reply', align: 'left', classes: 'ellipsis', style: 'max-width: 400px;' },
         { name: 'initialStep', label: 'Etapa Inicial', sortable: true, field: 'initialStep', align: 'left', format: v => v ? 'Sim' : '' },
         { name: 'acoes', label: '', field: 'acoes', align: 'center' }
       ],

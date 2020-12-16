@@ -181,7 +181,7 @@ export default {
         read: 1,
         fromMe: true,
         mediaUrl: '',
-        body: `*${usuario.username}*: ${this.textChat.trim()}`,
+        body: `*${usuario.name}*: ${this.textChat.trim()}`,
         quotedMsg: this.replyingMessage
       }
       return message

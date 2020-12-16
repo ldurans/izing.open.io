@@ -27,7 +27,8 @@ const ShowStepAutoReplyMessageService = async (
         where: { action } // action 0 - AutoReply Criacao ticket ou 1 - Resolução do ticket
         // attributes: ["id", "name"]
       }
-    ]
+    ],
+    logging: console.log
   });
   if (!stepReply) {
     throw new AppError("ERR_NO_STEP_AUTO_REPLY_FOUND", 404);

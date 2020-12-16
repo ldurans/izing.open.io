@@ -21,6 +21,10 @@ import { getIO } from "../../libs/socket";
 import AppError from "../../errors/AppError";
 import ShowTicketService from "../TicketServices/ShowTicketService";
 import CreateMessageService from "../MessageServices/CreateMessageService";
+import VerifyActionStepAutoReplyService from "../AutoReplyServices/VerifyActionStepAutoReplyService";
+import ShowStepAutoReplyMessageService from "../AutoReplyServices/ShowStepAutoReplyMessageService";
+import SendWhatsAppMessage from "./SendWhatsAppMessage";
+import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 // import ShowAutoReplyService from "../AutoReplyServices/ShowAutoReplyService";
 
 interface Session extends Client {
@@ -87,17 +91,6 @@ const verifyGroup = async (msgGroupContact: WbotContact) => {
   return groupContact;
 };
 
-// const verifyAutoReplyBoasVindas = async () => { };
-
-// const autoReplyWelcome = async () => {
-//   const reply = await AutoReply.findOne({
-//     where: {
-//       action: "0"
-//     }
-//   });
-//   return reply;
-// };
-
 const verifyTicket = async (
   contact: Contact,
   whatsappId: number,
@@ -156,6 +149,117 @@ const verifyTicket = async (
   }
 
   return ticket;
+};
+
+const verifyAutoReplyActionTicket = async (
+  msg: WbotMessage,
+  ticket: Ticket
+): Promise<void> => {
+  const celularContato = ticket.contact.number;
+  let celularTeste = "";
+
+  if (
+    ticket.autoReplyId &&
+    // ticket.contactId === 1 &&
+    ticket.status === "pending" &&
+    !msg.fromMe
+  ) {
+    if (ticket.autoReplyId) {
+      const actionAutoReply = await VerifyActionStepAutoReplyService(
+        ticket.stepAutoReplyId,
+        msg.body
+      );
+      if (actionAutoReply) {
+        const io = getIO();
+
+        // action = 0: enviar para proximo step: nextStepId
+        if (actionAutoReply.action === 0) {
+          await ticket.update({
+            stepAutoReplyId: actionAutoReply.nextStepId
+          });
+          const stepAutoReply = await ShowStepAutoReplyMessageService(
+            0,
+            ticket.autoReplyId,
+            actionAutoReply.nextStepId
+          );
+
+          // Verificar se rotina em teste
+          celularTeste = stepAutoReply.autoReply.celularTeste;
+          if (
+            (celularTeste &&
+              celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
+            !celularContato
+          ) {
+            return;
+          }
+
+          await SendWhatsAppMessage({
+            body: stepAutoReply.reply,
+            ticket,
+            quotedMsg: undefined
+          });
+          await SetTicketMessagesAsRead(ticket);
+          return;
+        }
+
+        // action = 1: enviar para fila: queue
+        if (actionAutoReply.action === 1) {
+          ticket.update({
+            queueId: actionAutoReply.queueId,
+            autoReplyId: null,
+            stepAutoReplyId: null
+          });
+        }
+
+        // action = 2: enviar para determinado usuário
+        if (actionAutoReply.action === 2) {
+          ticket.update({
+            userId: actionAutoReply.userIdDestination,
+            status: "open",
+            autoReplyId: null,
+            stepAutoReplyId: null
+          });
+        }
+        io.to(ticket.status).emit("ticket", {
+          action: "updateQueue",
+          ticket
+        });
+
+        if (actionAutoReply.replyDefinition) {
+          await SendWhatsAppMessage({
+            body: actionAutoReply.replyDefinition,
+            ticket,
+            quotedMsg: undefined
+          });
+          await SetTicketMessagesAsRead(ticket);
+        }
+      } else {
+        // retornar a ultima mensagem (estapa atual do ticket)
+        const stepAutoReply = await ShowStepAutoReplyMessageService(
+          0,
+          ticket.autoReplyId,
+          ticket.stepAutoReplyId
+        );
+
+        // Verificar se rotina em teste
+        celularTeste = stepAutoReply.autoReply.celularTeste;
+        if (
+          (celularTeste &&
+            celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
+          !celularContato
+        ) {
+          return;
+        }
+
+        await SendWhatsAppMessage({
+          body: stepAutoReply.reply,
+          ticket,
+          quotedMsg: undefined
+        });
+        await SetTicketMessagesAsRead(ticket);
+      }
+    }
+  }
 };
 
 const verifyMedia = async (
@@ -316,6 +420,7 @@ const handleMessage = async (
     // const welcome = await autoReplyWelcome();
     // console.log(welcome);
     await verifyMessage(msg, ticket, contact);
+    await verifyAutoReplyActionTicket(msg, ticket);
   } catch (err) {
     Sentry.captureException(err);
     console.log(err);

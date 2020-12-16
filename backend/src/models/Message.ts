@@ -8,17 +8,10 @@ import {
   PrimaryKey,
   Default,
   BelongsTo,
-  ForeignKey,
-  BeforeUpsert
+  ForeignKey
 } from "sequelize-typescript";
-import SetTicketMessagesAsRead from "../helpers/SetTicketMessagesAsRead";
-import ShowStepAutoReplyMessageService from "../services/AutoReplyServices/ShowStepAutoReplyMessageService";
-import VerifyActionStepAutoReplyService from "../services/AutoReplyServices/VerifyActionStepAutoReplyService";
-import ShowTicketService from "../services/TicketServices/ShowTicketService";
-import SendWhatsAppMessage from "../services/WbotServices/SendWhatsAppMessage";
 import Contact from "./Contact";
 import Ticket from "./Ticket";
-import { getIO } from "../libs/socket";
 
 @Table
 class Message extends Model<Message> {
@@ -87,115 +80,115 @@ class Message extends Model<Message> {
   @BelongsTo(() => Contact, "contactId")
   contact: Contact;
 
-  @BeforeUpsert
-  static async AutoReplyActionTicket(instance: Message): Promise<void> {
-    const ticket = await ShowTicketService(instance.ticketId);
-    const celularContato = ticket.contact.number;
-    let celularTeste = "";
+  // @BeforeUpsert
+  // static async AutoReplyActionTicket(instance: Message): Promise<void> {
+  //   const ticket = await ShowTicketService(instance.ticketId);
+  //   const celularContato = ticket.contact.number;
+  //   let celularTeste = "";
 
-    if (
-      ticket.autoReplyId &&
-      // ticket.contactId === 1 &&
-      ticket.status === "pending" &&
-      !instance.fromMe
-    ) {
-      if (ticket.autoReplyId) {
-        const actionAutoReply = await VerifyActionStepAutoReplyService(
-          ticket.stepAutoReplyId,
-          instance.body
-        );
-        if (actionAutoReply) {
-          const io = getIO();
+  //   if (
+  //     ticket.autoReplyId &&
+  //     // ticket.contactId === 1 &&
+  //     ticket.status === "pending" &&
+  //     !instance.fromMe
+  //   ) {
+  //     if (ticket.autoReplyId) {
+  //       const actionAutoReply = await VerifyActionStepAutoReplyService(
+  //         ticket.stepAutoReplyId,
+  //         instance.body
+  //       );
+  //       if (actionAutoReply) {
+  //         const io = getIO();
 
-          // action = 0: enviar para proximo step: nextStepId
-          if (actionAutoReply.action === 0) {
-            await ticket.update({
-              stepAutoReplyId: actionAutoReply.nextStepId
-            });
-            const stepAutoReply = await ShowStepAutoReplyMessageService(
-              0,
-              actionAutoReply.stepReplyId,
-              actionAutoReply.nextStepId
-            );
+  //         // action = 0: enviar para proximo step: nextStepId
+  //         if (actionAutoReply.action === 0) {
+  //           await ticket.update({
+  //             stepAutoReplyId: actionAutoReply.nextStepId
+  //           });
+  //           const stepAutoReply = await ShowStepAutoReplyMessageService(
+  //             0,
+  //             actionAutoReply.stepReplyId,
+  //             actionAutoReply.nextStepId
+  //           );
 
-            // Verificar se rotina em teste
-            celularTeste = stepAutoReply.autoReply.celularTeste;
-            if (
-              (celularTeste &&
-                celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
-              !celularContato
-            ) {
-              return;
-            }
+  //           // Verificar se rotina em teste
+  //           celularTeste = stepAutoReply.autoReply.celularTeste;
+  //           if (
+  //             (celularTeste &&
+  //               celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
+  //             !celularContato
+  //           ) {
+  //             return;
+  //           }
 
-            await SendWhatsAppMessage({
-              body: stepAutoReply.reply,
-              ticket,
-              quotedMsg: undefined
-            });
-            await SetTicketMessagesAsRead(ticket);
-            return;
-          }
+  //           await SendWhatsAppMessage({
+  //             body: stepAutoReply.reply,
+  //             ticket,
+  //             quotedMsg: undefined
+  //           });
+  //           await SetTicketMessagesAsRead(ticket);
+  //           return;
+  //         }
 
-          // action = 1: enviar para fila: queue
-          if (actionAutoReply.action === 1) {
-            ticket.update({
-              queueId: actionAutoReply.queueId,
-              autoReplyId: null,
-              stepAutoReplyId: null
-            });
-          }
+  //         // action = 1: enviar para fila: queue
+  //         if (actionAutoReply.action === 1) {
+  //           ticket.update({
+  //             queueId: actionAutoReply.queueId,
+  //             autoReplyId: null,
+  //             stepAutoReplyId: null
+  //           });
+  //         }
 
-          // action = 2: enviar para determinado usuário
-          if (actionAutoReply.action === 2) {
-            ticket.update({
-              userId: actionAutoReply.userIdDestination,
-              status: "open",
-              autoReplyId: null,
-              stepAutoReplyId: null
-            });
-          }
-          io.to(ticket.status).emit("ticket", {
-            action: "updateQueue",
-            ticket
-          });
+  //         // action = 2: enviar para determinado usuário
+  //         if (actionAutoReply.action === 2) {
+  //           ticket.update({
+  //             userId: actionAutoReply.userIdDestination,
+  //             status: "open",
+  //             autoReplyId: null,
+  //             stepAutoReplyId: null
+  //           });
+  //         }
+  //         io.to(ticket.status).emit("ticket", {
+  //           action: "updateQueue",
+  //           ticket
+  //         });
 
-          if (actionAutoReply.replyDefinition) {
-            await SendWhatsAppMessage({
-              body: actionAutoReply.replyDefinition,
-              ticket,
-              quotedMsg: undefined
-            });
-            await SetTicketMessagesAsRead(ticket);
-          }
-        } else {
-          // retornar a ultima mensagem (estapa atual do ticket)
-          const stepAutoReply = await ShowStepAutoReplyMessageService(
-            0,
-            ticket.autoReplyId,
-            ticket.stepAutoReplyId
-          );
+  //         if (actionAutoReply.replyDefinition) {
+  //           await SendWhatsAppMessage({
+  //             body: actionAutoReply.replyDefinition,
+  //             ticket,
+  //             quotedMsg: undefined
+  //           });
+  //           await SetTicketMessagesAsRead(ticket);
+  //         }
+  //       } else {
+  //         // retornar a ultima mensagem (estapa atual do ticket)
+  //         const stepAutoReply = await ShowStepAutoReplyMessageService(
+  //           0,
+  //           ticket.autoReplyId,
+  //           ticket.stepAutoReplyId
+  //         );
 
-          // Verificar se rotina em teste
-          celularTeste = stepAutoReply.autoReply.celularTeste;
-          if (
-            (celularTeste &&
-              celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
-            !celularContato
-          ) {
-            return;
-          }
+  //         // Verificar se rotina em teste
+  //         celularTeste = stepAutoReply.autoReply.celularTeste;
+  //         if (
+  //           (celularTeste &&
+  //             celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
+  //           !celularContato
+  //         ) {
+  //           return;
+  //         }
 
-          await SendWhatsAppMessage({
-            body: stepAutoReply.reply,
-            ticket,
-            quotedMsg: undefined
-          });
-          await SetTicketMessagesAsRead(ticket);
-        }
-      }
-    }
-  }
+  //         await SendWhatsAppMessage({
+  //           body: stepAutoReply.reply,
+  //           ticket,
+  //           quotedMsg: undefined
+  //         });
+  //         await SetTicketMessagesAsRead(ticket);
+  //       }
+  //     }
+  //   }
+  // }
 }
 
 export default Message;

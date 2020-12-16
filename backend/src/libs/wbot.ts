@@ -3,6 +3,7 @@ import { Client } from "whatsapp-web.js";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
 import AppError from "../errors/AppError";
+import Contact from "../models/Contact";
 // import { handleMessage } from "../services/WbotServices/wbotMessageListener";
 
 interface Session extends Client {
@@ -25,6 +26,41 @@ const sessions: Session[] = [];
 //     }
 //   });
 // };
+
+const syncContacts = async (wbot: Session) => {
+  let contacts;
+  try {
+    contacts = await wbot.getContacts();
+  } catch (err) {
+    console.log(
+      "Could not get whatsapp contacts from phone. Check connection page.",
+      err
+    );
+  }
+
+  if (!contacts) {
+    return null;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  const dataArray: object[] = [];
+  await Promise.all(
+    contacts.map(async ({ name, pushname, number, isGroup }) => {
+      if ((name || pushname) && !isGroup) {
+        // const profilePicUrl = await wbot.getProfilePicUrl(`${number}@c.us`);
+        const contactObj = { name: name || pushname, number };
+        dataArray.push(contactObj);
+      }
+    })
+  );
+  if (dataArray.length) {
+    return Contact.bulkCreate(dataArray, {
+      fields: ["number", "name"],
+      updateOnDuplicate: ["number"]
+    });
+  }
+  return null;
+};
 
 export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
   return new Promise((resolve, reject) => {
@@ -106,6 +142,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         console.log("Session:", sessionName, "READY");
 
         // syncUnreadMessages(wbot);
+        syncContacts(wbot);
 
         await whatsapp.update({
           status: "CONNECTED",
