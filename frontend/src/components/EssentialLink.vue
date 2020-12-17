@@ -2,9 +2,9 @@
   <q-item
     clickable
     v-ripple
-    :active="menuAtivo === routeName"
-    @click="$router.push({ name: routeName }); menuAtivo = routeName"
-    active-class="'my-menu-link'"
+    :active="routeName == cRouterName"
+    active-class="bg-teal-1 text-grey-8 menu-link-active-item-top"
+    @click=" () => !(routeName == cRouterName) ? $router.push({ name: routeName }) : ''"
     :class="{'text-negative text-bolder': color === 'negative'}"
   >
     <q-item-section
@@ -56,11 +56,18 @@ export default {
       type: String,
       default: ''
     }
+  },
+  computed: {
+    cRouterName () {
+      return this.$route.name
+    }
   }
 }
 </script>
 <style lang="sass">
-.my-menu-link
-  color: white
-  background: #F2C037
+.menu-link-active-item-top
+  border-left: 4px solid rgb(21, 120, 173)
+  border-radius: 0
+  position: relative
+  height: 100%
 </style>

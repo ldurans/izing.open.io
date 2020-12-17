@@ -1,5 +1,7 @@
 import openSocket from 'socket.io-client'
-const socket = openSocket(process.env.API)
+const socket = openSocket(process.env.API, {
+  forceNew: true
+})
 const userId = +localStorage.getItem('userId')
 
 export default {

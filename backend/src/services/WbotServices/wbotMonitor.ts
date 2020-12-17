@@ -38,6 +38,16 @@ const wbotMonitor = async (
         `Battery session: ${sessionName} ${battery}% - Charging? ${plugged}`
       );
 
+      if (battery <= 20 && !plugged) {
+        io.emit("change_battery", {
+          action: "update",
+          batteryInfo: {
+            ...batteryInfo,
+            sessionName
+          }
+        });
+      }
+
       try {
         await whatsapp.update({ battery, plugged });
       } catch (err) {

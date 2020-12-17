@@ -2,7 +2,7 @@
   <q-dialog
     :value="modalNovoTicket"
     persistent
-    @hide="$emit('update:modalNovoTicket', false)"
+    @hide="fecharModal"
   >
     <q-card
       class="q-pa-md"
@@ -13,8 +13,13 @@
       </q-card-section>
       <q-card-section>
         <q-select
+          ref="selectAutoCompleteContato"
+          autofocus
           square
           outlined
+          filled
+          hide-dropdown-icon
+          :loading="loading"
           v-model="contatoSelecionado"
           :options="contatos"
           input-debounce="700"
@@ -25,7 +30,35 @@
           option-label="name"
           option-value="id"
           label="Localizar Contato"
-        />
+          hint="Digite no mínimo duas letras para localizar o contato."
+        >
+          <template v-slot:before-options>
+            <q-btn
+              color="primary"
+              no-caps
+              padding
+              ripple
+              class="full-width no-border-radius"
+              outline
+              icon="add"
+              label="Adicionar Contato"
+              @click="modalContato = true"
+            />
+
+          </template>
+          <template v-slot:option="scope">
+            <q-item
+              v-bind="scope.itemProps"
+              v-on="scope.itemEvents"
+              v-if="scope.opt.name"
+            >
+              <q-item-section>
+                <q-item-label> {{ scope.opt.name }}</q-item-label>
+                <q-item-label caption>{{ scope.opt.number }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
       </q-card-section>
       <q-card-actions
         align="right"
@@ -45,6 +78,10 @@
         />
       </q-card-actions>
     </q-card>
+    <ContatoModal
+      :modalContato.sync="modalContato"
+      @contatoModal:contato-criado="contatoCriadoNotoTicket"
+    />
   </q-dialog>
 
 </template>
@@ -53,8 +90,11 @@
 const userId = +localStorage.getItem('userId')
 import { ListarContatos } from 'src/service/contatos'
 import { CriarTicket } from 'src/service/tickets'
+import ContatoModal from 'src/pages/contatos/ContatoModal'
+
 export default {
   name: 'ModalNovoTicket',
+  components: { ContatoModal },
   props: {
     modalNovoTicket: {
       type: Boolean,
@@ -65,22 +105,41 @@ export default {
     return {
       ticket: {},
       contatoSelecionado: null,
-      contatos: []
+      contatos: [],
+      modalContato: false,
+      loading: false
     }
   },
   methods: {
+    fecharModal () {
+      this.ticket = {}
+      this.contatoSelecionado = null
+      this.$emit('update:modalNovoTicket', false)
+    },
     async localizarContato (search, update, abort) {
       if (search.length < 2) {
         if (this.contatos.length) update(() => { this.contatos = [...this.contatos] })
         abort()
         return
       }
+      this.loading = true
       const { data } = await ListarContatos({
         searchParam: search
       })
+
       update(() => {
-        this.contatos = data.contacts
+        if (data.contacts.length) {
+          this.contatos = data.contacts
+        } else {
+          this.contatos = [{}]
+          // this.$refs.selectAutoCompleteContato.toggleOption({}, true)
+        }
       })
+      this.loading = false
+    },
+    contatoCriadoNotoTicket (contato) {
+      this.contatoSelecionado = contato
+      this.criarTicket()
     },
     async criarTicket () {
       if (!this.contatoSelecionado.id) return
@@ -98,7 +157,10 @@ export default {
           type: 'positive',
           progress: true
         })
-        this.$router.push({ name: 'atendimento' })
+        this.fecharModal()
+        if (this.$route.name !== 'atendimento') {
+          this.$router.push({ name: 'atendimento' })
+        }
       } catch (error) {
         console.error(error)
       }

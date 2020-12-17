@@ -32,6 +32,11 @@
           v-model="contato.number"
           :validator="$v.contato.number"
           @blur="$v.contato.number.$touch"
+          mask="(##) ##### - ####"
+          placeholder="(DDD) 99999 - 9999"
+          fill-mask
+          unmasked-value
+          hint="Número do celular deverá conter 9 dígitos e ser precedido do DDD. "
           label="Número"
         />
         <c-input
@@ -167,9 +172,14 @@ export default {
         })
       }
 
+      const contato = {
+        ...this.contato,
+        number: '55' + this.contato.number // inserir o DDI do brasil para consultar o número
+      }
+
       try {
         if (this.contactId) {
-          const { data } = await EditarContato(this.contactId, this.contato)
+          const { data } = await EditarContato(this.contactId, contato)
           this.$emit('contatoModal:contato-editado', data)
           this.$q.notify({
             type: 'info',
@@ -179,13 +189,14 @@ export default {
             message: 'Contato editado!'
           })
         } else {
-          await CriarContato(this.contato)
+          const { data } = await CriarContato(contato)
           this.$q.notify({
             type: 'positive',
             progress: true,
             position: 'top',
             message: 'Contato criado!'
           })
+          this.$emit('contatoModal:contato-criado', data)
         }
         this.$emit('update:modalContato', false)
       } catch (error) {

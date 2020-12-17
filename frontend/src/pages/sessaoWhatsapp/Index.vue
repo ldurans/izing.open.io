@@ -15,7 +15,7 @@
           color="primary"
           label="Adicionar"
           @click="whatsappSelecionado = {}; modalWhatsapp = true"
-          v-if="$user.isSuporte(userLogado)"
+          v-if="$store.getters['isSuporte']"
         />
       </template>
       <template v-slot:body-cell-status="props">
@@ -96,6 +96,7 @@
               label="Novo QR Code"
               @click="handleRequestNewQrCode(props.row.id)"
               icon-right="watch_later"
+              :disable="!$store.getters['isAdmin']"
             />
           </q-btn-group>
           <q-btn
@@ -104,6 +105,7 @@
             label="Desconectar"
             outline
             @click="handleDisconectWhatsSession(props.row.id)"
+            :disable="!$store.getters['isAdmin']"
           />
           <q-btn
             v-if="props.value == 'OPENING'"
@@ -137,6 +139,7 @@
             dense
             icon="edit"
             @click="handleOpenModalWhatsapp(props.row)"
+            v-if="$store.getters['isAdmin']"
           />
           <q-btn
             round
@@ -144,7 +147,22 @@
             dense
             icon="delete"
             @click="deleteWhatsapp(props.row)"
+            v-if="$store.getters['isSuporte']"
           />
+          <!-- <q-btn
+            class="q-ml-sm"
+            color="black"
+            icon="person_search"
+            round
+            flat
+            dense
+            @click="sincronizarContatos(props.row)"
+          >
+            <q-tooltip>
+              Sincronizar contatos
+            </q-tooltip>
+
+          </q-btn> -->
 
         </q-td>
       </template>
@@ -161,14 +179,14 @@
 </template>
 
 <script>
-import { DeletarWhatsapp, DeleteWhatsappSession, StartWhatsappSession, RequestNewQrCode, ListarWhatsapps } from 'src/service/sessoesWhatsapp'
+import { DeletarWhatsapp, DeleteWhatsappSession, StartWhatsappSession, RequestNewQrCode, ListarWhatsapps, SincronizarContatosWhatsapp } from 'src/service/sessoesWhatsapp'
 import { format, parseISO } from 'date-fns'
 import pt from 'date-fns/locale/pt-BR/index'
 import ModalQrCode from './ModalQrCode'
 import { mapGetters } from 'vuex'
 import ModalWhatsapp from './ModalWhatsapp'
 const userLogado = JSON.parse(localStorage.getItem('usuario'))
-console.log('userLogado', userLogado)
+
 export default {
   name: 'IndexSessoesWhatsapp',
   components: {
@@ -300,6 +318,35 @@ export default {
         }).finally(f => {
           this.loading = false
         })
+      })
+    },
+    sincronizarContatos (whatsapp) {
+      this.$q.dialog({
+        title: 'Atenção!! Deseja realmente sincronizar os contatos? ',
+        message: 'Todas os contatos com os quais você já conversou pelo Whatsapp serão criados. Isso pode demorar um pouco...',
+        cancel: {
+          label: 'Não',
+          color: 'primary',
+          push: true
+        },
+        ok: {
+          label: 'Sim',
+          color: 'negative',
+          push: true
+        },
+        persistent: true
+      }).onOk(() => {
+        this.loading = true
+        SincronizarContatosWhatsapp(whatsapp.id).then(res => {
+          this.$q.notify({
+            type: 'positive',
+            message: 'Contatos estão sendo sincronizados e importados. Poderão ser consultados posteriormente na Lista de Contatos.',
+            progress: true
+          })
+        }).catch(error => {
+          console.log(error)
+        })
+        this.loading = false
       })
     }
   },

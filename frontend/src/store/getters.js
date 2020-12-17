@@ -10,6 +10,8 @@ const getters = {
   hasMorePending: state => state.atendimentoTicket.hasMorePending,
   hasMoreClosed: state => state.atendimentoTicket.hasMoreClosed,
   hasMoreBusca: state => state.atendimentoTicket.hasMoreBusca,
-  whatsapps: state => state.whatsapp.whatsApps
+  whatsapps: state => state.whatsapp.whatsApps,
+  isSuporte: state => state.user.isSuporte,
+  isAdmin: state => state.user.isAdmin
 }
 export default getters

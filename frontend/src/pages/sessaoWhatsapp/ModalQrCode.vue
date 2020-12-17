@@ -31,7 +31,7 @@
 import { GetWhatSession } from 'src/service/sessoesWhatsapp'
 import QrcodeVue from 'qrcode.vue'
 import openSocket from 'socket.io-client'
-const socket = openSocket(process.env.API)
+const socket = openSocket(process.env.API, { forceNew: true })
 
 export default {
   name: 'ModalQrCode',

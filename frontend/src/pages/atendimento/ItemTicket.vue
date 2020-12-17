@@ -5,6 +5,9 @@
       :clickable="!ticketPendente"
       style="height: 7vh"
       @click="abrirChatContato(ticket)"
+      :class="{
+        'ticket-active-item bg-grey-4': ticket.id === $store.getters['ticketFocado'].id
+      }"
     >
       <q-item-section avatar>
         <q-btn
@@ -108,7 +111,7 @@
         </span> -->
       </q-item-section>
     </q-item>
-    <q-separator inset="item" />
+    <q-separator inset="avatar" />
   </div>
 </template>
 
@@ -177,5 +180,11 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="sass">
+.ticket-active-item
+  // border: 2px solid rgb(21, 120, 173)
+  border-left: 2px solid black //rgb(21, 120, 173)
+  border-radius: 0
+  position: relative
+  height: 100%
 </style>

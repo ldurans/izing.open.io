@@ -9,8 +9,10 @@ import {
   AllowNull,
   Unique,
   Default,
-  HasMany
+  HasMany,
+  BeforeCreate
 } from "sequelize-typescript";
+import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
 import ContactCustomField from "./ContactCustomField";
 import Ticket from "./Ticket";
 
@@ -52,6 +54,13 @@ class Contact extends Model<Contact> {
 
   @HasMany(() => ContactCustomField)
   extraInfo: ContactCustomField[];
+
+  @BeforeCreate
+  static async getProfilePicUrl(instance: Contact): Promise<void> {
+    const profilePicUrl = await GetProfilePicUrl(instance.number);
+    console.log("BeforeCreate - profilePicUrl", profilePicUrl);
+    instance.profilePicUrl = profilePicUrl;
+  }
 }
 
 export default Contact;

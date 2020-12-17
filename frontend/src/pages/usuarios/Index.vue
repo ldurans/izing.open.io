@@ -118,7 +118,9 @@ export default {
           label: 'Filas',
           field: 'queues',
           align: 'left',
-          format: (v) => v.map(f => f.queue).join(', ')
+          format: (v) => v.map(f => f.queue).join(', '),
+          classes: 'ellipsis',
+          style: 'max-width: 400px;'
         },
         { name: 'profile', label: 'Perfil', field: 'profile', align: 'left', format: (v) => this.optionsProfile.find(o => o.value == v).label },
         { name: 'acoes', label: 'Ações', field: 'acoes', align: 'center' }

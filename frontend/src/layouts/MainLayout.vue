@@ -61,6 +61,25 @@
             </span>
           </q-tooltip>
         </q-icon>
+        <q-icon
+          v-if="cOpening"
+          name="mdi-lan-connect"
+          color="warning"
+          size="2.5em"
+        >
+          <span class="q-ml-md text-weight-medium text-center text-caption text-white ">
+            Verifique o celular e a internet, a conexão foi perdida. Tentando reconectar ao Whatsapp.
+          </span>
+          <q-tooltip content-class="bg-light-blue-1 text-black q-pa-sm shadow-4">
+            <span class="text-weight-medium"> Ação: </span>
+            <span class="row col">
+              1 - Tente fechar e abrir novamente o aplicativo do whatsapp no celular;
+            </span>
+            <span class="row col">
+              2 - Certifique-se de que seu celular esteja conectado à internet e o WhatsApp esteja aberto;
+            </span>
+          </q-tooltip>
+        </q-icon>
         <q-space />
         <q-btn
           class="bg-grey"
@@ -153,17 +172,16 @@ import socketInitial from './socketInitial'
 import alertSound from 'src/assets/sound.mp3'
 import { format } from 'date-fns'
 const userId = +localStorage.getItem('userId')
-const userProfile = localStorage.getItem('profile')
 import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { mapGetters } from 'vuex'
 
 const objMenu = [
-  {
-    title: 'Dashboard',
-    caption: '',
-    icon: 'mdi-view-dashboard',
-    routeName: ''
-  },
+  // {
+  //   title: 'Dashboard',
+  //   caption: '',
+  //   icon: 'mdi-view-dashboard',
+  //   routeName: ''
+  // },
   {
     title: 'Conexões',
     caption: 'Sessões Whatsapp',
@@ -203,13 +221,13 @@ const objMenuAdmin = [
     caption: 'Configuração auto resposta',
     icon: 'mdi-message-reply-text',
     routeName: 'auto-resposta'
-  },
-  {
-    title: 'Configurações',
-    caption: 'Configurações gerais',
-    icon: 'mdi-cog',
-    routeName: 'conexoes'
   }
+  // {
+  //   title: 'Configurações',
+  //   caption: 'Configurações gerais',
+  //   icon: 'mdi-cog',
+  //   routeName: 'conexoes'
+  // }
 
 ]
 
@@ -219,7 +237,7 @@ export default {
   components: { EssentialLink, ModalUsuario },
   data () {
     return {
-      userProfile,
+      userProfile: 'user',
       modalUsuario: false,
       usuario: {},
       alertSound,
@@ -236,6 +254,10 @@ export default {
     },
     cQrCode () {
       const idx = this.whatsapps.findIndex(w => w.status === 'qrcode')
+      return (idx !== -1)
+    },
+    cOpening () {
+      const idx = this.whatsapps.findIndex(w => w.status === 'OPENING')
       return (idx !== -1)
     },
     cObjMenu () {
@@ -288,6 +310,8 @@ export default {
       this.usuario = data
       localStorage.setItem('usuario', JSON.stringify(data))
       localStorage.setItem('queues', JSON.stringify(data.queues))
+      this.$store.commit('SET_IS_SUPORTE', data)
+      this.$store.commit('SET_IS_ADMIN', data)
     },
     async abrirModalUsuario () {
       if (!this.usuario.id) {
@@ -303,16 +327,17 @@ export default {
       localStorage.removeItem('profile')
       localStorage.removeItem('userId')
       localStorage.removeItem('queues')
-      this.$router.push({ name: 'login' })
+      this.$router.go({ name: 'login', replace: true })
     }
   },
-  mounted () {
-    this.listarWhatsapps()
+  async mounted () {
+    await this.listarWhatsapps()
     if (!('Notification' in window)) {
     } else {
       Notification.requestPermission()
     }
-    this.dadosUsuario()
+    await this.dadosUsuario()
+    this.userProfile = localStorage.getItem('profile')
   }
 }
 </script>

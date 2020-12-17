@@ -35,7 +35,6 @@
           label="Adicionar"
           @click="selectedContactId = null; modalContato = true"
         />
-
       </template>
       <template v-slot:body-cell-profilePicUrl="props">
         <q-td>
@@ -90,6 +89,8 @@
     <ContatoModal
       :contactId="selectedContactId"
       :modalContato.sync="modalContato"
+      @contatoModal:contato-editado="UPDATE_CONTACTS"
+      @contatoModal:contato-criado="UPDATE_CONTACTS"
     />
   </div>
 </template>
@@ -143,12 +144,12 @@ export default {
       this.contacts = contactsObj
     },
     UPDATE_CONTACTS (contact) {
-      let newContacts = [...this.contacts]
+      const newContacts = [...this.contacts]
       const contactIndex = newContacts.findIndex(c => c.id === contact.id)
       if (contactIndex !== -1) {
         newContacts[contactIndex] = contact
       } else {
-        newContacts = [contact, ...newContacts]
+        newContacts.unshift(contact)
       }
       this.contacts = [...newContacts]
     },
@@ -242,6 +243,7 @@ export default {
         this.loading = false
       })
     }
+
   },
   mounted () {
     this.listarContatos()

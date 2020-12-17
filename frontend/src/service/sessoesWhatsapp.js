@@ -58,6 +58,14 @@ export function DeletarWhatsapp (whatsAppId) {
   })
 }
 
+export function SincronizarContatosWhatsapp (whatsAppId) {
+  return request({
+    url: `/whatsapp/sync-contacts/${whatsAppId}`,
+    method: 'post',
+    timeout: false
+  })
+}
+
 // api.put(`/whatsapp/${whatsAppId}`, {
 //   name: values.name,
 //   isDefault: values.isDefault,

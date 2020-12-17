@@ -142,7 +142,10 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         console.log("Session:", sessionName, "READY");
 
         // syncUnreadMessages(wbot);
-        syncContacts(wbot);
+        if (process.env.NODE_ENV === "prod") {
+          console.log("Lista de contatos sincronizada - syncContacts");
+          syncContacts(wbot);
+        }
 
         await whatsapp.update({
           status: "CONNECTED",

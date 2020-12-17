@@ -8,7 +8,7 @@ let io: SocketIO;
 export const initIO = (httpServer: Server): SocketIO => {
   io = socketIo(httpServer);
 
-  if (process.env.NODE_ENV === "PRODUCTION") {
+  if (process.env.NODE_ENV === "prod") {
     io.adapter(
       socketRedis({
         host: process.env.IO_REDIS_SERVER,

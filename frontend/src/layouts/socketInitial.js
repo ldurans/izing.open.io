@@ -1,5 +1,7 @@
 import openSocket from 'socket.io-client'
-const socket = openSocket(process.env.API)
+const socket = openSocket(process.env.API, {
+  forceNew: true
+})
 const userId = +localStorage.getItem('userId')
 
 export default {
@@ -39,6 +41,15 @@ export default {
         if (data.action === 'update') {
           this.$store.commit('UPDATE_SESSION', data.session)
         }
+      })
+
+      socket.on('change_battery', data => {
+        console.log('change_battery', data)
+        this.$q.notify({
+          message: `Bateria do celular do whatsapp ${data.sessionName} está com bateria em ${data.battery}%. Necessário iniciar carregamento.`,
+          type: 'negative',
+          progress: true
+        })
       })
     }
   },
