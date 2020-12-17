@@ -16,21 +16,21 @@ Sentry.init({ dsn: process.env.SENTRY_DSN });
 const app = express();
 
 // em produção estou usando assim:
-if (process.env.NODE_ENV === "prod") {
-  app.use(
-    (req, res, next) => {
-      next();
-    },
-    cors({
-      credentials: true,
-      origin: process.env.FRONTEND_URL
-    })
-  );
-} else {
-  app.use((req, res, next) => {
-    next();
-  }, cors());
-}
+// if (process.env.NODE_ENV === "prod") {
+//   app.use(
+//     (req, res, next) => {
+//       next();
+//     },
+//     cors({
+//       credentials: true,
+//       origin: process.env.FRONTEND_URL
+//     })
+//   );
+// } else {
+app.use((req, res, next) => {
+  next();
+}, cors());
+// }
 
 // app.use(
 //   cors({
