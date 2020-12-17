@@ -13,6 +13,7 @@ export const initIO = (httpServer: Server): SocketIO => {
       socketRedis({
         host: process.env.IO_REDIS_SERVER,
         port: Number(process.env.IO_REDIS_PORT)
+        // db: process.env.IO_REDIS_DB
       })
     );
   }

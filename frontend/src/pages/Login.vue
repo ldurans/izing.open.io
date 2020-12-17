@@ -80,11 +80,11 @@
             >
               Login
               <span slot="loading">
-                <q-spinner-puff class="on-left" />Logando
+                <q-spinner-puff class="on-left" />Logando...
               </span>
             </q-btn>
           </q-card-actions>
-          <q-btn
+          <!-- <q-btn
             flat
             color="info"
             no-caps
@@ -92,7 +92,7 @@
             class="q-px-sm"
             label="Esqueci a senha"
             @click="modalEsqueciSenha=true"
-          />
+          /> -->
 
           <q-inner-loading :showing="loading" />
         </q-card>
