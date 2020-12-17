@@ -33,7 +33,7 @@ const app = express();
 // }
 
 app.use(
-  cors({ credentials: true, origin: false /* process.env.FRONTEND_URL */ })
+  cors({ credentials: true, origin: true /* process.env.FRONTEND_URL */ })
 );
 app.use(cookieParser());
 app.use(express.json());
