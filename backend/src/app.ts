@@ -32,9 +32,7 @@ const app = express();
 // }, cors());
 // }
 
-app.use(
-  cors({ credentials: true, origin: true /* process.env.FRONTEND_URL */ })
-);
+app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(Sentry.Handlers.requestHandler());
