@@ -344,7 +344,7 @@ export default {
             progress: true
           })
         }).catch(error => {
-          console.log(error)
+          console.error(error)
         })
         this.loading = false
       })

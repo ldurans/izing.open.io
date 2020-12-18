@@ -111,7 +111,6 @@
                 style="height: 140px; max-width: 150px"
               />
               <VueEasyLightbox
-                escDisabled
                 moveDisabled
                 :visible="abrirModalImagem"
                 :imgs="urlMedia"

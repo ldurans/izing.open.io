@@ -63,6 +63,7 @@
         outlined
         @input="handlerInputMenssagem"
         :value="textChat"
+        @paste="handleInputPaste"
       />
       <span
         v-if="!cMostrarEnvioArquivo"
@@ -70,7 +71,7 @@
       >Quebra linha/Parágrafo: Shift + Enter ||| Enviar Mensagem: Enter</span>
       <!-- tamanho maximo por arquivo de 10mb -->
       <q-file
-        input-style="min-height: 9vh; max-height: 9vh"
+        input-style="min-height: 9vh; height: 9vh; max-height: 9vh"
         ref="PickerFileMessage"
         class="bg-white"
         input-class="bg-white"
@@ -86,6 +87,7 @@
     </div>
     <div class="col-1">
       <q-btn
+        ref="btnEnviarMensagem"
         @click="enviarMensagem"
         :disabled="ticketFocado.status !== 'open'"
         round
@@ -102,6 +104,49 @@
         </q-tooltip>
       </q-btn>
     </div>
+    <q-dialog
+      v-model="abrirModalPreviewImagem"
+      position="right"
+      @hide="hideModalPreviewImagem"
+      @show="showModalPreviewImagem"
+    >
+      <q-card
+        style="height: 90vh; min-width: 60vw; max-width: 60vw"
+        class="q-pa-md"
+      >
+        <q-card-section>
+          <div class="text-h6">{{ urlMediaPreview.title  }}
+            <q-btn
+              class="float-right"
+              icon="close"
+              color="negative"
+              round
+              outline
+            />
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <q-img
+            :src="urlMediaPreview.src"
+            spinner-color="white"
+            class="img-responsive mdi-image-auto-adjust q-uploader__file--img"
+            style="height: 60vh; min-width: 55vw; max-width: 55vw"
+          />
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn
+            ref="qbtnPasteEnvioMensagem"
+            label="Enviar"
+            color="primary"
+            v-close-popup
+            @click="enviarMensagem"
+            @keypress.enter.exact="enviarMensagem()"
+          />
+        </q-card-actions>
+        <span class="row col text-caption text-blue-grey-10">* Confirmar envio: Enter</span>
+        <span class="row col text-caption text-blue-grey-10">** Cancelar: ESC</span>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -123,11 +168,15 @@ export default {
   },
   components: {
     VEmojiPicker
-
   },
   data () {
     return {
       abrirFilePicker: false,
+      abrirModalPreviewImagem: false,
+      urlMediaPreview: {
+        title: '',
+        src: ''
+      },
       arquivos: [],
       textChat: ''
     }
@@ -135,10 +184,28 @@ export default {
   computed: {
     ...mapGetters(['ticketFocado']),
     cMostrarEnvioArquivo () {
-      return this.abrirFilePicker && this.arquivos.length > 0
+      return this.arquivos.length > 0
     }
   },
   methods: {
+    openFilePreview (event) {
+      const data = event.clipboardData.files[0]
+      const urlImg = window.URL.createObjectURL(data)
+      return urlImg
+    },
+    handleInputPaste (e) {
+      if (!this.ticketFocado?.id) return
+      if (e.clipboardData.files[0]) {
+        this.textChat = ''
+        this.arquivos = [e.clipboardData.files[0]]
+        this.abrirModalPreviewImagem = true
+        this.urlMediaPreview = {
+          title: `Enviar imagem para ${this.ticketFocado?.contact?.name}`,
+          src: this.openFilePreview(e)
+        }
+        this.$refs.inputEnvioMensagem.focus()
+      }
+    },
     onInsertSelectEmoji (emoji) {
       const self = this
       var tArea = this.$refs.inputEnvioMensagem
@@ -167,6 +234,9 @@ export default {
       this.$refs.PickerFileMessage.pickFiles(event)
     },
     prepararUploadMedia () {
+      if (!this.arquivos.length) {
+        throw new Error('Não existem arquivos para envio')
+      }
       const formData = new FormData()
       formData.append('fromMe', true)
       this.arquivos.forEach(media => {
@@ -176,7 +246,9 @@ export default {
       return formData
     },
     prepararMensagemTexto () {
-      if (this.textChat.trim() === '') return
+      if (this.textChat.trim() === '') {
+        throw new Error('Mensagem Inexistente')
+      }
       const message = {
         read: 1,
         fromMe: true,
@@ -193,11 +265,16 @@ export default {
         ? this.prepararMensagemTexto()
         : this.prepararUploadMedia()
       try {
+        if (!this.cMostrarEnvioArquivo && !this.textChat) return
         await EnviarMensagemTexto(ticketId, message)
         this.arquivos = []
         this.textChat = ''
         this.$emit('update:replyingMessage', null)
         this.abrirFilePicker = false
+        this.abrirModalPreviewImagem = false
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 300)
       } catch (error) {
         const errorMsg = error.response?.data?.error
         if (errorMsg) {
@@ -218,10 +295,28 @@ export default {
     },
     handlerInputMenssagem (v) {
       this.textChat = v.target.value
+    },
+    showModalPreviewImagem () {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.$refs.qbtnPasteEnvioMensagem.$el.focus()
+        }, 20)
+      })
+    },
+    hideModalPreviewImagem () {
+      this.arquivos = []
+      this.urlMediaPreview = {}
+      this.abrirModalPreviewImagem = false
     }
   },
   mounted () {
     this.$root.$on('mensagem-chat:focar-input-mensagem', () => this.$refs.inputEnvioMensagem.focus())
+    const self = this
+    window.addEventListener('paste', self.handleInputPaste)
+  },
+  beforeDestroy () {
+    const self = this
+    window.removeEventListener('paste', self.handleInputPaste)
   },
   destroyed () {
     this.$root.$off('mensagem-chat:focar-input-mensagem')

@@ -44,9 +44,8 @@ export default {
       })
 
       socket.on('change_battery', data => {
-        console.log('change_battery', data)
         this.$q.notify({
-          message: `Bateria do celular do whatsapp ${data.sessionName} está com bateria em ${data.battery}%. Necessário iniciar carregamento.`,
+          message: `Bateria do celular do whatsapp ${data.batteryInfo.sessionName} está com bateria em ${data.batteryInfo.battery}%. Necessário iniciar carregamento.`,
           type: 'negative',
           progress: true
         })

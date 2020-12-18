@@ -18,7 +18,7 @@ export default {
         if (data.action === 'create') {
           if (data.ticket.id == this.$store.getters.ticketFocado.id) {
             this.$store.commit('ADD_MESSAGE', data.message)
-            this.scrollToBottom()
+            // this.scrollToBottom()
           }
         }
         if (data.action === 'update') {

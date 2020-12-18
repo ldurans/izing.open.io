@@ -54,12 +54,13 @@ const syncContacts = async (wbot: Session) => {
     })
   );
   if (dataArray.length) {
-    return Contact.bulkCreate(dataArray, {
+    await Contact.bulkCreate(dataArray, {
       fields: ["number", "name"],
       updateOnDuplicate: ["number"]
     });
+    console.log("Lista de contatos sincronizada - syncContacts");
   }
-  return null;
+  return true;
 };
 
 export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
@@ -143,7 +144,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
 
         // syncUnreadMessages(wbot);
         if (process.env.NODE_ENV === "prod") {
-          console.log("Lista de contatos sincronizada - syncContacts");
+          console.log("Iniciando sincronização de contatos.");
           syncContacts(wbot);
         }
 
