@@ -122,6 +122,7 @@
               color="negative"
               round
               outline
+              @click="hideModalPreviewImagem"
             />
           </div>
         </q-card-section>
