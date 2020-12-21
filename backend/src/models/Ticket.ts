@@ -96,6 +96,12 @@ class Ticket extends Model<Ticket> {
   @BelongsTo(() => Queue)
   queue: Queue;
 
+  // @Column(DataType.VIRTUAL)
+  // get teste(): string {
+  //   // console.log("VIRTUAL ===>", this);
+  //   return "teste ok";
+  // }
+
   @AfterFind
   static async countTicketsUnreadMessages(tickets: Ticket[]): Promise<void> {
     if (tickets && tickets.length > 0) {
