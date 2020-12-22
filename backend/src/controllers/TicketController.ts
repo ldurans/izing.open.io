@@ -21,9 +21,11 @@ interface TicketData {
   contactId: number;
   status: string;
   userId: number;
+  tenantId: string | number;
 }
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
+  const { tenantId } = req.user;
   const {
     pageNumber,
     status,
@@ -44,19 +46,26 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     showAll,
     userId,
     withUnreadMessages,
-    queue
+    queue,
+    tenantId
   });
 
   return res.status(200).json({ tickets, count, hasMore });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
+  const { tenantId } = req.user;
   const { contactId, status, userId }: TicketData = req.body;
 
-  const ticket = await CreateTicketService({ contactId, status, userId });
+  const ticket = await CreateTicketService({
+    contactId,
+    status,
+    userId,
+    tenantId
+  });
 
   const io = getIO();
-  io.to(ticket.status).emit("ticket", {
+  io.to(`${tenantId}-${ticket.status}`).emit(`${tenantId}-ticket`, {
     action: "create",
     ticket
   });
@@ -66,8 +75,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
 export const show = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
+  const { tenantId } = req.user;
 
-  const contact = await ShowTicketService(ticketId);
+  const contact = await ShowTicketService({ id: ticketId, tenantId });
 
   return res.status(200).json(contact);
 };
@@ -77,7 +87,9 @@ export const update = async (
   res: Response
 ): Promise<Response> => {
   const { ticketId } = req.params;
-  const ticketData: TicketData = req.body;
+  const { tenantId } = req.user;
+
+  const ticketData: TicketData = { ...req.body, tenantId };
 
   const { ticket, oldStatus, oldUserId } = await UpdateTicketService({
     ticketData,
@@ -87,16 +99,19 @@ export const update = async (
   const io = getIO();
 
   if (ticket.status !== oldStatus || ticket.user?.id !== oldUserId) {
-    io.to(oldStatus).emit("ticket", {
+    io.to(`${tenantId}-${oldStatus}`).emit(`${tenantId}-ticket`, {
       action: "delete",
       ticketId: ticket.id
     });
   }
 
-  io.to(ticket.status).to("notification").to(ticketId).emit("ticket", {
-    action: "updateStatus",
-    ticket
-  });
+  io.to(`${tenantId}-${ticket.status}`)
+    .to(`${tenantId}-notification`)
+    .to(`${tenantId}-${ticketId}`)
+    .emit(`${tenantId}-ticket`, {
+      action: "updateStatus",
+      ticket
+    });
 
   return res.status(200).json(ticket);
 };
@@ -106,14 +121,15 @@ export const remove = async (
   res: Response
 ): Promise<Response> => {
   const { ticketId } = req.params;
+  const { tenantId } = req.user;
 
-  const ticket = await DeleteTicketService(ticketId);
+  const ticket = await DeleteTicketService({ id: ticketId, tenantId });
 
   const io = getIO();
-  io.to(ticket.status)
-    .to(ticketId)
-    .to("notification")
-    .emit("ticket", {
+  io.to(`${tenantId}-${ticket.status}`)
+    .to(`${tenantId}-${ticketId}`)
+    .to(`${tenantId}-notification`)
+    .emit(`${tenantId}-ticket`, {
       action: "delete",
       ticketId: +ticketId
     });

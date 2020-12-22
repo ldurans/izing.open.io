@@ -5,6 +5,7 @@ interface QueueData {
   queue: string;
   isActive: boolean;
   userId: number;
+  tenantId: number | string;
 }
 
 interface Request {
@@ -16,10 +17,10 @@ const UpdateQueueService = async ({
   queueData,
   queueId
 }: Request): Promise<Queue> => {
-  const { queue, isActive, userId } = queueData;
+  const { queue, isActive, userId, tenantId } = queueData;
 
   const queueModel = await Queue.findOne({
-    where: { id: queueId },
+    where: { id: queueId, tenantId },
     attributes: ["id", "queue", "isActive", "userId"]
   });
 

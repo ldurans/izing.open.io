@@ -4,8 +4,11 @@ import {
   CreatedAt,
   UpdatedAt,
   Model,
-  PrimaryKey
+  PrimaryKey,
+  ForeignKey,
+  BelongsTo
 } from "sequelize-typescript";
+import Tenant from "./Tenant";
 
 @Table
 class Setting extends Model<Setting> {
@@ -21,6 +24,13 @@ class Setting extends Model<Setting> {
 
   @UpdatedAt
   updatedAt: Date;
+
+  @ForeignKey(() => Tenant)
+  @Column
+  tenantId: number;
+
+  @BelongsTo(() => Tenant)
+  tenant: Tenant;
 }
 
 export default Setting;

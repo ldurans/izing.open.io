@@ -17,16 +17,18 @@ interface ContactData {
 interface Request {
   contactData: ContactData;
   contactId: string;
+  tenantId: string | number;
 }
 
 const UpdateContactService = async ({
   contactData,
-  contactId
+  contactId,
+  tenantId
 }: Request): Promise<Contact> => {
   const { email, name, number, extraInfo } = contactData;
 
   const contact = await Contact.findOne({
-    where: { id: contactId },
+    where: { id: contactId, tenantId },
     attributes: ["id", "name", "number", "email", "profilePicUrl"],
     include: ["extraInfo"]
   });

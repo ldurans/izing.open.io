@@ -1,6 +1,8 @@
+const token = JSON.parse(localStorage.getItem('token'))
 import openSocket from 'socket.io-client'
 const socket = openSocket(process.env.API, {
-  forceNew: true
+  forceNew: true,
+  token
 })
 const userId = +localStorage.getItem('userId')
 

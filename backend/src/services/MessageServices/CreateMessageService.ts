@@ -14,12 +14,17 @@ interface MessageData {
 }
 interface Request {
   messageData: MessageData;
+  tenantId: string | number;
 }
 
 const CreateMessageService = async ({
-  messageData
+  messageData,
+  tenantId
 }: Request): Promise<Message> => {
-  const ticket = await ShowTicketService(messageData.ticketId);
+  const ticket = await ShowTicketService({
+    id: messageData.ticketId,
+    tenantId
+  });
 
   if (!ticket) {
     throw new AppError("ERR_NO_TICKET_FOUND", 404);

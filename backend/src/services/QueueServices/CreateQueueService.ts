@@ -5,17 +5,20 @@ interface Request {
   queue: string;
   isActive: boolean;
   userId: number;
+  tenantId: number | string;
 }
 
 const CreateQueueService = async ({
   queue,
   isActive,
-  userId
+  userId,
+  tenantId
 }: Request): Promise<Queue> => {
   const queueData = await Queue.create({
     queue,
     isActive,
-    userId
+    userId,
+    tenantId
   });
 
   return queueData;

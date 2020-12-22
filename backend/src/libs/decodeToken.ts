@@ -1,8 +1,6 @@
 import { verify } from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
-
-import AppError from "../errors/AppError";
 import authConfig from "../config/auth";
+import AppError from "../errors/AppError";
 
 interface TokenPayload {
   id: string;
@@ -13,20 +11,16 @@ interface TokenPayload {
   exp: number;
 }
 
-const isAuth = (req: Request, res: Response, next: NextFunction): void => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
+const decode = (jwt: string) => {
+  if (!jwt) {
     throw new AppError("Token was not provided.", 403);
   }
-
-  const [, token] = authHeader.split(" ");
-
+  const [, token] = jwt.split(" ");
   try {
     const decoded = verify(token, authConfig.secret);
     const { id, profile, tenantId } = decoded as TokenPayload;
 
-    req.user = {
+    return {
       id,
       profile,
       tenantId
@@ -34,8 +28,6 @@ const isAuth = (req: Request, res: Response, next: NextFunction): void => {
   } catch (err) {
     throw new AppError("Invalid token.", 403);
   }
-
-  return next();
 };
 
-export default isAuth;
+export default decode;

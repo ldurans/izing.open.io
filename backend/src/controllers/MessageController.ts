@@ -24,10 +24,12 @@ type MessageData = {
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
   const { pageNumber } = req.query as IndexQuery;
+  const { tenantId } = req.user;
 
   const { count, messages, ticket, hasMore } = await ListMessagesService({
     pageNumber,
-    ticketId
+    ticketId,
+    tenantId
   });
 
   await SetTicketMessagesAsRead(ticket);
@@ -37,10 +39,11 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
+  const { tenantId } = req.user;
   const { body, quotedMsg }: MessageData = req.body;
   const medias = req.files as Express.Multer.File[];
 
-  const ticket = await ShowTicketService(ticketId);
+  const ticket = await ShowTicketService({ id: ticketId, tenantId });
 
   if (medias) {
     await Promise.all(
@@ -62,14 +65,18 @@ export const remove = async (
   res: Response
 ): Promise<Response> => {
   const { messageId } = req.params;
+  const { tenantId } = req.user;
 
-  const message = await DeleteWhatsAppMessage(messageId);
+  const message = await DeleteWhatsAppMessage(messageId, tenantId);
 
   const io = getIO();
-  io.to(message.ticketId.toString()).emit("appMessage", {
-    action: "update",
-    message
-  });
+  io.to(`${tenantId}-${message.ticketId.toString()}`).emit(
+    `${tenantId}-appMessage`,
+    {
+      action: "update",
+      message
+    }
+  );
 
   return res.send();
 };

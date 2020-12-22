@@ -1,9 +1,12 @@
 import Whatsapp from "../../models/Whatsapp";
 import AppError from "../../errors/AppError";
 
-const DeleteWhatsApprService = async (id: string): Promise<void> => {
+const DeleteWhatsApprService = async (
+  id: string,
+  tenantId: string | number
+): Promise<void> => {
   const whatsapp = await Whatsapp.findOne({
-    where: { id }
+    where: { id, tenantId }
   });
 
   if (!whatsapp) {

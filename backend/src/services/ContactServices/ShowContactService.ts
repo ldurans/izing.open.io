@@ -1,10 +1,18 @@
 import Contact from "../../models/Contact";
 import AppError from "../../errors/AppError";
 
-const ShowContactService = async (id: string | number): Promise<Contact> => {
+interface Request {
+  id: string | number;
+  tenantId: string | number;
+}
+
+const ShowContactService = async ({
+  id,
+  tenantId
+}: Request): Promise<Contact> => {
   const contact = await Contact.findByPk(id, { include: ["extraInfo"] });
 
-  if (!contact) {
+  if (!contact || contact.tenantId !== tenantId) {
     throw new AppError("ERR_NO_CONTACT_FOUND", 404);
   }
 

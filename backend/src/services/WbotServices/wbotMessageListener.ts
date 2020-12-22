@@ -25,6 +25,7 @@ import VerifyActionStepAutoReplyService from "../AutoReplyServices/VerifyActionS
 import ShowStepAutoReplyMessageService from "../AutoReplyServices/ShowStepAutoReplyMessageService";
 import SendWhatsAppMessage from "./SendWhatsAppMessage";
 import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
+import ShowWhatsAppService from "../WhatsappService/ShowWhatsAppService";
 // import ShowAutoReplyService from "../AutoReplyServices/ShowAutoReplyService";
 
 interface Session extends Client {
@@ -35,29 +36,35 @@ const writeFileAsync = promisify(writeFile);
 
 const verifyContact = async (
   msgContact: WbotContact,
-  profilePicUrl: string
+  profilePicUrl: string,
+  tenantId: string | number
 ): Promise<Contact> => {
   const io = getIO();
-
+  console.log(tenantId);
   let contact = await Contact.findOne({
-    where: { number: msgContact.id.user }
+    where: { number: msgContact.id.user, tenantId }
   });
 
   if (contact) {
     await contact.update({ profilePicUrl });
 
-    io.emit("contact", {
+    io.emit(`${tenantId}-contact`, {
       action: "update",
       contact
     });
   } else {
     contact = await Contact.create({
-      name: msgContact.name || msgContact.pushname || msgContact.id.user,
+      name:
+        msgContact.name ||
+        msgContact.pushname ||
+        msgContact.shortName ||
+        msgContact.id.user,
       number: msgContact.id.user,
-      profilePicUrl
+      profilePicUrl,
+      tenantId
     });
 
-    io.emit("contact", {
+    io.emit(`${tenantId}-contact`, {
       action: "create",
       contact
     });
@@ -66,11 +73,14 @@ const verifyContact = async (
   return contact;
 };
 
-const verifyGroup = async (msgGroupContact: WbotContact) => {
+const verifyGroup = async (
+  msgGroupContact: WbotContact,
+  tenantId: string | number
+) => {
   const profilePicUrl = await msgGroupContact.getProfilePicUrl();
 
   let groupContact = await Contact.findOne({
-    where: { number: msgGroupContact.id.user }
+    where: { number: msgGroupContact.id.user, tenantId }
   });
   if (groupContact) {
     await groupContact.update({ profilePicUrl });
@@ -79,10 +89,11 @@ const verifyGroup = async (msgGroupContact: WbotContact) => {
       name: msgGroupContact.name,
       number: msgGroupContact.id.user,
       isGroup: msgGroupContact.isGroup,
-      profilePicUrl
+      profilePicUrl,
+      tenantId
     });
     const io = getIO();
-    io.emit("contact", {
+    io.emit(`${tenantId}-contact`, {
       action: "create",
       contact: groupContact
     });
@@ -94,13 +105,15 @@ const verifyGroup = async (msgGroupContact: WbotContact) => {
 const verifyTicket = async (
   contact: Contact,
   whatsappId: number,
-  groupContact?: Contact
+  groupContact?: Contact,
+  tenantId: number | string = ""
 ): Promise<Ticket> => {
   let ticket = await Ticket.findOne({
     where: {
       status: {
         [Op.or]: ["open", "pending"]
       },
+      tenantId,
       contactId: groupContact ? groupContact.id : contact.id
     },
     include: ["contact"]
@@ -109,7 +122,8 @@ const verifyTicket = async (
   if (!ticket && groupContact) {
     ticket = await Ticket.findOne({
       where: {
-        contactId: groupContact.id
+        contactId: groupContact.id,
+        tenantId
       },
       order: [["createdAt", "DESC"]],
       include: ["contact"]
@@ -143,9 +157,10 @@ const verifyTicket = async (
       contactId: groupContact ? groupContact.id : contact.id,
       status: "pending",
       isGroup: !!groupContact,
-      whatsappId
+      whatsappId,
+      tenantId
     });
-    ticket = await ShowTicketService(id);
+    ticket = await ShowTicketService({ id, tenantId });
   }
 
   return ticket;
@@ -220,10 +235,13 @@ const verifyAutoReplyActionTicket = async (
             stepAutoReplyId: null
           });
         }
-        io.to(ticket.status).emit("ticket", {
-          action: "updateQueue",
-          ticket
-        });
+        io.to(`${ticket.tenantId}-${ticket.status}`).emit(
+          `${ticket.tenantId}-ticket`,
+          {
+            action: "updateQueue",
+            ticket
+          }
+        );
 
         if (actionAutoReply.replyDefinition) {
           await SendWhatsAppMessage({
@@ -309,7 +327,10 @@ const verifyMedia = async (
     quotedMsgId: quotedMsg?.id
   };
 
-  const newMessage = await CreateMessageService({ messageData });
+  const newMessage = await CreateMessageService({
+    messageData,
+    tenantId: ticket.tenantId
+  });
 
   await ticket.update({ lastMessage: msg.body || media.filename });
   return newMessage;
@@ -343,15 +364,18 @@ const verifyMessage = async (
       quotedMsgId: quotedMsg?.id
     };
 
-    newMessage = await CreateMessageService({ messageData });
+    newMessage = await CreateMessageService({
+      messageData,
+      tenantId: ticket.tenantId
+    });
     await ticket.update({ lastMessage: msg.body });
   }
 
   const io = getIO();
-  io.to(ticket.id.toString())
-    .to(ticket.status)
-    .to("notification")
-    .emit("appMessage", {
+  io.to(`${ticket.tenantId}-${ticket.id.toString()}`)
+    .to(`${ticket.tenantId}-${ticket.status}`)
+    .to(`${ticket.tenantId}-notification`)
+    .emit(`${ticket.tenantId}-appMessage`, {
       action: "create",
       message: newMessage,
       ticket,
@@ -386,7 +410,8 @@ const handleMessage = async (
   try {
     let msgContact: WbotContact;
     let groupContact: Contact | undefined;
-
+    const whatsapp = await ShowWhatsAppService(wbot.id || "");
+    const { tenantId } = whatsapp;
     if (msg.fromMe) {
       msgContact = await wbot.getContactById(msg.to);
 
@@ -411,12 +436,17 @@ const handleMessage = async (
         msgGroupContact = await wbot.getContactById(msg.from);
       }
 
-      groupContact = await verifyGroup(msgGroupContact);
+      groupContact = await verifyGroup(msgGroupContact, tenantId);
     }
 
     const profilePicUrl = await msgContact.getProfilePicUrl();
-    const contact = await verifyContact(msgContact, profilePicUrl);
-    const ticket = await verifyTicket(contact, wbot.id!, groupContact);
+    const contact = await verifyContact(msgContact, profilePicUrl, tenantId);
+    const ticket = await verifyTicket(
+      contact,
+      wbot.id!,
+      groupContact,
+      tenantId
+    );
     // const welcome = await autoReplyWelcome();
     // console.log(welcome);
     await verifyMessage(msg, ticket, contact);
@@ -440,6 +470,11 @@ const handleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
           model: Message,
           as: "quotedMsg",
           include: ["contact"]
+        },
+        {
+          model: Ticket,
+          as: "ticket",
+          attributes: ["id", "tenantId"]
         }
       ]
     });
@@ -447,11 +482,14 @@ const handleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
       return;
     }
     await messageToUpdate.update({ ack });
-
-    io.to(messageToUpdate.ticketId.toString()).emit("appMessage", {
-      action: "update",
-      message: messageToUpdate
-    });
+    const { ticket } = messageToUpdate;
+    io.to(`${ticket.tenantId}-${ticket.id.toString()}`).emit(
+      `${ticket.tenantId}-appMessage`,
+      {
+        action: "update",
+        message: messageToUpdate
+      }
+    );
   } catch (err) {
     Sentry.captureException(err);
     console.log(err);

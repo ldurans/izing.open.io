@@ -2,8 +2,11 @@ import AppError from "../../errors/AppError";
 import GetDefaultWhatsApp from "../../helpers/GetDefaultWhatsApp";
 import { getWbot } from "../../libs/wbot";
 
-const CheckIsValidContact = async (number: string): Promise<void> => {
-  const defaultWhatsapp = await GetDefaultWhatsApp();
+const CheckIsValidContact = async (
+  number: string,
+  tenantId: string | number
+): Promise<void> => {
+  const defaultWhatsapp = await GetDefaultWhatsApp(tenantId);
 
   const wbot = getWbot(defaultWhatsapp.id);
 

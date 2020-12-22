@@ -6,7 +6,8 @@ import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppSer
 
 const store = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
-  const whatsapp = await ShowWhatsAppService(whatsappId);
+  const { tenantId } = req.user;
+  const whatsapp = await ShowWhatsAppService(whatsappId, tenantId);
 
   StartWhatsAppSession(whatsapp);
 
@@ -15,10 +16,11 @@ const store = async (req: Request, res: Response): Promise<Response> => {
 
 const update = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
-
+  const { tenantId } = req.user;
   const { whatsapp } = await UpdateWhatsAppService({
     whatsappId,
-    whatsappData: { session: "" }
+    whatsappData: { session: "" },
+    tenantId
   });
 
   StartWhatsAppSession(whatsapp);
@@ -28,7 +30,9 @@ const update = async (req: Request, res: Response): Promise<Response> => {
 
 const remove = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
-  const whatsapp = await ShowWhatsAppService(whatsappId);
+  const { tenantId } = req.user;
+
+  const whatsapp = await ShowWhatsAppService(whatsappId, tenantId);
 
   const wbot = getWbot(whatsapp.id);
 

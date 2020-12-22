@@ -24,6 +24,7 @@ import AutoReply from "./AutoReply";
 import StepsReply from "./StepsReply";
 import Queue from "./Queue";
 import ShowStepAutoReplyMessageService from "../services/AutoReplyServices/ShowStepAutoReplyMessageService";
+import Tenant from "./Tenant";
 
 @Table
 class Ticket extends Model<Ticket> {
@@ -95,6 +96,13 @@ class Ticket extends Model<Ticket> {
 
   @BelongsTo(() => Queue)
   queue: Queue;
+
+  @ForeignKey(() => Tenant)
+  @Column
+  tenantId: number;
+
+  @BelongsTo(() => Tenant)
+  tenant: Tenant;
 
   // @Column(DataType.VIRTUAL)
   // get teste(): string {

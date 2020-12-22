@@ -4,6 +4,7 @@ import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
 import AppError from "../errors/AppError";
 import Contact from "../models/Contact";
+import Tenant from "../models/Tenant";
 // import { handleMessage } from "../services/WbotServices/wbotMessageListener";
 
 interface Session extends Client {
@@ -27,7 +28,7 @@ const sessions: Session[] = [];
 //   });
 // };
 
-const syncContacts = async (wbot: Session) => {
+const syncContacts = async (wbot: Session, tenantId: string | number) => {
   let contacts;
   try {
     contacts = await wbot.getContacts();
@@ -48,15 +49,22 @@ const syncContacts = async (wbot: Session) => {
     contacts.map(async ({ name, pushname, number, isGroup }) => {
       if ((name || pushname) && !isGroup) {
         // const profilePicUrl = await wbot.getProfilePicUrl(`${number}@c.us`);
-        const contactObj = { name: name || pushname, number };
+        const contactObj = { name: name || pushname, number, tenantId };
         dataArray.push(contactObj);
       }
     })
   );
   if (dataArray.length) {
     await Contact.bulkCreate(dataArray, {
-      fields: ["number", "name"],
-      updateOnDuplicate: ["number"]
+      fields: ["number", "name", "tenantId"],
+      updateOnDuplicate: ["name", "number"],
+      include: [
+        {
+          model: Tenant,
+          as: "tenant",
+          where: { tenantId }
+        }
+      ]
     });
     console.log("Lista de contatos sincronizada - syncContacts");
   }
@@ -68,6 +76,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
     try {
       const io = getIO();
       const sessionName = whatsapp.name;
+      const { tenantId } = whatsapp;
       let sessionCfg;
 
       if (whatsapp && whatsapp.session) {
@@ -105,7 +114,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           sessions.push(wbot);
         }
 
-        io.emit("whatsappSession", {
+        io.emit(`${tenantId}-whatsappSession`, {
           action: "update",
           session: whatsapp
         });
@@ -131,7 +140,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           retries: retry + 1
         });
 
-        io.emit("whatsappSession", {
+        io.emit(`${tenantId}-whatsappSession`, {
           action: "update",
           session: whatsapp
         });
@@ -145,7 +154,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         // syncUnreadMessages(wbot);
         if (process.env.NODE_ENV === "prod") {
           console.log("Iniciando sincronização de contatos.");
-          syncContacts(wbot);
+          syncContacts(wbot, tenantId);
         }
 
         await whatsapp.update({
@@ -154,7 +163,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           retries: 0
         });
 
-        io.emit("whatsappSession", {
+        io.emit(`${tenantId}-whatsappSession`, {
           action: "update",
           session: whatsapp
         });

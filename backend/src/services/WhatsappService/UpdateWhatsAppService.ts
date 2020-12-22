@@ -14,6 +14,7 @@ interface WhatsappData {
 interface Request {
   whatsappData: WhatsappData;
   whatsappId: string;
+  tenantId: string | number;
 }
 
 interface Response {
@@ -23,7 +24,8 @@ interface Response {
 
 const UpdateWhatsAppService = async ({
   whatsappData,
-  whatsappId
+  whatsappId,
+  tenantId
 }: Request): Promise<Response> => {
   const schema = Yup.object().shape({
     name: Yup.string().min(2),
@@ -42,7 +44,7 @@ const UpdateWhatsAppService = async ({
 
   if (isDefault) {
     oldDefaultWhatsapp = await Whatsapp.findOne({
-      where: { isDefault: true, id: { [Op.not]: whatsappId } }
+      where: { isDefault: true, tenantId, id: { [Op.not]: whatsappId } }
     });
     if (oldDefaultWhatsapp) {
       await oldDefaultWhatsapp.update({ isDefault: false });
@@ -50,7 +52,7 @@ const UpdateWhatsAppService = async ({
   }
 
   const whatsapp = await Whatsapp.findOne({
-    where: { id: whatsappId }
+    where: { id: whatsappId, tenantId }
   });
 
   if (!whatsapp) {

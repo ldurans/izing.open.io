@@ -14,6 +14,7 @@ import {
 } from "sequelize-typescript";
 import User from "./User";
 import StepsReply from "./StepsReply";
+import Tenant from "./Tenant";
 
 @Table({ freezeTableName: true })
 class AutoReply extends Model<AutoReply> {
@@ -54,6 +55,13 @@ class AutoReply extends Model<AutoReply> {
 
   @HasMany(() => StepsReply)
   stepsReply: StepsReply;
+
+  @ForeignKey(() => Tenant)
+  @Column
+  tenantId: number;
+
+  @BelongsTo(() => Tenant)
+  tenant: Tenant;
 
   tableName: "AutoReply";
 }

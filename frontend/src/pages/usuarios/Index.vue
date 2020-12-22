@@ -118,7 +118,7 @@ export default {
           label: 'Filas',
           field: 'queues',
           align: 'left',
-          format: (v) => v.map(f => f.queue).join(', '),
+          format: (v) => !v ? '' : v.map(f => f.queue).join(', '),
           classes: 'ellipsis',
           style: 'max-width: 400px;'
         },

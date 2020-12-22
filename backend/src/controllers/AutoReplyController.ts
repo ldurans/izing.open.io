@@ -13,18 +13,21 @@ interface AutoReplyData {
   userId: number;
   isActive: boolean;
   celularTeste?: string;
+  tenantId: number | string;
 }
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
+  const { tenantId } = req.user;
   if (req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
 
-  const newAutoReply: AutoReplyData = req.body;
+  const newAutoReply: AutoReplyData = { ...req.body, tenantId };
 
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     action: Yup.number().required(),
+    tenantId: Yup.number().required(),
     userId: Yup.number().required()
   });
 
@@ -40,7 +43,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const autoReply = await ListAutoReplyService();
+  const { tenantId } = req.user;
+  const autoReply = await ListAutoReplyService({ tenantId });
   return res.status(200).json(autoReply);
 };
 
@@ -51,6 +55,7 @@ export const update = async (
   if (req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
+  const { tenantId } = req.user;
   const autoReplyData: AutoReplyData = req.body;
 
   const schema = Yup.object().shape({
@@ -68,7 +73,8 @@ export const update = async (
   const { autoReplyId } = req.params;
   const autoReply = await UpdateAutoReplyService({
     autoReplyData,
-    autoReplyId
+    autoReplyId,
+    tenantId
   });
 
   return res.status(200).json(autoReply);
@@ -81,8 +87,9 @@ export const remove = async (
   if (req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
+  const { tenantId } = req.user;
   const { autoReplyId } = req.params;
 
-  await DeleteAutoReplyService(autoReplyId);
+  await DeleteAutoReplyService({ id: autoReplyId, tenantId });
   return res.status(200).json({ message: "Auto reply deleted" });
 };

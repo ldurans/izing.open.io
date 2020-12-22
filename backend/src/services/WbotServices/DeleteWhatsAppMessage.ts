@@ -3,13 +3,17 @@ import GetWbotMessage from "../../helpers/GetWbotMessage";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 
-const DeleteWhatsAppMessage = async (messageId: string): Promise<Message> => {
+const DeleteWhatsAppMessage = async (
+  messageId: string,
+  tenantId: string | number
+): Promise<Message> => {
   const message = await Message.findByPk(messageId, {
     include: [
       {
         model: Ticket,
         as: "ticket",
-        include: ["contact"]
+        include: ["contact"],
+        where: { tenantId }
       }
     ]
   });
