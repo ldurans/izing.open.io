@@ -32,6 +32,17 @@
             </q-tooltip>
           </q-icon>
           <q-icon
+            v-if="props.value == 'DESTROYED'"
+            color="primary"
+            name="mdi-qrcode-scan"
+            size="2.5em"
+          >
+            <q-tooltip content-class="bg-light-blue-1 text-black q-pa-sm shadow-4">
+              <span class="text-weight-medium"> Esperando leitura do QR Code </span>
+              <span class="row col"> Clique no botão 'QR CODE' e leia o QR Code com o seu celular para iniciar a sessão </span>
+            </q-tooltip>
+          </q-icon>
+          <q-icon
             v-if="props.value == 'DISCONNECTED'"
             color="negative"
             size="2.5em"
@@ -78,7 +89,15 @@
             v-if="props.value == 'qrcode'"
             color="primary"
             label="QR CODE"
-            @click="handleOpenQrModal(props.row.id)"
+            @click="props.row.status === 'qrcode' ? handleOpenQrModal(props.row.id) : handleRequestNewQrCode(props.row.id) "
+          />
+          <q-btn
+            v-if="props.value == 'DESTROYED'"
+            color="blue-5"
+            label="Novo QR Code"
+            @click="handleRequestNewQrCode(props.row.id)"
+            icon-right="watch_later"
+            :disable="!$store.getters['isAdmin']"
           />
           <q-btn-group
             v-if="props.value == 'DISCONNECTED'"
@@ -90,14 +109,7 @@
               label="Tentar novamente"
               @click="handleStartWhatsAppSession(props.row.id)"
             />
-            <q-btn
-              outline
-              color="blue-3"
-              label="Novo QR Code"
-              @click="handleRequestNewQrCode(props.row.id)"
-              icon-right="watch_later"
-              :disable="!$store.getters['isAdmin']"
-            />
+
           </q-btn-group>
           <q-btn
             v-if="['CONNECTED', 'PAIRING', 'TIMEOUT'].includes(props.value)"
@@ -175,6 +187,12 @@
       :modalWhatsapp.sync="modalWhatsapp"
       :whatsAppEdit.sync="whatsappSelecionado"
     />
+    <q-inner-loading :showing="loading">
+      <q-spinner-gears
+        size="50px"
+        color="primary"
+      />
+    </q-inner-loading>
   </div>
 </template>
 
@@ -195,6 +213,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       userLogado,
       abrirModalQR: false,
       modalWhatsapp: false,
@@ -217,6 +236,12 @@ export default {
           name: 'session',
           label: 'Sessão',
           field: 'status',
+          align: 'center'
+        },
+        {
+          name: 'number',
+          label: 'Número',
+          field: 'number',
           align: 'center'
         },
         {
@@ -273,7 +298,13 @@ export default {
         persistent: true
       }).onOk(() => {
         this.loading = true
-        DeleteWhatsappSession(whatsAppId).finally(f => {
+        DeleteWhatsappSession(whatsAppId).then(() => {
+          const whatsapp = this.whatsapps.find(w => w.id === whatsAppId)
+          this.$store.commit('UPDATE_WHATSAPPS', {
+            ...whatsapp,
+            status: 'DESTROYED'
+          })
+        }).finally(f => {
           this.loading = false
         })
       })
@@ -286,11 +317,16 @@ export default {
       }
     },
     async handleRequestNewQrCode (whatsAppId) {
+      this.loading = true
       try {
         await RequestNewQrCode(whatsAppId)
+        setTimeout(() => {
+          this.handleOpenQrModal(whatsAppId)
+        }, 3000)
       } catch (error) {
         console.error(error)
       }
+      this.loading = false
     },
     async listarWhatsapps () {
       const { data } = await ListarWhatsapps()
@@ -352,6 +388,17 @@ export default {
   },
   mounted () {
     this.listarWhatsapps()
+    this.$root.$on('UPDATE_SESSION', (whatsapp) => {
+      if (whatsapp.status === 'qrcode') {
+        this.handleOpenQrModal(whatsapp.id)
+      } else {
+        // if (whatsapp.status === 'qrcode') return
+        this.abrirModalQR = false
+      }
+    })
+  },
+  destroyed () {
+    this.$root.$off('UPDATE_SESSION')
   }
 }
 </script>

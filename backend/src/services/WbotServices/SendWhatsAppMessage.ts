@@ -5,6 +5,7 @@ import GetWbotMessage from "../../helpers/GetWbotMessage";
 import SerializeWbotMsgId from "../../helpers/SerializeWbotMsgId";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
+import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
 
 interface Request {
   body: string;
@@ -37,7 +38,8 @@ const SendWhatsAppMessage = async ({
     await ticket.update({ lastMessage: body });
     return sentMessage;
   } catch (err) {
-    console.log(err);
+    console.log("SendWhatsAppMessage", err);
+    await StartWhatsAppSessionVerify(ticket.whatsappId, err);
     throw new AppError("ERR_SENDING_WAPP_MSG");
   }
 };

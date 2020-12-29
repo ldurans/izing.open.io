@@ -3,6 +3,8 @@ const backendErrors = {
     'Nenhum WhatsApp padrão encontrado. Verifique a página de conexões.',
   ERR_WAPP_NOT_INITIALIZED:
     'Esta sessão do WhatsApp não foi inicializada. Verifique a página de conexões.',
+  ERR_WAPP_INITIALIZED:
+    'Não está conectado com o Whatsapp. Estamos reiniciando a conexão. Tente novamente em alguns segundos.',
   ERR_WAPP_CHECK_CONTACT:
     'Não foi possível verificar o contato do WhatsApp. Verifique a página de conexões',
   ERR_WAPP_INVALID_CONTACT: 'Este não é um número de Whatsapp válido.',

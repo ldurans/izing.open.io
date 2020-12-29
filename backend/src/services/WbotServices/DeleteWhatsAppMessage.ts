@@ -2,6 +2,7 @@ import AppError from "../../errors/AppError";
 import GetWbotMessage from "../../helpers/GetWbotMessage";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
+import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
 
 const DeleteWhatsAppMessage = async (
   messageId: string,
@@ -29,6 +30,7 @@ const DeleteWhatsAppMessage = async (
   try {
     await messageToDelete.delete(true);
   } catch (err) {
+    StartWhatsAppSessionVerify(ticket.whatsappId, err);
     throw new AppError("ERR_DELETE_WAPP_MSG");
   }
 

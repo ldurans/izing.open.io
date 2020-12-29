@@ -20,6 +20,6 @@ export const StartWhatsAppSession = async (
     wbotMessageListener(wbot);
     wbotMonitor(wbot, whatsapp);
   } catch (err) {
-    console.log(err);
+    console.log("StartWhatsAppSession", err);
   }
 };

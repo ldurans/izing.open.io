@@ -5,13 +5,21 @@
     @hide="fecharModalQrModal"
     persistent
   >
-    <q-card>
+    <q-card style="bg-white">
       <q-card-section>
         <div class="text-h6 text-primary">
           Leia o QrCode para iniciar a sessão
+          <q-btn
+            round
+            class="q-ml-md"
+            color="negative"
+            icon="mdi-close"
+            @click="fecharModalQrModal"
+          />
+
         </div>
       </q-card-section>
-      <q-card-section>
+      <q-card-section class="text-center">
         <QrcodeVue
           v-if="qrCode"
           :value="qrCode"
@@ -32,7 +40,17 @@ import { GetWhatSession } from 'src/service/sessoesWhatsapp'
 import QrcodeVue from 'qrcode.vue'
 import openSocket from 'socket.io-client'
 const token = JSON.parse(localStorage.getItem('token'))
-const socket = openSocket(process.env.API, { forceNew: true, token })
+const socket = openSocket(process.env.API, { query: { token } })
+const usuario = JSON.parse(localStorage.getItem('usuario'))
+
+socket.on(`tokenInvalid-${socket.id}`, () => {
+  socket.disconnect()
+  localStorage.removeItem('token')
+  localStorage.removeItem('username')
+  localStorage.removeItem('profile')
+  localStorage.removeItem('userId')
+  localStorage.removeItem('usuario')
+})
 
 export default {
   name: 'ModalQrCode',
@@ -64,7 +82,7 @@ export default {
       this.handlerModalQrCode()
     },
     handlerModalQrCode () {
-      socket.on('whatsappSession', data => {
+      socket.on(`${usuario.tenantId}-whatsappSession`, data => {
         if (data.action === 'update' && data.session.id === this.whatsAppId) {
           this.qrCode = data.session.qrcode
         }

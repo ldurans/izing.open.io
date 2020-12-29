@@ -13,7 +13,7 @@ const service = axios.create({
 })
 
 const handlerError = err => {
-  const errorMsg = err.response?.data?.error
+  const errorMsg = err?.response?.data?.error
   let error = 'Ocorreu um erro não identificado.'
   if (errorMsg) {
     if (backendErrors[errorMsg]) {

@@ -1,6 +1,5 @@
 import { verify } from "jsonwebtoken";
 import authConfig from "../config/auth";
-import AppError from "../errors/AppError";
 
 interface TokenPayload {
   id: string;
@@ -11,23 +10,38 @@ interface TokenPayload {
   exp: number;
 }
 
-const decode = (jwt: string) => {
-  if (!jwt) {
-    throw new AppError("Token was not provided.", 403);
-  }
-  const [, token] = jwt.split(" ");
+interface Data {
+  id: number | string;
+  profile: string;
+  tenantId: number | string;
+}
+interface Result {
+  isValid: boolean;
+  data: Data;
+}
+
+const decode = (token: string): Result => {
+  const validation = {
+    isValid: false,
+    data: {
+      id: "",
+      profile: "",
+      tenantId: 0
+    }
+  };
   try {
     const decoded = verify(token, authConfig.secret);
     const { id, profile, tenantId } = decoded as TokenPayload;
-
-    return {
+    validation.isValid = true;
+    validation.data = {
       id,
       profile,
       tenantId
     };
   } catch (err) {
-    throw new AppError("Invalid token.", 403);
+    console.log("decodeTokenSocket", err);
   }
+  return validation;
 };
 
 export default decode;

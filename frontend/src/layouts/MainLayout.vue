@@ -253,7 +253,7 @@ export default {
       return (idx !== -1)
     },
     cQrCode () {
-      const idx = this.whatsapps.findIndex(w => w.status === 'qrcode')
+      const idx = this.whatsapps.findIndex(w => w.status === 'qrcode' || w.status === 'DESTROYED')
       return (idx !== -1)
     },
     cOpening () {
@@ -327,6 +327,7 @@ export default {
       localStorage.removeItem('profile')
       localStorage.removeItem('userId')
       localStorage.removeItem('queues')
+      localStorage.removeItem('usuario')
       this.$router.go({ name: 'login', replace: true })
     }
   },

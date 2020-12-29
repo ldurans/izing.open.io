@@ -420,7 +420,7 @@ export default {
       // return () => clearTimeout(delayDebounceFn)
     },
     async onLoadAbertos (idx, done) {
-      if (!this.hasMoreOpen || this.loadAbertos) {
+      if (this.ticketsEmAtendimento.length === 0 || !this.hasMoreOpen || this.loadAbertos) {
         done()
         return
       }
@@ -436,7 +436,7 @@ export default {
       }
     },
     async onLoadPendentes (idx, done) {
-      if (!this.hasMorePending || this.loadPendentes) {
+      if (this.ticketsPendentes.length === 0 || !this.hasMorePending || this.loadPendentes) {
         done()
         return
       }
@@ -452,7 +452,7 @@ export default {
       }
     },
     async onLoadResolvidos (idx, done) {
-      if (!this.hasMoreClosed || this.loadClose) {
+      if (this.ticketsResolvidos.length === 0 || !this.hasMoreClosed || this.loadClose) {
         done()
         return
       }
@@ -468,7 +468,7 @@ export default {
       }
     },
     async onLoadMoreTicketsBusca (idx, done) {
-      if (!this.hasMoreBusca || this.loading) {
+      if (this.ticketsLocalizadosBusca.length === 0 || !this.hasMoreBusca || this.loading) {
         done()
         return
       }

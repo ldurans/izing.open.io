@@ -3,7 +3,7 @@ import { Client } from "whatsapp-web.js";
 
 import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
-import { StartWhatsAppSession } from "./StartWhatsAppSession";
+// import { StartWhatsAppSession } from "./StartWhatsAppSession";
 
 interface Session extends Client {
   id?: number;
@@ -23,7 +23,7 @@ const wbotMonitor = async (
         await whatsapp.update({ status: newState });
       } catch (err) {
         Sentry.captureException(err);
-        console.log(err);
+        console.log("wbotMonitor:update:change_state", err);
       }
 
       io.emit(`${whatsapp.tenantId}-whatsappSession`, {
@@ -52,7 +52,7 @@ const wbotMonitor = async (
         await whatsapp.update({ battery, plugged });
       } catch (err) {
         Sentry.captureException(err);
-        console.log(err);
+        console.log("wbotMonitor:update:change_battery", err);
       }
 
       io.emit(`${whatsapp.tenantId}-whatsappSession`, {
@@ -64,10 +64,26 @@ const wbotMonitor = async (
     wbot.on("disconnected", async reason => {
       console.log("Disconnected session:", sessionName, reason);
       try {
-        await whatsapp.update({ status: "OPENING", session: "" });
+        if (reason === "UNPAIRED") {
+          console.log(
+            "Disconnected (UNPAIRED) session DEstroy:",
+            sessionName,
+            reason
+          );
+          wbot.logout();
+          await whatsapp.update({
+            status: "qrcode",
+            retries: 0,
+            session: ""
+          });
+        } else if (reason === "CONFLICT") {
+          await whatsapp.update({ status: "DISCONNECTED", retries: 0 });
+        } else {
+          await whatsapp.update({ status: "qrcode", retries: 0 });
+        }
       } catch (err) {
         Sentry.captureException(err);
-        console.log(err);
+        console.log("wbotMonitor:update:disconnected", err);
       }
 
       io.emit(`${whatsapp.tenantId}-whatsappSession`, {
@@ -75,11 +91,11 @@ const wbotMonitor = async (
         session: whatsapp
       });
 
-      setTimeout(() => StartWhatsAppSession(whatsapp), 2000);
+      // setTimeout(() => StartWhatsAppSession(whatsapp), 2000);
     });
   } catch (err) {
     Sentry.captureException(err);
-    console.log(err);
+    console.log("wbotMonitor", err);
   }
 };
 

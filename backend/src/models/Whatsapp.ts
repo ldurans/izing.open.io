@@ -58,6 +58,13 @@ class Whatsapp extends Model<Whatsapp> {
   @UpdatedAt
   updatedAt: Date;
 
+  @Column
+  number: string;
+
+  @Column(DataType.JSONB)
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  phone: object;
+
   @HasMany(() => Ticket)
   tickets: Ticket[];
 

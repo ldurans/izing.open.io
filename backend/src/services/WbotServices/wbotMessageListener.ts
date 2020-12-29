@@ -40,7 +40,6 @@ const verifyContact = async (
   tenantId: string | number
 ): Promise<Contact> => {
   const io = getIO();
-  console.log(tenantId);
   let contact = await Contact.findOne({
     where: { number: msgContact.id.user, tenantId }
   });
@@ -406,11 +405,12 @@ const handleMessage = async (
   if (!isValidMsg(msg)) {
     return;
   }
+  let whatsapp;
 
   try {
     let msgContact: WbotContact;
     let groupContact: Contact | undefined;
-    const whatsapp = await ShowWhatsAppService(wbot.id || "");
+    whatsapp = await ShowWhatsAppService(wbot.id || "");
     const { tenantId } = whatsapp;
     if (msg.fromMe) {
       msgContact = await wbot.getContactById(msg.to);
@@ -453,7 +453,7 @@ const handleMessage = async (
     await verifyAutoReplyActionTicket(msg, ticket);
   } catch (err) {
     Sentry.captureException(err);
-    console.log(err);
+    console.log("handleMessage", err);
   }
 };
 
@@ -492,7 +492,7 @@ const handleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
     );
   } catch (err) {
     Sentry.captureException(err);
-    console.log(err);
+    console.log("handleMsgAck", err);
   }
 };
 
