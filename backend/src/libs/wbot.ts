@@ -107,7 +107,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       const wbot: Session = new Client({
         session: sessionCfg,
         puppeteer: {
-          headless: false,
+          headless: true,
           executablePath: process.env.CHROME_BIN || null, // "/usr/bin/google-chrome",
           args: [
             "--no-sandbox",
