@@ -27,6 +27,7 @@ import SendWhatsAppMessage from "./SendWhatsAppMessage";
 import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 import ShowWhatsAppService from "../WhatsappService/ShowWhatsAppService";
 // import ShowAutoReplyService from "../AutoReplyServices/ShowAutoReplyService";
+import CreateAutoReplyLogsService from "../AutoReplyServices/CreateAutoReplyLogsService";
 
 interface Session extends Client {
   id?: number;
@@ -172,19 +173,21 @@ const verifyAutoReplyActionTicket = async (
   const celularContato = ticket.contact.number;
   let celularTeste = "";
 
-  if (
-    ticket.autoReplyId &&
-    // ticket.contactId === 1 &&
-    ticket.status === "pending" &&
-    !msg.fromMe
-  ) {
+  if (ticket.autoReplyId && ticket.status === "pending" && !msg.fromMe) {
     if (ticket.autoReplyId) {
+      const stepAutoReplyAtual = await ShowStepAutoReplyMessageService(
+        0,
+        ticket.autoReplyId,
+        ticket.stepAutoReplyId
+      );
       const actionAutoReply = await VerifyActionStepAutoReplyService(
         ticket.stepAutoReplyId,
         msg.body
       );
       if (actionAutoReply) {
         const io = getIO();
+
+        await CreateAutoReplyLogsService(stepAutoReplyAtual, ticket, msg.body);
 
         // action = 0: enviar para proximo step: nextStepId
         if (actionAutoReply.action === 0) {
@@ -251,15 +254,8 @@ const verifyAutoReplyActionTicket = async (
           await SetTicketMessagesAsRead(ticket);
         }
       } else {
-        // retornar a ultima mensagem (estapa atual do ticket)
-        const stepAutoReply = await ShowStepAutoReplyMessageService(
-          0,
-          ticket.autoReplyId,
-          ticket.stepAutoReplyId
-        );
-
         // Verificar se rotina em teste
-        celularTeste = stepAutoReply.autoReply.celularTeste;
+        celularTeste = stepAutoReplyAtual.autoReply.celularTeste;
         if (
           (celularTeste &&
             celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
@@ -269,7 +265,14 @@ const verifyAutoReplyActionTicket = async (
         }
 
         await SendWhatsAppMessage({
-          body: stepAutoReply.reply,
+          body:
+            "Desculpe! Não entendi sua resposta. Vamos tentar novamente! Escolha uma opção válida.",
+          ticket,
+          quotedMsg: undefined
+        });
+
+        await SendWhatsAppMessage({
+          body: stepAutoReplyAtual.reply,
           ticket,
           quotedMsg: undefined
         });

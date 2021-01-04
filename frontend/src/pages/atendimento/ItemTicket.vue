@@ -17,7 +17,7 @@
           color="primary"
           dense
           round
-          v-if="ticketPendente"
+          v-if="ticketPendente || (buscaTicket && ticket.status === 'pending')"
         >
           <q-badge
             v-if="ticket.unreadMessages"
@@ -41,7 +41,7 @@
         </q-btn>
         <q-avatar
           size="40px"
-          v-if="!ticketPendente"
+          v-if="!ticketPendente && ticket.status !== 'pending'"
         >
           <q-badge
             v-if="ticket.unreadMessages"

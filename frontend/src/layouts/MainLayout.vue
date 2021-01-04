@@ -180,7 +180,7 @@ const objMenu = [
   //   title: 'Dashboard',
   //   caption: '',
   //   icon: 'mdi-view-dashboard',
-  //   routeName: ''
+  //   routeName: 'dashboard'
   // },
   {
     title: 'Conexões',

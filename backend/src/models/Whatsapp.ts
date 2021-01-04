@@ -13,10 +13,14 @@ import {
   Unique,
   ForeignKey,
   BelongsTo
+  // DefaultScope
 } from "sequelize-typescript";
 import Tenant from "./Tenant";
 import Ticket from "./Ticket";
 
+// @DefaultScope(() => ({
+//   where: { isDeleted: false }
+// }))
 @Table
 class Whatsapp extends Model<Whatsapp> {
   @PrimaryKey
@@ -43,6 +47,10 @@ class Whatsapp extends Model<Whatsapp> {
 
   @Column
   plugged: boolean;
+
+  @Default(false)
+  @Column
+  isDeleted: boolean;
 
   @Column
   retries: number;

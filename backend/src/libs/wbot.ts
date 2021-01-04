@@ -176,7 +176,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         //   // removeValue(`${wbot.id}`);
         // }
         const retry = whatsapp.retries;
-        if (retry > 2) {
+        if (retry > 1) {
           const sessionIndex = sessions.findIndex(s => s.id === whatsapp.id);
           if (sessionIndex === -1) {
             wbot.id = whatsapp.id;

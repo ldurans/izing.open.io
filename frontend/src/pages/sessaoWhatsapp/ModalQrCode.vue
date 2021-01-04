@@ -80,6 +80,14 @@ export default {
       const { data } = await GetWhatSession(whatsAppId)
       this.qrCode = data.qrcode
       this.handlerModalQrCode()
+      if (!this.qrCode) {
+        console.log('fetchSession', data)
+        setTimeout(() => {
+          if (!this.qrCode) {
+            this.$emit('modalQrCode:qrCodeInexistente')
+          }
+        }, 3000)
+      }
     },
     handlerModalQrCode () {
       socket.on(`${usuario.tenantId}-whatsappSession`, data => {

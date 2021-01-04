@@ -92,7 +92,7 @@
                     </div>
                   </div>
                   <q-card-section class="q-pa-sm bg-grey-3">
-                    Em atendimento {{ ticketsEmAtendimento.length }} de {{ count.open }}
+                    Em atendimento {{ ticketsEmAtendimento.length }} de {{ ticketsEmAtendimento.length > count.open ? ticketsEmAtendimento.length : count.open }}
                   </q-card-section>
                   <q-card-section
                     ref="scrollTargetRefTicketsAbertos"
@@ -129,7 +129,7 @@
                   flat
                 >
                   <q-card-section class="q-pa-sm bg-grey-3">
-                    Aguardando {{ ticketsPendentes.length }} de {{ count.pending }}
+                    Aguardando {{ ticketsPendentes.length }} de {{ ticketsPendentes.length > count.open ? ticketsPendentes.length : count.open }}
                   </q-card-section>
                   <q-card-section
                     ref="scrollTargetRefTicketsPendentes"
@@ -169,7 +169,7 @@
                   flat
                 >
                   <q-card-section class="q-pa-sm bg-grey-3">
-                    Resolvidos {{ ticketsResolvidos.length }} de {{ count.close }}
+                    Resolvidos {{ ticketsResolvidos.length }} de {{ ticketsResolvidos.length > count.open ? ticketsResolvidos.length : count.open }}
                   </q-card-section>
                   <q-card-section
                     ref="scrollTargetRefTicketsResolvidos"

@@ -12,6 +12,7 @@ import StepsReplyAction from "../models/StepsReplyAction";
 import Queue from "../models/Queue";
 import UsersQueues from "../models/UsersQueues";
 import Tenant from "../models/Tenant";
+import AutoReplyLogs from "../models/AutoReplyLogs";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -32,7 +33,8 @@ const models = [
   StepsReplyAction,
   Queue,
   UsersQueues,
-  Tenant
+  Tenant,
+  AutoReplyLogs
 ];
 
 sequelize.addModels(models);

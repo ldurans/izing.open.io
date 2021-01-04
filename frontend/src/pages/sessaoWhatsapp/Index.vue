@@ -153,14 +153,14 @@
             @click="handleOpenModalWhatsapp(props.row)"
             v-if="$store.getters['isAdmin']"
           />
-          <q-btn
+          <!-- <q-btn
             round
             flat
             dense
             icon="delete"
             @click="deleteWhatsapp(props.row)"
             v-if="$store.getters['isSuporte']"
-          />
+          /> -->
           <!-- <q-btn
             class="q-ml-sm"
             color="black"
@@ -182,6 +182,7 @@
     <ModalQrCode
       :abrirModalQR.sync="abrirModalQR"
       :whatsAppId="whatsAppId"
+      @modalQrCode:qrCodeInexistente="handleRequestNewQrCode(whatsAppId)"
     />
     <ModalWhatsapp
       :modalWhatsapp.sync="modalWhatsapp"
