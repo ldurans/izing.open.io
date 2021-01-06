@@ -183,8 +183,9 @@ export default {
 <style lang="sass">
 .ticket-active-item
   // border: 2px solid rgb(21, 120, 173)
-  border-left: 2px solid black //rgb(21, 120, 173)
+  // border-left: 3px solid $light //rgb(21, 120, 173)
   border-radius: 0
   position: relative
   height: 100%
+  font-weight: bolder
 </style>
