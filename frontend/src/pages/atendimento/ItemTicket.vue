@@ -6,7 +6,7 @@
       style="height: 7vh"
       @click="abrirChatContato(ticket)"
       :class="{
-        'ticket-active-item bg-grey-4': ticket.id === $store.getters['ticketFocado'].id
+        'ticket-active-item bg-grey-4 text-primary': ticket.id === $store.getters['ticketFocado'].id
       }"
     >
       <q-item-section avatar>
@@ -187,5 +187,5 @@ export default {
   border-radius: 0
   position: relative
   height: 100%
-  font-weight: bolder
+  font-weight: 600
 </style>

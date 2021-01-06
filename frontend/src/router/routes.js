@@ -3,11 +3,10 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    redirect: { name: 'atendimento' },
+    redirect: { name: 'dashboard' },
     children: [
       // { path: '', component: () => import('pages/Index.vue') },
       { path: '/dashboard', name: 'dashboard', component: () => import('pages/dashboard/Index.vue') },
-      { path: '/atendimento', name: 'atendimento', component: () => import('pages/atendimento/Index.vue') },
       { path: '/conexoes', name: 'conexoes', component: () => import('pages/sessaoWhatsapp/Index.vue') },
       { path: '/contatos', name: 'contatos', component: () => import('pages/contatos/Index.vue') },
       { path: '/usuarios', name: 'usuarios', component: () => import('pages/usuarios/Index.vue') },
@@ -16,6 +15,7 @@ const routes = [
 
     ]
   },
+  { path: '/atendimento', name: 'atendimento', component: () => import('pages/atendimento/Index.vue') },
 
   // Always leave this as last one,
   // but you can also remove it

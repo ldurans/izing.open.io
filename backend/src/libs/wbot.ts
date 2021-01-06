@@ -224,8 +224,8 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           status: "CONNECTED",
           qrcode: "",
           retries: 0,
-          number: wbot.info.me.user,
-          phone: wbot.info.phone
+          number: wbot?.info?.wid?.user || wbot?.info?.me?.user,
+          phone: wbot?.info?.phone
         });
 
         io.emit(`${tenantId}-whatsappSession`, {
