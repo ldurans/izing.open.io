@@ -1,68 +1,42 @@
 <template>
-  <div
-    padding
-    class="row"
-  >
-    <div :class="{'col-xs-12 col-md-8 col-lg-9': exibirContato, 'col-12': !exibirContato }">
-      <q-card
-        :style="styleCard"
-        square
-        bordered
-        flat
-      >
-        <q-card-section
-          class="q-pa-none"
-          :style="`min-height: calc(100vh - ${replyingMessage ? '22.4vh' : '22.4vh'}); max-height: calc(100vh - ${replyingMessage ? '22.4vh' : '22.4vh'})`"
-        >
-          <InforCabecalhoChat
-            @updateTicket:resolver="atualizarStatusTicket('closed')"
-            @updateTicket:retornar="atualizarStatusTicket('pending')"
-            @updateTicket:info-contato="exibirContato = !exibirContato"
-            class="bg-white"
+  <div>
+    <InforCabecalhoChat
+      @updateTicket:resolver="atualizarStatusTicket('closed')"
+      @updateTicket:retornar="atualizarStatusTicket('pending')"
+      @updateTicket:info-contato="exibirContato = !exibirContato"
+      class="bg-white"
+    />
+    <q-scroll-area
+      ref="scrollAreaChat"
+      @scroll="onLoadMore"
+      style="min-height: calc(100% - 5px)"
+    >
+
+      <div v-if="true">
+        <div class="row justify-center q-my-md">
+          <q-spinner
+            color="primary"
+            size="3em"
+            :thickness="3"
           />
-          <q-separator />
-          <div
-            ref="scrollTarget"
-            id="infinite-list"
-            class="q-pa-sm q-pa-lg scroll "
-            style="height: calc(100vh - 28vh); max-height: calc(100vh - 28vh)"
-          >
-            <q-infinite-scroll
-              reverse
-              :disable="!hasMore"
-              @load="onLoadMore"
-              :scroll-target="$refs.scrollTarget"
-            >
-              <MensagemChat
-                :replyingMessage.sync="replyingMessage"
-                :mensagensAgrupadas="cGroupDateMessage"
-                v-if="Object.keys(cGroupDateMessage).length"
-              />
-            </q-infinite-scroll>
-            <q-page-sticky
-              position="bottom-right"
-              :offset="[exibirContato ? 290: 40, replyingMessage ? 235 : 135]"
-              style="z-index: 99"
-            >
-              <q-btn
-                @click="scrollToBottom"
-                icon="keyboard_arrow_down"
-                round
-                color="grey-3"
-                push
-                text-color="black"
-                dense
-                style="z-index: 99"
-              >
-                <q-tooltip>
-                  Ir para mensagem atual
-                </q-tooltip>
-              </q-btn>
-            </q-page-sticky>
-          </div>
-          <q-separator />
-        </q-card-section>
-        <q-card-section
+        </div>
+        <div class="row col justify-center q-my-sm text-primary">
+          Carregando...
+        </div>
+      </div>
+      {{loading}}
+      asasasasasasas {{ cGroupDateMessage }}
+      <MensagemChat
+        :replyingMessage.sync="replyingMessage"
+        :mensagensAgrupadas="cGroupDateMessage"
+      />
+      <!-- v-if="Object.keys(cGroupDateMessage).length" -->
+      <h1>asasas</h1>
+      <q-separator />
+
+    </q-scroll-area>
+
+    <!-- <q-card-section
           v-if="replyingMessage"
           class="absolute q-pa-none q-pt-md bg-grey-3"
           :style="`border-top: 1px solid #; bottom: 120px; height: 120px; max-height: 120px; width: 100%;`"
@@ -99,16 +73,9 @@
               />
             </q-item>
           </q-list>
-        </q-card-section>
-        <InputMensagem :replyingMessage.sync="replyingMessage" />
-        <q-inner-loading :showing="loading">
-          <q-spinner-comment
-            size="80px"
-            color="primary"
-          />
-        </q-inner-loading>
-      </q-card>
-    </div>
+        </q-card-section> -->
+
+    <!-- <InputMensagem :replyingMessage.sync="replyingMessage" /> -->
 
     <ContatoModal
       :contactId="selectedContactId"
@@ -128,7 +95,7 @@ import pt from 'date-fns/locale/pt-BR'
 import { groupBy, orderBy } from 'lodash'
 import whatsBackground from 'src/assets/wa-background.png'
 import MensagemChat from './MensagemChat'
-import InputMensagem from './InputMensagem'
+// import InputMensagem from './InputMensagem'
 import mixinAtualizarStatusTicket from './mixinAtualizarStatusTicket'
 import mixinSockets from './mixinSockets'
 export default {
@@ -137,7 +104,7 @@ export default {
   components: {
     InforCabecalhoChat,
     MensagemChat,
-    InputMensagem,
+    // InputMensagem,
     ContatoModal
   },
   data () {
@@ -174,20 +141,19 @@ export default {
       this.selectedContactId = contactId
       this.modalContato = true
     },
-    async onLoadMore (i, done) {
+    async onLoadMore () {
+      console.log('onLoadMore')
+      this.loading = true
       if (!this.hasMore || !this.ticketFocado.id || this.loading) {
-        done()
         return
       }
       try {
         this.loading = true
         this.params.ticketId = this.ticketFocado.id
         this.params.pageNumber += 1
-        await this.$store.dispatch('LocalizarMensagensTicket', this.params).then(r => { this.loading = false; done() })
+        await this.$store.dispatch('LocalizarMensagensTicket', this.params).then(r => { this.loading = false })
         this.loading = false
-        done()
       } catch (error) {
-        done()
       }
     },
     contatoEditado (contato) {

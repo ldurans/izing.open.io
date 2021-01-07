@@ -1,5 +1,6 @@
 import { LocalizarMensagens } from 'src/service/tickets'
 import { Notify } from 'quasar'
+import $router from 'src/router'
 
 const atendimentoTicket = {
   state: {
@@ -187,6 +188,8 @@ const atendimentoTicket = {
           ticketId: data.id,
           pageNumber: 1
         }
+        await $router.push({ name: 'chat', params })
+
         await dispatch('LocalizarMensagensTicket', params)
       } catch (error) {
         const errorMsg = error.response?.data?.error

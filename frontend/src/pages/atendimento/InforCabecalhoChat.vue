@@ -1,90 +1,145 @@
 <template>
   <div>
-    <q-toolbar
-      class="no-border-radius no-shadow text-black"
-      style="min-height: 56px; height: 56px;"
-    >
-      <q-item
-        class="q-my-sm"
-        clickable
-        v-ripple
-        @click="$emit('updateTicket:info-contato')"
+    <q-header>
+      <q-toolbar
+        style="min-height: 50px; height: 50px;"
+        class="bg-grey-3 no-border-radius q-pa-none no-shadow text-black"
       >
-        <q-item-section avatar>
+        <q-btn
+          round
+          flat
+          icon="mdi-arrow-left"
+          @click="leftDrawerOpen = true"
+        />
+        <q-item
+          clickable
+          v-ripple
+          class="q-ma-none q-pa-none"
+          style="min-height: 50px; height: 50px;"
+          @click="$emit('updateTicket:info-contato')"
+        >
+          <q-item-section avatar>
+            <q-btn
+              round
+              flat
+            >
+              <q-avatar class="bg-grey">
+                <q-img :src="Value(cticket.contact, 'profilePicUrl')">
+                </q-img>
+              </q-avatar>
+            </q-btn>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              {{ Value(cticket.contact, 'name') }} <span
+                v-if="Value(cticket.contact, 'name')"
+                class="text-primary text-caption"
+              > (Ticket: {{ cticket.id }})</span>
+              <q-skeleton
+                v-if="!Value(cticket.contact, 'name')"
+                animation="none"
+                style="width: 230px"
+              />
+            </q-item-label>
+            <q-item-label
+              caption
+              lines="1"
+            >
+              <span v-if="Value(cticket.user, 'name')"> Atribuido à: {{ Value(cticket.user, 'name') }} </span>
+              <q-skeleton
+                v-else
+                type="text"
+                class="text-caption"
+                animation="none"
+                style="width: 150px"
+              />
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-space />
+        <div v-if="Value(cticket.contact, 'name')">
+          <q-btn
+            @click="$emit('updateTicket:retornar')"
+            dense
+            label="Retornar"
+            flat
+            icon="mdi-replay"
+          />
+          <q-btn
+            @click="$emit('updateTicket:resolver')"
+            dense
+            round
+            outline
+            color="positive"
+            class="q-ml-md"
+          >
+            <q-icon name="mdi-check" />
+            <q-tooltip>
+              Resolver
+            </q-tooltip>
+          </q-btn>
+          <q-btn
+            @click="listarUsuarios"
+            dense
+            round
+            outline
+            color="info"
+            class="q-ml-md"
+          >
+            <q-icon name="mdi-transfer" />
+            <q-tooltip>
+              Transferir
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn
+            round
+            flat
+            icon="mdi-text-box-search-outline"
+          />
           <q-btn
             round
             flat
           >
-            <q-avatar class="bg-grey">
-              <q-img :src="Value(cticket.contact, 'profilePicUrl')">
-              </q-img>
-            </q-avatar>
+            <q-icon
+              name="mdi-attachment"
+              class="rotate-135"
+            />
           </q-btn>
-        </q-item-section>
-        <q-item-section>
-          <q-item-label>
-            {{ Value(cticket.contact, 'name') }} <span
-              v-if="Value(cticket.contact, 'name')"
-              class="text-primary text-caption"
-            > (Ticket: {{ cticket.id }})</span>
-            <q-skeleton
-              v-if="!Value(cticket.contact, 'name')"
-              animation="none"
-              style="width: 230px"
-            />
-          </q-item-label>
-          <q-item-label
-            caption
-            lines="1"
+          <q-btn
+            round
+            flat
+            icon="mdi-dots-vertical"
           >
-            <span v-if="Value(cticket.user, 'name')"> Atribuido à: {{ Value(cticket.user, 'name') }} </span>
-            <q-skeleton
-              v-else
-              type="text"
-              class="text-caption"
-              animation="none"
-              style="width: 150px"
-            />
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-      <q-space />
-      <div v-if="Value(cticket.contact, 'name')">
-        <q-btn
-          @click="$emit('updateTicket:retornar')"
-          dense
-          label="Retornar"
-          flat
-          icon="mdi-replay"
-        />
-        <q-btn
-          @click="$emit('updateTicket:resolver')"
-          dense
-          round
-          outline
-          color="positive"
-          class="q-ml-md"
-        >
-          <q-icon name="mdi-check" />
-          <q-tooltip>
-            Resolver
-          </q-tooltip>
-        </q-btn>
-        <q-btn
-          @click="listarUsuarios"
-          dense
-          round
-          outline
-          color="info"
-          class="q-ml-md"
-        >
-          <q-icon name="mdi-transfer" />
-          <q-tooltip>
-            Transferir
-          </q-tooltip>
-        </q-btn>
-      </div>
-    </q-toolbar>
+            <q-menu
+              auto-close
+              :offset="[110, 0]"
+            >
+              <q-list style="min-width: 150px">
+                <q-item clickable>
+                  <q-item-section>Contact data</q-item-section>
+                </q-item>
+                <q-item clickable>
+                  <q-item-section>Block</q-item-section>
+                </q-item>
+                <q-item clickable>
+                  <q-item-section>Select messages</q-item-section>
+                </q-item>
+                <q-item clickable>
+                  <q-item-section>Silence</q-item-section>
+                </q-item>
+                <q-item clickable>
+                  <q-item-section>Clear messages</q-item-section>
+                </q-item>
+                <q-item clickable>
+                  <q-item-section>Erase messages</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </div>
+      </q-toolbar>
+    </q-header>
 
     <q-dialog
       v-model="modalTransferirTicket"

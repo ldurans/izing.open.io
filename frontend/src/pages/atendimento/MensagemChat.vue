@@ -6,6 +6,7 @@
         class="hr-text q-mt-lg q-mb-md"
         :data-content="key"
       >
+      {{ mensagens }}
       <template v-for="(mensagem, index) in mensagens">
         <template v-if="idxDate === Object.keys(mensagensAgrupadas).length - 1 && index === mensagens.length - 1">
           <div

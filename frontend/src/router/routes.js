@@ -15,7 +15,25 @@ const routes = [
 
     ]
   },
-  { path: '/atendimento', name: 'atendimento', component: () => import('pages/atendimento/Index.vue') },
+  {
+    path: '/atendimento',
+    name: 'atendimento',
+    component: () => import('pages/atendimento/Index.vue'),
+    children: [
+      {
+        path: 'contatos',
+        name: 'chat-contatos',
+        component: () => import('pages/contatos/Index.vue'),
+        props: { isChatContact: true }
+      },
+      {
+        path: '/atendimento/:ticketId',
+        name: 'chat',
+        component: () => import('pages/atendimento/Chat.vue')
+      }
+
+    ]
+  },
 
   // Always leave this as last one,
   // but you can also remove it

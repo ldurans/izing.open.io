@@ -8,79 +8,6 @@
       container
       view="lHr LpR lFr"
     >
-      <q-header elevated>
-        <q-toolbar class="bg-grey-3 text-black">
-          <q-btn
-            round
-            flat
-            icon="keyboard_arrow_left"
-            class="WAL__drawer-open q-mr-sm"
-            @click="leftDrawerOpen = true"
-          />
-
-          <q-btn
-            round
-            flat
-          >
-            <q-avatar>
-              <img src="https://cdn.quasar.dev/app-icons/icon-128x128.png" />
-            </q-avatar>
-          </q-btn>
-
-          <span class="q-subtitle-1 q-pl-md">
-            Nome
-          </span>
-
-          <q-space />
-
-          <q-btn
-            round
-            flat
-            icon="search"
-          />
-          <q-btn
-            round
-            flat
-          >
-            <q-icon
-              name="attachment"
-              class="rotate-135"
-            />
-          </q-btn>
-          <q-btn
-            round
-            flat
-            icon="more_vert"
-          >
-            <q-menu
-              auto-close
-              :offset="[110, 0]"
-            >
-              <q-list style="min-width: 150px">
-                <q-item clickable>
-                  <q-item-section>Contact data</q-item-section>
-                </q-item>
-                <q-item clickable>
-                  <q-item-section>Block</q-item-section>
-                </q-item>
-                <q-item clickable>
-                  <q-item-section>Select messages</q-item-section>
-                </q-item>
-                <q-item clickable>
-                  <q-item-section>Silence</q-item-section>
-                </q-item>
-                <q-item clickable>
-                  <q-item-section>Clear messages</q-item-section>
-                </q-item>
-                <q-item clickable>
-                  <q-item-section>Erase messages</q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
-        </q-toolbar>
-      </q-header>
-
       <q-drawer
         v-model="drawerTickets"
         show-if-above
@@ -109,7 +36,7 @@
           <q-btn
             round
             flat
-            icon="mdi-comment-search"
+            icon="mdi-comment-search-outline"
             @click="toolbarSearch = !toolbarSearch"
           >
             <q-tooltip
@@ -122,7 +49,20 @@
           <q-btn
             round
             flat
-            icon="more_vert"
+            icon="mdi-book-account-outline"
+            @click="$router.push({name:'chat-contatos'})"
+          >
+            <q-tooltip
+              :delay="1000"
+              content-class="bg-primary"
+            >
+              Contatos
+            </q-tooltip>
+          </q-btn>
+          <q-btn
+            round
+            flat
+            icon="mdi-dots-vertical"
           >
             <q-menu
               auto-close
@@ -150,7 +90,6 @@
               </q-list>
             </q-menu>
           </q-btn>
-
           <q-btn
             round
             flat
@@ -219,7 +158,7 @@
             <q-tab
               class="text-primary"
               name="inbox"
-              icon="mdi-forum-outline"
+              icon="mdi-comment-account-outline"
               label="Inbox"
             >
               <q-badge
@@ -235,7 +174,7 @@
             <q-tab
               class="text-negative"
               name="fila"
-              icon="check"
+              icon="mdi-clock-fast"
               label="Fila"
             >
               <q-badge
@@ -251,7 +190,7 @@
             <q-tab
               class="text-positive"
               name="resolvidos"
-              icon="check"
+              icon="mdi-comment-check-outline"
               label="Resolvidos"
             />
           </q-tabs>
@@ -309,19 +248,24 @@
               />
             </q-tab-panel>
           </q-tab-panels>
-          <template v-slot:loading>
+          <div v-if="loading">
             <div class="row justify-center q-my-md">
-              <q-spinner-comment
+              <q-spinner
                 color="primary"
-                size="40px"
+                size="3em"
+                :thickness="3"
               />
             </div>
-          </template>
+            <div class="row col justify-center q-my-sm text-primary">
+              Carregando...
+            </div>
+          </div>
         </q-scroll-area>
       </q-drawer>
 
       <q-page-container>
-        <q-page>
+        <router-view></router-view>
+        <!-- <q-page v-if="!cRouteContatos">
           <div class="row">
             <div class="col relative-position">
               <Chat v-if="ticketFocado.id" />
@@ -342,18 +286,21 @@
             </div>
           </div>
           <ModalNovoTicket :modalNovoTicket.sync="modalNovoTicket" />
-        </q-page>
+        </q-page> -->
+        <!-- <Contatos
+          isChatContact
+          v-if="cRouteContatos"
+        /> -->
       </q-page-container>
 
       <q-drawer
-        v-if="$route.name === 'atendimento'"
+        v-if="!cRouteContatos"
         v-model="drawerContact"
         show-if-above
         bordered
         side="right"
         content-class="bg-grey-1"
       >
-
         <div
           class="full-width no-border-radius q-pa-sm"
           style="height:55px;"
@@ -449,29 +396,26 @@
 
 <script>
 import ItemTicket from './ItemTicket'
-import Chat from './Chat'
 import { ConsultarTickets } from 'src/service/tickets'
 import { mapGetters } from 'vuex'
-import InforCabecalhoChat from './InforCabecalhoChat'
 import whatsBackground from 'src/assets/wa-background.png'
 import mixinSockets from './mixinSockets'
-import ModalNovoTicket from './ModalNovoTicket'
+// import ModalNovoTicket from './ModalNovoTicket'
 import { ListarFilas } from 'src/service/filas'
 const UserQueues = localStorage.getItem('queues')
 export default {
   name: 'IndexAtendimento',
   mixins: [mixinSockets],
   components: {
-    ItemTicket,
-    Chat,
-    InforCabecalhoChat,
-    ModalNovoTicket
+    ItemTicket
+    // ModalNovoTicket,
   },
   data () {
     return {
       toolbarSearch: false,
       drawerTickets: true,
       drawerContact: true,
+      loading: false,
       modalNovoTicket: false,
       styleCard: {
         minHeight: 'calc(100vh - 8.3vh)',
@@ -482,9 +426,6 @@ export default {
       filterBusca: '',
       showDialog: false,
       atendimentos: [],
-      loadAbertos: false,
-      loadPendentes: false,
-      loadResolvidos: false,
       pagAbertos: 1,
       pagPendentes: 1,
       pagResolvidos: 1,
@@ -544,14 +485,14 @@ export default {
       return {
         height: this.$q.screen.height + 'px'
       }
+    },
+    cRouteContatos () {
+      return this.$route.name === 'chat-contatos'
     }
 
   },
   methods: {
     onScroll (info) {
-      console.log('info.verticalPercentage <= 0.85',
-        info.verticalPercentage,
-        info.verticalPercentage <= 0.85)
       if (info.verticalPercentage <= 0.85) return
       if (this.tabsAtendimento === 'inbox') {
         this.onLoadAbertos()
@@ -597,29 +538,29 @@ export default {
       // return () => clearTimeout(delayDebounceFn)
     },
     async onLoadAbertos () {
-      if (this.ticketsEmAtendimento.length === 0 || !this.hasMoreOpen || this.loadAbertos) {
+      if (this.ticketsEmAtendimento.length === 0 || !this.hasMoreOpen || this.loading) {
         return
       }
       try {
-        this.loadAbertos = true
+        this.loading = true
         this.pagAbertos += 1
         await this.consultarTickets({ status: 'open', pageNumber: this.pagAbertos })
-        this.loadAbertos = false
+        this.loading = false
       } catch (error) {
-        this.loadAbertos = false
+        this.loading = false
       }
     },
     async onLoadPendentes () {
-      if (this.ticketsPendentes.length === 0 || !this.hasMorePending || this.loadPendentes) {
+      if (this.ticketsPendentes.length === 0 || !this.hasMorePending || this.loading) {
         return
       }
       try {
-        this.loadPendentes = true
+        this.loading = true
         this.pagPendentes += 1
         await this.consultarTickets({ status: 'pending', pageNumber: this.pagPendentes })
-        this.loadPendentes = false
+        this.loading = false
       } catch (error) {
-        this.loadPendentes = false
+        this.loading = false
       }
     },
     async onLoadResolvidos () {
@@ -677,9 +618,9 @@ export default {
     },
     async consultarTicketsIniciais () {
       this.$store.commit('RESET_TICKETS')
-      this.loadAbertos = false
-      this.loadPendentes = false
-      this.loadResolvidos = false
+      this.loading = false
+      this.loading = false
+      this.loading = false
       this.pagAbertos = 1
       this.pagPendentes = 1
       this.pagResolvidos = 1
@@ -703,7 +644,7 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 .upload-btn-wrapper
   position: relative
   overflow: hidden
@@ -726,14 +667,12 @@ export default {
     position: fixed
     top: 0
     width: 100%
-    background-color: #009688
 
   &__layout
     margin: 0 auto
     z-index: 4000
     height: 100%
     width: 100%
-    border-radius: 5px
 
   &__field.q-field--outlined .q-field__control:before
     border: none
