@@ -21,6 +21,7 @@
     "v-emoji-picker": "^2.3.1",
     "vdata-parser": "^0.1.5",
     "vue-easy-lightbox": "^0.14.0",
+    "vue-infinite-loading": "^2.4.5",
     "vue-linkify": "^1.0.1",
     "vuelidate": "^0.7.6",
     "vuelidate-error-extractor": "^2.4.1"

@@ -1,109 +1,92 @@
 <template>
   <div
-    style="height: 14vh"
-    class="bg-grey-3 row justify-center items-center relative-position"
+    style="min-height: 80px"
+    class="row bg-white justify-center items-start text-primary q-pt-md "
   >
-    <div class="col-xs-2 col-sm-3 col-md-2">
-      <q-btn
-        round
-        flat
-        class="q-ml-sm"
-      >
-        <q-icon
-          size="2em"
-          name="mdi-emoticon-happy-outline"
-        />
-        <q-tooltip>
-          Emoji
-        </q-tooltip>
-        <q-menu
-          anchor="top right"
-          self="bottom middle"
-          :offset="[5, 40]"
-        >
-          <VEmojiPicker
-            style="width: 40vw"
-            :showSearch="false"
-            :emojisByRow="20"
-            labelSearch="Localizar..."
-            lang="pt-BR"
-            @select="onInsertSelectEmoji"
-          />
-        </q-menu>
-      </q-btn>
-      <q-btn
-        round
-        flat
-        class="q-ml-md"
-        @click="abrirEnvioArquivo"
-      >
-        <q-icon
-          size="2em"
-          name="mdi-paperclip"
-        />
-        <q-tooltip>
-          Enviar arquivo
-        </q-tooltip>
-      </q-btn>
-    </div>
-    <div
-      style="height: 12vh"
-      class="col scroll"
+    <q-btn
+      round
+      flat
+      @click="abrirEnvioArquivo"
+      icon="mdi-paperclip"
     >
-      <textarea
-        :disabled="ticketFocado.status !== 'open'"
-        ref="inputEnvioMensagem"
-        @keypress.enter.exact="() => textChat.trim().length ? enviarMensagem() : ''"
-        style="min-height: 9vh; max-height: 9vh;"
-        v-show="!cMostrarEnvioArquivo"
-        class="q-pa-sm bg-white full-width"
-        placeholder="Digita sua mensagem"
-        autogrow
-        dense
-        outlined
-        @input="handlerInputMenssagem"
-        :value="textChat"
-        @paste="handleInputPaste"
-      />
-      <span
-        v-if="!cMostrarEnvioArquivo"
-        class="text-caption text-blue-grey-10"
-      >Quebra linha/Parágrafo: Shift + Enter ||| Enviar Mensagem: Enter</span>
-      <!-- tamanho maximo por arquivo de 10mb -->
-      <q-file
-        input-style="min-height: 9vh; height: 9vh; max-height: 9vh"
-        ref="PickerFileMessage"
-        class="bg-white"
-        input-class="bg-white"
-        v-show="cMostrarEnvioArquivo"
-        v-model="arquivos"
-        outlined
-        use-chips
-        multiple
-        :max-files="5"
-        :max-file-size="10485760"
-        accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
-      />
-    </div>
-    <div class="col-1">
-      <q-btn
-        ref="btnEnviarMensagem"
-        @click="enviarMensagem"
-        :disabled="ticketFocado.status !== 'open'"
-        round
-        flat
-        class="q-ml-xs q-pa-xs"
+      <q-tooltip>
+        Enviar arquivo
+      </q-tooltip>
+    </q-btn>
+    <q-btn
+      round
+      flat
+      icon="mdi-emoticon-happy-outline"
+    >
+      <q-tooltip>
+        Emoji
+      </q-tooltip>
+      <q-menu
+        anchor="top right"
+        self="bottom middle"
+        :offset="[5, 40]"
       >
-        <q-icon
-          size="3em"
-          color="positive"
-          name="mdi-send"
+        <VEmojiPicker
+          style="width: 40vw"
+          :showSearch="false"
+          :emojisByRow="20"
+          labelSearch="Localizar..."
+          lang="pt-BR"
+          @select="onInsertSelectEmoji"
         />
-        <q-tooltip>
-          Enviar Mensagem
-        </q-tooltip>
-      </q-btn>
-    </div>
+      </q-menu>
+    </q-btn>
+    <q-input
+      hide-bottom-space
+      :disabled="ticketFocado.status !== 'open'"
+      ref="inputEnvioMensagem"
+      type="textarea"
+      @keypress.enter.exact="() => textChat.trim().length ? enviarMensagem() : ''"
+      v-show="!cMostrarEnvioArquivo"
+      class="WAL__field col-grow"
+      bg-color="blue-grey-1"
+      placeholder="Digita sua mensagem"
+      input-style="max-height: 30vh"
+      autogrow
+      rounded
+      dense
+      outlined
+      v-model="textChat"
+      :value="textChat"
+      @paste="handleInputPaste"
+      hint="Quebra linha/Parágrafo: Shift + Enter ||| Enviar Mensagem: Enter"
+    />
+    <!-- tamanho maximo por arquivo de 10mb -->
+    <q-file
+      ref="PickerFileMessage"
+      v-show="cMostrarEnvioArquivo"
+      v-model="arquivos"
+      class="WAL__field col-grow "
+      bg-color="blue-grey-1"
+      input-style="max-height: 30vh"
+      outlined
+      use-chips
+      multiple
+      autogrow
+      dense
+      rounded
+      :max-files="5"
+      :max-file-size="10485760"
+      accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
+    />
+    <q-btn
+      ref="btnEnviarMensagem"
+      @click="enviarMensagem"
+      :disabled="ticketFocado.status !== 'open'"
+      round
+      flat
+      icon="mdi-send"
+      color="primary"
+    >
+      <q-tooltip>
+        Enviar Mensagem
+      </q-tooltip>
+    </q-btn>
     <q-dialog
       v-model="abrirModalPreviewImagem"
       position="right"
@@ -149,6 +132,11 @@
       </q-card>
     </q-dialog>
   </div>
+  <!-- <p
+      v-if="!cMostrarEnvioArquivo"
+      class="row col text-caption text-blue-grey-10"
+    >Quebra linha/Parágrafo: Shift + Enter ||| Enviar Mensagem: Enter</p> -->
+
 </template>
 
 <script>
@@ -250,9 +238,9 @@ export default {
         throw new Error('Mensagem Inexistente')
       }
       let mensagem = this.textChat.trim()
-      const usuario = JSON.parse(localStorage.getItem('usuario'))
-      if (usuario) {
-        mensagem = `*${usuario.name}*: ${mensagem}`
+      const username = localStorage.getItem('username')
+      if (username) {
+        mensagem = `*${username}*: ${mensagem}`
       }
       const message = {
         read: 1,

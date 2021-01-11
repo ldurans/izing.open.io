@@ -1,6 +1,14 @@
 import { LocalizarMensagens } from 'src/service/tickets'
 import { Notify } from 'quasar'
 import $router from 'src/router'
+import { orderBy } from 'lodash'
+import { parseISO } from 'date-fns'
+// import Vue from 'vue'
+
+const orderMessages = (messages) => {
+  const newMessages = orderBy(messages, (obj) => parseISO(obj.createdAt), ['asc'])
+  return [...newMessages]
+}
 
 const atendimentoTicket = {
   state: {
@@ -133,18 +141,26 @@ const atendimentoTicket = {
       state.ticketFocado = payload
       return state.ticketFocado
     },
-    LOAD_MESSAGES (state, payload) {
+    LOAD_INITIAL_MESSAGES (state, payload) {
+      const { messages } = payload
+      state.mensagens = []
+      const newMessages = orderMessages(messages)
+      state.mensagens = newMessages
+    },
+    LOAD_MORE_MESSAGES (state, payload) {
       const { messages } = payload
       const newMessages = []
-      messages.forEach(message => {
+      messages.forEach((message, index) => {
         const messageIndex = state.mensagens.findIndex(m => m.id === message.id)
         if (messageIndex !== -1) {
           state.mensagens[messageIndex] = message
+          messages.splice(index, 1)
         } else {
           newMessages.push(message)
         }
       })
-      state.mensagens = [...newMessages, ...state.mensagens]
+      const messagesOrdered = orderMessages(newMessages)
+      state.mensagens = [...messagesOrdered, ...state.mensagens]
     },
     ADD_MESSAGE (state, payload) {
       const newMessage = payload
@@ -176,7 +192,11 @@ const atendimentoTicket = {
       const mensagens = await LocalizarMensagens(params)
       commit('TICKET_FOCADO', mensagens.data.ticket)
       commit('SET_HAS_MORE', mensagens.data.hasMore)
-      commit('LOAD_MESSAGES', mensagens.data)
+      if (params.pageNumber === 1) {
+        commit('LOAD_INITIAL_MESSAGES', mensagens.data)
+      } else {
+        commit('LOAD_MORE_MESSAGES', mensagens.data)
+      }
     },
     async AbrirChatMensagens ({ commit, dispatch }, data) {
       try {
@@ -188,9 +208,15 @@ const atendimentoTicket = {
           ticketId: data.id,
           pageNumber: 1
         }
-        await $router.push({ name: 'chat', params })
-
         await dispatch('LocalizarMensagensTicket', params)
+
+        // evitar error de duplicidade de rota navegada.
+        // Se o ticket selecionado já estiver focado no rota
+        // não fazer o push de navegação.
+        const paramsRoute = this.$router.app.$route.params
+        if (paramsRoute.ticketId === params.ticketId) return
+
+        await $router.push({ name: 'chat', params })
       } catch (error) {
         const errorMsg = error.response?.data?.error
         if (errorMsg) {

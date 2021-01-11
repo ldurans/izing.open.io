@@ -1,18 +1,97 @@
 <template>
-  <div>
-    <q-toolbar class="bg-primary text-white">
+  <div class="flex flex-inline q-gutter-sm">
+    <div
+      :key="wbot.id"
+      v-for="wbot in whatsapps"
+    >
       <q-btn
-        flat
-        dense
+        :key="wbot.id"
+        v-if="isIconStatusMenu"
+        unelevated
         round
-        icon="menu"
-        aria-label="Menu"
-        @click="leftDrawerOpen = !leftDrawerOpen"
-      />
+        flat
+        :color="!isInvalidConnect(wbot) ? 'green' : 'negative'"
+      >
+        <q-icon
+          v-if="!isInvalidConnect(wbot)"
+          name="mdi-wifi-check"
+          size="2em"
+        />
+        <div
+          v-if="isInvalidConnect(wbot)"
+          class="notification-box"
+        >
+          <!--     <span class="notification-count">6</span> -->
+          <div class="notification-bell">
+            <span class="bell-top"></span>
+            <span class="bell-middle"></span>
+            <span class="bell-bottom"></span>
+            <span class="bell-rad"></span>
+          </div>
+        </div>
+        <q-menu
+          anchor="top right"
+          self="top left"
+        >
+          <ItemStatusWhatsapp
+            :key="wbot.id"
+            :wbot="wbot"
+          />
+        </q-menu>
+      </q-btn>
+    </div>
 
-      <q-toolbar-title>
-        WChats
-      </q-toolbar-title>
+    <q-carousel
+      v-if="!isIconStatusMenu"
+      ref="carouselStatusWhatsapp"
+      v-model="idWbotVisible"
+      transition-prev="slide-right"
+      transition-next="slide-left"
+      animated
+      swipeable
+      class="q-pa-none q-ma-none"
+      height="80px"
+    >
+      <template v-for="(wbot, index) in whatsapps">
+        <q-carousel-slide
+          :key="wbot.id + index"
+          :name="index"
+          class="q-pa-none q-ma-none"
+        >
+          <ItemStatusWhatsapp :wbot="wbot" />
+        </q-carousel-slide>
+      </template>
+      <template
+        v-slot:control
+        v-if="!!whatsapps.length"
+      >
+        <q-carousel-control
+          position="bottom-right"
+          :offset="[10, 40]"
+          class="q-gutter-xs"
+        >
+          <q-btn
+            round
+            flat
+            dense
+            color="white"
+            text-color="black"
+            icon="arrow_left"
+            @click="$refs.carouselStatusWhatsapp.previous()"
+          />
+          <q-btn
+            round
+            flat
+            dense
+            color="white"
+            text-color="black"
+            icon="arrow_right"
+            @click="$refs.carouselStatusWhatsapp.next()"
+          />
+        </q-carousel-control>
+      </template>
+    </q-carousel>
+    <!--
       <q-icon
         color="negative"
         size="2.5em"
@@ -110,17 +189,47 @@
           </q-list>
         </q-menu>
 
-      </q-btn>
+      </q-btn> -->
 
-    </q-toolbar>
   </div>
 </template>
 
 <script>
+import ItemStatusWhatsapp from './ItemStatusWhatsapp'
+import { mapGetters } from 'vuex'
+
 export default {
-  name: 'StatusWhatsapp'
+  name: 'StatusWhatsapp',
+  components: {
+    ItemStatusWhatsapp
+  },
+  props: {
+    isIconStatusMenu: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data () {
+    return {
+      idWbotVisible: 0
+    }
+  },
+  computed: {
+    ...mapGetters(['whatsapps'])
+  },
+  methods: {
+    isInvalidConnect (wbot) {
+      const statusAlert = [
+        'PAIRING',
+        'TIMEOUT',
+        'DISCONNECTED',
+        'qrcode',
+        'DESTROYED',
+        'CONFLICT'
+      ]
+      const idx = statusAlert.findIndex(w => w === wbot.status)
+      return (idx !== -1)
+    }
+  }
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

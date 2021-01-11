@@ -1,6 +1,6 @@
 <template>
   <div
-    class="WAL position-relative"
+    class="WAL position-relative bg-grey-3"
     :style="style"
   >
     <q-layout
@@ -8,14 +8,16 @@
       container
       view="lHr LpR lFr"
     >
+      <!-- view="lHr LpR lFr" -->
       <q-drawer
         v-model="drawerTickets"
         show-if-above
         bordered
         :width="450"
-        content-class="bg-grey-1"
+        content-class="bg-grey-2"
       >
-        <q-toolbar class="bg-primary text-white shadow-1">
+
+        <q-toolbar class="shadow-3 bg-blue-grey-1 text-primary q-pr-none ">
           <q-avatar class="cursor-pointer">
             <img src="https://cdn.quasar.dev/app-icons/icon-128x128.png" />
           </q-avatar>
@@ -97,21 +99,26 @@
             class="WAL__drawer-close"
             @click="leftDrawerOpen = false"
           />
+          <!-- <q-toolbar
+            class="text-center bg-grey-3"
+            style="width: 60px;"
+          >
+            <StatusWhatsapp isIconStatusMenu />
+          </q-toolbar> -->
         </q-toolbar>
+
         <q-toolbar
           v-show="toolbarSearch"
-          class="bg-grey-3"
+          class="bg-grey-1 row q-mt-sm items-center"
         >
-          <div class="row justify-center items-center">
-            <div class="col-11 flex q-pa-xs">
-              <q-checkbox
+          <!-- <q-checkbox
                 v-model="pesquisa.showAll"
                 :false-value="true"
                 :true-value="false"
                 label="Meus"
                 @input="consultarTicketsIniciais"
-              />
-              <q-select
+              /> -->
+          <!-- <q-select
                 rounded
                 class="q-ml-md"
                 style="width: 13vw"
@@ -126,33 +133,53 @@
                 emit-value
                 @input="consultarTicketsIniciais"
                 clearable
-              />
-            </div>
-            <div class="col-1 text-right q-pr-sm">
-              <q-btn
-                color="primary"
-                icon="mdi-close"
-                round
-                outline
-                dense
-                @click="toolbarSearch = !toolbarSearch"
-              >
-                <q-tooltip>
-                  Limpar pesquisa
-                </q-tooltip>
-              </q-btn>
-            </div>
-          </div>
+              /> -->
+          <q-btn
+            color="primary"
+            icon="mdi-filter-outline"
+            round
+            flat
+            dense
+          >
+            <q-tooltip>
+              Filtro Avançado
+            </q-tooltip>
+          </q-btn>
+          <q-btn
+            color="primary"
+            icon="mdi-close"
+            round
+            flat
+            dense
+            @click="toolbarSearch = !toolbarSearch"
+          >
+            <q-tooltip>
+              Limpar pesquisa
+            </q-tooltip>
+          </q-btn>
+          <q-input
+            v-model="filterBusca"
+            dense
+            outlined
+            rounded
+            type="search"
+            class="col-grow"
+            :debounce="700"
+            @input="buscarTicket(filterBusca)"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
         </q-toolbar>
-        <q-separator />
-        <q-toolbar class="q-pa-none">
+
+        <!-- <q-toolbar class="q-pa-none">
           <q-tabs
             v-model="tabsAtendimento"
             narrow-indicator
             no-caps
-            inline-label
             align="justify"
-            class="absolute-full"
+            dense
             @input="$refs.scrollAreaTickets.setScrollPosition(0)"
           >
             <q-tab
@@ -160,6 +187,7 @@
               name="inbox"
               icon="mdi-comment-account-outline"
               label="Inbox"
+              ripple
             >
               <q-badge
                 style="font-size: .7em; border-radius: 10px;"
@@ -194,103 +222,173 @@
               label="Resolvidos"
             />
           </q-tabs>
-        </q-toolbar>
-        <q-separator />
-
-        <q-scroll-area
-          ref="scrollAreaTickets"
-          style="height: calc(100% - 165px)"
-          @scroll="onScroll"
+        </q-toolbar> -->
+        <q-splitter
+          :style="`height: calc(100% - ${cHeigVerticalTabs})`"
+          v-model="splitterModel"
+          unit="px"
+          disable
+          :limits="[80, 350]"
         >
-          <q-tab-panels
-            v-model="tabsAtendimento"
-            keep-alive
-            animated
-          >
-            <q-tab-panel
-              name="inbox"
-              class="q-pa-none scroll-y"
-            >
-              <ItemTicket
-                v-for="(ticket, key) in ticketsEmAtendimento"
-                :key="key"
-                :ticket="ticket"
-                :filas="filas"
-              />
-            </q-tab-panel>
-            <q-tab-panel
-              name="fila"
-              class="q-pa-none scroll-y"
-            >
-              <ItemTicket
-                :ticketPendente="true"
-                v-for="(ticket, key) in ticketsPendentes"
-                :key="key"
-                :ticket="ticket"
-                :filas="filas"
-              />
-            </q-tab-panel>
-            <q-tab-panel name="resolvidos">
-              <ItemTicket
-                v-for="(ticket, key) in ticketsResolvidos"
-                :key="key"
-                :ticket="ticket"
-                :filas="filas"
-              />
-            </q-tab-panel>
-            <q-tab-panel name="busca">
-              <ItemTicket
-                v-for="(ticket, key) in ticketsLocalizadosBusca"
-                :key="key"
-                :ticket="ticket"
-                :buscaTicket="true"
-                :filas="filas"
-              />
-            </q-tab-panel>
-          </q-tab-panels>
-          <div v-if="loading">
-            <div class="row justify-center q-my-md">
-              <q-spinner
-                color="primary"
-                size="3em"
-                :thickness="3"
-              />
+          <template v-slot:before>
+            <div>
+              <q-tabs
+                vertical
+                v-model="tabsAtendimento"
+                no-caps
+                content-class="q-gutter-sm q-pt-sm"
+                @input="$refs.scrollAreaTickets.setScrollPosition(0)"
+              >
+                <q-tab
+                  class="text-primary"
+                  name="inbox"
+                  icon="mdi-comment-account-outline"
+                  ripple
+                  content-class="q-py-md"
+                >
+                  <span>
+                    Inbox
+                  </span>
+                  <q-badge
+                    style="font-size: .7em; border-radius: 10px;"
+                    class="text-center"
+                    floating
+                    dense
+                    text-color="white"
+                    color="primary"
+                    :label="ticketsEmAtendimento.length > count.open ? ticketsEmAtendimento.length : count.open"
+                  />
+                </q-tab>
+                <q-tab
+                  class="text-negative"
+                  name="fila"
+                  icon="mdi-clock-fast"
+                  content-class="q-py-md"
+                >
+                  <span>
+                    Fila
+                  </span>
+                  <q-badge
+                    style="font-size: .7em; border-radius: 10px;"
+                    class="text-center"
+                    floating
+                    dense
+                    text-color="white"
+                    color="negative"
+                    :label="ticketsPendentes.length > count.pending ? ticketsPendentes.length : count.pending"
+                  />
+                </q-tab>
+                <q-tab
+                  class="text-positive"
+                  name="resolvidos"
+                  icon="mdi-comment-check-outline"
+                  content-class="q-py-md"
+                >
+                  <span style="font-size: 0.9em ">
+                    Resolvidos
+                  </span>
+                </q-tab>
+              </q-tabs>
+
             </div>
-            <div class="row col justify-center q-my-sm text-primary">
-              Carregando...
+            <div class="absolute-bottom text-center center">
+              <q-separator />
+              <!-- <q-toolbar class="bg-blue-grey-1 text-primary"> -->
+              <StatusWhatsapp
+                class="q-ml-sm"
+                isIconStatusMenu
+              />
+              <q-separator />
+              <q-space />
+              <q-btn
+                color="light"
+                dense
+                no-caps
+                stretch
+                class="q-py-xs no-box-shadow full-width"
+                icon="mdi-logout-variant"
+              >
+                <span
+                  class="q-ml-xs"
+                  style="text-decoration: underline;"
+                >Sair</span>
+              </q-btn>
+              <!-- </q-toolbar> -->
+
             </div>
-          </div>
-        </q-scroll-area>
+          </template>
+          <template v-slot:after>
+            <q-scroll-area
+              ref="scrollAreaTickets"
+              style="height: calc(100% - 10px)"
+              @scroll="onScroll"
+              class="q-pt-sm"
+            >
+              <q-tab-panels
+                v-model="tabsAtendimento"
+                keep-alive
+                animated
+              >
+                <q-tab-panel
+                  name="inbox"
+                  class="q-pa-none scroll-y"
+                >
+                  <ItemTicket
+                    v-for="(ticket, key) in ticketsEmAtendimento"
+                    :key="key"
+                    :ticket="ticket"
+                    :filas="filas"
+                  />
+                </q-tab-panel>
+                <q-tab-panel
+                  name="fila"
+                  class="q-pa-none scroll-y"
+                >
+                  <ItemTicket
+                    :ticketPendente="true"
+                    v-for="(ticket, key) in ticketsPendentes"
+                    :key="key"
+                    :ticket="ticket"
+                    :filas="filas"
+                  />
+                </q-tab-panel>
+                <q-tab-panel name="resolvidos">
+                  <ItemTicket
+                    v-for="(ticket, key) in ticketsResolvidos"
+                    :key="key"
+                    :ticket="ticket"
+                    :filas="filas"
+                  />
+                </q-tab-panel>
+                <q-tab-panel name="busca">
+                  <ItemTicket
+                    v-for="(ticket, key) in ticketsLocalizadosBusca"
+                    :key="key"
+                    :ticket="ticket"
+                    :buscaTicket="true"
+                    :filas="filas"
+                  />
+                </q-tab-panel>
+              </q-tab-panels>
+              <div v-if="loading">
+                <div class="row justify-center q-my-md">
+                  <q-spinner
+                    color="primary"
+                    size="3em"
+                    :thickness="3"
+                  />
+                </div>
+                <div class="row col justify-center q-my-sm text-primary">
+                  Carregando...
+                </div>
+              </div>
+            </q-scroll-area>
+          </template>
+        </q-splitter>
       </q-drawer>
 
       <q-page-container>
-        <router-view></router-view>
-        <!-- <q-page v-if="!cRouteContatos">
-          <div class="row">
-            <div class="col relative-position">
-              <Chat v-if="ticketFocado.id" />
-              <div
-                :style="styleCard"
-                v-else
-                class="q-card--bordered justify-center items-center text-center  full-height full-width"
-              >
-                <InforCabecalhoChat class="bg-white " />
-                <div class="absolute-center text-grey-7">
-                  <div class="text-h4 "> Selecione um ticket! </div>
-                  <q-icon
-                    size="7em"
-                    name="mdi-target-account"
-                  ></q-icon>
-                </div>
-              </div>
-            </div>
-          </div>
-          <ModalNovoTicket :modalNovoTicket.sync="modalNovoTicket" />
-        </q-page> -->
-        <!-- <Contatos
-          isChatContact
-          v-if="cRouteContatos"
-        /> -->
+        <router-view :key="ticketFocado.id"></router-view>
       </q-page-container>
 
       <q-drawer
@@ -302,8 +400,8 @@
         content-class="bg-grey-1"
       >
         <div
-          class="full-width no-border-radius q-pa-sm"
-          style="height:55px;"
+          class="shadow-3 bg-blue-grey-1 text-primary full-width no-border-radius q-pa-sm"
+          style="height:50px;"
         >
           <span class="q-ml-md text-h6">
             Dados Contato
@@ -390,6 +488,14 @@
           </q-card>
         </div>
       </q-drawer>
+
+      <ModalNovoTicket :modalNovoTicket.sync="modalNovoTicket" />
+      <audio ref="audioNotification">
+        <source
+          :src="alertSound"
+          type="audio/mp3"
+        >
+      </audio>
     </q-layout>
   </div>
 </template>
@@ -398,30 +504,34 @@
 import ItemTicket from './ItemTicket'
 import { ConsultarTickets } from 'src/service/tickets'
 import { mapGetters } from 'vuex'
-import whatsBackground from 'src/assets/wa-background.png'
 import mixinSockets from './mixinSockets'
-// import ModalNovoTicket from './ModalNovoTicket'
+import socketInitial from 'src/layouts/socketInitial'
+import ModalNovoTicket from './ModalNovoTicket'
 import { ListarFilas } from 'src/service/filas'
 const UserQueues = localStorage.getItem('queues')
+import StatusWhatsapp from 'src/components/StatusWhatsapp'
+import alertSound from 'src/assets/sound.mp3'
+import { ListarWhatsapps } from 'src/service/sessoesWhatsapp'
+
+import { format } from 'date-fns'
+
 export default {
   name: 'IndexAtendimento',
-  mixins: [mixinSockets],
+  mixins: [mixinSockets, socketInitial],
   components: {
-    ItemTicket
-    // ModalNovoTicket,
+    ItemTicket,
+    ModalNovoTicket,
+    StatusWhatsapp
   },
   data () {
     return {
-      toolbarSearch: false,
+      splitterModel: 20,
+      alertSound,
+      toolbarSearch: true,
       drawerTickets: true,
       drawerContact: true,
       loading: false,
       modalNovoTicket: false,
-      styleCard: {
-        minHeight: 'calc(100vh - 8.3vh)',
-        height: 'calc(100vh - 8.3vh)',
-        backgroundImage: `url(${whatsBackground}) !important`
-      },
       tabsAtendimento: 'inbox',
       filterBusca: '',
       showDialog: false,
@@ -486,10 +596,15 @@ export default {
         height: this.$q.screen.height + 'px'
       }
     },
+    cToolbarSearchHeigthAjust () {
+      return this.toolbarSearch ? 58 : 0
+    },
+    cHeigVerticalTabs () {
+      return `${50 + this.cToolbarSearchHeigthAjust}px`
+    },
     cRouteContatos () {
       return this.$route.name === 'chat-contatos'
     }
-
   },
   methods: {
     onScroll (info) {
@@ -629,13 +744,52 @@ export default {
       await this.consultarTickets() // abertos (em atendimento)
       await this.consultarTickets({ status: 'pending' }) // pendentes (aguardando atendimento)
       await this.consultarTickets({ status: 'closed' }) // pendentes (aguardando atendimento)
+    },
+    async listarWhatsapps () {
+      const { data } = await ListarWhatsapps()
+      this.$store.commit('LOAD_WHATSAPPS', data)
+    },
+    handlerNotifications (data) {
+      const { message, contact, ticket } = data
+
+      const options = {
+        body: `${message.body} - ${format(new Date(), 'HH:mm')}`,
+        icon: contact.profilePicUrl,
+        tag: ticket.id,
+        renotify: true
+      }
+
+      const notification = new Notification(
+        `Mensagem de ${contact.name}`,
+        options
+      )
+
+      notification.onclick = e => {
+        e.preventDefault()
+        window.focus()
+        this.$store.dispatch('AbrirChatMensagens', ticket)
+        this.$router.push({ name: 'atendimento' })
+
+        // history.push(`/tickets/${ticket.id}`);
+      }
+      this.$nextTick(() => {
+        // utilizar refs do layout
+        this.$refs.audioNotification.play()
+      })
     }
   },
   beforeMount () {
     this.listarFilas()
   },
-  mounted () {
-    this.consultarTicketsIniciais()
+  async mounted () {
+    await this.consultarTicketsIniciais()
+    await this.listarWhatsapps()
+    if (!('Notification' in window)) {
+    } else {
+      Notification.requestPermission()
+    }
+    this.userProfile = localStorage.getItem('profile')
+    // this.socketInitial()
   },
   destroyed () {
     this.socketDisconnect()

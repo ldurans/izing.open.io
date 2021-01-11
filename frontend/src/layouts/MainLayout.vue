@@ -159,10 +159,6 @@ export default {
     }
   },
   methods: {
-    fnStyle (o, h) {
-      console.log('fnStyle', o, h)
-      return { minHeight: '0vh' }
-    },
     async listarWhatsapps () {
       const { data } = await ListarWhatsapps()
       this.$store.commit('LOAD_WHATSAPPS', data)

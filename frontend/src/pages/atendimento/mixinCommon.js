@@ -55,7 +55,7 @@ export default {
       format = format.replace(/\n/gi, '<br>')
       return format
     },
-    formatarData (data, formato) {
+    formatarData (data, formato = 'dd/MM/yyyy') {
       return format(parseISO(data), formato, { locale: pt })
     }
   }

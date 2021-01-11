@@ -81,7 +81,6 @@ export default {
       this.qrCode = data.qrcode
       this.handlerModalQrCode()
       if (!this.qrCode) {
-        console.log('fetchSession', data)
         setTimeout(() => {
           if (!this.qrCode) {
             this.$emit('modalQrCode:qrCodeInexistente')

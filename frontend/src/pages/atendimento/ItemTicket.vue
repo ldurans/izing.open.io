@@ -2,14 +2,22 @@
   <div>
     <q-item
       dense
-      :clickable="!ticketPendente"
+      :clickable="!ticketPendente && ticket.id !== $store.getters['ticketFocado'].id "
       style="height: 7vh"
       @click="abrirChatContato(ticket)"
+      :style="`border-left: 5px solid ${borderColor[ticket.status]}`"
+      class="q-px-sm"
       :class="{
-        'ticket-active-item bg-grey-4 text-primary': ticket.id === $store.getters['ticketFocado'].id
+        'ticket-active-item bg-blue-grey-1 text-primary': ticket.id === $store.getters['ticketFocado'].id,
       }"
     >
-      <q-item-section avatar>
+      <!-- 'primary': ticket.status === 'open',
+        'negative': ticket.status === 'pending',
+        'positive': ticket.status === 'closed' -->
+      <q-item-section
+        avatar
+        class="q-px-none"
+      >
         <q-btn
           flat
           @click="iniciarAtendimento(ticket)"
@@ -62,7 +70,7 @@
         </q-avatar>
       </q-item-section>
       <q-item-section>
-        <q-item-label>
+        <q-item-label lines="1">
           <div class="col-row">
             {{ticket.contact.name}}
             <span class="float-right absolute-top-right">
@@ -138,6 +146,11 @@ export default {
         open: 'primary',
         pending: 'negative',
         closed: 'positive'
+      },
+      borderColor: {
+        open: 'primary',
+        pending: 'negative',
+        closed: 'positive'
       }
     }
   },
@@ -188,4 +201,11 @@ export default {
   position: relative
   height: 100%
   font-weight: 600
+
+.primary
+  border-left: 3px solid $primary
+.negative
+  border-left: 3px solid $negative
+.positive
+  border-left: 3px solid $positive
 </style>

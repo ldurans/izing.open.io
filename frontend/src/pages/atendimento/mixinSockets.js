@@ -90,6 +90,7 @@ export default {
       socket.on(`${usuario.tenantId}-ticket`, data => {
         if (data.action === 'updateQueue' || data.action === 'create') {
           this.$store.commit('UPDATE_TICKET', data.ticket)
+          this.count[data.ticket.status]++
         }
 
         if (data.action === 'updateUnread') {
@@ -101,6 +102,7 @@ export default {
           (!data.ticket.userId || data.ticket.userId === userId /* || showAll */)
         ) {
           this.$store.commit('UPDATE_TICKET', data.ticket)
+          this.count[data.ticket.status]++
         }
 
         if (data.action === 'delete') {

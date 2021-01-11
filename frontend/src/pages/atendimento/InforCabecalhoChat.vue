@@ -1,9 +1,9 @@
 <template>
   <div>
-    <q-header>
+    <q-header class="shadow-3">
       <q-toolbar
         style="min-height: 50px; height: 50px;"
-        class="bg-grey-3 no-border-radius q-pa-none no-shadow text-black"
+        class="bg-blue-grey-1 no-border-radius q-pa-none text-primary"
       >
         <q-btn
           round

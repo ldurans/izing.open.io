@@ -1,41 +1,66 @@
 <template>
-  <div>
+  <div class="bg-grey-3 vac-col-messages">
     <InforCabecalhoChat
       @updateTicket:resolver="atualizarStatusTicket('closed')"
       @updateTicket:retornar="atualizarStatusTicket('pending')"
       @updateTicket:info-contato="exibirContato = !exibirContato"
-      class="bg-white"
     />
-    <q-scroll-area
-      ref="scrollAreaChat"
-      @scroll="onLoadMore"
-      style="min-height: calc(100% - 5px)"
+    <div
+      ref="scrollContainer"
+      class="scroll-y"
+      :style="cStyleScroll"
+      @scroll="scrollArea"
     >
-
-      <div v-if="true">
-        <div class="row justify-center q-my-md">
-          <q-spinner
-            color="primary"
-            size="3em"
-            :thickness="3"
-          />
-        </div>
-        <div class="row col justify-center q-my-sm text-primary">
-          Carregando...
-        </div>
-      </div>
-      {{loading}}
-      asasasasasasas {{ cGroupDateMessage }}
+      <transition
+        appear
+        enter-active-class="animated fadeIn"
+        leave-active-class="animated fadeOut"
+      >
+        <infinite-loading
+          v-if="cMessages.length"
+          @infinite="onLoadMore"
+          direction="top"
+          :identificador="ticketFocado.id"
+          spinner="spiral"
+        >
+          <div slot="no-results">
+            Sem resultados
+          </div>
+          <div slot="no-more">
+            Nada mais a carregar
+          </div>
+        </infinite-loading>
+      </transition>
       <MensagemChat
         :replyingMessage.sync="replyingMessage"
-        :mensagensAgrupadas="cGroupDateMessage"
+        :mensagens="cMessages"
+        v-if="cMessages.length"
       />
-      <!-- v-if="Object.keys(cGroupDateMessage).length" -->
-      <h1>asasas</h1>
-      <q-separator />
-
-    </q-scroll-area>
-
+    </div>
+    <div
+      v-if="cMessages.length"
+      class="relative-position"
+    >
+      <transition
+        appear
+        enter-active-class="animated fadeIn"
+        leave-active-class="animated fadeOut"
+      >
+        <div v-if="scrollIcon">
+          <q-btn
+            class="vac-icon-scroll"
+            color="white"
+            text-color="black"
+            icon="mdi-arrow-down"
+            round
+            push
+            ripple
+            dense
+            @click="scrollToBottom"
+          />
+        </div>
+      </transition>
+    </div>
     <!-- <q-card-section
           v-if="replyingMessage"
           class="absolute q-pa-none q-pt-md bg-grey-3"
@@ -74,49 +99,48 @@
             </q-item>
           </q-list>
         </q-card-section> -->
-
-    <!-- <InputMensagem :replyingMessage.sync="replyingMessage" /> -->
+    <q-footer>
+      <q-separator class="bg-grey-4" />
+      <InputMensagem :replyingMessage.sync="replyingMessage" />
+      <q-resize-observer @resize="onResizeInputMensagem" />
+    </q-footer>
 
     <ContatoModal
       :contactId="selectedContactId"
       :modalContato.sync="modalContato"
       @contatoModal:contato-editado="contatoEditado"
     />
-
   </div>
 </template>
 <script>
 import ContatoModal from 'src/pages/contatos/ContatoModal'
 import mixinCommon from './mixinCommon'
 import InforCabecalhoChat from './InforCabecalhoChat'
-import { format, parseISO } from 'date-fns'
-import pt from 'date-fns/locale/pt-BR'
 // import parser from 'vdata-parser'
-import { groupBy, orderBy } from 'lodash'
-import whatsBackground from 'src/assets/wa-background.png'
 import MensagemChat from './MensagemChat'
-// import InputMensagem from './InputMensagem'
+import InputMensagem from './InputMensagem'
 import mixinAtualizarStatusTicket from './mixinAtualizarStatusTicket'
 import mixinSockets from './mixinSockets'
+import InfiniteLoading from 'vue-infinite-loading'
+
 export default {
   name: 'Chat',
   mixins: [mixinCommon, mixinAtualizarStatusTicket, mixinSockets],
   components: {
     InforCabecalhoChat,
     MensagemChat,
-    // InputMensagem,
-    ContatoModal
+    InputMensagem,
+    ContatoModal,
+    InfiniteLoading
   },
   data () {
     return {
+      scrollIcon: false,
+      loading: false,
       exibirContato: false,
       selectedContactId: null,
       modalContato: false,
-      styleCard: {
-        minHeight: 'calc(100vh - 8.3vh)',
-        height: 'calc(100vh - 8.3vh)',
-        backgroundImage: `url(${whatsBackground}) !important`
-      },
+      heigthInputMensagem: 0,
       params: {
         ticketId: null,
         pageNumber: 1
@@ -125,15 +149,15 @@ export default {
     }
   },
   computed: {
-    cGroupDateMessage () {
+    cMessages () {
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.replyingMessage = null
-      const messages = [...this.mensagensTicket]
-      const dateFormat = message => format(parseISO(message.createdAt), 'dd/MM/yyyy', { locale: pt })
-      const messageOrdered = orderBy(messages, (obj) => parseISO(obj.createdAt), ['asc'])
-      const result = groupBy(messageOrdered, dateFormat)
-
-      return result
+      return this.mensagensTicket
+    },
+    cStyleScroll () {
+      const loading = 0 // this.loading ? 72 : 0
+      const add = this.heigthInputMensagem + loading
+      return `min-height: calc(100vh - ${50 + add}px); height: calc(100vh - ${50 + add}px); width: 100%`
     }
   },
   methods: {
@@ -141,24 +165,46 @@ export default {
       this.selectedContactId = contactId
       this.modalContato = true
     },
-    async onLoadMore () {
-      console.log('onLoadMore')
-      this.loading = true
-      if (!this.hasMore || !this.ticketFocado.id || this.loading) {
-        return
+    async onResizeInputMensagem (size) {
+      this.heigthInputMensagem = size.height
+    },
+    async onLoadMore (infiniteState) {
+      if (this.loading) return
+
+      if (!this.hasMore || !this.ticketFocado?.id) {
+        return infiniteState.complete()
       }
+
       try {
         this.loading = true
         this.params.ticketId = this.ticketFocado.id
         this.params.pageNumber += 1
         await this.$store.dispatch('LocalizarMensagensTicket', this.params).then(r => { this.loading = false })
         this.loading = false
+        infiniteState.loaded()
       } catch (error) {
+        infiniteState.complete()
       }
+      this.loading = false
     },
     contatoEditado (contato) {
       this.$store.commit('UPDATE_TICKET_FOCADO_CONTACT', contato)
       this.$store.commit('UPDATE_TICKET_CONTACT', contato)
+    },
+    scrollArea (e) {
+      this.hideOptions = true
+      setTimeout(() => {
+        if (!e.target) return
+
+        const { scrollHeight, clientHeight, scrollTop } = e.target
+        const bottomScroll = scrollHeight - clientHeight - scrollTop
+
+        this.scrollIcon = bottomScroll > 1000
+      }, 200)
+    },
+    scrollToBottom () {
+      const element = this.$refs.scrollContainer
+      element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' })
     }
   },
   created () {
@@ -196,7 +242,7 @@ audio {
   color: black;
   text-align: center;
   height: 1.5em;
-  opacity: 0.5;
+  opacity: 0.8;
   &:before {
     content: "";
     // use the linear-gradient for the fading effect
@@ -214,10 +260,10 @@ audio {
     display: inline-block;
     color: black;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
     padding: 0 0.5em;
     line-height: 1.5em;
-    background-color: #fcfcfa;
+    background-color: $grey;
     border-radius: 15px;
   }
 }
@@ -259,4 +305,25 @@ audio {
   color: #6bcbef;
   font-weight: 500;
 }
+
+.vac-icon-scroll {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  box-shadow: 0 1px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+    0 1px 2px 0 rgba(0, 0, 0, 0.12);
+  display: flex;
+  cursor: pointer;
+  z-index: 99;
+}
+
+// /* CSS Logilcs */
+// #message-box {
+//   &:empty ~ #submit-button {
+//     display: none;
+//   } /*when textbox empty show microhpone*/
+//   &:not(:empty) ~ #voice-button {
+//     display: none;
+//   } /*when textbox with texy show submit button*/
+// }
 </style>
