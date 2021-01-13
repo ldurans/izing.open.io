@@ -3,6 +3,7 @@ import socketRedis from "socket.io-redis";
 import { Server } from "http";
 import AppError from "../errors/AppError";
 import decodeTokenSocket from "./decodeTokenSocket";
+import { logger } from "../utils/logger";
 
 let io: SocketIO;
 
@@ -26,34 +27,30 @@ export const initIO = (httpServer: Server): SocketIO => {
       }
       next(new Error("authentication error"));
     } catch (error) {
-      console.log("tokenInvalid", socket);
+      logger.warn(`tokenInvalid: ${socket}`);
       socket.emit(`tokenInvalid-${socket.id}`);
       next(new Error("authentication error"));
     }
   });
 
   io.on("connection", socket => {
-    console.log("Client Connected", socket);
+    logger.info(`Client Connected: ${socket}`);
     const { tenantId } = socket.handshake.query;
     if (tenantId) {
-      console.log("Client Connected in tenant", tenantId);
+      logger.info(`Client Connected in tenant: ${tenantId}`);
       socket.on(`${tenantId}-joinChatBox`, ticketId => {
-        console.log(
-          "A client joined a ticket channel",
-          `${tenantId}-${ticketId}`
-        );
+        console.info(`Client joined a ticket channel ${tenantId}-${ticketId}`);
         socket.join(`${tenantId}-${ticketId}`);
       });
 
       socket.on(`${tenantId}-joinNotification`, () => {
-        console.log(
-          "A client joined notification channel",
-          `${tenantId}-notification`
+        logger.info(
+          `A client joined notification channel ${tenantId}-notification`
         );
         socket.join(`${tenantId}-notification`);
       });
       socket.on(`${tenantId}-joinTickets`, status => {
-        console.log(
+        logger.info(
           `A client joined to ${tenantId} - ${status} tickets channel.`
         );
         socket.join(`${tenantId}-${status}`);
@@ -61,7 +58,7 @@ export const initIO = (httpServer: Server): SocketIO => {
     }
 
     socket.on("disconnect", () => {
-      console.log("Client disconnected");
+      logger.info("Client disconnected");
     });
   });
   return io;

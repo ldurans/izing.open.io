@@ -79,6 +79,10 @@ class Message extends Model<Message> {
 
   @BelongsTo(() => Contact, "contactId")
   contact: Contact;
+
+  @Default(false)
+  @Column(DataType.INTEGER)
+  timestamp: number;
 }
 
 export default Message;

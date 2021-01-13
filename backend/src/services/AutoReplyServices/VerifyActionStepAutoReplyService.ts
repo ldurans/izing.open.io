@@ -10,7 +10,6 @@ const VerifyActionStepAutoReplyService = async (
   stepAutoReplyId: number,
   msg: string
 ): Promise<StepsReplyAction | null> => {
-  console.log("VerifyActionStepAutoReplyService", stepAutoReplyId, msg);
   if (!msg) {
     return null;
   }

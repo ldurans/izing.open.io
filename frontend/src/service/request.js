@@ -23,7 +23,7 @@ const handlerError = err => {
     }
   }
   Notify.create({
-    position: 'bottom-right',
+    position: 'top-right',
     type: 'negative',
     html: true,
     progress: true,
@@ -111,7 +111,7 @@ service.interceptors.response.use(
     } else if (error.message.indexOf('timeout') > -1) {
       Notify.create({
         message: 'Esperamos muito tempo por uma resposta. Será que está tudo "Ok" com a internet?',
-        position: 'bottom-right',
+        position: 'top-right',
         type: 'negative',
         progress: true,
         html: true

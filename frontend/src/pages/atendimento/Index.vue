@@ -420,17 +420,17 @@
             square
           >
             <q-card-section class="text-center">
-              <q-avatar style="border: 1px solid #9e9e9ea1 !important; width: 160px; height: 160px">
+              <q-avatar style="border: 1px solid #9e9e9ea1 !important; width: 100px; height: 100px">
                 <q-icon
                   name="mdi-account"
-                  style="width: 160px; height: 160px"
+                  style="width: 100px; height: 100px"
                   size="6em"
                   color="grey-5"
                   v-if="!ticketFocado.contact.profilePicUrl"
                 />
                 <q-img
                   :src="ticketFocado.contact.profilePicUrl"
-                  style="width: 160px; height: 160px"
+                  style="width: 100px; height: 100px"
                 >
                   <template v-slot:error>
                     <q-icon
@@ -443,20 +443,20 @@
               </q-avatar>
               <div
                 class="text-caption q-mt-md"
-                style="font-size: 16px"
+                style="font-size: 14px"
               >
                 {{ ticketFocado.contact.name || ''  }}
               </div>
               <div
                 class="text-caption q-mt-sm"
-                style="font-size: 16px"
+                style="font-size: 14px"
               >
                 {{ ticketFocado.contact.number || ''  }}
               </div>
               <q-btn
                 color="primary"
                 outline
-                class="q-mt-md"
+                class="q-mt-sm"
                 label="Editar Contato"
                 @click="editContact(ticketFocado.contact.id)"
               />
@@ -490,6 +490,11 @@
       </q-drawer>
 
       <ModalNovoTicket :modalNovoTicket.sync="modalNovoTicket" />
+      <ContatoModal
+        :contactId="selectedContactId"
+        :modalContato.sync="modalContato"
+        @contatoModal:contato-editado="contatoEditado"
+      />
       <audio ref="audioNotification">
         <source
           :src="alertSound"
@@ -501,6 +506,7 @@
 </template>
 
 <script>
+import ContatoModal from 'src/pages/contatos/ContatoModal'
 import ItemTicket from './ItemTicket'
 import { ConsultarTickets } from 'src/service/tickets'
 import { mapGetters } from 'vuex'
@@ -521,7 +527,8 @@ export default {
   components: {
     ItemTicket,
     ModalNovoTicket,
-    StatusWhatsapp
+    StatusWhatsapp,
+    ContatoModal
   },
   data () {
     return {
@@ -532,6 +539,8 @@ export default {
       drawerContact: true,
       loading: false,
       modalNovoTicket: false,
+      modalContato: false,
+      selectedContactId: null,
       tabsAtendimento: 'inbox',
       filterBusca: '',
       showDialog: false,
@@ -622,6 +631,14 @@ export default {
         this.onLoadMoreTicketsBusca()
       }
     },
+    editContact (contactId) {
+      this.selectedContactId = contactId
+      this.modalContato = true
+    },
+    contatoEditado (contato) {
+      this.$store.commit('UPDATE_TICKET_FOCADO_CONTACT', contato)
+      this.$store.commit('UPDATE_TICKET_CONTACT', contato)
+    },
     async consultarTickets (paramsInit = {}) {
       const params = {
         ...this.pesquisa,
@@ -639,13 +656,15 @@ export default {
           this.$q.notify({
             message: err.response.data.error,
             type: 'negative',
-            progress: true
+            progress: true,
+            position: 'top-right'
           })
         } else {
           this.$q.notify({
             message: 'Ops... Ocorreu um problema de rede não identificado.',
             type: 'negative',
-            progress: true
+            progress: true,
+            position: 'top-right'
           })
           console.error(err)
         }

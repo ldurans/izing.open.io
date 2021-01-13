@@ -14,8 +14,7 @@ export default {
   methods: {
     scrollToBottom () {
       setTimeout(() => {
-        const el = document.getElementById('lastMessageRef')
-        el.scrollIntoView()
+        this.$root.$emit('scrollToBottomMessageChat')
       }, 400)
     },
     dataInWords (date) {

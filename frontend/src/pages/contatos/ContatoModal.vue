@@ -152,6 +152,13 @@ export default {
       try {
         const { data } = await ObterContato(this.contactId)
         this.contato = data
+        if (data.number.substring(0, 2) === '55') {
+          console.log(
+            data.number.substring(0, 2),
+            data.number.substring(2),
+            data)
+          this.contato.number = data.number.substring(2)
+        }
       } catch (error) {
         console.error(error)
       }

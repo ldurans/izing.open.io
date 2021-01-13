@@ -4,6 +4,7 @@ import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService
 import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
 import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppService";
 import { setValue } from "../libs/redisClient";
+import { logger } from "../utils/logger";
 
 const store = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
@@ -41,7 +42,7 @@ const remove = async (req: Request, res: Response): Promise<Response> => {
     await wbot.logout();
     await wbot.destroy();
   } catch (error) {
-    console.log("WhatsappSessionRouters:remove", error);
+    logger.error(error);
   }
   return res.status(200).json({ message: "Session disconnected." });
 };

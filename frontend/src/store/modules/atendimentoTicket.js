@@ -223,13 +223,15 @@ const atendimentoTicket = {
           Notify.create({
             type: 'negative',
             message: error.response.data.error,
-            progress: true
+            progress: true,
+            position: 'top-right'
           })
         } else {
           Notify.create({
             type: 'negative',
             message: 'Ops... Ocorreu um problema não identificado.',
-            progress: true
+            progress: true,
+            position: 'top-right'
           })
         }
       }

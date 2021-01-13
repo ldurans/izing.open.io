@@ -3,6 +3,7 @@ import Whatsapp from "../../models/Whatsapp";
 import { wbotMessageListener } from "./wbotMessageListener";
 import { getIO } from "../../libs/socket";
 import wbotMonitor from "./wbotMonitor";
+import { logger } from "../../utils/logger";
 
 export const StartWhatsAppSessionVerify = async (
   whatsappId: number,
@@ -32,7 +33,7 @@ export const StartWhatsAppSessionVerify = async (
         wbotMonitor(wbot, whatsapp);
       }
     } catch (err) {
-      console.log("StartWhatsAppSessionVerify", err);
+      logger.error(err);
     }
   }
 };

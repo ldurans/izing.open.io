@@ -211,6 +211,7 @@ export default {
         this.$q.notify({
           message: `Atendimento Iniciado || ${ticket.contact.name} - Ticket: ${ticket.id}`,
           type: 'positive',
+          position: 'top-right',
           progress: true
         })
         this.$router.push({ name: 'atendimento' })

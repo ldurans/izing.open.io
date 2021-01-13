@@ -3,6 +3,7 @@ import { Client } from "whatsapp-web.js";
 
 import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
+import { logger } from "../../utils/logger";
 // import { StartWhatsAppSession } from "./StartWhatsAppSession";
 
 interface Session extends Client {
@@ -18,12 +19,12 @@ const wbotMonitor = async (
 
   try {
     wbot.on("change_state", async newState => {
-      console.log("Monitor session:", sessionName, newState);
+      logger.info(`Monitor session: ${sessionName} - NewState: ${newState}`);
       try {
         await whatsapp.update({ status: newState });
       } catch (err) {
         Sentry.captureException(err);
-        console.log("wbotMonitor:update:change_state", err);
+        logger.error(err);
       }
 
       io.emit(`${whatsapp.tenantId}-whatsappSession`, {
@@ -34,7 +35,7 @@ const wbotMonitor = async (
 
     wbot.on("change_battery", async batteryInfo => {
       const { battery, plugged } = batteryInfo;
-      console.log(
+      logger.info(
         `Battery session: ${sessionName} ${battery}% - Charging? ${plugged}`
       );
 
@@ -52,7 +53,7 @@ const wbotMonitor = async (
         await whatsapp.update({ battery, plugged });
       } catch (err) {
         Sentry.captureException(err);
-        console.log("wbotMonitor:update:change_battery", err);
+        logger.error(err);
       }
 
       io.emit(`${whatsapp.tenantId}-whatsappSession`, {
@@ -62,7 +63,7 @@ const wbotMonitor = async (
     });
 
     wbot.on("disconnected", async reason => {
-      console.log("Disconnected session:", sessionName, reason);
+      logger.info(`Disconnected session: ${sessionName} | Reason: ${reason}`);
       io.emit(`${whatsapp.tenantId}-whatsappSession`, {
         action: "update",
         session: whatsapp
@@ -72,7 +73,7 @@ const wbotMonitor = async (
     });
   } catch (err) {
     Sentry.captureException(err);
-    console.log("wbotMonitor", err);
+    logger.error(err);
   }
 };
 

@@ -61,19 +61,24 @@
           <q-btn
             @click="$emit('updateTicket:retornar')"
             dense
-            label="Retornar"
             flat
+            round
             icon="mdi-replay"
-          />
+            color="negative"
+          >
+            <q-tooltip>
+              Retornar Ticket para a Fila
+            </q-tooltip>
+          </q-btn>
           <q-btn
             @click="$emit('updateTicket:resolver')"
             dense
             round
-            outline
             color="positive"
-            class="q-ml-md"
+            class="q-ml-sm"
+            flat
+            icon="mdi-comment-check"
           >
-            <q-icon name="mdi-check" />
             <q-tooltip>
               Resolver
             </q-tooltip>
@@ -82,9 +87,9 @@
             @click="listarUsuarios"
             dense
             round
-            outline
-            color="info"
-            class="q-ml-md"
+            flat
+            color="primary"
+            class="q-ml-m q-mr-md"
           >
             <q-icon name="mdi-transfer" />
             <q-tooltip>
@@ -92,7 +97,7 @@
             </q-tooltip>
           </q-btn>
 
-          <q-btn
+          <!-- <q-btn
             round
             flat
             icon="mdi-text-box-search-outline"
@@ -136,7 +141,7 @@
                 </q-item>
               </q-list>
             </q-menu>
-          </q-btn>
+          </q-btn> -->
         </div>
       </q-toolbar>
     </q-header>

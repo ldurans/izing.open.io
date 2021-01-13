@@ -105,15 +105,9 @@
       <q-resize-observer @resize="onResizeInputMensagem" />
     </q-footer>
 
-    <ContatoModal
-      :contactId="selectedContactId"
-      :modalContato.sync="modalContato"
-      @contatoModal:contato-editado="contatoEditado"
-    />
   </div>
 </template>
 <script>
-import ContatoModal from 'src/pages/contatos/ContatoModal'
 import mixinCommon from './mixinCommon'
 import InforCabecalhoChat from './InforCabecalhoChat'
 // import parser from 'vdata-parser'
@@ -130,7 +124,6 @@ export default {
     InforCabecalhoChat,
     MensagemChat,
     InputMensagem,
-    ContatoModal,
     InfiniteLoading
   },
   data () {
@@ -138,8 +131,6 @@ export default {
       scrollIcon: false,
       loading: false,
       exibirContato: false,
-      selectedContactId: null,
-      modalContato: false,
       heigthInputMensagem: 0,
       params: {
         ticketId: null,
@@ -161,10 +152,6 @@ export default {
     }
   },
   methods: {
-    editContact (contactId) {
-      this.selectedContactId = contactId
-      this.modalContato = true
-    },
     async onResizeInputMensagem (size) {
       this.heigthInputMensagem = size.height
     },
@@ -187,10 +174,6 @@ export default {
       }
       this.loading = false
     },
-    contatoEditado (contato) {
-      this.$store.commit('UPDATE_TICKET_FOCADO_CONTACT', contato)
-      this.$store.commit('UPDATE_TICKET_CONTACT', contato)
-    },
     scrollArea (e) {
       this.hideOptions = true
       setTimeout(() => {
@@ -208,10 +191,14 @@ export default {
     }
   },
   created () {
+    this.$root.$on('scrollToBottomMessageChat', this.scrollToBottom)
     this.socketTicket()
   },
   mounted () {
     this.socketMessagesList()
+  },
+  destroyed () {
+    this.$root.$off('scrollToBottomMessageChat', this.scrollToBottom)
   }
 }
 </script>

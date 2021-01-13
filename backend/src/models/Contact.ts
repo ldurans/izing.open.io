@@ -40,6 +40,19 @@ class Contact extends Model<Contact> {
   @Column
   profilePicUrl: string;
 
+  @AllowNull(true)
+  @Default(null)
+  @Column
+  pushname: string;
+
+  @Default(false)
+  @Column
+  isUser: boolean;
+
+  @Default(false)
+  @Column
+  isWAContact: boolean;
+
   @Default(false)
   @Column
   isGroup: boolean;
@@ -69,7 +82,6 @@ class Contact extends Model<Contact> {
       instance.number,
       instance.tenantId
     );
-    console.log("BeforeCreate - profilePicUrl", profilePicUrl);
     instance.profilePicUrl = profilePicUrl;
   }
 }

@@ -91,7 +91,8 @@ export default {
         this.$q.notify({
           message: `Bateria do celular do whatsapp ${data.batteryInfo.sessionName} está com bateria em ${data.batteryInfo.battery}%. Necessário iniciar carregamento.`,
           type: 'negative',
-          progress: true
+          progress: true,
+          position: 'top-right'
         })
       })
     }

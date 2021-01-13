@@ -1,5 +1,6 @@
 import { verify } from "jsonwebtoken";
 import authConfig from "../config/auth";
+import { logger } from "../utils/logger";
 
 interface TokenPayload {
   id: string;
@@ -39,7 +40,7 @@ const decode = (token: string): Result => {
       tenantId
     };
   } catch (err) {
-    console.log("decodeTokenSocket", err);
+    logger.error(err);
   }
   return validation;
 };
