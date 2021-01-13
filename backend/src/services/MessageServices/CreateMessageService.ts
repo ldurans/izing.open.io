@@ -1,6 +1,6 @@
-import AppError from "../../errors/AppError";
 import Message from "../../models/Message";
-import ShowTicketService from "../TicketServices/ShowTicketService";
+import { getIO } from "../../libs/socket";
+import Ticket from "../../models/Ticket";
 
 interface MessageData {
   id: string;
@@ -11,6 +11,7 @@ interface MessageData {
   read?: boolean;
   mediaType?: string;
   mediaUrl?: string;
+  timestamp?: number;
 }
 interface Request {
   messageData: MessageData;
@@ -21,20 +22,17 @@ const CreateMessageService = async ({
   messageData,
   tenantId
 }: Request): Promise<Message> => {
-  const ticket = await ShowTicketService({
-    id: messageData.ticketId,
-    tenantId
-  });
-
-  if (!ticket) {
-    throw new AppError("ERR_NO_TICKET_FOUND", 404);
-  }
-
   await Message.upsert(messageData);
 
   const message = await Message.findByPk(messageData.id, {
     include: [
       "contact",
+      {
+        model: Ticket,
+        as: "ticket",
+        where: { tenantId },
+        include: ["contact"]
+      },
       {
         model: Message,
         as: "quotedMsg",
@@ -44,8 +42,21 @@ const CreateMessageService = async ({
   });
 
   if (!message) {
-    throw new AppError("ERR_CREATING_MESSAGE", 501);
+    // throw new AppError("ERR_CREATING_MESSAGE", 501);
+    throw new Error("ERR_CREATING_MESSAGE");
   }
+
+  const io = getIO();
+  const tenant = message.ticket.tenantId;
+  io.to(`${tenant}-${message.ticketId.toString()}`)
+    .to(`${tenant}-${message.ticket.status}`)
+    .to(`${tenant}-notification`)
+    .emit(`${tenant}-appMessage`, {
+      action: "create",
+      message,
+      ticket: message.ticket,
+      contact: message.ticket.contact
+    });
 
   return message;
 };

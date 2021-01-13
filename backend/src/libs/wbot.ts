@@ -3,11 +3,12 @@ import { Client } from "whatsapp-web.js";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
 import AppError from "../errors/AppError";
-import Contact from "../models/Contact";
-import Tenant from "../models/Tenant";
+// import Contact from "../models/Contact";
+// import Tenant from "../models/Tenant";
 import { StartWhatsAppSessionVerify } from "../services/WbotServices/StartWhatsAppSessionVerify";
-// import { handleMessage } from "../services/WbotServices/wbotMessageListener";
+import { handleMessage } from "../services/WbotServices/wbotMessageListener";
 import { getValue, setValue } from "./redisClient";
+import { logger } from "../utils/logger";
 
 interface Session extends Client {
   id?: number;
@@ -15,63 +16,63 @@ interface Session extends Client {
 
 const sessions: Session[] = [];
 
-// const syncUnreadMessages = async (wbot: Session) => {
-//   const chats = await wbot.getChats();
-
-//   chats.forEach(async chat => {
-//     if (chat.unreadCount > 0) {
-//       const unreadMessages = await chat.fetchMessages({
-//         limit: chat.unreadCount
-//       });
-//       unreadMessages.forEach(msg => {
-//         handleMessage(msg, wbot);
-//       });
-//     }
-//   });
-// };
-
-const syncContacts = async (wbot: Session, tenantId: string | number) => {
-  let contacts;
-  try {
-    contacts = await wbot.getContacts();
-  } catch (err) {
-    console.log(
-      "Could not get whatsapp contacts from phone. Check connection page.",
-      err
-    );
-  }
-
-  if (!contacts) {
-    return null;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  const dataArray: object[] = [];
+const syncUnreadMessages = async (wbot: Session): Promise<void> => {
+  const chats = await wbot.getChats();
   await Promise.all(
-    contacts.map(async ({ name, pushname, number, isGroup }) => {
-      if ((name || pushname) && !isGroup) {
-        // const profilePicUrl = await wbot.getProfilePicUrl(`${number}@c.us`);
-        const contactObj = { name: name || pushname, number, tenantId };
-        dataArray.push(contactObj);
+    chats.map(async chat => {
+      if (chat.unreadCount > 0) {
+        const unreadMessages = await chat.fetchMessages({
+          limit: chat.unreadCount
+        });
+        unreadMessages.map(async msg => {
+          await handleMessage(msg, wbot);
+        });
       }
     })
   );
-  if (dataArray.length) {
-    await Contact.bulkCreate(dataArray, {
-      fields: ["number", "name", "tenantId"],
-      updateOnDuplicate: ["name", "number"],
-      include: [
-        {
-          model: Tenant,
-          as: "tenant",
-          where: { tenantId }
-        }
-      ]
-    });
-    console.log("Lista de contatos sincronizada - syncContacts");
-  }
-  return true;
 };
+
+// const syncContacts = async (wbot: Session, tenantId: string | number) => {
+//   let contacts;
+//   try {
+//     contacts = await wbot.getContacts();
+//   } catch (err) {
+//     logger.error(
+//       `Could not get whatsapp contacts from phone. Check connection page ${err}`
+//     );
+//   }
+
+//   if (!contacts) {
+//     return null;
+//   }
+
+//   // eslint-disable-next-line @typescript-eslint/ban-types
+//   const dataArray: object[] = [];
+//   await Promise.all(
+//     contacts.map(async ({ name, pushname, number, isGroup }) => {
+//       if ((name || pushname) && !isGroup) {
+//         // const profilePicUrl = await wbot.getProfilePicUrl(`${number}@c.us`);
+//         const contactObj = { name: name || pushname, number, tenantId };
+//         dataArray.push(contactObj);
+//       }
+//     })
+//   );
+//   if (dataArray.length) {
+//     await Contact.bulkCreate(dataArray, {
+//       fields: ["number", "name", "tenantId"],
+//       updateOnDuplicate: ["name", "number"],
+//       include: [
+//         {
+//           model: Tenant,
+//           as: "tenant",
+//           where: { tenantId }
+//         }
+//       ]
+//     });
+//     logger.info("Lista de contatos sincronizada - syncContacts");
+//   }
+//   return true;
+// };
 
 // const getConnectionStateIsValid = async (
 //   wbot: Session,
@@ -131,11 +132,8 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           await setValue(`${whatsapp.id}-retryQrCode`, 1);
           retryQrCode = 1;
         }
-        console.log(
-          "Session QR CODE:",
-          sessionName,
-          whatsapp.id,
-          whatsapp.status
+        logger.info(
+          `Session QR CODE: ${sessionName} - ID: ${whatsapp.id} - ${whatsapp.status}`
         );
         await setValue(`${whatsapp.id}-retryQrCode`, retryQrCode + 1);
         await whatsapp.update({ qrcode: qr, status: "qrcode", retries: 0 });
@@ -162,14 +160,16 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
 
       wbot.on("authenticated", async session => {
-        console.log("Session:", sessionName, "AUTHENTICATED");
+        logger.info(`Session: ${sessionName} AUTHENTICATED`);
         await whatsapp.update({
           session: JSON.stringify(session)
         });
       });
 
       wbot.on("auth_failure", async msg => {
-        console.error("Session:", sessionName, "AUTHENTICATION FAILURE", msg);
+        logger.error(
+          `Session: ${sessionName} - AUTHENTICATION FAILURE :: ${msg}`
+        );
 
         // if (whatsapp.retries > 3) {
         //   await whatsapp.update({ session: "", retries: 0 });
@@ -212,13 +212,12 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       });
 
       wbot.on("ready", async () => {
-        console.log("Session:", sessionName, "READY");
+        logger.info(`Session: ${sessionName} - READY `);
 
-        // syncUnreadMessages(wbot);
-        if (process.env.NODE_ENV === "prod") {
-          console.log("Iniciando sincronização de contatos.");
-          syncContacts(wbot, tenantId);
-        }
+        // if (process.env.NODE_ENV === "prod") {
+        //   logger.info("Iniciando sincronização de contatos.");
+        //   syncContacts(wbot, tenantId);
+        // }
 
         await whatsapp.update({
           status: "CONNECTED",
@@ -238,8 +237,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           session: whatsapp
         });
 
-        wbot.sendPresenceAvailable();
-
         const sessionIndex = sessions.findIndex(s => s.id === whatsapp.id);
         if (sessionIndex === -1) {
           wbot.id = whatsapp.id;
@@ -249,28 +246,24 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           sessions[sessionIndex] = wbot;
         }
         setValue(`${wbot.id}`, whatsapp);
+        wbot.sendPresenceAvailable();
+        await syncUnreadMessages(wbot);
         resolve(wbot);
       });
 
       wbot.on("TIMEOUT", async reason => {
-        console.log(
-          "TIMEOUT - Cliente",
-          sessionName,
-          whatsapp.id,
-          whatsapp.status,
-          reason
+        logger.info(
+          `TIMEOUT - Cliente - ${sessionName} | ${whatsapp.id} | ${whatsapp.status} | ${reason}`
         );
       });
 
       wbot.on("disconnected", async reason => {
-        console.log("disconnected wbot", reason);
+        logger.info(`disconnected wbot ${reason}`);
 
         try {
           if (reason === "UNPAIRED") {
-            console.log(
-              "Disconnected (UNPAIRED) session DEstroy:",
-              sessionName,
-              reason
+            logger.info(
+              `Disconnected (UNPAIRED) session DEstroy: ${sessionName} | ${reason}`
             );
             const sessionIndex = sessions.findIndex(s => s.id === whatsapp.id);
             if (sessionIndex === -1) {
@@ -294,7 +287,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
             await whatsapp.update({ status: "qrcode", retries: 0 });
           }
         } catch (err) {
-          console.log("wbot:update:disconnected", err);
+          logger.error(`wbot:update:disconnected. Error: ${err}`);
         }
 
         io.emit(`${whatsapp.tenantId}-whatsappSession`, {
@@ -303,14 +296,14 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         });
       });
     } catch (err) {
-      console.log("initWbot", err);
+      logger.error(`initWbot error | Error: ${err}`);
       // 'Error: Protocol error (Runtime.callFunctionOn): Session closed.'
     }
   });
 };
 
 export const getWbot = (whatsappId: number, checkState = true): Session => {
-  console.log("whatsappId", whatsappId, "checkState", checkState);
+  logger.info(`whatsappId: ${whatsappId} | checkState: ${checkState}`);
   const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
 
   if (sessionIndex === -1) {
@@ -334,6 +327,6 @@ export const removeWbot = (whatsappId: number): void => {
       sessions.splice(sessionIndex, 1);
     }
   } catch (err) {
-    console.log("removeWbot", err);
+    logger.error(`removeWbot | Error: ${err}`);
   }
 };
