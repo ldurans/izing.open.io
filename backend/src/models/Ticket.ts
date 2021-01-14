@@ -129,10 +129,16 @@ class Ticket extends Model<Ticket> {
 
   @AfterCreate
   static async AutoReplyWelcome(instance: Ticket): Promise<void> {
-    const contato = await Contact.findByPk(instance.contactId);
+    if (instance.userId) return;
+
     const stepAutoReply = await ShowStepAutoReplyMessageService(0, 0, 0, true);
+
+    if (!stepAutoReply) return;
+
+    const contato = await Contact.findByPk(instance.contactId);
     const { celularTeste } = stepAutoReply.autoReply;
     const celularContato = contato?.number;
+
     if (
       (celularTeste &&
         celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
@@ -141,12 +147,10 @@ class Ticket extends Model<Ticket> {
       return;
     }
 
-    if (stepAutoReply) {
-      await instance.update({
-        autoReplyId: stepAutoReply.autoReply.id,
-        stepAutoReplyId: stepAutoReply.id
-      });
-    }
+    await instance.update({
+      autoReplyId: stepAutoReply.autoReply.id,
+      stepAutoReplyId: stepAutoReply.id
+    });
   }
 }
 

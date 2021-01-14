@@ -9,7 +9,6 @@ interface Session extends Client {
 
 const wbotMessageListener = (wbot: Session): void => {
   wbot.on("message_create", async msg => {
-    console.log("message_create", wbot);
     HandleMessage(msg, wbot);
   });
 
