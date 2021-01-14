@@ -14,7 +14,7 @@
         show-if-above
         bordered
         :width="450"
-        content-class="bg-white"
+        content-class="bg-white hide-scrollbar"
       >
 
         <q-toolbar class="bg-grey-3 text-primary q-pr-none ">
@@ -61,43 +61,9 @@
               Contatos
             </q-tooltip>
           </q-btn>
-          <q-btn
-            round
-            flat
-            icon="mdi-dots-vertical"
-          >
-            <q-menu
-              auto-close
-              :offset="[110, 8]"
-            >
-              <q-list style="min-width: 150px">
-                <q-item clickable>
-                  <q-item-section>New group</q-item-section>
-                </q-item>
-                <q-item clickable>
-                  <q-item-section>Profile</q-item-section>
-                </q-item>
-                <q-item clickable>
-                  <q-item-section>Archived</q-item-section>
-                </q-item>
-                <q-item clickable>
-                  <q-item-section>Favorites</q-item-section>
-                </q-item>
-                <q-item clickable>
-                  <q-item-section>Settings</q-item-section>
-                </q-item>
-                <q-item clickable>
-                  <q-item-section>Logout</q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
-          <q-btn
-            round
-            flat
-            icon="close"
-            class="WAL__drawer-close"
-            @click="leftDrawerOpen = false"
+          <StatusWhatsapp
+            class="q-mx-sm"
+            isIconStatusMenu
           />
           <!-- <q-toolbar
             class="text-center bg-grey-3"
@@ -161,7 +127,6 @@
             v-model="filterBusca"
             dense
             outlined
-            rounded
             type="search"
             class="col-grow "
             :debounce="700"
@@ -173,24 +138,27 @@
           </q-input>
           <q-separator class="absolute-bottom" />
         </q-toolbar>
-        <!-- <q-toolbar class="q-pa-none">
+        <q-toolbar class="q-pa-none">
           <q-tabs
-            v-model="tabsAtendimento"
             narrow-indicator
-            no-caps
             align="justify"
             dense
+            v-model="tabsAtendimento"
+            no-caps
+            inline-label
+            class="full-width bg-grey-3"
             @input="$refs.scrollAreaTickets.setScrollPosition(0)"
           >
             <q-tab
               class="text-primary"
               name="inbox"
               icon="mdi-comment-account-outline"
-              label="Inbox"
               ripple
+              label="Inbox"
+              content-class="q-py-md"
             >
               <q-badge
-                style="font-size: .7em; border-radius: 10px;"
+                style="margin-top: 0px; font-size: .7em; border-radius: 10px;"
                 class="text-center"
                 floating
                 dense
@@ -203,6 +171,7 @@
               class="text-negative"
               name="fila"
               icon="mdi-clock-fast"
+              content-class="q-py-md"
               label="Fila"
             >
               <q-badge
@@ -212,179 +181,85 @@
                 dense
                 text-color="white"
                 color="negative"
-                :label="ticketsPendentes.length > count.open ? ticketsPendentes.length : count.open"
+                :label="ticketsPendentes.length > count.pending ? ticketsPendentes.length : count.pending"
               />
             </q-tab>
             <q-tab
               class="text-positive"
               name="resolvidos"
               icon="mdi-comment-check-outline"
+              content-class="q-py-md"
               label="Resolvidos"
-            />
-          </q-tabs>
-        </q-toolbar> -->
-        <q-splitter
-          :style="`height: calc(100% - ${cHeigVerticalTabs})`"
-          v-model="splitterModel"
-          unit="px"
-          disable
-          :limits="[80, 350]"
-        >
-          <template v-slot:before>
-            <div>
-              <q-tabs
-                vertical
-                v-model="tabsAtendimento"
-                no-caps
-                content-class="q-gutter-sm q-pt-sm"
-                @input="$refs.scrollAreaTickets.setScrollPosition(0)"
-              >
-                <q-tab
-                  class="text-primary"
-                  name="inbox"
-                  icon="mdi-comment-account-outline"
-                  ripple
-                  content-class="q-py-md"
-                >
-                  <span>
-                    Inbox
-                  </span>
-                  <q-badge
-                    style="font-size: .7em; border-radius: 10px;"
-                    class="text-center"
-                    floating
-                    dense
-                    text-color="white"
-                    color="primary"
-                    :label="ticketsEmAtendimento.length > count.open ? ticketsEmAtendimento.length : count.open"
-                  />
-                </q-tab>
-                <q-tab
-                  class="text-negative"
-                  name="fila"
-                  icon="mdi-clock-fast"
-                  content-class="q-py-md"
-                >
-                  <span>
-                    Fila
-                  </span>
-                  <q-badge
-                    style="font-size: .7em; border-radius: 10px;"
-                    class="text-center"
-                    floating
-                    dense
-                    text-color="white"
-                    color="negative"
-                    :label="ticketsPendentes.length > count.pending ? ticketsPendentes.length : count.pending"
-                  />
-                </q-tab>
-                <q-tab
-                  class="text-positive"
-                  name="resolvidos"
-                  icon="mdi-comment-check-outline"
-                  content-class="q-py-md"
-                >
-                  <span style="font-size: 0.9em ">
-                    Resolvidos
-                  </span>
-                </q-tab>
-              </q-tabs>
-
-            </div>
-            <div class="absolute-bottom text-center center">
-              <q-separator />
-              <!-- <q-toolbar class="bg-blue-grey-1 text-primary"> -->
-              <StatusWhatsapp
-                class="q-ml-sm"
-                isIconStatusMenu
-              />
-              <q-separator />
-              <q-space />
-              <q-btn
-                color="light"
-                dense
-                no-caps
-                stretch
-                class="q-py-xs no-box-shadow full-width"
-                icon="mdi-logout-variant"
-              >
-                <span
-                  class="q-ml-xs"
-                  style="text-decoration: underline;"
-                >Sair</span>
-              </q-btn>
-              <!-- </q-toolbar> -->
-
-            </div>
-          </template>
-          <template v-slot:after>
-            <q-scroll-area
-              ref="scrollAreaTickets"
-              style="height: calc(100% - 10px)"
-              @scroll="onScroll"
-              class="bg-grey-1"
             >
-              <q-tab-panels
-                v-model="tabsAtendimento"
-                keep-alive
-                animated
-              >
-                <q-tab-panel
-                  name="inbox"
-                  class="q-pa-none scroll-y"
-                >
-                  <ItemTicket
-                    v-for="(ticket, key) in ticketsEmAtendimento"
-                    :key="key"
-                    :ticket="ticket"
-                    :filas="filas"
-                  />
-                </q-tab-panel>
-                <q-tab-panel
-                  name="fila"
-                  class="q-pa-none scroll-y"
-                >
-                  <ItemTicket
-                    :ticketPendente="true"
-                    v-for="(ticket, key) in ticketsPendentes"
-                    :key="key"
-                    :ticket="ticket"
-                    :filas="filas"
-                  />
-                </q-tab-panel>
-                <q-tab-panel name="resolvidos">
-                  <ItemTicket
-                    v-for="(ticket, key) in ticketsResolvidos"
-                    :key="key"
-                    :ticket="ticket"
-                    :filas="filas"
-                  />
-                </q-tab-panel>
-                <q-tab-panel name="busca">
-                  <ItemTicket
-                    v-for="(ticket, key) in ticketsLocalizadosBusca"
-                    :key="key"
-                    :ticket="ticket"
-                    :buscaTicket="true"
-                    :filas="filas"
-                  />
-                </q-tab-panel>
-              </q-tab-panels>
-              <div v-if="loading">
-                <div class="row justify-center q-my-md">
-                  <q-spinner
-                    color="primary"
-                    size="3em"
-                    :thickness="3"
-                  />
-                </div>
-                <div class="row col justify-center q-my-sm text-primary">
-                  Carregando...
-                </div>
-              </div>
-            </q-scroll-area>
-          </template>
-        </q-splitter>
+            </q-tab>
+          </q-tabs>
+        </q-toolbar>
+        <q-scroll-area
+          ref="scrollAreaTickets"
+          style="height: calc(100% - 165px)"
+          @scroll="onScroll"
+          class="bg-grey-1"
+        >
+          <q-separator />
+          <q-tab-panels
+            v-model="tabsAtendimento"
+            keep-alive
+            animated
+          >
+            <q-tab-panel
+              name="inbox"
+              class="q-pa-none scroll-y"
+            >
+              <ItemTicket
+                v-for="(ticket, key) in ticketsEmAtendimento"
+                :key="key"
+                :ticket="ticket"
+                :filas="filas"
+              />
+            </q-tab-panel>
+            <q-tab-panel
+              name="fila"
+              class="q-pa-none scroll-y"
+            >
+              <ItemTicket
+                :ticketPendente="true"
+                v-for="(ticket, key) in ticketsPendentes"
+                :key="key"
+                :ticket="ticket"
+                :filas="filas"
+              />
+            </q-tab-panel>
+            <q-tab-panel name="resolvidos">
+              <ItemTicket
+                v-for="(ticket, key) in ticketsResolvidos"
+                :key="key"
+                :ticket="ticket"
+                :filas="filas"
+              />
+            </q-tab-panel>
+            <q-tab-panel name="busca">
+              <ItemTicket
+                v-for="(ticket, key) in ticketsLocalizadosBusca"
+                :key="key"
+                :ticket="ticket"
+                :buscaTicket="true"
+                :filas="filas"
+              />
+            </q-tab-panel>
+          </q-tab-panels>
+          <div v-if="loading">
+            <div class="row justify-center q-my-md">
+              <q-spinner
+                color="primary"
+                size="3em"
+                :thickness="3"
+              />
+            </div>
+            <div class="row col justify-center q-my-sm text-primary">
+              Carregando...
+            </div>
+          </div>
+        </q-scroll-area>
       </q-drawer>
 
       <q-page-container>
@@ -670,6 +545,9 @@ export default {
         }
       }
       // return () => clearTimeout(delayDebounceFn)
+    },
+    async BuscarTicketFiltro () {
+
     },
     async onLoadAbertos () {
       if (this.ticketsEmAtendimento.length === 0 || !this.hasMoreOpen || this.loading) {

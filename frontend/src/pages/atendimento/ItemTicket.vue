@@ -29,7 +29,7 @@
         >
           <q-badge
             v-if="ticket.unreadMessages"
-            style="font-size: .7em; border-radius: 10px;"
+            style="border-radius: 10px;"
             class="text-center"
             floating
             dense
@@ -53,7 +53,7 @@
         >
           <q-badge
             v-if="ticket.unreadMessages"
-            style="font-size: .5em; border-radius: 10px;"
+            style="border-radius: 10px;"
             class="text-center"
             floating
             dense
@@ -75,13 +75,14 @@
             {{ticket.contact.name}}
             <span class="float-right absolute-top-right">
               <q-badge
-                style="font-size: .7em;"
                 dense
+                style="font-size: .7em;"
                 transparent
                 square
                 text-color="grey-10"
                 color="grey-2"
                 :label="dataInWords(ticket.updatedAt)"
+                :key="recalcularHora"
               />
             </span>
           </div>
@@ -107,7 +108,7 @@
             v-if="buscaTicket"
           >
             <q-badge
-              style="font-size: .8em; border-radius: 10px; z-index: 9999;"
+              style="border-radius: 10px; z-index: 9999;"
               dense
               :color="color[ticket.status]"
               :label="status[ticket.status]"
@@ -132,6 +133,7 @@ export default {
   mixins: [mixinAtualizarStatusTicket],
   data () {
     return {
+      recalcularHora: 1,
       statusAbreviado: {
         open: 'A',
         pending: 'P',
@@ -189,6 +191,11 @@ export default {
       this.$store.commit('SET_HAS_MORE', true)
       this.$store.dispatch('AbrirChatMensagens', ticket)
     }
+  },
+  created () {
+    setInterval(() => {
+      this.recalcularHora++
+    }, 50000)
   }
 }
 </script>
