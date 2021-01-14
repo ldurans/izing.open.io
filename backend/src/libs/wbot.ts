@@ -6,31 +6,16 @@ import AppError from "../errors/AppError";
 // import Contact from "../models/Contact";
 // import Tenant from "../models/Tenant";
 import { StartWhatsAppSessionVerify } from "../services/WbotServices/StartWhatsAppSessionVerify";
-import { handleMessage } from "../services/WbotServices/wbotMessageListener";
+// import { handleMessage } from "../services/WbotServices/wbotMessageListener";
 import { getValue, setValue } from "./redisClient";
 import { logger } from "../utils/logger";
+import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesWbot";
 
 interface Session extends Client {
   id?: number;
 }
 
 const sessions: Session[] = [];
-
-const syncUnreadMessages = async (wbot: Session): Promise<void> => {
-  const chats = await wbot.getChats();
-  await Promise.all(
-    chats.map(async chat => {
-      if (chat.unreadCount > 0) {
-        const unreadMessages = await chat.fetchMessages({
-          limit: chat.unreadCount
-        });
-        unreadMessages.map(async msg => {
-          await handleMessage(msg, wbot);
-        });
-      }
-    })
-  );
-};
 
 // const syncContacts = async (wbot: Session, tenantId: string | number) => {
 //   let contacts;
@@ -247,7 +232,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         }
         setValue(`${wbot.id}`, whatsapp);
         wbot.sendPresenceAvailable();
-        await syncUnreadMessages(wbot);
+        await SyncUnreadMessagesWbot(wbot, tenantId);
         resolve(wbot);
       });
 

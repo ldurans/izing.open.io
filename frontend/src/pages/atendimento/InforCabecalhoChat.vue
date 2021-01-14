@@ -1,9 +1,9 @@
 <template>
   <div>
-    <q-header class="shadow-3">
+    <q-header class="bg-grey-3">
       <q-toolbar
         style="min-height: 50px; height: 50px;"
-        class="bg-blue-grey-1 no-border-radius q-pa-none text-primary"
+        class="no-border-radius q-pa-none text-primary"
       >
         <q-btn
           round
@@ -144,6 +144,7 @@
           </q-btn> -->
         </div>
       </q-toolbar>
+      <q-separator />
     </q-header>
 
     <q-dialog

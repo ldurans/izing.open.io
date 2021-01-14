@@ -14,10 +14,10 @@
         show-if-above
         bordered
         :width="450"
-        content-class="bg-grey-2"
+        content-class="bg-white"
       >
 
-        <q-toolbar class="shadow-3 bg-blue-grey-1 text-primary q-pr-none ">
+        <q-toolbar class="bg-grey-3 text-primary q-pr-none ">
           <q-avatar class="cursor-pointer">
             <img src="https://cdn.quasar.dev/app-icons/icon-128x128.png" />
           </q-avatar>
@@ -106,11 +106,11 @@
             <StatusWhatsapp isIconStatusMenu />
           </q-toolbar> -->
         </q-toolbar>
-
         <q-toolbar
           v-show="toolbarSearch"
-          class="bg-grey-1 row q-mt-sm items-center"
+          class="bg-white row q-py-sm items-center"
         >
+          <q-separator class="absolute-top" />
           <!-- <q-checkbox
                 v-model="pesquisa.showAll"
                 :false-value="true"
@@ -163,7 +163,7 @@
             outlined
             rounded
             type="search"
-            class="col-grow"
+            class="col-grow "
             :debounce="700"
             @input="buscarTicket(filterBusca)"
           >
@@ -171,8 +171,8 @@
               <q-icon name="search" />
             </template>
           </q-input>
+          <q-separator class="absolute-bottom" />
         </q-toolbar>
-
         <!-- <q-toolbar class="q-pa-none">
           <q-tabs
             v-model="tabsAtendimento"
@@ -322,7 +322,7 @@
               ref="scrollAreaTickets"
               style="height: calc(100% - 10px)"
               @scroll="onScroll"
-              class="q-pt-sm"
+              class="bg-grey-1"
             >
               <q-tab-panels
                 v-model="tabsAtendimento"
@@ -400,7 +400,7 @@
         content-class="bg-grey-1"
       >
         <div
-          class="shadow-3 bg-blue-grey-1 text-primary full-width no-border-radius q-pa-sm"
+          class="bg-grey-3 text-primary full-width no-border-radius q-pa-sm"
           style="height:50px;"
         >
           <span class="q-ml-md text-h6">

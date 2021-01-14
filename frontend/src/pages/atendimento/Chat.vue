@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-grey-3 vac-col-messages">
+  <div class="bg-grey-2 vac-col-messages">
     <InforCabecalhoChat
       @updateTicket:resolver="atualizarStatusTicket('closed')"
       @updateTicket:retornar="atualizarStatusTicket('pending')"
@@ -148,7 +148,7 @@ export default {
     cStyleScroll () {
       const loading = 0 // this.loading ? 72 : 0
       const add = this.heigthInputMensagem + loading
-      return `min-height: calc(100vh - ${50 + add}px); height: calc(100vh - ${50 + add}px); width: 100%`
+      return `min-height: calc(100vh - ${52 + add}px); height: calc(100vh - ${52 + add}px); width: 100%`
     }
   },
   methods: {
