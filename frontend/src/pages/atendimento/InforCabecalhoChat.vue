@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-header class="bg-grey-3">
+    <q-header class="bg-white no-border-radius">
       <q-toolbar
         style="min-height: 50px; height: 50px;"
         class="no-border-radius q-pa-none text-primary"

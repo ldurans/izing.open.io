@@ -17,7 +17,10 @@
         content-class="bg-white hide-scrollbar"
       >
 
-        <q-toolbar class="bg-grey-3 text-primary q-pr-none ">
+        <q-toolbar
+          class="text-primary q-pr-none"
+          style="height: 50px"
+        >
           <q-avatar class="cursor-pointer">
             <img src="https://cdn.quasar.dev/app-icons/icon-128x128.png" />
           </q-avatar>
@@ -74,7 +77,7 @@
         </q-toolbar>
         <q-toolbar
           v-show="toolbarSearch"
-          class="bg-white row q-py-sm items-center"
+          class="row q-py-sm items-center"
         >
           <q-separator class="absolute-top" />
           <!-- <q-checkbox
@@ -130,7 +133,7 @@
             type="search"
             class="col-grow "
             :debounce="700"
-            @input="buscarTicket(filterBusca)"
+            @input="BuscarTicketFiltro(filterBusca)"
           >
             <template v-slot:append>
               <q-icon name="search" />
@@ -146,7 +149,7 @@
             v-model="tabsAtendimento"
             no-caps
             inline-label
-            class="full-width bg-grey-3"
+            class="full-width bg-grey-2"
             @input="$refs.scrollAreaTickets.setScrollPosition(0)"
           >
             <q-tab
@@ -198,7 +201,6 @@
           ref="scrollAreaTickets"
           style="height: calc(100% - 165px)"
           @scroll="onScroll"
-          class="bg-grey-1"
         >
           <q-separator />
           <q-tab-panels
@@ -275,7 +277,7 @@
         content-class="bg-grey-1"
       >
         <div
-          class="bg-grey-3 text-primary full-width no-border-radius q-pa-sm"
+          class="bg-white text-primary full-width no-border-radius q-pa-sm"
           style="height:50px;"
         >
           <span class="q-ml-md text-h6">
@@ -546,8 +548,26 @@ export default {
       }
       // return () => clearTimeout(delayDebounceFn)
     },
-    async BuscarTicketFiltro () {
-
+    async BuscarTicketFiltro (searchParam) {
+      if (this.loading === true) return
+      const statusPesquisa = ['open', 'pending', 'closed']
+      this.$store.commit('RESET_TICKETS')
+      this.loading = true
+      this.pagAbertos = 1
+      this.pagPendentes = 1
+      this.pagResolvidos = 1
+      await Promise.all(
+        statusPesquisa.map(async status => {
+          this.pesquisaTickets = {
+            ...this.pesquisaTickets,
+            pageNumber: 1,
+            searchParam,
+            status
+          }
+          await this.consultarTickets(this.pesquisaTickets)
+        })
+      )
+      this.loading = false
     },
     async onLoadAbertos () {
       if (this.ticketsEmAtendimento.length === 0 || !this.hasMoreOpen || this.loading) {
@@ -604,34 +624,12 @@ export default {
       }
       this.loading = false
     },
-    buscarTicket () {
-      if (this.loading === true) return
-      this.loading = true
-      this.pesquisaTickets = {
-        ...this.pesquisaTickets,
-        searchParam: this.filterBusca,
-        pageNumber: 1
-      }
-      try {
-        ConsultarTickets(this.pesquisaTickets).then(({ data }) => {
-          this.pesquisaTickets.count = data.count
-          this.$store.commit('RESET_TICKETS_LOCALIZADOS_BUSCA')
-          this.$store.commit('LOAD_TICKETS_LOCALIZADOS_BUSCA', data.tickets)
-          this.$store.commit('SET_HAS_MORE_BUSCA', data.hasMore)
-        })
-      } catch (err) {
-        console.error(err)
-      }
-      this.loading = false
-    },
     async listarFilas () {
       const { data } = await ListarFilas()
       this.filas = data.queueData
     },
     async consultarTicketsIniciais () {
       this.$store.commit('RESET_TICKETS')
-      this.loading = false
-      this.loading = false
       this.loading = false
       this.pagAbertos = 1
       this.pagPendentes = 1

@@ -2,13 +2,13 @@
   <div>
     <q-item
       dense
-      :clickable="!ticketPendente && ticket.id !== $store.getters['ticketFocado'].id "
+      :clickable="!ticketPendente && (ticket.id !== $store.getters['ticketFocado'].id || $route.name !== 'chat')"
       style="height: 7vh"
       @click="abrirChatContato(ticket)"
       :style="`border-left: 5px solid ${borderColor[ticket.status]}`"
       class="q-px-sm"
       :class="{
-        'ticket-active-item bg-blue-grey-1 text-primary': ticket.id === $store.getters['ticketFocado'].id,
+        'ticket-active-item bg-blue-1 text-primary': ticket.id === $store.getters['ticketFocado'].id,
       }"
     >
       <!-- 'primary': ticket.status === 'open',
