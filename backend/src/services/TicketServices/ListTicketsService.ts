@@ -84,6 +84,7 @@ const ListTicketsService = async ({
     ];
 
     whereCondition = {
+      ...whereCondition,
       [Op.or]: [
         {
           "$contact.name$": where(
@@ -128,7 +129,7 @@ const ListTicketsService = async ({
     ];
   }
 
-  if (!searchParam && status !== "closed" /* && profile !== "admin" */) {
+  if (status !== "closed" /* && profile !== "admin" */) {
     if (queue) {
       whereCondition = {
         ...whereCondition,
@@ -157,7 +158,8 @@ const ListTicketsService = async ({
     distinct: true,
     limit,
     offset,
-    order: [["updatedAt", "DESC"]]
+    order: [["updatedAt", "DESC"]],
+    logging: console.log
   });
 
   const hasMore = count > offset + tickets.length;
