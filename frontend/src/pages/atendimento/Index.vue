@@ -19,7 +19,7 @@
 
         <q-toolbar
           class="text-primary q-pr-none"
-          style="height: 50px"
+          style="height: 60px"
         >
           <q-avatar class="cursor-pointer">
             <img src="https://cdn.quasar.dev/app-icons/icon-128x128.png" />
@@ -38,7 +38,7 @@
               Novo atendimento
             </q-tooltip>
           </q-btn>
-          <q-btn
+          <!-- <q-btn
             round
             flat
             icon="mdi-comment-search-outline"
@@ -50,7 +50,7 @@
             >
               Pesquisar
             </q-tooltip>
-          </q-btn>
+          </q-btn> -->
           <q-btn
             round
             flat
@@ -80,60 +80,160 @@
           class="row q-py-sm items-center"
         >
           <q-separator class="absolute-top" />
-          <!-- <q-checkbox
-                v-model="pesquisa.showAll"
-                :false-value="true"
-                :true-value="false"
-                label="Meus"
-                @input="consultarTicketsIniciais"
-              /> -->
-          <!-- <q-select
-                rounded
-                class="q-ml-md"
-                style="width: 13vw"
-                dense
-                outlined
-                v-model="pesquisa.queue"
-                :options="cUserQueues"
-                option-label="queue"
-                option-value="id"
-                label="Fila"
-                map-options
-                emit-value
-                @input="consultarTicketsIniciais"
-                clearable
-              /> -->
           <q-btn
-            color="primary"
-            icon="mdi-filter-outline"
+            :icon="!cFiltroSelecionado ? 'mdi-filter-outline' : 'mdi-filter-plus'"
             round
-            flat
+            :flat="!cFiltroSelecionado"
+            push
             dense
+            :color="cFiltroSelecionado ? 'deep-orange-9' : 'primary'"
+            class="q-mr-md"
           >
+            <q-menu
+              content-class="shadow-10"
+              square
+            >
+              <div
+                class="row q-pa-sm"
+                style="min-width: 350px; max-width: 350px"
+              >
+                <div class="q-ma-sm">
+                  <div class="text-h6 q-mb-md">Filtros Avançados</div>
+                  <q-toggle
+                    v-if="profile === 'admin'"
+                    class="q-ml-lg"
+                    v-model="pesquisaTickets.showAll"
+                    label="(Admin) - Visualizar Todos"
+                    :class="{'q-mb-lg': pesquisaTickets.showAll}"
+                    @input="debounce(BuscarTicketFiltro(), 700)"
+                  />
+                  <q-separator
+                    class="q-mb-md"
+                    v-if="!pesquisaTickets.showAll"
+                  />
+                  <div v-if="!pesquisaTickets.showAll">
+                    <q-select
+                      :disable="pesquisaTickets.showAll"
+                      square
+                      outlined
+                      hide-bottom-space
+                      emit-value
+                      map-options
+                      multiple
+                      options-dense
+                      use-chips
+                      label="Filas"
+                      color="primary"
+                      v-model="pesquisaTickets.queuesIds"
+                      :options="filas"
+                      :input-debounce="700"
+                      option-value="id"
+                      option-label="queue"
+                      @input="debounce(BuscarTicketFiltro(), 700)"
+                      input-style="width: 300px; max-width: 300px;"
+                    />
+
+                    <q-list
+                      dense
+                      class="q-my-md"
+                    >
+                      <q-item
+                        tag="label"
+                        v-ripple
+                      >
+                        <q-item-section avatar>
+                          <q-checkbox
+                            v-model="pesquisaTickets.status"
+                            val="open"
+                            color="primary"
+                            keep-color
+                            @input="debounce(BuscarTicketFiltro(), 700)"
+                          />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label>Abertos</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                      <q-item
+                        tag="label"
+                        v-ripple
+                      >
+                        <q-item-section avatar>
+                          <q-checkbox
+                            v-model="pesquisaTickets.status"
+                            val="pending"
+                            color="negative"
+                            keep-color
+                            @input="debounce(BuscarTicketFiltro(), 700)"
+                          />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label>Pendentes</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                      <q-item
+                        tag="label"
+                        v-ripple
+                      >
+                        <q-item-section avatar>
+                          <q-checkbox
+                            v-model="pesquisaTickets.status"
+                            val="closed"
+                            color="positive"
+                            keep-color
+                            @input="debounce(BuscarTicketFiltro(), 700)"
+                          />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label>Resolvidos</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+
+                    <q-separator class="q-mb-md" />
+                    <q-toggle
+                      v-model="pesquisaTickets.includeNotQueueDefined"
+                      label="Incluir Tickets sem filas definidas"
+                      @input="debounce(BuscarTicketFiltro(), 700)"
+                    />
+                    <q-toggle
+                      v-model="pesquisaTickets.withUnreadMessages"
+                      label="Somente Tickets com mensagens não lidas"
+                      @input="debounce(BuscarTicketFiltro(), 700)"
+                    />
+                    <q-toggle
+                      v-model="pesquisaTickets.isNotAssignedUser"
+                      label="Somente Tickets não atribuidos (sem usuário definido)"
+                      @input="debounce(BuscarTicketFiltro(), 700)"
+                    />
+                  </div>
+                  <q-separator
+                    class="q-my-md"
+                    spaced
+                    v-if="!pesquisaTickets.showAll"
+                  />
+                  <q-btn
+                    class="float-right q-my-md"
+                    color="primary"
+                    label="Fechar"
+                    push
+                    v-close-popup
+                  />
+                </div>
+              </div>
+            </q-menu>
             <q-tooltip>
               Filtro Avançado
             </q-tooltip>
           </q-btn>
-          <q-btn
-            color="primary"
-            icon="mdi-close"
-            round
-            flat
-            dense
-            @click="toolbarSearch = !toolbarSearch"
-          >
-            <q-tooltip>
-              Limpar pesquisa
-            </q-tooltip>
-          </q-btn>
           <q-input
-            v-model="filterBusca"
+            v-model="pesquisaTickets.searchParam"
             dense
             outlined
             type="search"
-            class="col-grow "
+            class="col-grow"
             :debounce="700"
-            @input="BuscarTicketFiltro(filterBusca)"
+            @input="BuscarTicketFiltro()"
           >
             <template v-slot:append>
               <q-icon name="search" />
@@ -141,114 +241,19 @@
           </q-input>
           <q-separator class="absolute-bottom" />
         </q-toolbar>
-        <q-toolbar class="q-pa-none">
-          <q-tabs
-            narrow-indicator
-            align="justify"
-            dense
-            v-model="tabsAtendimento"
-            no-caps
-            inline-label
-            class="full-width bg-grey-2"
-            @input="$refs.scrollAreaTickets.setScrollPosition(0)"
-          >
-            <q-tab
-              class="text-primary"
-              name="inbox"
-              icon="mdi-comment-account-outline"
-              ripple
-              label="Inbox"
-              content-class="q-py-md"
-            >
-              <q-badge
-                style="margin-top: 0px; font-size: .7em; border-radius: 10px;"
-                class="text-center"
-                floating
-                dense
-                text-color="white"
-                color="primary"
-                :label="ticketsEmAtendimento.length > count.open ? ticketsEmAtendimento.length : count.open"
-              />
-            </q-tab>
-            <q-tab
-              class="text-negative"
-              name="fila"
-              icon="mdi-clock-fast"
-              content-class="q-py-md"
-              label="Fila"
-            >
-              <q-badge
-                style="font-size: .7em; border-radius: 10px;"
-                class="text-center"
-                floating
-                dense
-                text-color="white"
-                color="negative"
-                :label="ticketsPendentes.length > count.pending ? ticketsPendentes.length : count.pending"
-              />
-            </q-tab>
-            <q-tab
-              class="text-positive"
-              name="resolvidos"
-              icon="mdi-comment-check-outline"
-              content-class="q-py-md"
-              label="Resolvidos"
-            >
-            </q-tab>
-          </q-tabs>
-        </q-toolbar>
+
         <q-scroll-area
           ref="scrollAreaTickets"
-          style="height: calc(100% - 165px)"
+          style="height: calc(100% - 120px)"
           @scroll="onScroll"
         >
           <q-separator />
-          <q-tab-panels
-            v-model="tabsAtendimento"
-            keep-alive
-            animated
-          >
-            <q-tab-panel
-              name="inbox"
-              class="q-pa-none scroll-y"
-            >
-              <ItemTicket
-                v-for="(ticket, key) in ticketsEmAtendimento"
-                :key="key"
-                :ticket="ticket"
-                :filas="filas"
-              />
-            </q-tab-panel>
-            <q-tab-panel
-              name="fila"
-              class="q-pa-none scroll-y"
-            >
-              <ItemTicket
-                :ticketPendente="true"
-                v-for="(ticket, key) in ticketsPendentes"
-                :key="key"
-                :ticket="ticket"
-                :filas="filas"
-              />
-            </q-tab-panel>
-            <q-tab-panel name="resolvidos">
-              <ItemTicket
-                v-for="(ticket, key) in ticketsResolvidos"
-                :key="key"
-                :ticket="ticket"
-                :filas="filas"
-              />
-            </q-tab-panel>
-            <q-tab-panel name="busca">
-              <ItemTicket
-                v-for="(ticket, key) in ticketsLocalizadosBusca"
-                :key="key"
-                :ticket="ticket"
-                :buscaTicket="true"
-                :filas="filas"
-              />
-            </q-tab-panel>
-          </q-tab-panels>
+          <ItemTicket
+            v-for="(ticket, key) in tickets"
+            :key="key"
+            :ticket="ticket"
+            :filas="filas"
+          />
           <div v-if="loading">
             <div class="row justify-center q-my-md">
               <q-spinner
@@ -278,7 +283,7 @@
       >
         <div
           class="bg-white text-primary full-width no-border-radius q-pa-sm"
-          style="height:50px;"
+          style="height:60px;"
         >
           <span class="q-ml-md text-h6">
             Dados Contato
@@ -372,6 +377,7 @@
         :modalContato.sync="modalContato"
         @contatoModal:contato-editado="contatoEditado"
       />
+
       <audio ref="audioNotification">
         <source
           :src="alertSound"
@@ -392,10 +398,11 @@ import socketInitial from 'src/layouts/socketInitial'
 import ModalNovoTicket from './ModalNovoTicket'
 import { ListarFilas } from 'src/service/filas'
 const UserQueues = localStorage.getItem('queues')
+const profile = localStorage.getItem('profile')
 import StatusWhatsapp from 'src/components/StatusWhatsapp'
 import alertSound from 'src/assets/sound.mp3'
 import { ListarWhatsapps } from 'src/service/sessoesWhatsapp'
-
+import { debounce } from 'quasar'
 import { format } from 'date-fns'
 
 export default {
@@ -409,61 +416,40 @@ export default {
   },
   data () {
     return {
-      splitterModel: 20,
+      debounce,
       alertSound,
       toolbarSearch: true,
       drawerTickets: true,
       drawerContact: true,
       loading: false,
+      profile,
       modalNovoTicket: false,
       modalContato: false,
       selectedContactId: null,
-      tabsAtendimento: 'inbox',
       filterBusca: '',
       showDialog: false,
       atendimentos: [],
-      pagAbertos: 1,
-      pagPendentes: 1,
-      pagResolvidos: 1,
-      count: {
-        open: 0,
-        pending: 0,
-        closed: 0,
-        busca: 0
-      },
-      pesquisa: {
-        searchParam: '',
-        pageNumber: 1,
-        status: 'open',
-        showAll: false,
-        queue: null
-        // date: new Date(),
-        // withUnreadMessages: ''
-      },
+      countTickets: 0,
       pesquisaTickets: {
         searchParam: '',
         pageNumber: 1,
-        // status: 'open',
-        showAll: true,
+        status: ['open', 'pending'],
+        showAll: false,
         count: null,
-        queue: null
+        queuesIds: [],
+        withUnreadMessages: false,
+        isNotAssignedUser: false,
+        includeNotQueueDefined: true
         // date: new Date(),
-        // withUnreadMessages: ''
       },
       filas: []
     }
   },
   computed: {
     ...mapGetters([
-      'ticketsEmAtendimento',
-      'ticketsPendentes',
-      'ticketsResolvidos',
-      'ticketsLocalizadosBusca',
+      'tickets',
       'ticketFocado',
-      'hasMoreOpen',
-      'hasMorePending',
-      'hasMoreClosed',
-      'hasMoreBusca'
+      'hasMore'
     ]),
     cUserQueues () {
       try {
@@ -490,23 +476,16 @@ export default {
     },
     cRouteContatos () {
       return this.$route.name === 'chat-contatos'
+    },
+    cFiltroSelecionado () {
+      const { queuesIds, showAll, withUnreadMessages, isNotAssignedUser } = this.pesquisaTickets
+      return !!(queuesIds?.length || showAll || withUnreadMessages || isNotAssignedUser)
     }
   },
   methods: {
     onScroll (info) {
       if (info.verticalPercentage <= 0.85) return
-      if (this.tabsAtendimento === 'inbox') {
-        this.onLoadAbertos()
-      }
-      if (this.tabsAtendimento === 'fila') {
-        this.onLoadPendentes()
-      }
-      if (this.tabsAtendimento === 'resolvidos') {
-        this.onLoadResolvidos()
-      }
-      if (this.tabsAtendimento === 'busca') {
-        this.onLoadMoreTicketsBusca()
-      }
+      this.onLoadMore()
     },
     editContact (contactId) {
       this.selectedContactId = contactId
@@ -518,15 +497,15 @@ export default {
     },
     async consultarTickets (paramsInit = {}) {
       const params = {
-        ...this.pesquisa,
+        ...this.pesquisaTickets,
         ...paramsInit
       }
       try {
-        this.socketTicketList(params.status)
+        this.socketTicketList()
         const { data } = await ConsultarTickets(params)
-        this.count[params.status] = data.count // count total de tickets no status
+        this.countTickets = data.count // count total de tickets no status
         this.$store.commit('LOAD_TICKETS', data.tickets)
-        this.$store.commit(`SET_HAS_MORE_${params.status.toUpperCase()}`, data.hasMore)
+        this.$store.commit('SET_HAS_MORE', data.hasMore)
       } catch (err) {
         const errorMsg = err.response?.data?.error
         if (errorMsg) {
@@ -534,111 +513,56 @@ export default {
             message: err.response.data.error,
             type: 'negative',
             progress: true,
-            position: 'top-right'
+            position: 'top',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         } else {
           this.$q.notify({
             message: 'Ops... Ocorreu um problema de rede não identificado.',
             type: 'negative',
             progress: true,
-            position: 'top-right'
+            position: 'top',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
           console.error(err)
         }
       }
       // return () => clearTimeout(delayDebounceFn)
     },
-    async BuscarTicketFiltro (searchParam) {
-      if (this.loading === true) return
-      const statusPesquisa = ['open', 'pending', 'closed']
+    async BuscarTicketFiltro () {
       this.$store.commit('RESET_TICKETS')
       this.loading = true
-      this.pagAbertos = 1
-      this.pagPendentes = 1
-      this.pagResolvidos = 1
-      await Promise.all(
-        statusPesquisa.map(async status => {
-          this.pesquisaTickets = {
-            ...this.pesquisaTickets,
-            pageNumber: 1,
-            searchParam,
-            status
-          }
-          await this.consultarTickets(this.pesquisaTickets)
-        })
-      )
+      this.pesquisaTickets = {
+        ...this.pesquisaTickets,
+        pageNumber: 1
+      }
+      await this.consultarTickets(this.pesquisaTickets)
       this.loading = false
     },
-    async onLoadAbertos () {
-      if (this.ticketsEmAtendimento.length === 0 || !this.hasMoreOpen || this.loading) {
-        return
-      }
-      try {
-        this.loading = true
-        this.pagAbertos += 1
-        await this.consultarTickets({ status: 'open', pageNumber: this.pagAbertos })
-        this.loading = false
-      } catch (error) {
-        this.loading = false
-      }
-    },
-    async onLoadPendentes () {
-      if (this.ticketsPendentes.length === 0 || !this.hasMorePending || this.loading) {
-        return
-      }
-      try {
-        this.loading = true
-        this.pagPendentes += 1
-        await this.consultarTickets({ status: 'pending', pageNumber: this.pagPendentes })
-        this.loading = false
-      } catch (error) {
-        this.loading = false
-      }
-    },
-    async onLoadResolvidos () {
-      if (this.ticketsResolvidos.length === 0 || !this.hasMoreClosed || this.loadClose) {
-        return
-      }
-      try {
-        this.loadClose = true
-        this.pagResolvidos += 1
-        await this.consultarTickets({ status: 'closed', pageNumber: this.pagResolvidos })
-        this.loadClose = false
-      } catch (error) {
-        this.loadClose = false
-      }
-    },
-    async onLoadMoreTicketsBusca () {
-      if (this.ticketsLocalizadosBusca.length === 0 || !this.hasMoreBusca || this.loading) {
+    async onLoadMore () {
+      if (this.tickets.length === 0 || !this.hasMore || this.loading) {
         return
       }
       try {
         this.loading = true
         this.pesquisaTickets.pageNumber++
-        const { data } = await ConsultarTickets(this.pesquisaTickets)
-        // this.pesquisaTickets.count = data.count
-        this.$store.commit('LOAD_TICKETS_LOCALIZADOS_BUSCA', data.tickets)
-        this.$store.commit('SET_HAS_MORE_BUSCA', data.hasMore)
+        await this.consultarTickets()
+        this.loading = false
       } catch (error) {
-        console.error(error)
+        this.loading = false
       }
-      this.loading = false
     },
     async listarFilas () {
       const { data } = await ListarFilas()
       this.filas = data.queueData
-    },
-    async consultarTicketsIniciais () {
-      this.$store.commit('RESET_TICKETS')
-      this.loading = false
-      this.pagAbertos = 1
-      this.pagPendentes = 1
-      this.pagResolvidos = 1
-      this.pesquisa.pageNumber = 1
-      this.pesquisaTickets.pageNumber = 1
-      await this.consultarTickets() // abertos (em atendimento)
-      await this.consultarTickets({ status: 'pending' }) // pendentes (aguardando atendimento)
-      await this.consultarTickets({ status: 'closed' }) // pendentes (aguardando atendimento)
     },
     async listarWhatsapps () {
       const { data } = await ListarWhatsapps()
@@ -677,8 +601,8 @@ export default {
     this.listarFilas()
   },
   async mounted () {
-    await this.consultarTicketsIniciais()
     await this.listarWhatsapps()
+    await this.consultarTickets()
     if (!('Notification' in window)) {
     } else {
       Notification.requestPermission()

@@ -250,7 +250,12 @@ export default {
           progress: true,
           position: 'top',
           textColor: 'black',
-          message: 'Ação editada!'
+          message: 'Ação editada!',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
       } else {
         const { data } = await CriarAcaoEtapa(params)
@@ -259,7 +264,12 @@ export default {
           type: 'positive',
           progress: true,
           position: 'top',
-          message: 'Ação criada!'
+          message: 'Ação criada!',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
       }
       this.fecharModal()

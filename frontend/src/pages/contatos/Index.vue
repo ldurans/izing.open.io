@@ -211,8 +211,13 @@ export default {
         this.$q.notify({
           message: `Atendimento Iniciado || ${ticket.contact.name} - Ticket: ${ticket.id}`,
           type: 'positive',
-          position: 'top-right',
-          progress: true
+          position: 'top',
+          progress: true,
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
         this.$router.push({ name: 'atendimento' })
       } catch (error) {
@@ -248,7 +253,12 @@ export default {
               type: 'positive',
               progress: true,
               position: 'top',
-              message: 'Contato deletado!'
+              message: 'Contato deletado!',
+              actions: [{
+                icon: 'close',
+                round: true,
+                color: 'white'
+              }]
             })
           })
           .catch(error => {

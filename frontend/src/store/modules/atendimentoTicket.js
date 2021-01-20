@@ -17,10 +17,6 @@ const atendimentoTicket = {
     ticketsLocalizadosBusca: [],
     ticketFocado: {},
     hasMore: false,
-    hasMoreOpen: false,
-    hasMorePending: false,
-    hasMoreClosed: false,
-    hasMoreBusca: false,
     contatos: [],
     mensagens: []
   },
@@ -28,22 +24,6 @@ const atendimentoTicket = {
     SET_HAS_MORE (state, payload) {
       state.hasMore = payload
       return state.hasMore
-    },
-    SET_HAS_MORE_OPEN (state, payload) {
-      state.hasMoreOpen = payload
-      return state.hasMoreOpen
-    },
-    SET_HAS_MORE_PENDING (state, payload) {
-      state.hasMorePending = payload
-      return state.hasMorePending
-    },
-    SET_HAS_MORE_CLOSED (state, payload) {
-      state.hasMoreClosed = payload
-      return state.hasMoreClosed
-    },
-    SET_HAS_MORE_BUSCA (state, payload) {
-      state.hasMoreBusca = payload
-      return state.hasMoreBusca
     },
     LOAD_TICKETS (state, payload) {
       const newTickets = payload
@@ -60,31 +40,9 @@ const atendimentoTicket = {
       })
       return state.tickets
     },
-    LOAD_TICKETS_LOCALIZADOS_BUSCA (state, payload) {
-      const newTickets = payload
-      newTickets.forEach(ticket => {
-        const ticketIndex = state.ticketsLocalizadosBusca.findIndex(t => t.id === ticket.id)
-        if (ticketIndex !== -1) {
-          state.ticketsLocalizadosBusca[ticketIndex] = ticket
-          if (ticket.unreadMessages > 0) {
-            state.ticketsLocalizadosBusca.unshift(state.ticketsLocalizadosBusca.splice(ticketIndex, 1)[0])
-          }
-        } else {
-          state.ticketsLocalizadosBusca.push(ticket)
-        }
-      })
-      return state.ticketsLocalizadosBusca
-    },
     RESET_TICKETS (state) {
       state.hasMore = true
-      state.hasMoreOpen = true
-      state.hasMorePending = true
-      state.hasMoreClosed = true
-      state.hasMoreBusca = true
       state.tickets = []
-    },
-    RESET_TICKETS_LOCALIZADOS_BUSCA (state) {
-      state.ticketsLocalizadosBusca = []
     },
     RESET_UNREAD (state, payload) {
       const ticketId = payload
@@ -224,14 +182,14 @@ const atendimentoTicket = {
             type: 'negative',
             message: error.response.data.error,
             progress: true,
-            position: 'top-right'
+            position: 'top'
           })
         } else {
           Notify.create({
             type: 'negative',
             message: 'Ops... Ocorreu um problema não identificado.',
             progress: true,
-            position: 'top-right'
+            position: 'top'
           })
         }
       }

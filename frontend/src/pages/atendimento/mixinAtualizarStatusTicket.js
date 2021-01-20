@@ -12,7 +12,12 @@ export default {
             message: `Atendimento Iniciado || ${ticket.contact.name} - Ticket: ${ticket.id}`,
             type: 'positive',
             progress: true,
-            position: 'top-right'
+            position: 'top',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
           this.$store.commit('TICKET_FOCADO', {})
           this.$store.commit('SET_HAS_MORE', true)
@@ -59,7 +64,12 @@ export default {
             this.$q.notify({
               message: `${toast[status]} || ${contatoName} (Ticket ${ticketId})`,
               type: 'positive',
-              progress: true
+              progress: true,
+              actions: [{
+                icon: 'close',
+                round: true,
+                color: 'white'
+              }]
             })
             this.$store.commit('TICKET_FOCADO', {})
           })

@@ -511,7 +511,7 @@ export default {
         ...paramsInit
       }
       try {
-        this.socketTicketList(params.status)
+        this.socketTicketList()
         const { data } = await ConsultarTickets(params)
         this.count[params.status] = data.count // count total de tickets no status
         this.$store.commit('LOAD_TICKETS', data.tickets)
@@ -522,13 +522,23 @@ export default {
           this.$q.notify({
             message: err.response.data.error,
             type: 'negative',
-            progress: true
+            progress: true,
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         } else {
           this.$q.notify({
             message: 'Ops... Ocorreu um problema de rede não identificado.',
             type: 'negative',
-            progress: true
+            progress: true,
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
           console.error(err)
         }

@@ -280,7 +280,12 @@ export default {
           this.$q.notify({
             type: 'negative',
             message: 'Ops... Ocorreu um problema não identificado.',
-            progress: true
+            progress: true,
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         }
       }

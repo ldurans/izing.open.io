@@ -378,7 +378,12 @@ export default {
           this.$q.notify({
             type: 'positive',
             message: 'Contatos estão sendo sincronizados e importados. Poderão ser consultados posteriormente na Lista de Contatos.',
-            progress: true
+            progress: true,
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         }).catch(error => {
           console.error(error)

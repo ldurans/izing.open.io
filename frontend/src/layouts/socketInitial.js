@@ -1,6 +1,12 @@
 const token = JSON.parse(localStorage.getItem('token'))
 const usuario = JSON.parse(localStorage.getItem('usuario'))
+const queues = JSON.parse(localStorage.getItem('queues'))
 import Router from 'src/router/index'
+
+const isQueueOrUserNotify = (ticket) => {
+  const queue = queues.findIndex(q => q.id === ticket.queueId)
+  return (queue || usuario.id === ticket.userId)
+}
 
 import openSocket from 'socket.io-client'
 const socket = openSocket(process.env.API, {
@@ -41,7 +47,10 @@ export default {
           !data.message.read &&
           (data.ticket.userId === userId || !data.ticket.userId)
         ) {
-          this.handlerNotifications(data)
+          console.log('queues', data.ticket, queues)
+          if (isQueueOrUserNotify(data.ticket)) {
+            this.handlerNotifications(data)
+          }
         }
       })
 
@@ -65,7 +74,7 @@ export default {
 
         if (data.action === 'readySession') {
           this.$q.notify({
-            position: 'top-right',
+            position: 'top',
             icon: 'mdi-wifi-arrow-up-down',
             message: `
               <p >
@@ -92,7 +101,12 @@ export default {
           message: `Bateria do celular do whatsapp ${data.batteryInfo.sessionName} está com bateria em ${data.batteryInfo.battery}%. Necessário iniciar carregamento.`,
           type: 'negative',
           progress: true,
-          position: 'top-right'
+          position: 'top',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
       })
     }

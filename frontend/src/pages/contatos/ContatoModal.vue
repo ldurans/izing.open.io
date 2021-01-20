@@ -175,7 +175,12 @@ export default {
           type: 'warning',
           progress: true,
           position: 'top',
-          message: 'Ops! Verifique os erros...'
+          message: 'Ops! Verifique os erros...',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
       }
 
@@ -193,7 +198,12 @@ export default {
             progress: true,
             position: 'top',
             textColor: 'black',
-            message: 'Contato editado!'
+            message: 'Contato editado!',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         } else {
           const { data } = await CriarContato(contato)
@@ -201,7 +211,12 @@ export default {
             type: 'positive',
             progress: true,
             position: 'top',
-            message: 'Contato criado!'
+            message: 'Contato criado!',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
           this.$emit('contatoModal:contato-criado', data)
         }

@@ -2,7 +2,7 @@
   <div>
     <q-header class="bg-white no-border-radius">
       <q-toolbar
-        style="min-height: 50px; height: 50px;"
+        style="min-height: 60px; height: 60px;"
         class="no-border-radius q-pa-none text-primary"
       >
         <q-btn
@@ -14,11 +14,14 @@
         <q-item
           clickable
           v-ripple
-          class="q-ma-none q-pa-none"
-          style="min-height: 50px; height: 50px;"
+          class="q-ma-none q-pa-none full"
+          style="min-height: 60px; height: 60px; min-width: 400px;"
           @click="$emit('updateTicket:info-contato')"
         >
-          <q-item-section avatar>
+          <q-item-section
+            avatar
+            class="q-pl-sm"
+          >
             <q-btn
               round
               flat
@@ -30,11 +33,8 @@
             </q-btn>
           </q-item-section>
           <q-item-section>
-            <q-item-label>
-              {{ Value(cticket.contact, 'name') }} <span
-                v-if="Value(cticket.contact, 'name')"
-                class="text-primary text-caption"
-              > (Ticket: {{ cticket.id }})</span>
+            <q-item-label class="text-bold">
+              {{ Value(cticket.contact, 'name') }}
               <q-skeleton
                 v-if="!Value(cticket.contact, 'name')"
                 animation="none"
@@ -44,6 +44,7 @@
             <q-item-label
               caption
               lines="1"
+              style="margin-top: 2px !important;"
             >
               <span v-if="Value(cticket.user, 'name')"> Atribuido à: {{ Value(cticket.user, 'name') }} </span>
               <q-skeleton
@@ -53,6 +54,16 @@
                 animation="none"
                 style="width: 150px"
               />
+            </q-item-label>
+            <q-item-label
+              lines="1"
+              style="margin-top: 0px !important;"
+            >
+              <span
+                v-if="Value(cticket.contact, 'name')"
+                class="text-primary"
+                style="font-size: 11px"
+              > Ticket: {{ cticket.id }}</span>
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -242,7 +253,12 @@ export default {
         this.$q.notify({
           type: 'info',
           message: 'Ticket já pertece ao usuário selecionado.',
-          progress: true
+          progress: true,
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
         return
       }
@@ -250,7 +266,12 @@ export default {
         this.$q.notify({
           type: 'info',
           message: 'Ticket já pertece ao seu usuário',
-          progress: true
+          progress: true,
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
         return
       }
@@ -261,7 +282,12 @@ export default {
       this.$q.notify({
         type: 'positive',
         message: 'Ticket transferido.',
-        progress: true
+        progress: true,
+        actions: [{
+          icon: 'close',
+          round: true,
+          color: 'white'
+        }]
       })
       this.modalTransferirTicket = false
       this.$store.commit('TICKET_FOCADO', {})

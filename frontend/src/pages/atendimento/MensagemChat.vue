@@ -244,7 +244,12 @@ export default {
         this.$q.notify({
           message: JSON.stringify(error.response),
           type: 'negative',
-          progress: true
+          progress: true,
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
       }
       this.loading = false

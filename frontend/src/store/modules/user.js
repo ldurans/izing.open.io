@@ -42,7 +42,7 @@ const user = {
         Notify.create({
           type: 'positive',
           message: 'Login realizado com sucesso!',
-          position: 'top-right',
+          position: 'top',
           progress: true
         })
         this.$router.push({

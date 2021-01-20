@@ -10,11 +10,13 @@ import UpdateTicketService from "../services/TicketServices/UpdateTicketService"
 type IndexQuery = {
   searchParam: string;
   pageNumber: string;
-  status: string;
+  status: string[];
   date: string;
   showAll: string;
   withUnreadMessages: string;
-  queue: string;
+  queuesIds: string[];
+  isNotAssignedUser: string;
+  includeNotQueueDefined: string;
 };
 
 interface TicketData {
@@ -25,15 +27,17 @@ interface TicketData {
 }
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { tenantId } = req.user;
+  const { tenantId, profile } = req.user;
   const {
+    searchParam,
     pageNumber,
     status,
     date,
-    searchParam,
     showAll,
     withUnreadMessages,
-    queue
+    queuesIds,
+    isNotAssignedUser,
+    includeNotQueueDefined
   } = req.query as IndexQuery;
 
   const userId = req.user.id;
@@ -46,8 +50,11 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     showAll,
     userId,
     withUnreadMessages,
-    queue,
-    tenantId
+    queuesIds,
+    isNotAssignedUser,
+    includeNotQueueDefined,
+    tenantId,
+    profile
   });
 
   return res.status(200).json({ tickets, count, hasMore });

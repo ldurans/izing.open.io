@@ -173,6 +173,11 @@ export default {
           timeout: 100000,
           position: 'top',
           closeBtn: true,
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }],
           message: `Cada Auto Resposta poderá ter apenas uma etapa inicial. A etapa de "ID: ${isInitialExists.id}" está indicada como a etapa inicial. Caso deseje alterar, precisa primerio editar a etapa ("ID: ${isInitialExists.id}") para que não seja a etapa inicial.`
         })
         throw new Error('Etapa Inicial na Auto Resposta já existente')
@@ -194,7 +199,12 @@ export default {
             progress: true,
             position: 'top',
             textColor: 'black',
-            message: 'Etapa editada!'
+            message: 'Etapa editada!',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         } else {
           const { data } = await CriarEtapaResposta(dataParams)
@@ -203,7 +213,12 @@ export default {
             type: 'positive',
             progress: true,
             position: 'top',
-            message: 'Etapa criada!'
+            message: 'Etapa criada!',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         }
         this.fecharModal()

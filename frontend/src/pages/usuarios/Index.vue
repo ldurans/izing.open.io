@@ -210,7 +210,12 @@ export default {
               type: 'positive',
               progress: true,
               position: 'top',
-              message: `Usuario ${usuario.name} deletado!`
+              message: `Usuario ${usuario.name} deletado!`,
+              actions: [{
+                icon: 'close',
+                round: true,
+                color: 'white'
+              }]
             })
           })
           .catch(error => {

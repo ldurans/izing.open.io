@@ -78,18 +78,19 @@ export default {
         }
       })
     },
-    socketTicketList (status) {
+    socketTicketList () {
       const searchParam = null
-      if (status) {
-        socket.emit(`${usuario.tenantId}-joinTickets`, status)
-      } else {
-        socket.emit(`${usuario.tenantId}-joinNotification`)
-      }
+      // if (status) {
+      socket.emit(`${usuario.tenantId}-joinTickets`, 'open')
+      socket.emit(`${usuario.tenantId}-joinTickets`, 'pending')
+      socket.emit(`${usuario.tenantId}-joinTickets`, 'closed')
+      // } else {
+      socket.emit(`${usuario.tenantId}-joinNotification`)
+      // }
 
       socket.on(`${usuario.tenantId}-ticket`, data => {
         if (data.action === 'updateQueue' || data.action === 'create') {
           this.$store.commit('UPDATE_TICKET', data.ticket)
-          this.count[data.ticket.status]++
         }
 
         if (data.action === 'updateUnread') {
@@ -101,7 +102,6 @@ export default {
           (!data.ticket.userId || data.ticket.userId === userId /* || showAll */)
         ) {
           this.$store.commit('UPDATE_TICKET', data.ticket)
-          this.count[data.ticket.status]++
         }
 
         if (data.action === 'delete') {

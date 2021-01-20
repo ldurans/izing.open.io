@@ -2,7 +2,7 @@
   <div>
     <q-item
       dense
-      :clickable="!ticketPendente && (ticket.id !== $store.getters['ticketFocado'].id || $route.name !== 'chat')"
+      :clickable="ticket.status !== 'pending' && (ticket.id !== $store.getters['ticketFocado'].id || $route.name !== 'chat')"
       style="height: 7vh"
       @click="abrirChatContato(ticket)"
       :style="`border-left: 5px solid ${borderColor[ticket.status]}`"
@@ -11,9 +11,6 @@
         'ticket-active-item bg-blue-1 text-primary': ticket.id === $store.getters['ticketFocado'].id,
       }"
     >
-      <!-- 'primary': ticket.status === 'open',
-        'negative': ticket.status === 'pending',
-        'positive': ticket.status === 'closed' -->
       <q-item-section
         avatar
         class="q-px-none"
@@ -25,7 +22,7 @@
           color="primary"
           dense
           round
-          v-if="ticketPendente || (buscaTicket && ticket.status === 'pending')"
+          v-if="ticket.status === 'pending' || (buscaTicket && ticket.status === 'pending')"
         >
           <q-badge
             v-if="ticket.unreadMessages"
@@ -40,7 +37,7 @@
           <q-avatar>
             <q-icon
               size="40px"
-              name="mdi-play-speed"
+              name="mdi-play-circle-outline"
             />
           </q-avatar>
           <q-tooltip>
@@ -49,7 +46,7 @@
         </q-btn>
         <q-avatar
           size="40px"
-          v-if="!ticketPendente && ticket.status !== 'pending'"
+          v-if="ticket.status !== 'pending'"
         >
           <q-badge
             v-if="ticket.unreadMessages"
@@ -120,7 +117,7 @@
         </span> -->
       </q-item-section>
     </q-item>
-    <q-separator inset="avatar" />
+    <q-separator />
   </div>
 </template>
 
@@ -161,10 +158,6 @@ export default {
       type: Object,
       default: () => {
       }
-    },
-    ticketPendente: {
-      type: Boolean,
-      default: false
     },
     buscaTicket: {
       type: Boolean,
