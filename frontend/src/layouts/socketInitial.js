@@ -12,7 +12,8 @@ import openSocket from 'socket.io-client'
 const socket = openSocket(process.env.API, {
   query: {
     token
-  }
+  },
+  forceNew: true
 })
 const userId = +localStorage.getItem('userId')
 
@@ -47,7 +48,6 @@ export default {
           !data.message.read &&
           (data.ticket.userId === userId || !data.ticket.userId)
         ) {
-          console.log('queues', data.ticket, queues)
           if (isQueueOrUserNotify(data.ticket)) {
             this.handlerNotifications(data)
           }

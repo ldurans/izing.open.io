@@ -9,16 +9,18 @@ import {
   Default,
   BelongsTo,
   ForeignKey,
-  AllowNull
+  AutoIncrement
 } from "sequelize-typescript";
 import Contact from "./Contact";
+import Message from "./Message";
 import Ticket from "./Ticket";
 
-@Table
-class Message extends Model<Message> {
+@Table({ freezeTableName: true })
+class MessagesOffLine extends Model<MessagesOffLine> {
   @PrimaryKey
+  @AutoIncrement
   @Column
-  id: string;
+  id: number;
 
   @Default(0)
   @Column
@@ -34,6 +36,11 @@ class Message extends Model<Message> {
 
   @Column(DataType.TEXT)
   body: string;
+
+  @Column(DataType.VIRTUAL)
+  get mediaName(): string | null {
+    return this.getDataValue("mediaUrl");
+  }
 
   @Column(DataType.STRING)
   get mediaUrl(): string | null {
@@ -81,10 +88,7 @@ class Message extends Model<Message> {
   @BelongsTo(() => Contact, "contactId")
   contact: Contact;
 
-  @Default(null)
-  @AllowNull
-  @Column(DataType.INTEGER)
-  timestamp: number;
+  tableName: "MessagesOffLine";
 }
 
-export default Message;
+export default MessagesOffLine;

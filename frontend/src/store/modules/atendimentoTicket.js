@@ -100,19 +100,20 @@ const atendimentoTicket = {
       return state.ticketFocado
     },
     LOAD_INITIAL_MESSAGES (state, payload) {
-      const { messages } = payload
+      const { messages, messagesOffLine } = payload
       state.mensagens = []
-      const newMessages = orderMessages(messages)
+      const newMessages = orderMessages([...messages, ...messagesOffLine])
       state.mensagens = newMessages
     },
     LOAD_MORE_MESSAGES (state, payload) {
-      const { messages } = payload
+      const { messages, messagesOffLine } = payload
+      const arrayMessages = [...messages, ...messagesOffLine]
       const newMessages = []
-      messages.forEach((message, index) => {
+      arrayMessages.forEach((message, index) => {
         const messageIndex = state.mensagens.findIndex(m => m.id === message.id)
         if (messageIndex !== -1) {
           state.mensagens[messageIndex] = message
-          messages.splice(index, 1)
+          arrayMessages.splice(index, 1)
         } else {
           newMessages.push(message)
         }
@@ -138,6 +139,12 @@ const atendimentoTicket = {
         messagesState[messageIndex] = messageToUpdate
       }
       state.mensagens = messagesState
+      return state.mensagens
+    },
+    DELETE_MESSAGE (state, payload) {
+      const messagesState = [...state.mensagens]
+      const message = messagesState.filter(msg => msg.id !== payload.id)
+      state.mensagens = message
       return state.mensagens
     },
     RESET_MESSAGE (state) {

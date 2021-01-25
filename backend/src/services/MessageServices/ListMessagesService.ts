@@ -1,5 +1,6 @@
 import AppError from "../../errors/AppError";
 import Message from "../../models/Message";
+import MessagesOffLine from "../../models/MessageOffLine";
 import Ticket from "../../models/Ticket";
 import ShowTicketService from "../TicketServices/ShowTicketService";
 
@@ -11,6 +12,7 @@ interface Request {
 
 interface Response {
   messages: Message[];
+  messagesOffLine: MessagesOffLine[];
   ticket: Ticket;
   count: number;
   hasMore: boolean;
@@ -46,10 +48,28 @@ const ListMessagesService = async ({
     order: [["createdAt", "DESC"]]
   });
 
+  let messagesOffLine: MessagesOffLine[] = [];
+  if (+pageNumber === 1) {
+    const { rows } = await MessagesOffLine.findAndCountAll({
+      where: { ticketId },
+      include: [
+        "contact",
+        {
+          model: Message,
+          as: "quotedMsg",
+          include: ["contact"]
+        }
+      ],
+      order: [["createdAt", "DESC"]]
+    });
+    messagesOffLine = rows;
+  }
+
   const hasMore = count > offset + messages.length;
 
   return {
     messages: messages.reverse(),
+    messagesOffLine,
     ticket,
     count,
     hasMore

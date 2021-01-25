@@ -5,7 +5,8 @@ import openSocket from 'socket.io-client'
 const socket = openSocket(process.env.API, {
   query: {
     token
-  }
+  },
+  forceNew: true
 })
 const userId = +localStorage.getItem('userId')
 
@@ -41,8 +42,13 @@ export default {
             // this.scrollToBottom()
           }
         }
+
         if (data.action === 'update') {
           this.$store.commit('UPDATE_MESSAGE', data.message)
+        }
+
+        if (data.action === 'delete') {
+          this.$store.commit('DELETE_MESSAGE', data.message)
         }
       })
     },

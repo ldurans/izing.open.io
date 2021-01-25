@@ -24,6 +24,7 @@ const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
     logger.warn(
       `Could not mark messages as read. Maybe whatsapp session disconnected? Err: ${err}`
     );
+    throw new Error("ERR_WAPP_NOT_INITIALIZED");
   }
 
   const io = getIO();

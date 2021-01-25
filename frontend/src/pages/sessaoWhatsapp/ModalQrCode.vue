@@ -40,7 +40,10 @@ import { GetWhatSession } from 'src/service/sessoesWhatsapp'
 import QrcodeVue from 'qrcode.vue'
 import openSocket from 'socket.io-client'
 const token = JSON.parse(localStorage.getItem('token'))
-const socket = openSocket(process.env.API, { query: { token } })
+const socket = openSocket(process.env.API, {
+  query: { token },
+  forceNew: true
+})
 const usuario = JSON.parse(localStorage.getItem('usuario'))
 
 socket.on(`tokenInvalid-${socket.id}`, () => {

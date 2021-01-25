@@ -22,6 +22,7 @@ import StepsReply from "./StepsReply";
 import Queue from "./Queue";
 import ShowStepAutoReplyMessageService from "../services/AutoReplyServices/ShowStepAutoReplyMessageService";
 import Tenant from "./Tenant";
+import MessagesOffLine from "./MessageOffLine";
 
 @Table
 class Ticket extends Model<Ticket> {
@@ -101,31 +102,8 @@ class Ticket extends Model<Ticket> {
   @BelongsTo(() => Tenant)
   tenant: Tenant;
 
-  // @Column(DataType.VIRTUAL)
-  // get teste(): string {
-  //   // console.log("VIRTUAL ===>", this);
-  //   return "teste ok";
-  // }
-
-  // @AfterFind
-  // static async countTicketsUnreadMessages(tickets: Ticket[]): Promise<void> {
-  //   if (tickets && tickets.length > 0) {
-  //     await Promise.all(
-  //       tickets.map(async ticket => {
-  //         ticket.unreadMessages = await Message.count({
-  //           where: { ticketId: ticket.id, read: false }
-  //         });
-  //       })
-  //     );
-  //   }
-  // }
-
-  // @BeforeUpdate
-  // static async countTicketUnreadMessags(ticket: Ticket): Promise<void> {
-  //   ticket.unreadMessages = await Message.count({
-  //     where: { ticketId: ticket.id, read: false }
-  //   });
-  // }
+  @HasMany(() => MessagesOffLine)
+  messagesOffLine: MessagesOffLine[];
 
   @AfterCreate
   static async AutoReplyWelcome(instance: Ticket): Promise<void> {

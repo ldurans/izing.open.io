@@ -6,6 +6,7 @@ import Ticket from "../models/Ticket";
 import Whatsapp from "../models/Whatsapp";
 import ContactCustomField from "../models/ContactCustomField";
 import Message from "../models/Message";
+import MessageOffLine from "../models/MessageOffLine";
 import AutoReply from "../models/AutoReply";
 import StepsReply from "../models/StepsReply";
 import StepsReplyAction from "../models/StepsReplyAction";
@@ -25,6 +26,7 @@ const models = [
   Contact,
   Ticket,
   Message,
+  MessageOffLine,
   Whatsapp,
   ContactCustomField,
   Setting,
