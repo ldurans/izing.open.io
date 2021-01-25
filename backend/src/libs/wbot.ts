@@ -9,7 +9,7 @@ import { StartWhatsAppSessionVerify } from "../services/WbotServices/StartWhatsA
 // import { handleMessage } from "../services/WbotServices/wbotMessageListener";
 import { getValue, setValue } from "./redisClient";
 import { logger } from "../utils/logger";
-// import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesWbot";
+import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesWbot";
 import SendOffLineMessagesWbot from "../services/WbotServices/SendOffLineMessagesWbot";
 
 interface Session extends Client {
@@ -233,7 +233,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         }
         setValue(`${wbot.id}`, whatsapp);
         wbot.sendPresenceAvailable();
-        // await SyncUnreadMessagesWbot(wbot, tenantId);
+        SyncUnreadMessagesWbot(wbot, tenantId);
         SendOffLineMessagesWbot(wbot, tenantId);
         resolve(wbot);
       });

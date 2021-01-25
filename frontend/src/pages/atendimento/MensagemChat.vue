@@ -28,7 +28,7 @@
           :bg-color="mensagem.fromMe ? 'teal-2' : 'white' "
         >
           <div
-            class="q-pa-sm"
+            class="q-pa-sm q-pt-md"
             :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
           >
             <div
