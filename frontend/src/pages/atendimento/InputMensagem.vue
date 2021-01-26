@@ -75,7 +75,9 @@
       autogrow
       dense
       rounded
+      append
       :max-files="5"
+      counter
       :max-file-size="10485760"
       :max-total-size="30485760"
       accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
