@@ -13,6 +13,7 @@ import {
 } from "sequelize-typescript";
 import Contact from "./Contact";
 import Ticket from "./Ticket";
+import User from "./User";
 
 @Table
 class Message extends Model<Message> {
@@ -85,6 +86,15 @@ class Message extends Model<Message> {
   @AllowNull
   @Column(DataType.INTEGER)
   timestamp: number;
+
+  @ForeignKey(() => User)
+  @Default(null)
+  @AllowNull
+  @Column
+  userId: number;
+
+  @BelongsTo(() => User)
+  user: User;
 }
 
 export default Message;
