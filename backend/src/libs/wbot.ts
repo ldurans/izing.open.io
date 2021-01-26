@@ -2,10 +2,10 @@
 import { Client } from "whatsapp-web.js";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
-import AppError from "../errors/AppError";
+// import AppError from "../errors/AppError";
 // import Contact from "../models/Contact";
 // import Tenant from "../models/Tenant";
-import { StartWhatsAppSessionVerify } from "../services/WbotServices/StartWhatsAppSessionVerify";
+// import { StartWhatsAppSessionVerify } from "../services/WbotServices/StartWhatsAppSessionVerify";
 // import { handleMessage } from "../services/WbotServices/wbotMessageListener";
 import { getValue, setValue } from "./redisClient";
 import { logger } from "../utils/logger";
@@ -293,15 +293,15 @@ export const getWbot = (whatsappId: number, checkState = true): Session => {
   logger.info(`whatsappId: ${whatsappId} | checkState: ${checkState}`);
   const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
 
-  if (sessionIndex === -1) {
-    StartWhatsAppSessionVerify(whatsappId, "ERR_WAPP_NOT_INITIALIZED")
-      .then(() => {
-        throw new AppError("ERR_WAPP_INITIALIZED");
-      })
-      .catch(() => {
-        throw new Error("ERR_WAPP_NOT_INITIALIZED");
-      });
-  }
+  // if (sessionIndex === -1) {
+  //   StartWhatsAppSessionVerify(whatsappId, "ERR_WAPP_NOT_INITIALIZED")
+  //     .then(() => {
+  //       throw new AppError("ERR_WAPP_INITIALIZED");
+  //     })
+  //     .catch(() => {
+  //       throw new Error("ERR_WAPP_NOT_INITIALIZED");
+  //     });
+  // }
 
   return sessions[sessionIndex];
 };

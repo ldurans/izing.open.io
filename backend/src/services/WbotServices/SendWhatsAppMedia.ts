@@ -19,7 +19,7 @@ const SendWhatsAppMedia = async ({
 
     const newMedia = MessageMedia.fromFilePath(media.path);
 
-    const sentMessage = await wbot.sendMessage(
+    const sendMessage = await wbot.sendMessage(
       `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`,
       newMedia,
       { sendAudioAsVoice: true }
@@ -29,7 +29,7 @@ const SendWhatsAppMedia = async ({
 
     fs.unlinkSync(media.path);
 
-    return sentMessage;
+    return sendMessage;
   } catch (err) {
     logger.error(`SendWhatsAppMedia | Error: ${err}`);
     // StartWhatsAppSessionVerify(ticket.whatsappId, err);

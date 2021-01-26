@@ -3,7 +3,7 @@
     <q-item
       dense
       :clickable="ticket.status !== 'pending' && (ticket.id !== $store.getters['ticketFocado'].id || $route.name !== 'chat')"
-      style="height: 7vh"
+      style="min-height: 7vh; max-height: 9vh"
       @click="abrirChatContato(ticket)"
       :style="`border-left: 5px solid ${borderColor[ticket.status]}`"
       class="q-px-sm"
@@ -36,7 +36,7 @@
           />
           <q-avatar>
             <q-icon
-              size="40px"
+              size="45px"
               name="mdi-play-circle-outline"
             />
           </q-avatar>
@@ -45,7 +45,7 @@
           </q-tooltip>
         </q-btn>
         <q-avatar
-          size="40px"
+          size="45px"
           v-if="ticket.status !== 'pending'"
         >
           <q-badge
@@ -66,7 +66,7 @@
             </template> -->
         </q-avatar>
       </q-item-section>
-      <q-item-section>
+      <q-item-section id="ListItemsTicket">
         <q-item-label lines="1">
           <div class="col-row">
             {{ticket.contact.name}}
@@ -111,6 +111,13 @@
               :label="status[ticket.status]"
             />
           </span>
+        </q-item-label>
+        <q-item-label
+          class="text-primary"
+          lines="1"
+          caption
+        >
+          Usuário: {{ ticket && ticket.user && ticket.user.name }}
         </q-item-label>
         <!-- <span class="absolute-bottom-right" v-if="ticket.unreadMessages">
           <q-badge style="font-size: .8em; border-radius: 10px;" class="q-py-xs" dense text-color="white" color="green" :label="ticket.unreadMessages" />
@@ -201,6 +208,10 @@ export default {
   position: relative
   height: 100%
   font-weight: 600
+
+#ListItemsTicket
+  .q-item__label + .q-item__label
+    margin-top: 1.5px
 
 .primary
   border-left: 3px solid $primary

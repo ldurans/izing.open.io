@@ -27,10 +27,7 @@
           :sent="mensagem.fromMe"
           :bg-color="mensagem.fromMe ? 'teal-2' : 'white' "
         >
-          <div
-            class="q-pa-sm q-pt-md"
-            :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
-          >
+          <div :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''">
             <div
               v-if="mensagem.isDeleted"
               class="text-italic"
@@ -89,7 +86,10 @@
               :color="mensagem.ack >= 3 ? 'green-4' : ''"
             />
             <template v-if="mensagem.mediaType === 'audio'">
-              <audio controls>
+              <audio
+                class="q-mt-md full-width"
+                controls
+              >
                 <source
                   :src="mensagem.mediaUrl"
                   type="audio/ogg"
@@ -115,7 +115,8 @@
                 @click="urlMedia=mensagem.mediaUrl;abrirModalImagem=true"
                 :src="mensagem.mediaUrl"
                 spinner-color="primary"
-                style="height: 140px; max-width: 150px"
+                style="height: 140px; width: 100%"
+                class="q-mt-md"
               />
               <VueEasyLightbox
                 moveDisabled
@@ -129,8 +130,9 @@
               <video
                 :src="mensagem.mediaUrl"
                 controls
+                class="q-mt-md"
                 style="objectFit: cover;
-                  width: 250px;
+                  width: 100%;
                   height: 200px;
                   borderTopLeftRadius: 8px;
                   borderTopRightRadius: 8px;
