@@ -12,16 +12,18 @@ interface AutoReplyData {
 interface Request {
   autoReplyData: AutoReplyData;
   autoReplyId: string;
+  tenantId: string | number;
 }
 
 const UpdateAutoReplyService = async ({
   autoReplyData,
-  autoReplyId
+  autoReplyId,
+  tenantId
 }: Request): Promise<AutoReply> => {
   const { name, action, userId, isActive, celularTeste } = autoReplyData;
 
   const autoReply = await AutoReply.findOne({
-    where: { id: autoReplyId },
+    where: { id: autoReplyId, tenantId },
     attributes: ["id", "name", "action", "userId", "isActive", "celularTeste"]
   });
 

@@ -5,17 +5,20 @@ interface Request {
   name: string;
   action: number;
   userId: number;
+  tenantId: number | string;
 }
 
 const CreateAutoReplyService = async ({
   name,
   action,
-  userId
+  userId,
+  tenantId
 }: Request): Promise<AutoReply> => {
   const autoReply = await AutoReply.create({
     name,
     action,
-    userId
+    userId,
+    tenantId
   });
 
   return autoReply;

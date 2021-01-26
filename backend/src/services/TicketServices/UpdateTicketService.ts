@@ -8,6 +8,7 @@ import User from "../../models/User";
 interface TicketData {
   status?: string;
   userId?: number;
+  tenantId: number | string;
 }
 
 interface Request {
@@ -25,10 +26,10 @@ const UpdateTicketService = async ({
   ticketData,
   ticketId
 }: Request): Promise<Response> => {
-  const { status, userId } = ticketData;
+  const { status, userId, tenantId } = ticketData;
 
   const ticket = await Ticket.findOne({
-    where: { id: ticketId },
+    where: { id: ticketId, tenantId },
     include: [
       {
         model: Contact,

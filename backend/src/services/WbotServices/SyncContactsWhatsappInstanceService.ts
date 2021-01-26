@@ -1,6 +1,7 @@
 import { getWbot } from "../../libs/wbot";
 import Contact from "../../models/Contact";
 import AppError from "../../errors/AppError";
+import { logger } from "../../utils/logger";
 
 const SyncContactsWhatsappInstanceService = async (
   whatsappId: number
@@ -12,9 +13,8 @@ const SyncContactsWhatsappInstanceService = async (
   try {
     contacts = await wbot.getContacts();
   } catch (err) {
-    console.log(
-      "Could not get whatsapp contacts from phone. Check connection page.",
-      err
+    logger.error(
+      `Could not get whatsapp contacts from phone. Check connection page. | Error: ${err}`
     );
   }
 

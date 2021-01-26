@@ -155,7 +155,13 @@ export default {
         this.$q.notify({
           message: `Atendimento Iniciado || ${ticket.contact.name} - Ticket: ${ticket.id}`,
           type: 'positive',
-          progress: true
+          progress: true,
+          position: 'top',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
         this.fecharModal()
         if (this.$route.name !== 'atendimento') {

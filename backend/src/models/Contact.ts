@@ -7,13 +7,15 @@ import {
   PrimaryKey,
   AutoIncrement,
   AllowNull,
-  Unique,
   Default,
   HasMany,
-  BeforeCreate
+  BeforeCreate,
+  ForeignKey,
+  BelongsTo
 } from "sequelize-typescript";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
 import ContactCustomField from "./ContactCustomField";
+import Tenant from "./Tenant";
 import Ticket from "./Ticket";
 
 @Table
@@ -27,7 +29,6 @@ class Contact extends Model<Contact> {
   name: string;
 
   @AllowNull(false)
-  @Unique
   @Column
   number: string;
 
@@ -38,6 +39,19 @@ class Contact extends Model<Contact> {
 
   @Column
   profilePicUrl: string;
+
+  @AllowNull(true)
+  @Default(null)
+  @Column
+  pushname: string;
+
+  @Default(false)
+  @Column
+  isUser: boolean;
+
+  @Default(false)
+  @Column
+  isWAContact: boolean;
 
   @Default(false)
   @Column
@@ -55,10 +69,19 @@ class Contact extends Model<Contact> {
   @HasMany(() => ContactCustomField)
   extraInfo: ContactCustomField[];
 
+  @ForeignKey(() => Tenant)
+  @Column
+  tenantId: number;
+
+  @BelongsTo(() => Tenant)
+  tenant: Tenant;
+
   @BeforeCreate
   static async getProfilePicUrl(instance: Contact): Promise<void> {
-    const profilePicUrl = await GetProfilePicUrl(instance.number);
-    console.log("BeforeCreate - profilePicUrl", profilePicUrl);
+    const profilePicUrl = await GetProfilePicUrl(
+      instance.number,
+      instance.tenantId
+    );
     instance.profilePicUrl = profilePicUrl;
   }
 }

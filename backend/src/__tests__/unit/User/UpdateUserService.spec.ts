@@ -21,7 +21,8 @@ describe("User", () => {
     const newUser = await CreateUserService({
       name: faker.name.findName(),
       email: faker.internet.email(),
-      password: faker.internet.password()
+      password: faker.internet.password(),
+      tenantId: 1
     });
 
     const updatedUser = await UpdateUserService({
@@ -29,7 +30,8 @@ describe("User", () => {
       userData: {
         name: "New name",
         email: "newmail@email.com"
-      }
+      },
+      tenantId: 1
     });
 
     expect(updatedUser).toHaveProperty("name", "New name");
@@ -43,16 +45,17 @@ describe("User", () => {
       email: faker.internet.email()
     };
 
-    expect(UpdateUserService({ userId, userData })).rejects.toBeInstanceOf(
-      AppError
-    );
+    expect(
+      UpdateUserService({ userId, userData, tenantId: 1 })
+    ).rejects.toBeInstanceOf(AppError);
   });
 
   it("should not be able to updated an user with invalid data", async () => {
     const newUser = await CreateUserService({
       name: faker.name.findName(),
       email: faker.internet.email(),
-      password: faker.internet.password()
+      password: faker.internet.password(),
+      tenantId: 1
     });
 
     const userId = newUser.id;
@@ -61,8 +64,8 @@ describe("User", () => {
       email: "test.worgn.email"
     };
 
-    expect(UpdateUserService({ userId, userData })).rejects.toBeInstanceOf(
-      AppError
-    );
+    expect(
+      UpdateUserService({ userId, userData, tenantId: 1 })
+    ).rejects.toBeInstanceOf(AppError);
   });
 });

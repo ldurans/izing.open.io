@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import SetTicketMessagesAsRead from "../helpers/SetTicketMessagesAsRead";
 import { getIO } from "../libs/socket";
 import Message from "../models/Message";
+import CreateMessageOffilineService from "../services/MessageServices/CreateMessageOfflineService";
 
 import ListMessagesService from "../services/MessageServices/ListMessagesService";
 import ShowTicketService from "../services/TicketServices/ShowTicketService";
@@ -24,35 +25,53 @@ type MessageData = {
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
   const { pageNumber } = req.query as IndexQuery;
+  const { tenantId } = req.user;
 
-  const { count, messages, ticket, hasMore } = await ListMessagesService({
+  const {
+    count,
+    messages,
+    messagesOffLine,
+    ticket,
+    hasMore
+  } = await ListMessagesService({
     pageNumber,
-    ticketId
+    ticketId,
+    tenantId
   });
 
-  await SetTicketMessagesAsRead(ticket);
+  SetTicketMessagesAsRead(ticket);
 
-  return res.json({ count, messages, ticket, hasMore });
+  return res.json({ count, messages, messagesOffLine, ticket, hasMore });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
+  const { tenantId } = req.user;
   const { body, quotedMsg }: MessageData = req.body;
   const medias = req.files as Express.Multer.File[];
 
-  const ticket = await ShowTicketService(ticketId);
+  const ticket = await ShowTicketService({ id: ticketId, tenantId });
 
-  if (medias) {
-    await Promise.all(
-      medias.map(async (media: Express.Multer.File) => {
-        await SendWhatsAppMedia({ media, ticket });
-      })
-    );
-  } else {
-    await SendWhatsAppMessage({ body, ticket, quotedMsg });
+  try {
+    SetTicketMessagesAsRead(ticket);
+
+    if (medias) {
+      await Promise.all(
+        medias.map(async (media: Express.Multer.File) => {
+          await SendWhatsAppMedia({ media, ticket });
+        })
+      );
+    } else {
+      await SendWhatsAppMessage({ body, ticket, quotedMsg });
+    }
+  } catch (error) {
+    CreateMessageOffilineService({
+      msg: req.body,
+      tenantId,
+      medias,
+      ticket
+    });
   }
-
-  await SetTicketMessagesAsRead(ticket);
 
   return res.send();
 };
@@ -62,14 +81,18 @@ export const remove = async (
   res: Response
 ): Promise<Response> => {
   const { messageId } = req.params;
+  const { tenantId } = req.user;
 
-  const message = await DeleteWhatsAppMessage(messageId);
+  const message = await DeleteWhatsAppMessage(messageId, tenantId);
 
   const io = getIO();
-  io.to(message.ticketId.toString()).emit("appMessage", {
-    action: "update",
-    message
-  });
+  io.to(`${tenantId}-${message.ticketId.toString()}`).emit(
+    `${tenantId}-appMessage`,
+    {
+      action: "update",
+      message
+    }
+  );
 
   return res.send();
 };

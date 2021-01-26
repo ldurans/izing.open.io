@@ -18,8 +18,11 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).json({
     token,
     username: user.name,
+    email: user.email,
     profile: user.profile,
-    userId: user.id
+    userId: user.id,
+    tenantId: user.tenantId,
+    queues: user.queues
   });
 };
 

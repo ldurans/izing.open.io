@@ -404,7 +404,12 @@ export default {
               type: 'positive',
               progress: true,
               position: 'top',
-              message: `Auto Resposta ${autoResposta.name} deletada!`
+              message: `Auto Resposta ${autoResposta.name} deletada!`,
+              actions: [{
+                icon: 'close',
+                round: true,
+                color: 'white'
+              }]
             })
           })
           .catch(error => {
@@ -485,7 +490,12 @@ export default {
               type: 'positive',
               progress: true,
               position: 'top',
-              message: `Etapa ${etapa.id} deletada!`
+              message: `Etapa ${etapa.id} deletada!`,
+              actions: [{
+                icon: 'close',
+                round: true,
+                color: 'white'
+              }]
             })
           })
           .catch(error => {
@@ -543,7 +553,12 @@ export default {
               type: 'positive',
               progress: true,
               position: 'top',
-              message: `Etapa ${etapa.id} deletada!`
+              message: `Etapa ${etapa.id} deletada!`,
+              actions: [{
+                icon: 'close',
+                round: true,
+                color: 'white'
+              }]
             })
           })
           .catch(error => {

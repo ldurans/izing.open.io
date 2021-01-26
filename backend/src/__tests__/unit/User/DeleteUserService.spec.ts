@@ -21,14 +21,15 @@ describe("User", () => {
     const { id } = await CreateUserService({
       name: faker.name.findName(),
       email: faker.internet.email(),
-      password: faker.internet.password()
+      password: faker.internet.password(),
+      tenantId: 1
     });
 
-    expect(DeleteUserService(id)).resolves.not.toThrow();
+    expect(DeleteUserService(id, 1)).resolves.not.toThrow();
   });
 
   it("to throw an error if tries to delete a non existing user", async () => {
-    expect(DeleteUserService(faker.random.number())).rejects.toBeInstanceOf(
+    expect(DeleteUserService(faker.random.number(), 1)).rejects.toBeInstanceOf(
       AppError
     );
   });

@@ -20,6 +20,7 @@ interface UserData {
 interface Request {
   userData: UserData;
   userId: string | number;
+  tenantId: string | number;
 }
 
 interface Response {
@@ -31,10 +32,11 @@ interface Response {
 
 const UpdateUserService = async ({
   userData,
-  userId
+  userId,
+  tenantId
 }: Request): Promise<Response | undefined> => {
   const user = await User.findOne({
-    where: { id: userId },
+    where: { id: userId, tenantId },
     attributes: ["name", "id", "email", "profile"]
   });
 

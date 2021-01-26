@@ -10,8 +10,9 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   if (req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
+  const { tenantId } = req.user;
 
-  const settings = await ListSettingsService();
+  const settings = await ListSettingsService(tenantId);
 
   return res.status(200).json(settings);
 };
@@ -23,16 +24,18 @@ export const update = async (
   if (req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
+  const { tenantId } = req.user;
   const { settingKey: key } = req.params;
   const { value } = req.body;
 
   const setting = await UpdateSettingService({
     key,
-    value
+    value,
+    tenantId
   });
 
   const io = getIO();
-  io.emit("settings", {
+  io.emit(`${tenantId}-settings`, {
     action: "update",
     setting
   });

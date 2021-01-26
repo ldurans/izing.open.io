@@ -6,11 +6,14 @@ import Ticket from "../models/Ticket";
 import Whatsapp from "../models/Whatsapp";
 import ContactCustomField from "../models/ContactCustomField";
 import Message from "../models/Message";
+import MessageOffLine from "../models/MessageOffLine";
 import AutoReply from "../models/AutoReply";
 import StepsReply from "../models/StepsReply";
 import StepsReplyAction from "../models/StepsReplyAction";
 import Queue from "../models/Queue";
 import UsersQueues from "../models/UsersQueues";
+import Tenant from "../models/Tenant";
+import AutoReplyLogs from "../models/AutoReplyLogs";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -23,6 +26,7 @@ const models = [
   Contact,
   Ticket,
   Message,
+  MessageOffLine,
   Whatsapp,
   ContactCustomField,
   Setting,
@@ -30,7 +34,9 @@ const models = [
   StepsReply,
   StepsReplyAction,
   Queue,
-  UsersQueues
+  UsersQueues,
+  Tenant,
+  AutoReplyLogs
 ];
 
 sequelize.addModels(models);

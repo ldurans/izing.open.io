@@ -1,9 +1,14 @@
 import Queue from "../../models/Queue";
 import AppError from "../../errors/AppError";
 
-const DeleteQueueService = async (id: string): Promise<void> => {
+interface Request {
+  id: string;
+  tenantId: number | string;
+}
+
+const DeleteQueueService = async ({ id, tenantId }: Request): Promise<void> => {
   const queue = await Queue.findOne({
-    where: { id }
+    where: { id, tenantId }
   });
 
   if (!queue) {

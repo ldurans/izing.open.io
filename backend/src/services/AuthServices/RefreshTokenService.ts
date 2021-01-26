@@ -28,7 +28,7 @@ export const RefreshTokenService = async (token: string): Promise<Response> => {
 
   const { id, tokenVersion } = decoded as RefreshTokenPayload;
 
-  const user = await ShowUserService(id);
+  const user = await ShowUserService(id, 1);
 
   if (user.tokenVersion !== tokenVersion) {
     throw new AppError("ERR_SESSION_EXPIRED", 401);

@@ -7,6 +7,7 @@ interface Request {
   email: string;
   password: string;
   name: string;
+  tenantId: string | number;
   profile?: string;
 }
 
@@ -21,10 +22,12 @@ const CreateUserService = async ({
   email,
   password,
   name,
+  tenantId,
   profile = "admin"
 }: Request): Promise<Response> => {
   const schema = Yup.object().shape({
     name: Yup.string().required().min(2),
+    tenantId: Yup.number().required(),
     email: Yup.string()
       .email()
       .required()
@@ -42,7 +45,7 @@ const CreateUserService = async ({
   });
 
   try {
-    await schema.validate({ email, password, name });
+    await schema.validate({ email, password, name, tenantId });
   } catch (err) {
     throw new AppError(err.message);
   }
@@ -51,7 +54,8 @@ const CreateUserService = async ({
     email,
     password,
     name,
-    profile
+    profile,
+    tenantId
   });
 
   const serializedUser = {

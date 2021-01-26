@@ -1,4 +1,5 @@
 node_modules
+.cache
 public/*
 dist
 !public/.gitkeep

@@ -1,15 +1,18 @@
 import AppError from "../../errors/AppError";
 import Message from "../../models/Message";
+import MessagesOffLine from "../../models/MessageOffLine";
 import Ticket from "../../models/Ticket";
 import ShowTicketService from "../TicketServices/ShowTicketService";
 
 interface Request {
   ticketId: string;
+  tenantId: number | string;
   pageNumber?: string;
 }
 
 interface Response {
   messages: Message[];
+  messagesOffLine: MessagesOffLine[];
   ticket: Ticket;
   count: number;
   hasMore: boolean;
@@ -17,16 +20,17 @@ interface Response {
 
 const ListMessagesService = async ({
   pageNumber = "1",
-  ticketId
+  ticketId,
+  tenantId
 }: Request): Promise<Response> => {
-  const ticket = await ShowTicketService(ticketId);
+  const ticket = await ShowTicketService({ id: ticketId, tenantId });
 
   if (!ticket) {
     throw new AppError("ERR_NO_TICKET_FOUND", 404);
   }
 
   // await setMessagesAsRead(ticket);
-  const limit = 200;
+  const limit = 50;
   const offset = limit * (+pageNumber - 1);
 
   const { count, rows: messages } = await Message.findAndCountAll({
@@ -44,10 +48,28 @@ const ListMessagesService = async ({
     order: [["createdAt", "DESC"]]
   });
 
+  let messagesOffLine: MessagesOffLine[] = [];
+  if (+pageNumber === 1) {
+    const { rows } = await MessagesOffLine.findAndCountAll({
+      where: { ticketId },
+      include: [
+        "contact",
+        {
+          model: Message,
+          as: "quotedMsg",
+          include: ["contact"]
+        }
+      ],
+      order: [["createdAt", "DESC"]]
+    });
+    messagesOffLine = rows;
+  }
+
   const hasMore = count > offset + messages.length;
 
   return {
     messages: messages.reverse(),
+    messagesOffLine,
     ticket,
     count,
     hasMore

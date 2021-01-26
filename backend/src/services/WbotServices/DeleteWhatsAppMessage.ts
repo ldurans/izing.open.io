@@ -2,14 +2,19 @@ import AppError from "../../errors/AppError";
 import GetWbotMessage from "../../helpers/GetWbotMessage";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
+import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
 
-const DeleteWhatsAppMessage = async (messageId: string): Promise<Message> => {
+const DeleteWhatsAppMessage = async (
+  messageId: string,
+  tenantId: string | number
+): Promise<Message> => {
   const message = await Message.findByPk(messageId, {
     include: [
       {
         model: Ticket,
         as: "ticket",
-        include: ["contact"]
+        include: ["contact"],
+        where: { tenantId }
       }
     ]
   });
@@ -25,6 +30,7 @@ const DeleteWhatsAppMessage = async (messageId: string): Promise<Message> => {
   try {
     await messageToDelete.delete(true);
   } catch (err) {
+    StartWhatsAppSessionVerify(ticket.whatsappId, err);
     throw new AppError("ERR_DELETE_WAPP_MSG");
   }
 

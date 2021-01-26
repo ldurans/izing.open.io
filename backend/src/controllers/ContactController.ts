@@ -29,17 +29,20 @@ interface ContactData {
 }
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
+  const { tenantId } = req.user;
   const { searchParam, pageNumber } = req.query as IndexQuery;
 
   const { contacts, count, hasMore } = await ListContactsService({
     searchParam,
-    pageNumber
+    pageNumber,
+    tenantId
   });
 
   return res.json({ contacts, count, hasMore });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
+  const { tenantId } = req.user;
   const newContact: ContactData = req.body;
   newContact.number = newContact.number.replace("-", "").replace(" ", "");
 
@@ -56,17 +59,18 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     throw new AppError(err.message);
   }
 
-  await CheckIsValidContact(newContact.number);
+  await CheckIsValidContact(newContact.number, tenantId);
 
-  const profilePicUrl = await GetProfilePicUrl(newContact.number);
+  const profilePicUrl = await GetProfilePicUrl(newContact.number, tenantId);
 
   const contact = await CreateContactService({
     ...newContact,
-    profilePicUrl
+    profilePicUrl,
+    tenantId
   });
 
   const io = getIO();
-  io.emit("contact", {
+  io.emit(`${tenantId}-contact`, {
     action: "create",
     contact
   });
@@ -76,8 +80,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
 export const show = async (req: Request, res: Response): Promise<Response> => {
   const { contactId } = req.params;
+  const { tenantId } = req.user;
 
-  const contact = await ShowContactService(contactId);
+  const contact = await ShowContactService({ id: contactId, tenantId });
 
   return res.status(200).json(contact);
 };
@@ -87,6 +92,7 @@ export const update = async (
   res: Response
 ): Promise<Response> => {
   const contactData: ContactData = req.body;
+  const { tenantId } = req.user;
 
   const schema = Yup.object().shape({
     name: Yup.string(),
@@ -102,14 +108,18 @@ export const update = async (
     throw new AppError(err.message);
   }
 
-  await CheckIsValidContact(contactData.number);
+  await CheckIsValidContact(contactData.number, tenantId);
 
   const { contactId } = req.params;
 
-  const contact = await UpdateContactService({ contactData, contactId });
+  const contact = await UpdateContactService({
+    contactData,
+    contactId,
+    tenantId
+  });
 
   const io = getIO();
-  io.emit("contact", {
+  io.emit(`${tenantId}-contact`, {
     action: "update",
     contact
   });
@@ -122,11 +132,12 @@ export const remove = async (
   res: Response
 ): Promise<Response> => {
   const { contactId } = req.params;
+  const { tenantId } = req.user;
 
-  await DeleteContactService(contactId);
+  await DeleteContactService({ id: contactId, tenantId });
 
   const io = getIO();
-  io.emit("contact", {
+  io.emit(`${tenantId}-contact`, {
     action: "delete",
     contactId
   });

@@ -1,0 +1,68 @@
+import { join } from "path";
+import { promisify } from "util";
+import { writeFile } from "fs";
+import * as Sentry from "@sentry/node";
+
+import { Message as WbotMessage } from "whatsapp-web.js";
+import Contact from "../../../models/Contact";
+import Ticket from "../../../models/Ticket";
+
+import Message from "../../../models/Message";
+import VerifyQuotedMessage from "./VerifyQuotedMessage";
+import CreateMessageService from "../../MessageServices/CreateMessageService";
+import { logger } from "../../../utils/logger";
+
+const writeFileAsync = promisify(writeFile);
+
+const VerifyMediaMessage = async (
+  msg: WbotMessage,
+  ticket: Ticket,
+  contact: Contact
+): Promise<Message> => {
+  const quotedMsg = await VerifyQuotedMessage(msg);
+
+  const media = await msg.downloadMedia();
+
+  if (!media) {
+    throw new Error("ERR_WAPP_DOWNLOAD_MEDIA");
+  }
+
+  if (!media.filename) {
+    const ext = media.mimetype.split("/")[1].split(";")[0];
+    media.filename = `${new Date().getTime()}.${ext}`;
+  }
+
+  try {
+    await writeFileAsync(
+      join(__dirname, "..", "..", "..", "..", "public", media.filename),
+      media.data,
+      "base64"
+    );
+  } catch (err) {
+    Sentry.captureException(err);
+    logger.error(err);
+  }
+
+  const messageData = {
+    id: msg.id.id,
+    ticketId: ticket.id,
+    contactId: msg.fromMe ? undefined : contact.id,
+    body: msg.body || media.filename,
+    fromMe: msg.fromMe,
+    read: msg.fromMe,
+    mediaUrl: media.filename,
+    mediaType: media.mimetype.split("/")[0],
+    quotedMsgId: quotedMsg?.id,
+    timestamp: msg.timestamp
+  };
+
+  await ticket.update({ lastMessage: msg.body || media.filename });
+  const newMessage = await CreateMessageService({
+    messageData,
+    tenantId: ticket.tenantId
+  });
+
+  return newMessage;
+};
+
+export default VerifyMediaMessage;

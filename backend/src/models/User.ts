@@ -11,12 +11,15 @@ import {
   AutoIncrement,
   Default,
   HasMany,
-  BelongsToMany
+  BelongsToMany,
+  ForeignKey,
+  BelongsTo
 } from "sequelize-typescript";
 import { hash, compare } from "bcryptjs";
 import Ticket from "./Ticket";
 import Queue from "./Queue";
 import UsersQueues from "./UsersQueues";
+import Tenant from "./Tenant";
 
 @Table
 class User extends Model<User> {
@@ -56,6 +59,13 @@ class User extends Model<User> {
 
   @BelongsToMany(() => Queue, () => UsersQueues, "userId", "queueId")
   queues: Queue[];
+
+  @ForeignKey(() => Tenant)
+  @Column
+  tenantId: number;
+
+  @BelongsTo(() => Tenant)
+  tenant: Tenant;
 
   @BeforeUpdate
   @BeforeCreate

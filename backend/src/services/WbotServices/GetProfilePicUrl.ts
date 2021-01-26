@@ -1,8 +1,11 @@
 import GetDefaultWhatsApp from "../../helpers/GetDefaultWhatsApp";
 import { getWbot } from "../../libs/wbot";
 
-const GetProfilePicUrl = async (number: string): Promise<string> => {
-  const defaultWhatsapp = await GetDefaultWhatsApp();
+const GetProfilePicUrl = async (
+  number: string,
+  tenantId: string | number
+): Promise<string> => {
+  const defaultWhatsapp = await GetDefaultWhatsApp(tenantId);
 
   const wbot = getWbot(defaultWhatsapp.id);
 

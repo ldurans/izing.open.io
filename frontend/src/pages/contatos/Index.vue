@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-table
-      class="my-sticky-dynamic q-ma-lg"
+      class="my-sticky-dynamic"
       title="Contatos"
       :data="contacts"
       :columns="columns"
@@ -13,6 +13,13 @@
       :pagination.sync="pagination"
       :rows-per-page-options="[0]"
       @virtual-scroll="onScroll"
+      :bordered="isChatContact"
+      :square="isChatContact"
+      :flat="isChatContact"
+      :class="{
+        'q-ma-lg': !isChatContact,
+        'q-ma-none heightChat': isChatContact
+      }"
     >
       <template v-slot:top-right>
         <q-input
@@ -103,6 +110,12 @@ import ContatoModal from './ContatoModal'
 export default {
   name: 'IndexContatos',
   components: { ContatoModal },
+  props: {
+    isChatContact: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       contacts: [],
@@ -198,7 +211,13 @@ export default {
         this.$q.notify({
           message: `Atendimento Iniciado || ${ticket.contact.name} - Ticket: ${ticket.id}`,
           type: 'positive',
-          progress: true
+          position: 'top',
+          progress: true,
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
         this.$router.push({ name: 'atendimento' })
       } catch (error) {
@@ -234,7 +253,12 @@ export default {
               type: 'positive',
               progress: true,
               position: 'top',
-              message: 'Contato deletado!'
+              message: 'Contato deletado!',
+              actions: [{
+                icon: 'close',
+                round: true,
+                color: 'white'
+              }]
             })
           })
           .catch(error => {
@@ -270,4 +294,7 @@ export default {
     top: 63px
   thead tr:first-child th
     top: 0
+
+.heightChat
+  height: calc(100vh - 2px)
 </style>

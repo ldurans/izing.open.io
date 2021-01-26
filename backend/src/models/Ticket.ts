@@ -4,14 +4,11 @@ import {
   CreatedAt,
   UpdatedAt,
   Model,
-  DataType,
   PrimaryKey,
   ForeignKey,
   BelongsTo,
   HasMany,
   AutoIncrement,
-  AfterFind,
-  BeforeUpdate,
   Default,
   AfterCreate
 } from "sequelize-typescript";
@@ -24,6 +21,8 @@ import AutoReply from "./AutoReply";
 import StepsReply from "./StepsReply";
 import Queue from "./Queue";
 import ShowStepAutoReplyMessageService from "../services/AutoReplyServices/ShowStepAutoReplyMessageService";
+import Tenant from "./Tenant";
+import MessagesOffLine from "./MessageOffLine";
 
 @Table
 class Ticket extends Model<Ticket> {
@@ -35,7 +34,7 @@ class Ticket extends Model<Ticket> {
   @Column({ defaultValue: "pending" })
   status: string;
 
-  @Column(DataType.VIRTUAL)
+  @Column
   unreadMessages: number;
 
   @Column
@@ -96,38 +95,28 @@ class Ticket extends Model<Ticket> {
   @BelongsTo(() => Queue)
   queue: Queue;
 
-  // @Column(DataType.VIRTUAL)
-  // get teste(): string {
-  //   // console.log("VIRTUAL ===>", this);
-  //   return "teste ok";
-  // }
+  @ForeignKey(() => Tenant)
+  @Column
+  tenantId: number;
 
-  @AfterFind
-  static async countTicketsUnreadMessages(tickets: Ticket[]): Promise<void> {
-    if (tickets && tickets.length > 0) {
-      await Promise.all(
-        tickets.map(async ticket => {
-          ticket.unreadMessages = await Message.count({
-            where: { ticketId: ticket.id, read: false }
-          });
-        })
-      );
-    }
-  }
+  @BelongsTo(() => Tenant)
+  tenant: Tenant;
 
-  @BeforeUpdate
-  static async countTicketUnreadMessags(ticket: Ticket): Promise<void> {
-    ticket.unreadMessages = await Message.count({
-      where: { ticketId: ticket.id, read: false }
-    });
-  }
+  @HasMany(() => MessagesOffLine)
+  messagesOffLine: MessagesOffLine[];
 
   @AfterCreate
   static async AutoReplyWelcome(instance: Ticket): Promise<void> {
-    const contato = await Contact.findByPk(instance.contactId);
+    if (instance.userId) return;
+
     const stepAutoReply = await ShowStepAutoReplyMessageService(0, 0, 0, true);
+
+    if (!stepAutoReply) return;
+
+    const contato = await Contact.findByPk(instance.contactId);
     const { celularTeste } = stepAutoReply.autoReply;
     const celularContato = contato?.number;
+
     if (
       (celularTeste &&
         celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
@@ -136,12 +125,10 @@ class Ticket extends Model<Ticket> {
       return;
     }
 
-    if (stepAutoReply) {
-      await instance.update({
-        autoReplyId: stepAutoReply.autoReply.id,
-        stepAutoReplyId: stepAutoReply.id
-      });
-    }
+    await instance.update({
+      autoReplyId: stepAutoReply.autoReply.id,
+      stepAutoReplyId: stepAutoReply.id
+    });
   }
 }
 

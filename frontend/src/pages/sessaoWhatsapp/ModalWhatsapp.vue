@@ -110,7 +110,12 @@ export default {
           type: 'warning',
           progress: true,
           position: 'top',
-          message: 'Ops! Verifique os erros...'
+          message: 'Ops! Verifique os erros...',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
       }
       try {
@@ -123,7 +128,12 @@ export default {
           type: 'positive',
           progress: true,
           position: 'top',
-          message: `Whatsapp ${this.whatsAppEdit.id ? 'editado' : 'criado'} com sucesso!`
+          message: `Whatsapp ${this.whatsAppEdit.id ? 'editado' : 'criado'} com sucesso!`,
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
         this.fecharModal()
       } catch (error) {

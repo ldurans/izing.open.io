@@ -3,7 +3,8 @@ import { Client } from "whatsapp-web.js";
 
 import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
-import { StartWhatsAppSession } from "./StartWhatsAppSession";
+import { logger } from "../../utils/logger";
+// import { StartWhatsAppSession } from "./StartWhatsAppSession";
 
 interface Session extends Client {
   id?: number;
@@ -18,15 +19,15 @@ const wbotMonitor = async (
 
   try {
     wbot.on("change_state", async newState => {
-      console.log("Monitor session:", sessionName, newState);
+      logger.info(`Monitor session: ${sessionName} - NewState: ${newState}`);
       try {
         await whatsapp.update({ status: newState });
       } catch (err) {
         Sentry.captureException(err);
-        console.log(err);
+        logger.error(err);
       }
 
-      io.emit("whatsappSession", {
+      io.emit(`${whatsapp.tenantId}-whatsappSession`, {
         action: "update",
         session: whatsapp
       });
@@ -34,12 +35,12 @@ const wbotMonitor = async (
 
     wbot.on("change_battery", async batteryInfo => {
       const { battery, plugged } = batteryInfo;
-      console.log(
+      logger.info(
         `Battery session: ${sessionName} ${battery}% - Charging? ${plugged}`
       );
 
       if (battery <= 20 && !plugged) {
-        io.emit("change_battery", {
+        io.emit(`${whatsapp.tenantId}-change_battery`, {
           action: "update",
           batteryInfo: {
             ...batteryInfo,
@@ -52,34 +53,27 @@ const wbotMonitor = async (
         await whatsapp.update({ battery, plugged });
       } catch (err) {
         Sentry.captureException(err);
-        console.log(err);
+        logger.error(err);
       }
 
-      io.emit("whatsappSession", {
+      io.emit(`${whatsapp.tenantId}-whatsappSession`, {
         action: "update",
         session: whatsapp
       });
     });
 
     wbot.on("disconnected", async reason => {
-      console.log("Disconnected session:", sessionName, reason);
-      try {
-        await whatsapp.update({ status: "OPENING", session: "" });
-      } catch (err) {
-        Sentry.captureException(err);
-        console.log(err);
-      }
-
-      io.emit("whatsappSession", {
+      logger.info(`Disconnected session: ${sessionName} | Reason: ${reason}`);
+      io.emit(`${whatsapp.tenantId}-whatsappSession`, {
         action: "update",
         session: whatsapp
       });
 
-      setTimeout(() => StartWhatsAppSession(whatsapp), 2000);
+      // setTimeout(() => StartWhatsAppSession(whatsapp), 2000);
     });
   } catch (err) {
     Sentry.captureException(err);
-    console.log(err);
+    logger.error(err);
   }
 };
 

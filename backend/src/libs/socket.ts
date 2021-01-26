@@ -2,41 +2,63 @@ import socketIo, { Server as SocketIO } from "socket.io";
 import socketRedis from "socket.io-redis";
 import { Server } from "http";
 import AppError from "../errors/AppError";
+import decodeTokenSocket from "./decodeTokenSocket";
+import { logger } from "../utils/logger";
 
 let io: SocketIO;
 
 export const initIO = (httpServer: Server): SocketIO => {
   io = socketIo(httpServer);
+  io.adapter(
+    socketRedis({
+      host: process.env.IO_REDIS_SERVER,
+      port: Number(process.env.IO_REDIS_PORT)
+    })
+  );
 
-  if (process.env.NODE_ENV === "prod") {
-    io.adapter(
-      socketRedis({
-        host: process.env.IO_REDIS_SERVER,
-        port: Number(process.env.IO_REDIS_PORT)
-        // db: process.env.IO_REDIS_DB
-      })
-    );
-  }
+  io.use((socket, next) => {
+    try {
+      const token = socket?.handshake?.query?.token;
+      const verify = decodeTokenSocket(token);
+      if (verify.isValid) {
+        const query = socket?.handshake?.query;
+        socket.handshake.query = { ...query, ...verify.data };
+        next();
+      }
+      next(new Error("authentication error"));
+    } catch (error) {
+      logger.warn(`tokenInvalid: ${socket}`);
+      socket.emit(`tokenInvalid-${socket.id}`);
+      next(new Error("authentication error"));
+    }
+  });
 
   io.on("connection", socket => {
-    console.log("Client Connected");
-    socket.on("joinChatBox", ticketId => {
-      console.log("A client joined a ticket channel");
-      socket.join(ticketId);
-    });
+    logger.info(`Client Connected: ${socket}`);
+    const { tenantId } = socket.handshake.query;
+    if (tenantId) {
+      logger.info(`Client Connected in tenant: ${tenantId}`);
+      socket.on(`${tenantId}-joinChatBox`, ticketId => {
+        console.info(`Client joined a ticket channel ${tenantId}-${ticketId}`);
+        socket.join(`${tenantId}-${ticketId}`);
+      });
 
-    socket.on("joinNotification", () => {
-      console.log("A client joined notification channel");
-      socket.join("notification");
-    });
-
-    socket.on("joinTickets", status => {
-      console.log(`A client joined to ${status} tickets channel.`);
-      socket.join(status);
-    });
+      socket.on(`${tenantId}-joinNotification`, () => {
+        logger.info(
+          `A client joined notification channel ${tenantId}-notification`
+        );
+        socket.join(`${tenantId}-notification`);
+      });
+      socket.on(`${tenantId}-joinTickets`, status => {
+        logger.info(
+          `A client joined to ${tenantId} - ${status} tickets channel.`
+        );
+        socket.join(`${tenantId}-${status}`);
+      });
+    }
 
     socket.on("disconnect", () => {
-      console.log("Client disconnected");
+      logger.info("Client disconnected");
     });
   });
   return io;

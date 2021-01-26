@@ -1,13 +1,18 @@
 <template>
-  <div>
-    <template v-for="(mensagens, key, idxDate) in mensagensAgrupadas">
-      <hr
-        :key="`timestamp-${key}`"
-        class="hr-text q-mt-lg q-mb-md"
-        :data-content="key"
-      >
+  <div class="q-pa-md">
+    <transition-group
+      appear
+      enter-active-class="animated fadeIn"
+      leave-active-class="animated fadeOut"
+    >
       <template v-for="(mensagem, index) in mensagens">
-        <template v-if="idxDate === Object.keys(mensagensAgrupadas).length - 1 && index === mensagens.length - 1">
+        <hr
+          :key="'hr-'+index"
+          class="hr-text q-mt-lg q-mb-md"
+          :data-content="formatarData(mensagem.createdAt)"
+          v-show="index === 0 || formatarData(mensagem.createdAt) !== formatarData(mensagens[index -1].createdAt)"
+        >
+        <template v-if="mensagens.length && index === mensagens.length - 1">
           <div
             :key="`ref-${mensagem.createdAt}`"
             ref="lastMessageRef"
@@ -20,10 +25,12 @@
           :key="mensagem.id"
           :stamp="dataInWords(mensagem.createdAt)"
           :sent="mensagem.fromMe"
-          :bg-color="mensagem.fromMe ? 'green-3' : 'white' "
-          class="text-weight-regular"
+          :bg-color="mensagem.fromMe ? 'teal-2' : 'white' "
         >
-          <div :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''">
+          <div
+            class="q-pa-sm q-pt-md"
+            :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
+          >
             <div
               v-if="mensagem.isDeleted"
               class="text-italic"
@@ -156,8 +163,9 @@
             </div>
           </div>
         </q-chat-message>
+
       </template>
-    </template>
+    </transition-group>
   </div>
 </template>
 
@@ -180,9 +188,9 @@ export default {
   name: 'MensagemChat',
   mixins: [mixinCommon],
   props: {
-    mensagensAgrupadas: {
-      type: Object,
-      default: () => { }
+    mensagens: {
+      type: Array,
+      default: () => []
     },
     replyingMessage: {
       type: Object,
@@ -236,7 +244,12 @@ export default {
         this.$q.notify({
           message: JSON.stringify(error.response),
           type: 'negative',
-          progress: true
+          progress: true,
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
       }
       this.loading = false
@@ -283,5 +296,9 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.q-message-text {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.14),
+    0 2px 1px -1px rgba(0, 0, 0, 0.12);
+}
 </style>

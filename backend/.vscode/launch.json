@@ -9,6 +9,7 @@
       "preLaunchTask": "tsc: watch - backend/tsconfig.json",
       "program": "${workspaceFolder}/src/server.ts",
       "cwd": "${workspaceFolder}",
+      "outputCapture": "std",
       "protocol": "inspector",
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"

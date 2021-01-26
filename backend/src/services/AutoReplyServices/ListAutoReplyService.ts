@@ -6,7 +6,14 @@ import StepsReplyAction from "../../models/StepsReplyAction";
 interface Response {
   autoReply: AutoReply[];
 }
-const ListAutoReplyService = async (): Promise<Response> => {
+
+interface Request {
+  tenantId: number | string;
+}
+
+const ListAutoReplyService = async ({
+  tenantId
+}: Request): Promise<Response> => {
   let includeCondition: Includeable[];
   // eslint-disable-next-line prefer-const
   includeCondition = [
@@ -34,6 +41,7 @@ const ListAutoReplyService = async (): Promise<Response> => {
   ];
   const autoReply = await AutoReply.findAll({
     include: includeCondition,
+    where: { tenantId },
     order: [[{ model: StepsReply, as: "stepsReply" }, "id", "ASC"]]
   });
 
