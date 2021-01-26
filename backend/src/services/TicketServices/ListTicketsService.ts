@@ -186,7 +186,7 @@ const ListTicketsService = async ({
       [Op.or]: [
         {
           "$contact.name$": where(
-            fn("LOWER", col("name")),
+            fn("LOWER", col("contact.name")),
             "LIKE",
             `%${sanitizedSearchParam}%`
           )
