@@ -1,8 +1,8 @@
 {
-  "name": "whatchats",
+  "name": "WChats",
   "version": "0.0.1",
   "description": "Bot Multi-atendimento para whatsapp",
-  "productName": "WhatChats",
+  "productName": "WChats",
   "author": "Durans <lumardyelson@gmail.com>",
   "private": true,
   "scripts": {

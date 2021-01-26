@@ -7,6 +7,7 @@ import Contact from "../../models/Contact";
 import Message from "../../models/Message";
 import UsersQueues from "../../models/UsersQueues";
 import AppError from "../../errors/AppError";
+import User from "../../models/User";
 
 interface Request {
   searchParam?: string;
@@ -53,6 +54,11 @@ const ListTicketsService = async ({
       model: Contact,
       as: "contact",
       attributes: ["id", "name", "number", "profilePicUrl"]
+    },
+    {
+      model: User,
+      as: "user",
+      attributes: ["id", "name", "profile"]
     }
   ];
 
@@ -180,7 +186,7 @@ const ListTicketsService = async ({
       [Op.or]: [
         {
           "$contact.name$": where(
-            fn("LOWER", col("name")),
+            fn("LOWER", col("contact.name")),
             "LIKE",
             `%${sanitizedSearchParam}%`
           )

@@ -126,8 +126,8 @@ module.exports = function (ctx) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'WhatChats',
-        short_name: 'WhatChats',
+        name: 'WChats',
+        short_name: 'WChats',
         description: 'Bot Multi-atendimento para whatsapp',
         display: 'standalone',
         orientation: 'portrait',
@@ -193,7 +193,7 @@ module.exports = function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'whatchats'
+        appId: 'WChats'
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

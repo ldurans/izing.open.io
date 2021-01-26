@@ -21,9 +21,14 @@
           class="text-primary q-pr-none"
           style="height: 60px"
         >
-          <q-avatar class="cursor-pointer">
-            <img src="https://cdn.quasar.dev/app-icons/icon-128x128.png" />
-          </q-avatar>
+
+          <q-btn
+            round
+            outline
+            color="primary"
+            label="LD"
+          />
+
           <q-space />
           <q-btn
             round
