@@ -7,6 +7,7 @@ interface Request {
   name: string;
   status?: string;
   isDefault?: boolean;
+  tenantId: string | number;
 }
 
 interface Response {
@@ -17,7 +18,8 @@ interface Response {
 const CreateWhatsAppService = async ({
   name,
   status = "OPENING",
-  isDefault = false
+  isDefault = false,
+  tenantId
 }: Request): Promise<Response> => {
   const schema = Yup.object().shape({
     name: Yup.string()
@@ -45,7 +47,7 @@ const CreateWhatsAppService = async ({
     throw new AppError(err.message);
   }
 
-  const whatsappFound = await Whatsapp.findOne();
+  const whatsappFound = await Whatsapp.findOne({ where: { tenantId } });
 
   if (!whatsappFound) {
     isDefault = !whatsappFound;
@@ -55,7 +57,7 @@ const CreateWhatsAppService = async ({
 
   if (isDefault) {
     oldDefaultWhatsapp = await Whatsapp.findOne({
-      where: { isDefault: true }
+      where: { isDefault: true, tenantId }
     });
     if (oldDefaultWhatsapp) {
       await oldDefaultWhatsapp.update({ isDefault: false });
@@ -65,7 +67,8 @@ const CreateWhatsAppService = async ({
   const whatsapp = await Whatsapp.create({
     name,
     status,
-    isDefault
+    isDefault,
+    tenantId
   });
 
   return { whatsapp, oldDefaultWhatsapp };

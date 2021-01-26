@@ -2,9 +2,17 @@ import AutoReply from "../../models/AutoReply";
 import AppError from "../../errors/AppError";
 import Ticket from "../../models/Ticket";
 
-const DeleteAutoReplyService = async (id: string): Promise<void> => {
+interface Request {
+  id: string | number;
+  tenantId: string | number;
+}
+
+const DeleteAutoReplyService = async ({
+  id,
+  tenantId
+}: Request): Promise<void> => {
   const autoReply = await AutoReply.findOne({
-    where: { id }
+    where: { id, tenantId }
   });
 
   const countTicket = await Ticket.findOne({ where: { autoReplyId: id } });

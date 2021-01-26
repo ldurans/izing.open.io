@@ -10,6 +10,7 @@ import {
   AutoIncrement,
   Default
 } from "sequelize-typescript";
+import Tenant from "./Tenant";
 import User from "./User";
 
 @Table
@@ -38,6 +39,13 @@ class Queue extends Model<Queue> {
 
   @BelongsTo(() => User)
   user: User;
+
+  @ForeignKey(() => Tenant)
+  @Column
+  tenantId: number;
+
+  @BelongsTo(() => Tenant)
+  tenant: Tenant;
 }
 
 export default Queue;

@@ -2,6 +2,7 @@ import { Message as WbotMessage } from "whatsapp-web.js";
 import Ticket from "../models/Ticket";
 import GetTicketWbot from "./GetTicketWbot";
 import AppError from "../errors/AppError";
+import { logger } from "../utils/logger";
 
 export const GetWbotMessage = async (
   ticket: Ticket,
@@ -37,7 +38,7 @@ export const GetWbotMessage = async (
 
     return msgFound;
   } catch (err) {
-    console.log(err);
+    logger.error(err);
     throw new AppError("ERR_FETCH_WAPP_MSG");
   }
 };

@@ -5,6 +5,8 @@ import GetWbotMessage from "../../helpers/GetWbotMessage";
 import SerializeWbotMsgId from "../../helpers/SerializeWbotMsgId";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
+import { logger } from "../../utils/logger";
+// import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
 
 interface Request {
   body: string;
@@ -30,14 +32,16 @@ const SendWhatsAppMessage = async ({
       `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`,
       body,
       {
-        quotedMessageId: quotedMsgSerializedId
+        quotedMessageId: quotedMsgSerializedId,
+        linkPreview: false // fix: send a message takes 2 seconds when there's a link on message body
       }
     );
 
     await ticket.update({ lastMessage: body });
     return sentMessage;
   } catch (err) {
-    console.log(err);
+    logger.error(`SendWhatsAppMessage | Error: ${err}`);
+    // await StartWhatsAppSessionVerify(ticket.whatsappId, err);
     throw new AppError("ERR_SENDING_WAPP_MSG");
   }
 };

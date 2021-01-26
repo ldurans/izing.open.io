@@ -8,13 +8,14 @@ const whatsapp = {
     },
     UPDATE_WHATSAPPS (state, payload) {
       const whatsApp = payload
-      const whatsAppIndex = state.whatsApps.findIndex(s => s.id === whatsApp.id)
+      let newWhats = [...state.whatsApps]
+      const whatsAppIndex = newWhats.findIndex(s => s.id === whatsApp.id)
       if (whatsAppIndex !== -1) {
-        state.whatsApps[whatsAppIndex] = whatsApp
+        newWhats[whatsAppIndex] = whatsApp
       } else {
-        state.whatsApps = [whatsApp, ...state.whatsApps]
+        newWhats = [whatsApp, ...newWhats]
       }
-      return state.whatsApps
+      state.whatsApps = [...newWhats]
     },
     UPDATE_SESSION (state, payload) {
       const whatsApp = payload

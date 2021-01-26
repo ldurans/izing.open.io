@@ -1,109 +1,137 @@
 <template>
   <div
-    style="height: 14vh"
-    class="bg-grey-3 row justify-center items-center relative-position"
+    style="min-height: 80px"
+    class="row bg-white justify-center items-start text-primary q-pt-md "
   >
-    <div class="col-xs-2 col-sm-3 col-md-2">
-      <q-btn
-        round
-        flat
-        class="q-ml-sm"
-      >
-        <q-icon
-          size="2em"
-          name="mdi-emoticon-happy-outline"
-        />
-        <q-tooltip>
-          Emoji
-        </q-tooltip>
-        <q-menu
-          anchor="top right"
-          self="bottom middle"
-          :offset="[5, 40]"
-        >
-          <VEmojiPicker
-            style="width: 40vw"
-            :showSearch="false"
-            :emojisByRow="20"
-            labelSearch="Localizar..."
-            lang="pt-BR"
-            @select="onInsertSelectEmoji"
-          />
-        </q-menu>
-      </q-btn>
-      <q-btn
-        round
-        flat
-        class="q-ml-md"
-        @click="abrirEnvioArquivo"
-      >
-        <q-icon
-          size="2em"
-          name="mdi-paperclip"
-        />
-        <q-tooltip>
-          Enviar arquivo
-        </q-tooltip>
-      </q-btn>
-    </div>
-    <div
-      style="height: 12vh"
-      class="col scroll"
+    <q-btn
+      round
+      flat
+      @click="abrirEnvioArquivo"
+      icon="mdi-paperclip"
+      :disable="cDisableActions"
     >
-      <textarea
-        :disabled="ticketFocado.status !== 'open'"
-        ref="inputEnvioMensagem"
-        @keypress.enter.exact="() => textChat.trim().length ? enviarMensagem() : ''"
-        style="min-height: 9vh; max-height: 9vh;"
-        v-show="!cMostrarEnvioArquivo"
-        class="q-pa-sm bg-white full-width"
-        placeholder="Digita sua mensagem"
-        autogrow
-        dense
-        outlined
-        @input="handlerInputMenssagem"
-        :value="textChat"
-        @paste="handleInputPaste"
-      />
-      <span
-        v-if="!cMostrarEnvioArquivo"
-        class="text-caption text-blue-grey-10"
-      >Quebra linha/Parágrafo: Shift + Enter ||| Enviar Mensagem: Enter</span>
-      <!-- tamanho maximo por arquivo de 10mb -->
-      <q-file
-        input-style="min-height: 9vh; height: 9vh; max-height: 9vh"
-        ref="PickerFileMessage"
-        class="bg-white"
-        input-class="bg-white"
-        v-show="cMostrarEnvioArquivo"
-        v-model="arquivos"
-        outlined
-        use-chips
-        multiple
-        :max-files="5"
-        :max-file-size="10485760"
-        accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
-      />
-    </div>
-    <div class="col-1">
+      <q-tooltip>
+        Enviar arquivo
+      </q-tooltip>
+    </q-btn>
+    <q-btn
+      round
+      flat
+      icon="mdi-emoticon-happy-outline"
+      :disable="cDisableActions"
+    >
+      <q-tooltip>
+        Emoji
+      </q-tooltip>
+      <q-menu
+        anchor="top right"
+        self="bottom middle"
+        :offset="[5, 40]"
+      >
+        <VEmojiPicker
+          style="width: 40vw"
+          :showSearch="false"
+          :emojisByRow="20"
+          labelSearch="Localizar..."
+          lang="pt-BR"
+          @select="onInsertSelectEmoji"
+        />
+      </q-menu>
+    </q-btn>
+    <q-input
+      hide-bottom-space
+      :loading="loading"
+      :disable="cDisableActions"
+      ref="inputEnvioMensagem"
+      type="textarea"
+      @keypress.enter.exact="() => textChat.trim().length ? enviarMensagem() : ''"
+      v-show="!cMostrarEnvioArquivo"
+      class="WAL__field col-grow"
+      bg-color="blue-grey-1"
+      placeholder="Digita sua mensagem"
+      input-style="max-height: 30vh"
+      autogrow
+      rounded
+      dense
+      outlined
+      v-model="textChat"
+      :value="textChat"
+      @paste="handleInputPaste"
+      hint="Quebra linha/Parágrafo: Shift + Enter ||| Enviar Mensagem: Enter"
+    />
+    <!-- tamanho maximo por arquivo de 10mb -->
+    <q-file
+      :loading="loading"
+      :disable="cDisableActions"
+      ref="PickerFileMessage"
+      v-show="cMostrarEnvioArquivo"
+      v-model="arquivos"
+      class="WAL__field col-grow "
+      bg-color="blue-grey-1"
+      input-style="max-height: 30vh"
+      outlined
+      use-chips
+      multiple
+      autogrow
+      dense
+      rounded
+      append
+      :max-files="5"
+      counter
+      :max-file-size="10485760"
+      :max-total-size="30485760"
+      accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
+      @rejected="onRejectedFiles"
+    />
+    <q-btn
+      v-if="textChat || cMostrarEnvioArquivo"
+      ref="btnEnviarMensagem"
+      @click="enviarMensagem"
+      :disabled="ticketFocado.status !== 'open'"
+      round
+      flat
+      icon="mdi-send"
+      color="primary"
+    >
+      <q-tooltip>
+        Enviar Mensagem
+      </q-tooltip>
+    </q-btn>
+    <q-btn
+      v-if="!textChat && !cMostrarEnvioArquivo && !isRecordingAudio"
+      @click="handleSartRecordingAudio"
+      :disabled="cDisableActions"
+      round
+      flat
+      icon="mdi-microphone"
+      color="primary"
+    >
+      <q-tooltip>
+        Enviar Áudio
+      </q-tooltip>
+    </q-btn>
+    <div
+      style="width: 140px"
+      class="flex flex-center items-center"
+      v-if="isRecordingAudio"
+    >
       <q-btn
-        ref="btnEnviarMensagem"
-        @click="enviarMensagem"
-        :disabled="ticketFocado.status !== 'open'"
         round
         flat
-        class="q-ml-xs q-pa-xs"
-      >
-        <q-icon
-          size="3em"
-          color="positive"
-          name="mdi-send"
-        />
-        <q-tooltip>
-          Enviar Mensagem
-        </q-tooltip>
-      </q-btn>
+        icon="mdi-close"
+        color="negative"
+        @click="handleCancelRecordingAudio"
+      />
+      <RecordingTimer />
+      <q-btn
+        round
+        flat
+        icon="mdi-send-circle-outline"
+        color="positive"
+        @click="handleStopRecordingAudio"
+      />
     </div>
+
     <q-dialog
       v-model="abrirModalPreviewImagem"
       position="right"
@@ -149,6 +177,11 @@
       </q-card>
     </q-dialog>
   </div>
+  <!-- <p
+      v-if="!cMostrarEnvioArquivo"
+      class="row col text-caption text-blue-grey-10"
+    >Quebra linha/Parágrafo: Shift + Enter ||| Enviar Mensagem: Enter</p> -->
+
 </template>
 
 <script>
@@ -156,7 +189,9 @@ import mixinCommon from './mixinCommon'
 import { EnviarMensagemTexto } from 'src/service/tickets'
 import { VEmojiPicker } from 'v-emoji-picker'
 import { mapGetters } from 'vuex'
-const usuario = JSON.parse(localStorage.getItem('usuario'))
+import RecordingTimer from './RecordingTimer'
+import MicRecorder from 'mic-recorder-to-mp3'
+const Mp3Recorder = new MicRecorder({ bitRate: 128 })
 
 export default {
   name: 'InputMensagem',
@@ -168,12 +203,15 @@ export default {
     }
   },
   components: {
-    VEmojiPicker
+    VEmojiPicker,
+    RecordingTimer
   },
   data () {
     return {
+      loading: false,
       abrirFilePicker: false,
       abrirModalPreviewImagem: false,
+      isRecordingAudio: false,
       urlMediaPreview: {
         title: '',
         src: ''
@@ -186,6 +224,9 @@ export default {
     ...mapGetters(['ticketFocado']),
     cMostrarEnvioArquivo () {
       return this.arquivos.length > 0
+    },
+    cDisableActions () {
+      return (this.loading || this.isRecordingAudio || this.ticketFocado.status !== 'open')
     }
   },
   methods: {
@@ -209,7 +250,7 @@ export default {
     },
     onInsertSelectEmoji (emoji) {
       const self = this
-      var tArea = this.$refs.inputEnvioMensagem
+      var tArea = this.$refs.inputEnvioMensagem.$refs.input
       // get cursor's position:
       var startPos = tArea.selectionStart,
         endPos = tArea.selectionEnd,
@@ -231,8 +272,82 @@ export default {
       }, 10)
     },
     abrirEnvioArquivo (event) {
+      this.textChat = ''
       this.abrirFilePicker = true
       this.$refs.PickerFileMessage.pickFiles(event)
+    },
+    async handleSartRecordingAudio () {
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true })
+        await Mp3Recorder.start()
+        this.isRecordingAudio = true
+      } catch (error) {
+        this.isRecordingAudio = false
+      }
+    },
+    async handleStopRecordingAudio () {
+      this.loading = true
+      try {
+        const [, blob] = await Mp3Recorder.stop().getMp3()
+        if (blob.size < 10000) {
+          this.loading = false
+          this.isRecordingAudio = false
+          return
+        }
+
+        const formData = new FormData()
+        const filename = `${new Date().getTime()}.mp3`
+        formData.append('medias', blob, filename)
+        formData.append('body', filename)
+        formData.append('fromMe', true)
+        const ticketId = this.ticketFocado.id
+        await EnviarMensagemTexto(ticketId, formData)
+        this.arquivos = []
+        this.textChat = ''
+        this.$emit('update:replyingMessage', null)
+        this.abrirFilePicker = false
+        this.abrirModalPreviewImagem = false
+        this.isRecordingAudio = false
+        this.loading = false
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 300)
+      } catch (error) {
+        this.isRecordingAudio = false
+        this.loading = false
+        this.$q.notify({
+          html: true,
+          message: `Ops... Ocorreu um erro! <br>${JSON.stringify(error)}`,
+          type: 'negative',
+          progress: true,
+          position: 'top',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
+        })
+      }
+    },
+    async handleCancelRecordingAudio () {
+      try {
+        await Mp3Recorder.stop().getMp3()
+        this.isRecordingAudio = false
+        this.loading = false
+      } catch (error) {
+        this.$q.notify({
+          html: true,
+          message: `Ops... Ocorreu um erro! <br>${JSON.stringify(error)}`,
+          type: 'negative',
+          progress: true,
+          position: 'top',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
+        })
+      }
     },
     prepararUploadMedia () {
       if (!this.arquivos.length) {
@@ -250,11 +365,16 @@ export default {
       if (this.textChat.trim() === '') {
         throw new Error('Mensagem Inexistente')
       }
+      let mensagem = this.textChat.trim()
+      const username = localStorage.getItem('username')
+      if (username) {
+        mensagem = `*${username}*: ${mensagem}`
+      }
       const message = {
         read: 1,
         fromMe: true,
         mediaUrl: '',
-        body: `*${usuario.name}*: ${this.textChat.trim()}`,
+        body: mensagem,
         quotedMsg: this.replyingMessage
       }
       return message
@@ -277,6 +397,8 @@ export default {
           this.scrollToBottom()
         }, 300)
       } catch (error) {
+        this.isRecordingAudio = false
+        this.loading = false
         const errorMsg = error.response?.data?.error
         if (errorMsg) {
           this.$q.notify({
@@ -288,10 +410,16 @@ export default {
           this.$q.notify({
             type: 'negative',
             message: 'Ops... Ocorreu um problema não identificado.',
-            progress: true
+            progress: true,
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         }
       }
+      this.isRecordingAudio = false
       this.loading = false
     },
     handlerInputMenssagem (v) {
@@ -308,6 +436,24 @@ export default {
       this.arquivos = []
       this.urlMediaPreview = {}
       this.abrirModalPreviewImagem = false
+    },
+    onRejectedFiles (rejectedEntries) {
+      this.$q.notify({
+        html: true,
+        message: `Ops... Ocorreu um erro! <br>
+        <ul>
+          <li>Cada arquivo deve ter no máximo 10MB.</li>
+          <li>Em caso de múltiplos arquivos, o tamanho total (soma de todos) deve ser de até 30MB.</li>
+        </ul>`,
+        type: 'negative',
+        progress: true,
+        position: 'top',
+        actions: [{
+          icon: 'close',
+          round: true,
+          color: 'white'
+        }]
+      })
     }
   },
   mounted () {

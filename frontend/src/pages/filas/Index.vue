@@ -132,7 +132,12 @@ export default {
               type: 'positive',
               progress: true,
               position: 'top',
-              message: `Fila ${fila.queue} deletada!`
+              message: `Fila ${fila.queue} deletada!`,
+              actions: [{
+                icon: 'close',
+                round: true,
+                color: 'white'
+              }]
             })
           })
         this.loading = false

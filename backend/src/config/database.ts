@@ -10,7 +10,7 @@ module.exports = {
   timezone: "UTC",
   host: process.env.DB_HOST || "localhost",
   port: process.env.DB_PORT || "5432",
-  database: process.env.DB_NAME || "whatsapp",
+  database: process.env.DB_NAME || "wchats",
   username: process.env.DB_USER || "postgres",
   password: process.env.DB_PASS || "marina@0509",
   logging: false // console.log

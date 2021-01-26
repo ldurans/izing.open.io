@@ -1,5 +1,4 @@
 import { RealizarLogin } from '../../service/login'
-import { DadosUsuario } from 'src/service/user'
 import { Notify } from 'quasar'
 
 const user = {
@@ -33,20 +32,21 @@ const user = {
         localStorage.setItem('username', data.username)
         localStorage.setItem('profile', data.profile)
         localStorage.setItem('userId', data.userId)
+        localStorage.setItem('usuario', JSON.stringify(data))
+        localStorage.setItem('queues', JSON.stringify(data.queues))
+        commit('SET_IS_SUPORTE', data)
+        commit('SET_IS_ADMIN', data)
 
         // chamada deve ser feita após inserir o token no localstorage
-        const { data: usuario } = await DadosUsuario(data.userId)
-        localStorage.setItem('usuario', JSON.stringify(usuario))
-        commit('SET_IS_SUPORTE', usuario)
-        commit('SET_IS_ADMIN', usuario)
-        this.$router.push({
-          name: 'atendimento'
-        })
+        // const { data: usuario } = await DadosUsuario(data.userId)
         Notify.create({
           type: 'positive',
           message: 'Login realizado com sucesso!',
-          position: 'bottom-right',
+          position: 'top',
           progress: true
+        })
+        this.$router.push({
+          name: 'atendimento'
         })
       } catch (error) {
         console.error(error)

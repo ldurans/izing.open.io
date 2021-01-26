@@ -14,7 +14,7 @@
           <div class="col-5">
             <c-input
               outlined
-              v-model="usuario.name"
+              v-model.trim="usuario.name"
               :validator="$v.usuario.name"
               @blur="$v.usuario.name.$touch"
               label="Nome"
@@ -25,7 +25,7 @@
               outlined
               :validator="$v.usuario.email"
               @blur="$v.usuario.email.$touch"
-              v-model="usuario.email"
+              v-model.trim="usuario.email"
               label="E-mail"
             />
           </div>
@@ -159,7 +159,12 @@ export default {
           type: 'warning',
           progress: true,
           position: 'top',
-          message: 'Ops! Verifique os erros...'
+          message: 'Ops! Verifique os erros...',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
         })
       }
 
@@ -172,7 +177,12 @@ export default {
             progress: true,
             position: 'top',
             textColor: 'black',
-            message: 'Usuário editado!'
+            message: 'Usuário editado!',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         } else {
           const { data } = await CriarUsuario(this.usuario)
@@ -181,7 +191,12 @@ export default {
             type: 'positive',
             progress: true,
             position: 'top',
-            message: 'Usuário criado!'
+            message: 'Usuário criado!',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         }
         this.$emit('update:modalUsuario', false)

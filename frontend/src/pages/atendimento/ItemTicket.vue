@@ -2,14 +2,19 @@
   <div>
     <q-item
       dense
-      :clickable="!ticketPendente"
+      :clickable="ticket.status !== 'pending' && (ticket.id !== $store.getters['ticketFocado'].id || $route.name !== 'chat')"
       style="height: 7vh"
       @click="abrirChatContato(ticket)"
+      :style="`border-left: 5px solid ${borderColor[ticket.status]}`"
+      class="q-px-sm"
       :class="{
-        'ticket-active-item bg-grey-4': ticket.id === $store.getters['ticketFocado'].id
+        'ticket-active-item bg-blue-1 text-primary': ticket.id === $store.getters['ticketFocado'].id,
       }"
     >
-      <q-item-section avatar>
+      <q-item-section
+        avatar
+        class="q-px-none"
+      >
         <q-btn
           flat
           @click="iniciarAtendimento(ticket)"
@@ -17,11 +22,11 @@
           color="primary"
           dense
           round
-          v-if="ticketPendente"
+          v-if="ticket.status === 'pending' || (buscaTicket && ticket.status === 'pending')"
         >
           <q-badge
             v-if="ticket.unreadMessages"
-            style="font-size: .7em; border-radius: 10px;"
+            style="border-radius: 10px;"
             class="text-center"
             floating
             dense
@@ -32,7 +37,7 @@
           <q-avatar>
             <q-icon
               size="40px"
-              name="mdi-play-speed"
+              name="mdi-play-circle-outline"
             />
           </q-avatar>
           <q-tooltip>
@@ -41,11 +46,11 @@
         </q-btn>
         <q-avatar
           size="40px"
-          v-if="!ticketPendente"
+          v-if="ticket.status !== 'pending'"
         >
           <q-badge
             v-if="ticket.unreadMessages"
-            style="font-size: .5em; border-radius: 10px;"
+            style="border-radius: 10px;"
             class="text-center"
             floating
             dense
@@ -62,18 +67,19 @@
         </q-avatar>
       </q-item-section>
       <q-item-section>
-        <q-item-label>
+        <q-item-label lines="1">
           <div class="col-row">
             {{ticket.contact.name}}
             <span class="float-right absolute-top-right">
               <q-badge
-                style="font-size: .7em;"
                 dense
+                style="font-size: .7em;"
                 transparent
                 square
                 text-color="grey-10"
                 color="grey-2"
                 :label="dataInWords(ticket.updatedAt)"
+                :key="recalcularHora"
               />
             </span>
           </div>
@@ -99,7 +105,7 @@
             v-if="buscaTicket"
           >
             <q-badge
-              style="font-size: .8em; border-radius: 10px; z-index: 9999;"
+              style="border-radius: 10px; z-index: 9999;"
               dense
               :color="color[ticket.status]"
               :label="status[ticket.status]"
@@ -111,7 +117,7 @@
         </span> -->
       </q-item-section>
     </q-item>
-    <q-separator inset="avatar" />
+    <q-separator />
   </div>
 </template>
 
@@ -124,6 +130,7 @@ export default {
   mixins: [mixinAtualizarStatusTicket],
   data () {
     return {
+      recalcularHora: 1,
       statusAbreviado: {
         open: 'A',
         pending: 'P',
@@ -138,6 +145,11 @@ export default {
         open: 'primary',
         pending: 'negative',
         closed: 'positive'
+      },
+      borderColor: {
+        open: 'primary',
+        pending: 'negative',
+        closed: 'positive'
       }
     }
   },
@@ -146,10 +158,6 @@ export default {
       type: Object,
       default: () => {
       }
-    },
-    ticketPendente: {
-      type: Boolean,
-      default: false
     },
     buscaTicket: {
       type: Boolean,
@@ -176,6 +184,11 @@ export default {
       this.$store.commit('SET_HAS_MORE', true)
       this.$store.dispatch('AbrirChatMensagens', ticket)
     }
+  },
+  created () {
+    setInterval(() => {
+      this.recalcularHora++
+    }, 50000)
   }
 }
 </script>
@@ -183,8 +196,16 @@ export default {
 <style lang="sass">
 .ticket-active-item
   // border: 2px solid rgb(21, 120, 173)
-  border-left: 2px solid black //rgb(21, 120, 173)
+  // border-left: 3px solid $light //rgb(21, 120, 173)
   border-radius: 0
   position: relative
   height: 100%
+  font-weight: 600
+
+.primary
+  border-left: 3px solid $primary
+.negative
+  border-left: 3px solid $negative
+.positive
+  border-left: 3px solid $positive
 </style>

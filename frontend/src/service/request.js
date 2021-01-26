@@ -13,7 +13,7 @@ const service = axios.create({
 })
 
 const handlerError = err => {
-  const errorMsg = err.response?.data?.error
+  const errorMsg = err?.response?.data?.error
   let error = 'Ocorreu um erro não identificado.'
   if (errorMsg) {
     if (backendErrors[errorMsg]) {
@@ -23,7 +23,7 @@ const handlerError = err => {
     }
   }
   Notify.create({
-    position: 'bottom-right',
+    position: 'top',
     type: 'negative',
     html: true,
     progress: true,
@@ -111,7 +111,7 @@ service.interceptors.response.use(
     } else if (error.message.indexOf('timeout') > -1) {
       Notify.create({
         message: 'Esperamos muito tempo por uma resposta. Será que está tudo "Ok" com a internet?',
-        position: 'bottom-right',
+        position: 'top',
         type: 'negative',
         progress: true,
         html: true

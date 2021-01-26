@@ -4,6 +4,7 @@ import {
   createAccessToken,
   createRefreshToken
 } from "../../helpers/CreateTokens";
+import Queue from "../../models/Queue";
 
 interface Request {
   email: string;
@@ -21,7 +22,8 @@ const AuthUserService = async ({
   password
 }: Request): Promise<Response> => {
   const user = await User.findOne({
-    where: { email }
+    where: { email },
+    include: [{ model: Queue, as: "queues" }]
   });
 
   if (!user) {

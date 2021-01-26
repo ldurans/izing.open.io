@@ -4,6 +4,21 @@ import { Notify } from 'quasar'
 
 import routes from './routes'
 
+// Ajuste para desativar error por navegação duplicada
+// https://github.com/vuejs/vue-router/issues/2881#issuecomment-520554378
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (location, onResolve, onReject) {
+  if (onResolve || onReject) { return originalPush.call(this, location, onResolve, onReject) }
+  return originalPush.call(this, location).catch((err) => {
+    if (VueRouter.isNavigationFailure(err)) {
+      // resolve err
+      return err
+    }
+    // rethrow error
+    return Promise.reject(err)
+  })
+}
+
 Vue.use(VueRouter)
 
 /*
@@ -35,7 +50,7 @@ Router.beforeEach((to, from, next) => {
   if (!token) {
     if (whiteListName.indexOf(to.name) == -1) {
       if (to.fullPath !== '/login' && !to.query.tokenSetup) {
-        Notify.create({ message: 'Necessário realizar login' })
+        Notify.create({ message: 'Necessário realizar login', position: 'top' })
         next({ name: 'login' })
       } else {
         next()

@@ -3,21 +3,24 @@ import AppError from "../../errors/AppError";
 import Ticket from "../../models/Ticket";
 import UpdateDeletedUserOpenTicketsStatus from "../../helpers/UpdateDeletedUserOpenTicketsStatus";
 
-const DeleteUserService = async (id: string | number): Promise<void> => {
+const DeleteUserService = async (
+  id: string | number,
+  tenantId: string | number
+): Promise<void> => {
   const user = await User.findOne({
-    where: { id }
+    where: { id, tenantId }
   });
 
-  if (!user) {
+  if (!user || tenantId !== user.tenantId) {
     throw new AppError("ERR_NO_USER_FOUND", 404);
   }
 
   const userOpenTickets: Ticket[] = await user.$get("tickets", {
-    where: { status: "open" }
+    where: { status: "open", tenantId }
   });
 
   if (userOpenTickets.length > 0) {
-    UpdateDeletedUserOpenTicketsStatus(userOpenTickets);
+    UpdateDeletedUserOpenTicketsStatus(userOpenTickets, tenantId);
   }
 
   await user.destroy();

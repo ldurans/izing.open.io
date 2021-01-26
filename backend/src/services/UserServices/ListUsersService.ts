@@ -6,6 +6,7 @@ import User from "../../models/User";
 interface Request {
   searchParam?: string;
   pageNumber?: string | number;
+  tenantId: string | number;
 }
 
 interface Response {
@@ -16,9 +17,11 @@ interface Response {
 
 const ListUsersService = async ({
   searchParam = "",
-  pageNumber = "1"
+  pageNumber = "1",
+  tenantId
 }: Request): Promise<Response> => {
   const whereCondition = {
+    tenantId,
     [Op.or]: [
       {
         name: Sequelize.where(

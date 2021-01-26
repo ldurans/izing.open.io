@@ -95,7 +95,12 @@ export default {
         type: 'positive',
         progress: true,
         position: 'top',
-        message: 'Filas do usuário editadas com sucesso!'
+        message: 'Filas do usuário editadas com sucesso!',
+        actions: [{
+          icon: 'close',
+          round: true,
+          color: 'white'
+        }]
       })
       this.fecharModal()
     }

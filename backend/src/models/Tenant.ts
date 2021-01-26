@@ -21,6 +21,9 @@ class Tenant extends Model<Tenant> {
   @Column({ defaultValue: "active" })
   status: string;
 
+  @Column
+  name: string;
+
   @ForeignKey(() => User)
   @Column
   ownerId: number;

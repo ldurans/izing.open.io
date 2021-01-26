@@ -104,7 +104,12 @@ export default {
             progress: true,
             position: 'top',
             textColor: 'black',
-            message: 'Etapa editada!'
+            message: 'Etapa editada!',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         } else {
           const { data } = await CriarFila(this.fila)
@@ -113,7 +118,12 @@ export default {
             type: 'positive',
             progress: true,
             position: 'top',
-            message: 'Fila criada!'
+            message: 'Fila criada!',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
           })
         }
         this.loading = false

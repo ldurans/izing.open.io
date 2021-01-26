@@ -16,17 +16,20 @@ type IndexQuery = {
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
+  const { tenantId } = req.user;
   const { searchParam, pageNumber } = req.query as IndexQuery;
 
   const { users, count, hasMore } = await ListUsersService({
     searchParam,
-    pageNumber
+    pageNumber,
+    tenantId
   });
 
   return res.json({ users, count, hasMore });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
+  const { tenantId } = req.user;
   const { email, password, name, profile } = req.body;
 
   if (
@@ -42,11 +45,12 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     email,
     password,
     name,
-    profile
+    profile,
+    tenantId
   });
 
   const io = getIO();
-  io.emit("user", {
+  io.emit(`${tenantId}-user`, {
     action: "create",
     user
   });
@@ -56,8 +60,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
 export const show = async (req: Request, res: Response): Promise<Response> => {
   const { userId } = req.params;
+  const { tenantId } = req.user;
 
-  const user = await ShowUserService(userId);
+  const user = await ShowUserService(userId, tenantId);
 
   return res.status(200).json(user);
 };
@@ -72,11 +77,12 @@ export const update = async (
 
   const { userId } = req.params;
   const userData = req.body;
+  const { tenantId } = req.user;
 
-  const user = await UpdateUserService({ userData, userId });
+  const user = await UpdateUserService({ userData, userId, tenantId });
 
   const io = getIO();
-  io.emit("user", {
+  io.emit(`${tenantId}-user`, {
     action: "update",
     user
   });
@@ -89,15 +95,16 @@ export const remove = async (
   res: Response
 ): Promise<Response> => {
   const { userId } = req.params;
+  const { tenantId } = req.user;
 
   if (req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
 
-  await DeleteUserService(userId);
+  await DeleteUserService(userId, tenantId);
 
   const io = getIO();
-  io.emit("user", {
+  io.emit(`${tenantId}-user`, {
     action: "delete",
     userId
   });

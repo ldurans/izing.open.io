@@ -11,18 +11,21 @@ interface QueueData {
   queue: string;
   isActive: boolean;
   userId: number;
+  tenantId: number | string;
 }
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
+  const { tenantId } = req.user;
   if (req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
 
-  const newQueue: QueueData = { ...req.body, userId: req.user.id };
+  const newQueue: QueueData = { ...req.body, userId: req.user.id, tenantId };
 
   const schema = Yup.object().shape({
     queue: Yup.string().required(),
-    userId: Yup.number().required()
+    userId: Yup.number().required(),
+    tenantId: Yup.number().required()
   });
 
   try {
@@ -37,7 +40,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const queues = await ListQueueService();
+  const { tenantId } = req.user;
+  const queues = await ListQueueService({ tenantId });
   return res.status(200).json(queues);
 };
 
@@ -45,10 +49,12 @@ export const update = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  const { tenantId } = req.user;
+
   if (req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
-  const queueData: QueueData = { ...req.body, userId: req.user.id };
+  const queueData: QueueData = { ...req.body, userId: req.user.id, tenantId };
 
   const schema = Yup.object().shape({
     queue: Yup.string().required(),
@@ -75,11 +81,12 @@ export const remove = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  const { tenantId } = req.user;
   if (req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
   const { queueId } = req.params;
 
-  await DeleteQueueService(queueId);
+  await DeleteQueueService({ id: queueId, tenantId });
   return res.status(200).json({ message: "Queue deleted" });
 };

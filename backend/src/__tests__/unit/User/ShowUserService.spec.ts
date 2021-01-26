@@ -22,17 +22,18 @@ describe("User", () => {
     const newUser = await CreateUserService({
       name: faker.name.findName(),
       email: faker.internet.email(),
-      password: faker.internet.password()
+      password: faker.internet.password(),
+      tenantId: 1
     });
 
-    const user = await ShowUserService(newUser.id);
+    const user = await ShowUserService(newUser.id, 1);
 
     expect(user).toHaveProperty("id");
     expect(user).toBeInstanceOf(User);
   });
 
   it("should not be able to find a inexisting user", async () => {
-    expect(ShowUserService(faker.random.number())).rejects.toBeInstanceOf(
+    expect(ShowUserService(faker.random.number(), 1)).rejects.toBeInstanceOf(
       AppError
     );
   });

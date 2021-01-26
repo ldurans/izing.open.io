@@ -3,6 +3,7 @@ import Whatsapp from "../../models/Whatsapp";
 import { wbotMessageListener } from "./wbotMessageListener";
 import { getIO } from "../../libs/socket";
 import wbotMonitor from "./wbotMonitor";
+import { logger } from "../../utils/logger";
 
 export const StartWhatsAppSession = async (
   whatsapp: Whatsapp
@@ -10,7 +11,7 @@ export const StartWhatsAppSession = async (
   await whatsapp.update({ status: "OPENING" });
 
   const io = getIO();
-  io.emit("whatsappSession", {
+  io.emit(`${whatsapp.tenantId}-whatsappSession`, {
     action: "update",
     session: whatsapp
   });
@@ -20,6 +21,6 @@ export const StartWhatsAppSession = async (
     wbotMessageListener(wbot);
     wbotMonitor(wbot, whatsapp);
   } catch (err) {
-    console.log(err);
+    logger.error(`StartWhatsAppSession | Error: ${err}`);
   }
 };

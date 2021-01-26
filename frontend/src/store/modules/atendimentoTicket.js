@@ -1,5 +1,14 @@
 import { LocalizarMensagens } from 'src/service/tickets'
 import { Notify } from 'quasar'
+import $router from 'src/router'
+import { orderBy } from 'lodash'
+import { parseISO } from 'date-fns'
+// import Vue from 'vue'
+
+const orderMessages = (messages) => {
+  const newMessages = orderBy(messages, (obj) => parseISO(obj.createdAt), ['asc'])
+  return [...newMessages]
+}
 
 const atendimentoTicket = {
   state: {
@@ -8,10 +17,6 @@ const atendimentoTicket = {
     ticketsLocalizadosBusca: [],
     ticketFocado: {},
     hasMore: false,
-    hasMoreOpen: false,
-    hasMorePending: false,
-    hasMoreClosed: false,
-    hasMoreBusca: false,
     contatos: [],
     mensagens: []
   },
@@ -19,22 +24,6 @@ const atendimentoTicket = {
     SET_HAS_MORE (state, payload) {
       state.hasMore = payload
       return state.hasMore
-    },
-    SET_HAS_MORE_OPEN (state, payload) {
-      state.hasMoreOpen = payload
-      return state.hasMoreOpen
-    },
-    SET_HAS_MORE_PENDING (state, payload) {
-      state.hasMorePending = payload
-      return state.hasMorePending
-    },
-    SET_HAS_MORE_CLOSED (state, payload) {
-      state.hasMoreClosed = payload
-      return state.hasMoreClosed
-    },
-    SET_HAS_MORE_BUSCA (state, payload) {
-      state.hasMoreBusca = payload
-      return state.hasMoreBusca
     },
     LOAD_TICKETS (state, payload) {
       const newTickets = payload
@@ -51,31 +40,9 @@ const atendimentoTicket = {
       })
       return state.tickets
     },
-    LOAD_TICKETS_LOCALIZADOS_BUSCA (state, payload) {
-      const newTickets = payload
-      newTickets.forEach(ticket => {
-        const ticketIndex = state.ticketsLocalizadosBusca.findIndex(t => t.id === ticket.id)
-        if (ticketIndex !== -1) {
-          state.ticketsLocalizadosBusca[ticketIndex] = ticket
-          if (ticket.unreadMessages > 0) {
-            state.ticketsLocalizadosBusca.unshift(state.ticketsLocalizadosBusca.splice(ticketIndex, 1)[0])
-          }
-        } else {
-          state.ticketsLocalizadosBusca.push(ticket)
-        }
-      })
-      return state.ticketsLocalizadosBusca
-    },
     RESET_TICKETS (state) {
       state.hasMore = true
-      state.hasMoreOpen = true
-      state.hasMorePending = true
-      state.hasMoreClosed = true
-      state.hasMoreBusca = true
       state.tickets = []
-    },
-    RESET_TICKETS_LOCALIZADOS_BUSCA (state) {
-      state.ticketsLocalizadosBusca = []
     },
     RESET_UNREAD (state, payload) {
       const ticketId = payload
@@ -132,18 +99,27 @@ const atendimentoTicket = {
       state.ticketFocado = payload
       return state.ticketFocado
     },
-    LOAD_MESSAGES (state, payload) {
-      const { messages } = payload
+    LOAD_INITIAL_MESSAGES (state, payload) {
+      const { messages, messagesOffLine } = payload
+      state.mensagens = []
+      const newMessages = orderMessages([...messages, ...messagesOffLine])
+      state.mensagens = newMessages
+    },
+    LOAD_MORE_MESSAGES (state, payload) {
+      const { messages, messagesOffLine } = payload
+      const arrayMessages = [...messages, ...messagesOffLine]
       const newMessages = []
-      messages.forEach(message => {
+      arrayMessages.forEach((message, index) => {
         const messageIndex = state.mensagens.findIndex(m => m.id === message.id)
         if (messageIndex !== -1) {
           state.mensagens[messageIndex] = message
+          arrayMessages.splice(index, 1)
         } else {
           newMessages.push(message)
         }
       })
-      state.mensagens = [...newMessages, ...state.mensagens]
+      const messagesOrdered = orderMessages(newMessages)
+      state.mensagens = [...messagesOrdered, ...state.mensagens]
     },
     ADD_MESSAGE (state, payload) {
       const newMessage = payload
@@ -165,6 +141,12 @@ const atendimentoTicket = {
       state.mensagens = messagesState
       return state.mensagens
     },
+    DELETE_MESSAGE (state, payload) {
+      const messagesState = [...state.mensagens]
+      const message = messagesState.filter(msg => msg.id !== payload.id)
+      state.mensagens = message
+      return state.mensagens
+    },
     RESET_MESSAGE (state) {
       state.mensagens = []
       return state.mensagens
@@ -175,7 +157,11 @@ const atendimentoTicket = {
       const mensagens = await LocalizarMensagens(params)
       commit('TICKET_FOCADO', mensagens.data.ticket)
       commit('SET_HAS_MORE', mensagens.data.hasMore)
-      commit('LOAD_MESSAGES', mensagens.data)
+      if (params.pageNumber === 1) {
+        commit('LOAD_INITIAL_MESSAGES', mensagens.data)
+      } else {
+        commit('LOAD_MORE_MESSAGES', mensagens.data)
+      }
     },
     async AbrirChatMensagens ({ commit, dispatch }, data) {
       try {
@@ -188,19 +174,29 @@ const atendimentoTicket = {
           pageNumber: 1
         }
         await dispatch('LocalizarMensagensTicket', params)
+
+        // evitar error de duplicidade de rota navegada.
+        // Se o ticket selecionado já estiver focado no rota
+        // não fazer o push de navegação.
+        const paramsRoute = this.$router.app.$route.params
+        if (paramsRoute.ticketId === params.ticketId) return
+
+        await $router.push({ name: 'chat', params })
       } catch (error) {
         const errorMsg = error.response?.data?.error
         if (errorMsg) {
           Notify.create({
             type: 'negative',
             message: error.response.data.error,
-            progress: true
+            progress: true,
+            position: 'top'
           })
         } else {
           Notify.create({
             type: 'negative',
             message: 'Ops... Ocorreu um problema não identificado.',
-            progress: true
+            progress: true,
+            position: 'top'
           })
         }
       }
