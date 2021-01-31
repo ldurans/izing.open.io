@@ -14,6 +14,7 @@ import {
 import Contact from "./Contact";
 import Message from "./Message";
 import Ticket from "./Ticket";
+import User from "./User";
 
 @Table({ freezeTableName: true })
 class MessagesOffLine extends Model<MessagesOffLine> {
@@ -87,6 +88,13 @@ class MessagesOffLine extends Model<MessagesOffLine> {
 
   @BelongsTo(() => Contact, "contactId")
   contact: Contact;
+
+  @ForeignKey(() => User)
+  @Column
+  userId: number;
+
+  @BelongsTo(() => User)
+  user: User;
 
   tableName: "MessagesOffLine";
 }

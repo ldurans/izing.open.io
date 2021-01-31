@@ -19,6 +19,7 @@ interface MessageData {
   mediaUrl?: string;
   timestamp?: number;
   internalId?: string;
+  userId: string | number;
 }
 
 interface MessageRequest {
@@ -33,6 +34,7 @@ interface Request {
   tenantId: string | number;
   medias?: Express.Multer.File[];
   ticket: Ticket;
+  userId: number | string;
 }
 
 const writeFileAsync = promisify(writeFile);
@@ -41,7 +43,8 @@ const CreateMessageOffilineService = async ({
   msg,
   tenantId,
   medias,
-  ticket
+  ticket,
+  userId
 }: Request): Promise<void> => {
   const io = getIO();
 
@@ -54,7 +57,8 @@ const CreateMessageOffilineService = async ({
     read: true,
     mediaType: "chat",
     mediaUrl: undefined,
-    timestamp: undefined
+    timestamp: undefined,
+    userId
   };
 
   try {
@@ -120,7 +124,6 @@ const CreateMessageOffilineService = async ({
         })
       );
     } else {
-      // await SendWhatsAppMessage({ body, ticket, quotedMsg });
       const msgCreated = await MessageOffLine.create({
         ...messageData,
         mediaType: "chat"

@@ -5,6 +5,7 @@ import GetWbotMessage from "../../helpers/GetWbotMessage";
 import SerializeWbotMsgId from "../../helpers/SerializeWbotMsgId";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
+import UserMessagesLog from "../../models/UserMessagesLog";
 import { logger } from "../../utils/logger";
 // import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
 
@@ -12,12 +13,14 @@ interface Request {
   body: string;
   ticket: Ticket;
   quotedMsg?: Message;
+  userId?: number | string | undefined;
 }
 
 const SendWhatsAppMessage = async ({
   body,
   ticket,
-  quotedMsg
+  quotedMsg,
+  userId
 }: Request): Promise<WbotMessage> => {
   let quotedMsgSerializedId: string | undefined;
   if (quotedMsg) {
@@ -28,7 +31,7 @@ const SendWhatsAppMessage = async ({
   const wbot = await GetTicketWbot(ticket);
 
   try {
-    const sentMessage = await wbot.sendMessage(
+    const sendMessage = await wbot.sendMessage(
       `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`,
       body,
       {
@@ -38,7 +41,18 @@ const SendWhatsAppMessage = async ({
     );
 
     await ticket.update({ lastMessage: body });
-    return sentMessage;
+    try {
+      if (userId) {
+        await UserMessagesLog.create({
+          messageId: sendMessage.id.id,
+          userId,
+          ticketId: ticket.id
+        });
+      }
+    } catch (error) {
+      logger.error(`Error criar log mensagem ${error}`);
+    }
+    return sendMessage;
   } catch (err) {
     logger.error(`SendWhatsAppMessage | Error: ${err}`);
     // await StartWhatsAppSessionVerify(ticket.whatsappId, err);

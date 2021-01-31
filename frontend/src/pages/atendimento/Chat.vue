@@ -61,46 +61,52 @@
         </div>
       </transition>
     </div>
-    <!-- <q-card-section
-          v-if="replyingMessage"
-          class="absolute q-pa-none q-pt-md bg-grey-3"
-          :style="`border-top: 1px solid #; bottom: 120px; height: 120px; max-height: 120px; width: 100%;`"
+    <q-footer>
+      <q-separator class="bg-grey-4" />
+      <q-card-section
+        v-if="replyingMessage"
+        class="q-pa-none q-py-md bg-grey-1 text-black"
+        :style="`border-top: 1px solid #; max-height: 140px; width: 100%;`"
+      >
+        <q-list
+          style=" max-height: 100px;"
+          class="row items-center col justify-center full-width"
         >
-          <q-list class="row col justify-center full-width">
-            <q-item
-              class="q-card--bordered shadow-10"
-              :style="`
+          <q-item
+            class="q-card--bordered shadow-6 q-pb-sm"
+            :style="`
               width: 460px;
               min-width: 460px;
               max-width: 460px;
-              background-color: ${replyingMessage.fromMe ? '#a5d6a7' : '#ffffff'};
+              max-height: 110px;
+              background-color: ${replyingMessage.fromMe ? '#b2dfdb' : '#fff'};
             `"
-            >
-              <q-item-section>
-                <q-item-label
-                  v-if="!replyingMessage.fromMe"
-                  overline
-                >
-                  {{ replyingMessage.contact.name }}
-                </q-item-label>
-                <q-item-label lines="4">
-                  {{ farmatarMensagemWhatsapp(replyingMessage.body) }}
-                </q-item-label>
-              </q-item-section>
-              <q-btn
-                @click="replyingMessage=null"
-                dense
-                flat
-                round
-                icon="close"
-                class="float-right"
-                :disabled="loading || ticketFocado.status !== 'open'"
-              />
-            </q-item>
-          </q-list>
-        </q-card-section> -->
-    <q-footer>
-      <q-separator class="bg-grey-4" />
+          >
+            <q-item-section>
+              <q-item-label
+                v-if="!replyingMessage.fromMe"
+                overline
+              >
+                {{ replyingMessage.contact.name }}
+              </q-item-label>
+              <q-item-label
+                lines="5"
+                v-html="farmatarMensagemWhatsapp(replyingMessage.body)"
+              >
+              </q-item-label>
+            </q-item-section>
+            <q-btn
+              @click="replyingMessage=null"
+              dense
+              flat
+              round
+              icon="close"
+              class="float-right absolute-top-right"
+              :disabled="loading || ticketFocado.status !== 'open'"
+            />
+          </q-item>
+        </q-list>
+      </q-card-section>
       <InputMensagem :replyingMessage.sync="replyingMessage" />
       <q-resize-observer @resize="onResizeInputMensagem" />
     </q-footer>

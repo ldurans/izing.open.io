@@ -21,7 +21,6 @@
           v-if="isInvalidConnect(wbot)"
           class="notification-box"
         >
-          <!--     <span class="notification-count">6</span> -->
           <div class="notification-bell">
             <span class="bell-top"></span>
             <span class="bell-middle"></span>
@@ -41,56 +40,59 @@
       </q-btn>
     </div>
 
-    <q-carousel
-      v-if="!isIconStatusMenu"
-      ref="carouselStatusWhatsapp"
-      v-model="idWbotVisible"
-      transition-prev="slide-right"
-      transition-next="slide-left"
-      animated
-      swipeable
-      class="q-pa-none q-ma-none"
-      height="80px"
+    <transition
+      transition-show="flip-up"
+      transition-hide="flip-down"
     >
-      <template v-for="(wbot, index) in whatsapps">
-        <q-carousel-slide
-          :key="wbot.id + index"
-          :name="index"
-          class="q-pa-none q-ma-none"
-        >
-          <ItemStatusWhatsapp :wbot="wbot" />
-        </q-carousel-slide>
-      </template>
-      <template
-        v-slot:control
-        v-if="!!whatsapps.length"
+      <q-carousel
+        v-if="!isIconStatusMenu && whatsapps.length && isProblemConnect"
+        ref="carouselStatusWhatsapp"
+        v-model="idWbotVisible"
+        transition-prev="slide-right"
+        transition-next="slide-left"
+        animated
+        swipeable
+        class="q-pa-none q-ma-none full-width bg-amber"
+        height="90px"
       >
-        <q-carousel-control
-          position="bottom-right"
-          :offset="[10, 40]"
-          class="q-gutter-xs"
-        >
-          <q-btn
-            round
-            flat
-            dense
-            color="white"
-            text-color="black"
-            icon="arrow_left"
-            @click="$refs.carouselStatusWhatsapp.previous()"
-          />
-          <q-btn
-            round
-            flat
-            dense
-            color="white"
-            text-color="black"
-            icon="arrow_right"
-            @click="$refs.carouselStatusWhatsapp.next()"
-          />
-        </q-carousel-control>
-      </template>
-    </q-carousel>
+        <template v-for="(wbot, index) in whatsapps">
+          <q-carousel-slide
+            :key="wbot.id + index"
+            :name="index"
+            class="q-pa-none q-ma-none"
+          >
+            <ItemStatusWhatsapp :wbot="wbot" />
+          </q-carousel-slide>
+        </template>
+        <template v-slot:control>
+          <q-carousel-control
+            position="bottom-right"
+            :offset="[10, 40]"
+            class="q-gutter-xs"
+            v-if="isBtnSlider"
+          >
+            <q-btn
+              round
+              flat
+              dense
+              color="white"
+              text-color="black"
+              icon="arrow_left"
+              @click="$refs.carouselStatusWhatsapp.previous()"
+            />
+            <q-btn
+              round
+              flat
+              dense
+              color="white"
+              text-color="black"
+              icon="arrow_right"
+              @click="$refs.carouselStatusWhatsapp.next()"
+            />
+          </q-carousel-control>
+        </template>
+      </q-carousel>
+    </transition>
     <!--
       <q-icon
         color="negative"
@@ -211,11 +213,40 @@ export default {
   },
   data () {
     return {
-      idWbotVisible: 0
+      idWbotVisible: 0,
+      isProblemConnect: false
+    }
+  },
+  watch: {
+    whatsapps: {
+      handler () {
+        const problem = this.whatsapps.findIndex(w => w.status !== 'CONNECTED') !== -1
+        setTimeout(() => {
+          this.isProblemConnect = problem
+        }, 3000)
+      },
+      deep: true,
+      immediate: true
     }
   },
   computed: {
-    ...mapGetters(['whatsapps'])
+    ...mapGetters(['whatsapps']),
+    // isProblemConnect: {
+    //   get () {
+    //     return this.isProblem
+    //   },
+    //   set () {
+    //     debounce(function () {
+    //       const problem = this.whatsapps.findIndex(w => w.status !== 'CONNECTED') !== -1
+    //       console.log('problem', problem)
+    //       this.isProblem = problem
+    //     }, 3000)
+    //   }
+    // },
+    isBtnSlider () {
+      const len = this.whatsapps.filter(w => w.status !== 'CONNECTED')
+      return len > 1
+    }
   },
   methods: {
     isInvalidConnect (wbot) {
@@ -230,6 +261,9 @@ export default {
       const idx = statusAlert.findIndex(w => w === wbot.status)
       return (idx !== -1)
     }
+  },
+  mounted () {
+    this.isProblemConnect = this.whatsapps.findIndex(w => w.status !== 'CONNECTED') !== -1
   }
 }
 </script>

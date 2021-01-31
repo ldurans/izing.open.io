@@ -46,7 +46,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
-  const { tenantId } = req.user;
+  const { tenantId, id: userId } = req.user;
   const { body, quotedMsg }: MessageData = req.body;
   const medias = req.files as Express.Multer.File[];
 
@@ -58,18 +58,19 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     if (medias) {
       await Promise.all(
         medias.map(async (media: Express.Multer.File) => {
-          await SendWhatsAppMedia({ media, ticket });
+          await SendWhatsAppMedia({ media, ticket, userId });
         })
       );
     } else {
-      await SendWhatsAppMessage({ body, ticket, quotedMsg });
+      await SendWhatsAppMessage({ body, ticket, quotedMsg, userId });
     }
   } catch (error) {
     CreateMessageOffilineService({
       msg: req.body,
       tenantId,
       medias,
-      ticket
+      ticket,
+      userId
     });
   }
 

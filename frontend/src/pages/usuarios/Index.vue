@@ -226,7 +226,7 @@ export default {
     },
     async listarFilas () {
       const { data } = await ListarFilas()
-      this.filas = data.queueData
+      this.filas = data
     },
     gerirFilasUsuario (usuario) {
       this.usuarioSelecionado = usuario

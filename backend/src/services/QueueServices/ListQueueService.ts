@@ -1,13 +1,9 @@
 import Queue from "../../models/Queue";
 
-interface Response {
-  queueData: Queue[];
-}
-
 interface Request {
   tenantId: string | number;
 }
-const ListQueueService = async ({ tenantId }: Request): Promise<Response> => {
+const ListQueueService = async ({ tenantId }: Request): Promise<Queue[]> => {
   const queueData = await Queue.findAll({
     where: {
       tenantId
@@ -15,7 +11,7 @@ const ListQueueService = async ({ tenantId }: Request): Promise<Response> => {
     order: [["queue", "ASC"]]
   });
 
-  return { queueData };
+  return queueData;
 };
 
 export default ListQueueService;

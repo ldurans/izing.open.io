@@ -80,6 +80,7 @@
             <StatusWhatsapp isIconStatusMenu />
           </q-toolbar> -->
         </q-toolbar>
+        <StatusWhatsapp class="q-mx-sm full-width" />
         <q-toolbar
           v-show="toolbarSearch"
           class="row q-py-sm items-center"
@@ -465,7 +466,7 @@ export default {
         })
         return this.filas.filter(f => filasUsuario.includes(f.id)) || []
       } catch (error) {
-        return this.filas
+        return []
       }
     },
     style () {
@@ -567,7 +568,7 @@ export default {
     },
     async listarFilas () {
       const { data } = await ListarFilas()
-      this.filas = data.queueData
+      this.filas = data
     },
     async listarWhatsapps () {
       const { data } = await ListarWhatsapps()

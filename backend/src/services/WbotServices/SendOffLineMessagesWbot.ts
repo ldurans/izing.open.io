@@ -6,12 +6,13 @@ import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
 import SendWhatsAppMessage from "./SendWhatsAppMessage";
 import { getIO } from "../../libs/socket";
+import UserMessagesLog from "../../models/UserMessagesLog";
 
 interface Session extends Client {
   id?: number;
 }
 
-const SendoffLineMessagesWbot = async (
+const SendOffLineMessagesWbot = async (
   wbot: Session,
   tenantId: number | string
 ): Promise<void> => {
@@ -45,16 +46,28 @@ const SendoffLineMessagesWbot = async (
           );
           const newMedia = MessageMedia.fromFilePath(mediaPath);
           const { number } = message.ticket.contact;
-          await wbot.sendMessage(
+          const sendMessage = await wbot.sendMessage(
             `${number}@${message.ticket.isGroup ? "g" : "c"}.us`,
             newMedia,
             { sendAudioAsVoice: true }
           );
+          try {
+            if (message.userId) {
+              await UserMessagesLog.create({
+                messageId: sendMessage.id.id,
+                userId: message.userId,
+                ticketId: message.ticketId
+              });
+            }
+          } catch (error) {
+            logger.error(`Error criar log mensagem ${error}`);
+          }
         } else {
           await SendWhatsAppMessage({
             body: message.body,
             ticket: message.ticket,
-            quotedMsg: message.quotedMsg
+            quotedMsg: message.quotedMsg,
+            userId: message.userId
           });
         }
         await MessagesOffLine.destroy({ where: { id: message.id } });
@@ -72,4 +85,4 @@ const SendoffLineMessagesWbot = async (
   );
 };
 
-export default SendoffLineMessagesWbot;
+export default SendOffLineMessagesWbot;

@@ -2,5 +2,6 @@
   "vetur.validation.template": true,
   "vetur.format.enable": true,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
-  "vetur.experimental.templateInterpolationService": true
+  "vetur.experimental.templateInterpolationService": true,
+  "compile-hero.disable-compile-files-on-did-save-code": true
 }

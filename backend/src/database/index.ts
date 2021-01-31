@@ -14,6 +14,7 @@ import Queue from "../models/Queue";
 import UsersQueues from "../models/UsersQueues";
 import Tenant from "../models/Tenant";
 import AutoReplyLogs from "../models/AutoReplyLogs";
+import UserMessagesLog from "../models/UserMessagesLog";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -36,7 +37,8 @@ const models = [
   Queue,
   UsersQueues,
   Tenant,
-  AutoReplyLogs
+  AutoReplyLogs,
+  UserMessagesLog
 ];
 
 sequelize.addModels(models);

@@ -372,7 +372,7 @@ export default {
     },
     async listarFilas () {
       const { data } = await ListarFilas({ isActive: true })
-      this.filas = data?.queueData.filter(q => q.isActive)
+      this.filas = data.filter(q => q.isActive)
     },
     editarAutoResposta (autoResposta) {
       this.autoRespostaSelecionado = autoResposta

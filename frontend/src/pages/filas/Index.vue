@@ -86,7 +86,7 @@ export default {
   methods: {
     async listarFilas () {
       const { data } = await ListarFilas()
-      this.filas = data.queueData
+      this.filas = data
     },
     filaCriada (fila) {
       const newFilas = [...this.filas]

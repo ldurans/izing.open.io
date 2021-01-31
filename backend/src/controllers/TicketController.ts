@@ -71,11 +71,14 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     tenantId
   });
 
-  const io = getIO();
-  io.to(`${tenantId}-${ticket.status}`).emit(`${tenantId}-ticket`, {
-    action: "create",
-    ticket
-  });
+  // se ticket criado pelo próprio usuário, não emitir socket.
+  if (!userId) {
+    const io = getIO();
+    io.to(`${tenantId}-${ticket.status}`).emit(`${tenantId}-ticket`, {
+      action: "create",
+      ticket
+    });
+  }
 
   return res.status(200).json(ticket);
 };

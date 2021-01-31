@@ -3,7 +3,8 @@
     :key="wbot.id"
     v-ripple
     clickable
-    class="full-width full-height"
+    dense
+    class="full-width full-height "
   >
     <q-item-section avatar>
       <q-icon
@@ -16,10 +17,14 @@
       <q-item-label lines="1">
         Nome: {{ wbot.name }}
       </q-item-label>
-      <q-item-label lines="1">
+      <q-item-label
+        caption
+        lines="1"
+      >
         {{ status[wbot.status].status }}
       </q-item-label>
       <q-item-label
+        caption
         lines="3"
         v-if="isIconStatusMenu"
       >

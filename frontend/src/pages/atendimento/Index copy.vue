@@ -633,7 +633,7 @@ export default {
     },
     async listarFilas () {
       const { data } = await ListarFilas()
-      this.filas = data.queueData
+      this.filas = data
     },
     async consultarTicketsIniciais () {
       this.$store.commit('RESET_TICKETS')
