@@ -533,9 +533,7 @@ export default {
     },
     isNotViewTicketsQueueUndefined () {
       const configuracoes = JSON.parse(localStorage.getItem('configuracoes'))
-      console.log(configuracoes)
       const conf = configuracoes.find(c => c.key === 'NotViewTicketsQueueUndefined')
-      console.log(conf)
       return (conf.value === 'enabled' && profile !== 'admin')
     },
     onScroll (info) {

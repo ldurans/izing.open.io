@@ -382,7 +382,6 @@ export default {
     consultarTickets () {
       ConsultarTicketsQueuesService(this.pesquisaTickets)
         .then(res => {
-          console.log(res)
           this.tickets = res.data
           this.connectSocket()
         })
@@ -397,7 +396,6 @@ export default {
 
   async mounted () {
     await ListarFilas().then(res => {
-      console.log(res.data)
       this.filas = res.data
     })
     await this.consultarTickets()

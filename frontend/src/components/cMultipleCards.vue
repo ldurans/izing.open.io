@@ -35,7 +35,6 @@ export default {
     },
     sets () {
       const sets = []
-      console.log('this.collection.length', this.collection.length)
       const limit = Math.ceil(this.collection[0].length / this.itemsPerSet)
       for (let index = 0; index < limit; index++) {
         const start = index * this.itemsPerSet
