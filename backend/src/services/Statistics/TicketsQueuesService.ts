@@ -13,7 +13,7 @@ interface Request {
   userId: string;
   queuesIds?: string[];
   tenantId: string | number;
-  showAll?: boolean | string;
+  showAll?: string | boolean;
 }
 
 const TicketsQueuesService = async ({
@@ -43,7 +43,8 @@ const TicketsQueuesService = async ({
   ];
 
   const isExistsQueues = await Queue.count({ where: { tenantId } });
-  if (isExistsQueues && !showAll) {
+  // eslint-disable-next-line eqeqeq
+  if (isExistsQueues && (showAll == "false" || !showAll)) {
     const queues = await UsersQueues.findAll({
       where: {
         userId
@@ -101,8 +102,7 @@ const TicketsQueuesService = async ({
       tenantId
     },
     include: includeCondition,
-    order: [["updatedAt", "DESC"]],
-    logging: console.log
+    order: [["updatedAt", "DESC"]]
   });
 
   return tickets;

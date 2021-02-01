@@ -4,16 +4,20 @@ import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
 import User from "../../models/User";
+import { getIO } from "../../libs/socket";
 
 interface TicketData {
   status?: string;
   userId?: number;
   tenantId: number | string;
+  queueId?: number | null;
+  autoReplyId?: number | string | null;
+  stepAutoReplyId?: number | string | null;
 }
 
 interface Request {
   ticketData: TicketData;
-  ticketId: string;
+  ticketId: string | number;
 }
 
 interface Response {
@@ -26,7 +30,7 @@ const UpdateTicketService = async ({
   ticketData,
   ticketId
 }: Request): Promise<Response> => {
-  const { status, userId, tenantId } = ticketData;
+  const { status, userId, tenantId, queueId } = ticketData;
 
   const ticket = await Ticket.findOne({
     where: { id: ticketId, tenantId },
@@ -62,10 +66,28 @@ const UpdateTicketService = async ({
 
   await ticket.update({
     status: statusData,
+    queueId,
     userId
   });
 
   await ticket.reload();
+
+  const io = getIO();
+
+  if (ticket.status !== oldStatus || ticket.user?.id !== oldUserId) {
+    io.to(`${tenantId}-${oldStatus}`).emit(`${tenantId}-ticket`, {
+      action: "delete",
+      ticketId: ticket.id
+    });
+  }
+
+  io.to(`${tenantId}-${ticket.status}`)
+    .to(`${tenantId}-notification`)
+    .to(`${tenantId}-${ticketId.toString()}`)
+    .emit(`${tenantId}-ticket`, {
+      action: "update",
+      ticket
+    });
 
   return { ticket, oldStatus, oldUserId };
 };

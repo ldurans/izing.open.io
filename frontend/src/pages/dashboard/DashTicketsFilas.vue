@@ -100,8 +100,8 @@
           >
             <q-card
               bordered
-              flat
               square
+              flat
             >
               <q-item
                 v-if="visao === 'U' || visao === 'US'"
@@ -154,7 +154,7 @@
               </q-item>
               <q-separator />
               <q-card-section
-                :style="{ height: '300px' }"
+                :style="{ height: '320px' }"
                 class="scroll"
                 v-if="visao === 'U' || visao === 'F'"
               >
@@ -176,6 +176,16 @@
 </template>
 
 <script>
+const token = JSON.parse(localStorage.getItem('token'))
+const userId = +localStorage.getItem('userId')
+const usuario = JSON.parse(localStorage.getItem('usuario'))
+import openSocket from 'socket.io-client'
+const socket = openSocket(process.env.API, {
+  query: {
+    token
+  },
+  forceNew: true
+})
 import ItemTicket from 'src/pages/atendimento/ItemTicket'
 import { ConsultarTicketsQueuesService } from 'src/service/estatisticas.js'
 import { ListarFilas } from 'src/service/filas'
@@ -261,7 +271,94 @@ export default {
     }
   },
   methods: {
+    deleteTicket (ticketId) {
+      const newTickets = [...this.tickets]
+      const ticketsFilter = newTickets.filter(t => t.id !== ticketId)
+      this.tickets = [...ticketsFilter]
+    },
+    updateTicket (ticket) {
+      const newTickets = [...this.tickets]
+      const idx = newTickets.findIndex(t => ticket.id)
+      if (idx) {
+        newTickets[idx] = ticket
+        this.tickets = [...newTickets]
+      }
+    },
+    createTicket (ticket) {
+      const newTickets = [...this.tickets]
+      newTickets.unshift(ticket)
+      this.tickets = [...newTickets]
+    },
+    verifyIsActionSocket (data) {
+      if (!data.id) return false
+
+      // mostrar todos
+      if (this.pesquisaTickets.showAll) return true
+
+      // não existir filas cadastradas
+      if (!this.filas.length) return true
+
+      // verificar se a fila do ticket está filtrada
+      const isQueue = this.pesquisaTickets.queuesIds.indexOf(q => data.queueId === q)
+
+      let isValid = false
+      if (isQueue !== -1) {
+        isValid = true
+      }
+      return isValid
+
+      // verificar se o usuario possui ecesso a fila do ticket
+    },
+    conectSocketQueues (tenantId, queueId) {
+      socket.on(`${tenantId}-${queueId}-ticket-queue`, data => {
+        if (!this.verifyIsActionSocket(data.ticket)) return
+
+        if (data.action === 'update') {
+          this.updateTicket(data.ticket)
+        }
+        if (data.action === 'create') {
+          this.createTicket(data.ticket)
+        }
+        if (data.action === 'delete') {
+          this.deleteTicket(data.ticketId)
+        }
+      })
+    },
+    socketTickets (tenantId) {
+      socket.emit(`${tenantId}-joinTickets`, 'open')
+      socket.emit(`${tenantId}-joinTickets`, 'pending')
+
+      socket.on(`${tenantId}-ticket`, data => {
+        if (!this.verifyIsActionSocket(data.ticket)) return
+
+        if (data.action === 'updateQueue' || data.action === 'create') {
+          this.updateTicket(data.ticket)
+        }
+
+        if (data.action === 'updateUnread') {
+          // this.$store.commit('RESET_UNREAD', data.ticketId)
+        }
+
+        if (
+          (data.action === 'updateStatus' || data.action === 'create') &&
+          (!data.ticket.userId || data.ticket.userId === userId /* || showAll */)
+        ) {
+          this.updateTicket(data.ticket)
+        }
+
+        if (data.action === 'delete') {
+          this.deleteTicket(data.ticketId)
+        }
+      })
+    },
+    connectSocket () {
+      this.socketTickets()
+      this.cUserQueues.forEach(el => {
+        this.conectSocketQueues(usuario.tenantId, el.id)
+      })
+    },
     definirNomeUsuario (item) {
+      this.verifyIsActionSocket(item)
       return item?.user?.name || 'Pendente'
     },
     definirNomeFila (f) {
@@ -285,6 +382,7 @@ export default {
         .then(res => {
           console.log(res)
           this.tickets = res.data
+          this.connectSocket()
         })
         .catch(error => {
           console.error(error)
@@ -301,6 +399,9 @@ export default {
       this.filas = res.data
     })
     await this.consultarTickets()
+  },
+  destroyed () {
+    socket.disconnect()
   }
 }
 </script>

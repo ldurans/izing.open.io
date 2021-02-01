@@ -101,27 +101,27 @@ export const update = async (
 
   const ticketData: TicketData = { ...req.body, tenantId };
 
-  const { ticket, oldStatus, oldUserId } = await UpdateTicketService({
+  const { ticket } = await UpdateTicketService({
     ticketData,
     ticketId
   });
 
-  const io = getIO();
+  // const io = getIO();
 
-  if (ticket.status !== oldStatus || ticket.user?.id !== oldUserId) {
-    io.to(`${tenantId}-${oldStatus}`).emit(`${tenantId}-ticket`, {
-      action: "delete",
-      ticketId: ticket.id
-    });
-  }
+  // if (ticket.status !== oldStatus || ticket.user?.id !== oldUserId) {
+  //   io.to(`${tenantId}-${oldStatus}`).emit(`${tenantId}-ticket`, {
+  //     action: "delete",
+  //     ticketId: ticket.id
+  //   });
+  // }
 
-  io.to(`${tenantId}-${ticket.status}`)
-    .to(`${tenantId}-notification`)
-    .to(`${tenantId}-${ticketId}`)
-    .emit(`${tenantId}-ticket`, {
-      action: "updateStatus",
-      ticket
-    });
+  // io.to(`${tenantId}-${ticket.status}`)
+  //   .to(`${tenantId}-notification`)
+  //   .to(`${tenantId}-${ticketId}`)
+  //   .emit(`${tenantId}-ticket`, {
+  //     action: "updateStatus",
+  //     ticket
+  //   });
 
   return res.status(200).json(ticket);
 };

@@ -451,6 +451,15 @@ export default {
       filas: []
     }
   },
+  watch: {
+    pesquisaTickets: {
+      handler (v) {
+        localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   computed: {
     ...mapGetters([
       'tickets',

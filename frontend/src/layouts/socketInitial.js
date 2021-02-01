@@ -2,6 +2,7 @@ const token = JSON.parse(localStorage.getItem('token'))
 const usuario = JSON.parse(localStorage.getItem('usuario'))
 const queues = JSON.parse(localStorage.getItem('queues'))
 import Router from 'src/router/index'
+import verifySocketTicketAction from 'src/utils/verifySocketTicketAction'
 
 const isQueueOrUserNotify = (ticket) => {
   const queue = queues.findIndex(q => q.id === ticket.queueId)
@@ -37,6 +38,7 @@ export default {
       socket.emit(`${usuario.tenantId}-joinNotification`)
 
       socket.on(`${usuario.tenantId}-ticket`, data => {
+        if (!verifySocketTicketAction(data.ticket, data.action)) return
         if (data.action === 'updateUnread' || data.action === 'delete') {
 
         }

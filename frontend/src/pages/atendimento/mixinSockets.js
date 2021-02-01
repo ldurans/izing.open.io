@@ -1,5 +1,6 @@
 const token = JSON.parse(localStorage.getItem('token'))
 const usuario = JSON.parse(localStorage.getItem('usuario'))
+import verifySocketTicketAction from 'src/utils/verifySocketTicketAction'
 import Router from 'src/router/index'
 import openSocket from 'socket.io-client'
 const socket = openSocket(process.env.API, {
@@ -54,6 +55,7 @@ export default {
     },
     socketTicket () {
       socket.on(`${usuario.tenantId}-ticket`, data => {
+        if (!verifySocketTicketAction(data.ticket, data.action)) return
         if (data.action === 'updateStatus' && data.ticket.userId === userId) {
           if (data.ticket.status === 'open') {
             this.$store.commit('TICKET_FOCADO', data.ticket)
@@ -95,6 +97,7 @@ export default {
       // }
 
       socket.on(`${usuario.tenantId}-ticket`, data => {
+        if (!verifySocketTicketAction(data.ticket, data.action)) return
         if (data.action === 'updateQueue' || data.action === 'create') {
           this.$store.commit('UPDATE_TICKET', data.ticket)
         }
