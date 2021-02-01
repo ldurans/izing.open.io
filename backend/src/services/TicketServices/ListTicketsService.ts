@@ -8,6 +8,7 @@ import Message from "../../models/Message";
 import UsersQueues from "../../models/UsersQueues";
 import AppError from "../../errors/AppError";
 import User from "../../models/User";
+import ListSettingsService from "../SettingServices/ListSettingsService";
 
 interface Request {
   searchParam?: string;
@@ -209,6 +210,35 @@ const ListTicketsService = async ({
       createdAt: {
         [Op.between]: [+startOfDay(parseISO(date)), +endOfDay(parseISO(date))]
       }
+    };
+  }
+
+  // tratar as configurações do sistema
+  const settings = await ListSettingsService(tenantId);
+  const NotViewTicketsQueueUndefined =
+    settings?.find(s => s.key === "NotViewTicketsQueueUndefined")?.value ||
+    "disabled";
+  const NotViewAssignedTickets =
+    settings?.find(s => s.key === "NotViewAssignedTickets")?.value ||
+    "disabled";
+
+  if (NotViewTicketsQueueUndefined === "enabled" && !isAdminShowAll) {
+    whereCondition = {
+      ...whereCondition,
+      [Op.and]: [{ queueId: { [Op.ne]: null } }]
+    };
+  }
+
+  if (NotViewAssignedTickets === "enabled" && !isAdminShowAll) {
+    whereCondition = {
+      ...whereCondition,
+      [Op.and]: [
+        {
+          userId: {
+            [Op.or]: [userId, null]
+          }
+        }
+      ]
     };
   }
 

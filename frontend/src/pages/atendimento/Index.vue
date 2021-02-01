@@ -32,7 +32,7 @@
             </q-avatar>
             <q-menu>
               <q-list style="min-width: 100px">
-                <q-item-label header> Olá! {{ usuario.name }} </q-item-label>
+                <q-item-label header> Olá! {{ username }} </q-item-label>
                 <q-separator />
                 <q-item
                   clickable
@@ -209,9 +209,9 @@
                         </q-item-section>
                       </q-item>
                     </q-list>
-
                     <q-separator class="q-mb-md" />
                     <q-toggle
+                      v-if="!isNotViewTicketsQueueUndefined()"
                       v-model="pesquisaTickets.includeNotQueueDefined"
                       label="Incluir Tickets sem filas definidas"
                       @input="debounce(BuscarTicketFiltro(), 700)"
@@ -425,6 +425,7 @@ import ModalNovoTicket from './ModalNovoTicket'
 import { ListarFilas } from 'src/service/filas'
 const UserQueues = localStorage.getItem('queues')
 const profile = localStorage.getItem('profile')
+const username = localStorage.getItem('username')
 const usuario = JSON.parse(localStorage.getItem('usuario'))
 import StatusWhatsapp from 'src/components/StatusWhatsapp'
 import alertSound from 'src/assets/sound.mp3'
@@ -432,6 +433,7 @@ import { ListarWhatsapps } from 'src/service/sessoesWhatsapp'
 import { debounce } from 'quasar'
 import { format } from 'date-fns'
 import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
+import { ListarConfiguracoes } from 'src/service/configuracoes'
 
 export default {
   name: 'IndexAtendimento',
@@ -445,9 +447,11 @@ export default {
   },
   data () {
     return {
+      configuracoes: [],
       debounce,
       alertSound,
       usuario,
+      username,
       modalUsuario: false,
       toolbarSearch: true,
       drawerTickets: true,
@@ -523,6 +527,17 @@ export default {
     }
   },
   methods: {
+    async listarConfiguracoes () {
+      const { data } = await ListarConfiguracoes()
+      localStorage.setItem('configuracoes', JSON.stringify(data))
+    },
+    isNotViewTicketsQueueUndefined () {
+      const configuracoes = JSON.parse(localStorage.getItem('configuracoes'))
+      console.log(configuracoes)
+      const conf = configuracoes.find(c => c.key === 'NotViewTicketsQueueUndefined')
+      console.log(conf)
+      return (conf.value === 'enabled' && profile !== 'admin')
+    },
     onScroll (info) {
       if (info.verticalPercentage <= 0.85) return
       this.onLoadMore()
@@ -656,6 +671,7 @@ export default {
   },
   beforeMount () {
     this.listarFilas()
+    this.listarConfiguracoes()
   },
   async mounted () {
     await this.listarWhatsapps()

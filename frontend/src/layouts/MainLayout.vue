@@ -6,7 +6,7 @@
       bordered
       content-class="bg-grey-1"
     >
-      <q-list>
+      <q-list :key="userProfile">
         <q-item-label
           header
           class="text-grey-8"
@@ -96,6 +96,7 @@ import { format } from 'date-fns'
 const userId = +localStorage.getItem('userId')
 import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { mapGetters } from 'vuex'
+import { ListarConfiguracoes } from 'src/service/configuracoes'
 
 const objMenu = [
   // {
@@ -149,13 +150,13 @@ const objMenuAdmin = [
     caption: 'Configuração auto resposta',
     icon: 'mdi-message-reply-text',
     routeName: 'auto-resposta'
+  },
+  {
+    title: 'Configurações',
+    caption: 'Configurações gerais',
+    icon: 'mdi-cog',
+    routeName: 'configuracoes'
   }
-  // {
-  //   title: 'Configurações',
-  //   caption: 'Configurações gerais',
-  //   icon: 'mdi-cog',
-  //   routeName: 'conexoes'
-  // }
 
 ]
 
@@ -257,10 +258,15 @@ export default {
       localStorage.removeItem('queues')
       localStorage.removeItem('usuario')
       this.$router.go({ name: 'login', replace: true })
+    },
+    async listarConfiguracoes () {
+      const { data } = await ListarConfiguracoes()
+      localStorage.setItem('configuracoes', JSON.stringify(data))
     }
   },
   async mounted () {
     await this.listarWhatsapps()
+    await this.listarConfiguracoes()
     if (!('Notification' in window)) {
     } else {
       Notification.requestPermission()

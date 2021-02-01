@@ -6,6 +6,7 @@ import User from "../../models/User";
 import UsersQueues from "../../models/UsersQueues";
 
 interface UserQueues {
+  id?: number;
   queue?: number;
 }
 
@@ -63,7 +64,8 @@ const UpdateUserService = async ({
     await UsersQueues.destroy({ where: { userId } });
     await Promise.all(
       queues.map(async queue => {
-        await UsersQueues.upsert({ queueId: queue, userId });
+        const { id: queueId } = queue;
+        await UsersQueues.upsert({ queueId, userId });
       })
     );
   }
