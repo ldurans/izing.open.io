@@ -3,7 +3,6 @@
     <q-input
       class="full-width"
       dense
-      clearable
       hide-bottom-space
       outlined
       stack-label

@@ -23,11 +23,37 @@
         >
 
           <q-btn
-            round
-            outline
             color="primary"
-            label="LD"
-          />
+            round
+            push
+          >
+            <q-avatar size="32px">
+              <q-icon name="mdi-account" />
+            </q-avatar>
+            <q-menu>
+              <q-list style="min-width: 100px">
+                <q-item-label header> Olá! {{ usuario.name }} </q-item-label>
+                <q-separator />
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="abrirModalUsuario"
+                >
+                  <q-item-section>Perfil</q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="efetuarLogout"
+                >
+                  <q-item-section>Sair</q-item-section>
+                </q-item>
+                <q-separator />
+
+              </q-list>
+            </q-menu>
+
+          </q-btn>
 
           <q-space />
           <q-btn
@@ -43,19 +69,7 @@
               Novo atendimento
             </q-tooltip>
           </q-btn>
-          <!-- <q-btn
-            round
-            flat
-            icon="mdi-comment-search-outline"
-            @click="toolbarSearch = !toolbarSearch"
-          >
-            <q-tooltip
-              :delay="1000"
-              content-class="bg-primary"
-            >
-              Pesquisar
-            </q-tooltip>
-          </q-btn> -->
+
           <q-btn
             round
             flat
@@ -384,6 +398,12 @@
         @contatoModal:contato-editado="contatoEditado"
       />
 
+      <ModalUsuario
+        :isProfile="true"
+        :modalUsuario.sync="modalUsuario"
+        :usuarioEdicao.sync="usuario"
+      />
+
       <audio ref="audioNotification">
         <source
           :src="alertSound"
@@ -405,11 +425,13 @@ import ModalNovoTicket from './ModalNovoTicket'
 import { ListarFilas } from 'src/service/filas'
 const UserQueues = localStorage.getItem('queues')
 const profile = localStorage.getItem('profile')
+const usuario = JSON.parse(localStorage.getItem('usuario'))
 import StatusWhatsapp from 'src/components/StatusWhatsapp'
 import alertSound from 'src/assets/sound.mp3'
 import { ListarWhatsapps } from 'src/service/sessoesWhatsapp'
 import { debounce } from 'quasar'
 import { format } from 'date-fns'
+import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 
 export default {
   name: 'IndexAtendimento',
@@ -418,12 +440,15 @@ export default {
     ItemTicket,
     ModalNovoTicket,
     StatusWhatsapp,
-    ContatoModal
+    ContatoModal,
+    ModalUsuario
   },
   data () {
     return {
       debounce,
       alertSound,
+      usuario,
+      modalUsuario: false,
       toolbarSearch: true,
       drawerTickets: true,
       drawerContact: true,
@@ -610,6 +635,23 @@ export default {
         // utilizar refs do layout
         this.$refs.audioNotification.play()
       })
+    },
+    async abrirModalUsuario () {
+      // if (!usuario.id) {
+      //   await this.dadosUsuario()
+      // }
+      // const { data } = await DadosUsuario(userId)
+      // this.usuario = data
+      this.modalUsuario = true
+    },
+    efetuarLogout () {
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      localStorage.removeItem('profile')
+      localStorage.removeItem('userId')
+      localStorage.removeItem('queues')
+      localStorage.removeItem('usuario')
+      this.$router.go({ name: 'login', replace: true })
     }
   },
   beforeMount () {

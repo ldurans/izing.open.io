@@ -3,11 +3,11 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    redirect: { name: 'dashboard' },
+    redirect: { name: 'conexoes' },
     children: [
       // { path: '', component: () => import('pages/Index.vue') },
-      { path: '/dashboard-tickets-filas', name: 'dashboard-tickets-filas', component: () => import('pages/dashboard/DashTicketsFilas.vue') },
-      { path: '/ConsultarTicketsQueuesService', name: 'dashboard', component: () => import('pages/dashboard/Index.vue') },
+      { path: '/painel-tickets', name: 'painel-tickets', component: () => import('pages/dashboard/DashTicketsFilas.vue') },
+      // { path: '/ConsultarTicketsQueuesService', name: 'dashboard', component: () => import('pages/dashboard/Index.vue') },
       { path: '/conexoes', name: 'conexoes', component: () => import('pages/sessaoWhatsapp/Index.vue') },
       { path: '/contatos', name: 'contatos', component: () => import('pages/contatos/Index.vue') },
       { path: '/usuarios', name: 'usuarios', component: () => import('pages/usuarios/Index.vue') },

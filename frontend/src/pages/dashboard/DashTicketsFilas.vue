@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row col q-pa-md justify-between items-center">
-      <h1> Paínel Tickets </h1>
+      <h1> Painel Tickets </h1>
       <q-btn
         color="primary"
         icon="mdi-filter"
@@ -64,6 +64,8 @@
           <!-- @input="debounce(BuscarTicketFiltro(), 700)" -->
         </q-card-section>
         <q-card-section>
+          <q-separator />
+          <div class="text-h6 q-mt-md">Tipo de visualização</div>
           <q-option-group
             :options="optionsVisao"
             label="Visão"
@@ -192,7 +194,7 @@ import { ListarFilas } from 'src/service/filas'
 const UserQueues = localStorage.getItem('queues')
 import { groupBy } from 'lodash'
 const profile = localStorage.getItem('profile')
-// import { format } from 'date-fns'
+import { format } from 'date-fns'
 export default {
   name: 'DashBoard',
   components: { ItemTicket },
@@ -211,8 +213,8 @@ export default {
       visao: 'U',
       pesquisaTickets: {
         showAll: false,
-        dateStart: new Date(2021, 0, 1),
-        dateEnd: new Date(2021, 1, 31),
+        dateStart: format(new Date(2021, 0, 1), 'yyyy-MM-dd'),
+        dateEnd: format(new Date(2021, 0, 31), 'yyyy-MM-dd'),
         queuesIds: []
       },
       tickets: [],

@@ -29,6 +29,42 @@
         </div>
 
       </q-list>
+      <div class="absolute-bottom">
+        <q-btn
+          class="q-ma-sm"
+          color="primary"
+          round
+          push
+        >
+          <q-avatar size="32px">
+            <q-icon name="mdi-account" />
+          </q-avatar>
+          <q-menu>
+            <q-list style="min-width: 100px">
+              <q-item-label header> Olá! {{ usuario.name }} </q-item-label>
+              <q-separator />
+              <q-item
+                clickable
+                v-close-popup
+                @click="abrirModalUsuario"
+              >
+                <q-item-section>Perfil</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                @click="efetuarLogout"
+              >
+                <q-item-section>Sair</q-item-section>
+              </q-item>
+              <q-separator />
+
+            </q-list>
+          </q-menu>
+
+        </q-btn>
+
+      </div>
     </q-drawer>
 
     <q-page-container>
@@ -68,6 +104,12 @@ const objMenu = [
   //   icon: 'mdi-view-dashboard',
   //   routeName: 'dashboard'
   // },
+  {
+    title: 'Painel Tickets',
+    caption: 'Visão dos tickets por usuário e filas',
+    icon: 'mdi-view-dashboard-variant',
+    routeName: 'painel-tickets'
+  },
   {
     title: 'Conexões',
     caption: 'Sessões Whatsapp',
