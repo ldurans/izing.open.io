@@ -251,8 +251,7 @@ const ListTicketsService = async ({
     distinct: true,
     limit,
     offset,
-    order: [["updatedAt", "DESC"]],
-    logging: console.log
+    order: [["updatedAt", "DESC"]]
   });
 
   const hasMore = count > offset + tickets.length;
