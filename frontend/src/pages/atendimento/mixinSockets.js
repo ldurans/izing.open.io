@@ -56,7 +56,7 @@ export default {
     socketTicket () {
       socket.on(`${usuario.tenantId}-ticket`, data => {
         if (!verifySocketTicketAction(data.ticket, data.action)) return
-        if (data.action === 'updateStatus' && data.ticket.userId === userId) {
+        if (data.action === 'update' && data.ticket.userId === userId) {
           if (data.ticket.status === 'open') {
             this.$store.commit('TICKET_FOCADO', data.ticket)
           }
@@ -97,7 +97,7 @@ export default {
       // }
 
       socket.on(`${usuario.tenantId}-ticket`, data => {
-        if (!verifySocketTicketAction(data.ticket, data.action)) return
+        if (!verifySocketTicketAction(data.ticket, data.action)) return // refatorar para verificar corretamente os parametros
         if (data.action === 'updateQueue' || data.action === 'create') {
           this.$store.commit('UPDATE_TICKET', data.ticket)
         }
@@ -107,8 +107,8 @@ export default {
         }
 
         if (
-          (data.action === 'updateStatus' || data.action === 'create') &&
-          (!data.ticket.userId || data.ticket.userId === userId /* || showAll */)
+          (data.action === 'update' || data.action === 'create') &&
+          (!data.ticket.userId || data.ticket.userId === userId || this.showAll)
         ) {
           this.$store.commit('UPDATE_TICKET', data.ticket)
         }
@@ -120,7 +120,7 @@ export default {
 
       socket.on(`${usuario.tenantId}-appMessage`, data => {
         if (
-          data.action === 'create' && (!data.ticket.userId || data.ticket.userId === userId /* || showAll */)
+          data.action === 'create' && (!data.ticket.userId || data.ticket.userId === userId || this.showAll)
         ) {
           this.$store.commit('UPDATE_TICKET_MESSAGES_COUNT', {
             ticket: data.ticket,

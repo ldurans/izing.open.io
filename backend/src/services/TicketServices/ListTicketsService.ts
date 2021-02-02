@@ -170,13 +170,13 @@ const ListTicketsService = async ({
         model: Message,
         as: "messages",
         attributes: ["id", "body"],
-        // where: {
-        //   body: where(
-        //     fn("LOWER", col("body")),
-        //     "LIKE",
-        //     `%${sanitizedSearchParam}%`
-        //   )
-        // },
+        where: {
+          body: where(
+            fn("LOWER", col("body")),
+            "LIKE",
+            `%${sanitizedSearchParam}%`
+          )
+        },
         required: false,
         duplicating: false
       }
@@ -251,7 +251,8 @@ const ListTicketsService = async ({
     distinct: true,
     limit,
     offset,
-    order: [["updatedAt", "DESC"]]
+    order: [["updatedAt", "DESC"]],
+    logging: console.log
   });
 
   const hasMore = count > offset + tickets.length;

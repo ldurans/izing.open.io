@@ -342,7 +342,7 @@ export default {
         }
 
         if (
-          (data.action === 'updateStatus' || data.action === 'create') &&
+          (data.action === 'update' || data.action === 'create') &&
           (!data.ticket.userId || data.ticket.userId === userId /* || showAll */)
         ) {
           this.updateTicket(data.ticket)
