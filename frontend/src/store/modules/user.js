@@ -45,9 +45,15 @@ const user = {
           position: 'top',
           progress: true
         })
-        this.$router.push({
-          name: 'atendimento'
-        })
+        if (data.profile === 'admin') {
+          this.$router.push({
+            name: 'contatos'
+          })
+        } else {
+          this.$router.push({
+            name: 'atendimento'
+          })
+        }
       } catch (error) {
         console.error(error)
       }

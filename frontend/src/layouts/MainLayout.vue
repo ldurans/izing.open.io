@@ -6,6 +6,37 @@
       bordered
       content-class="bg-grey-1"
     >
+      <q-toolbar
+        class="text-primary q-pr-none"
+        style="height: 60px"
+      >
+        <q-btn-dropdown
+          color="primary"
+          :label="username"
+          no-caps
+          outline
+          ripple
+        >
+          <q-list style="min-width: 100px">
+            <q-item
+              clickable
+              v-close-popup
+              @click="abrirModalUsuario"
+            >
+              <q-item-section>Perfil</q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              v-close-popup
+              @click="efetuarLogout"
+            >
+              <q-item-section>Sair</q-item-section>
+            </q-item>
+            <q-separator />
+
+          </q-list>
+        </q-btn-dropdown>
+      </q-toolbar>
       <q-list :key="userProfile">
         <q-item-label
           header
@@ -29,42 +60,6 @@
         </div>
 
       </q-list>
-      <div class="absolute-bottom">
-        <q-btn
-          class="q-ma-sm"
-          color="primary"
-          round
-          push
-        >
-          <q-avatar size="32px">
-            <q-icon name="mdi-account" />
-          </q-avatar>
-          <q-menu>
-            <q-list style="min-width: 100px">
-              <q-item-label header> Olá! {{ usuario.name }} </q-item-label>
-              <q-separator />
-              <q-item
-                clickable
-                v-close-popup
-                @click="abrirModalUsuario"
-              >
-                <q-item-section>Perfil</q-item-section>
-              </q-item>
-              <q-item
-                clickable
-                v-close-popup
-                @click="efetuarLogout"
-              >
-                <q-item-section>Sair</q-item-section>
-              </q-item>
-              <q-separator />
-
-            </q-list>
-          </q-menu>
-
-        </q-btn>
-
-      </div>
     </q-drawer>
 
     <q-page-container>
@@ -94,6 +89,7 @@ import socketInitial from './socketInitial'
 import alertSound from 'src/assets/sound.mp3'
 import { format } from 'date-fns'
 const userId = +localStorage.getItem('userId')
+const username = localStorage.getItem('username')
 import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { mapGetters } from 'vuex'
 import { ListarConfiguracoes } from 'src/service/configuracoes'
@@ -112,10 +108,10 @@ const objMenu = [
     routeName: 'painel-tickets'
   },
   {
-    title: 'Conexões',
+    title: 'Sessões',
     caption: 'Sessões Whatsapp',
     icon: 'mdi-cellphone-wireless',
-    routeName: 'conexoes'
+    routeName: 'sessoes'
   },
   {
     title: 'Atendimentos',
@@ -166,6 +162,7 @@ export default {
   components: { EssentialLink, ModalUsuario },
   data () {
     return {
+      username,
       userProfile: 'user',
       modalUsuario: false,
       usuario: {},
@@ -192,7 +189,7 @@ export default {
     cObjMenu () {
       if (this.cProblemaConexao) {
         return objMenu.map(menu => {
-          if (menu.routeName === 'conexoes') {
+          if (menu.routeName === 'sessoes') {
             menu.color = 'negative'
           }
           return menu

@@ -24,18 +24,36 @@
           spinner="spiral"
         >
           <div slot="no-results">
-            Sem resultados
+            <div v-if="!cMessages.length">
+              Sem resultados :(
+            </div>
           </div>
           <div slot="no-more">
-            Nada mais a carregar
+            Nada mais a carregar :)
           </div>
         </infinite-loading>
       </transition>
       <MensagemChat
         :replyingMessage.sync="replyingMessage"
         :mensagens="cMessages"
-        v-if="cMessages.length"
+        v-if="cMessages.length && ticketFocado.id"
       />
+      <div
+        class="absolute-center row col items-center "
+        v-if="!ticketFocado.id"
+      >
+        <q-icon
+          style="margin-left: 10vw"
+          size="10em"
+          color="grey-4"
+          name="mdi-emoticon-cool-outline"
+          class="row col"
+        >
+        </q-icon>
+        <h1 class="text-grey-4 row col justify-center">
+          Selecione um ticket!
+        </h1>
+      </div>
     </div>
     <div
       v-if="cMessages.length"
@@ -61,6 +79,7 @@
         </div>
       </transition>
     </div>
+
     <q-footer>
       <q-separator class="bg-grey-4" />
       <q-card-section

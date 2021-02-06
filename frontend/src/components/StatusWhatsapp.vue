@@ -231,18 +231,6 @@ export default {
   },
   computed: {
     ...mapGetters(['whatsapps']),
-    // isProblemConnect: {
-    //   get () {
-    //     return this.isProblem
-    //   },
-    //   set () {
-    //     debounce(function () {
-    //       const problem = this.whatsapps.findIndex(w => w.status !== 'CONNECTED') !== -1
-    //       console.log('problem', problem)
-    //       this.isProblem = problem
-    //     }, 3000)
-    //   }
-    // },
     isBtnSlider () {
       const len = this.whatsapps.filter(w => w.status !== 'CONNECTED')
       return len > 1

@@ -36,11 +36,15 @@ export default {
     },
     socketMessagesList () {
       socket.emit(`${usuario.tenantId}-joinChatBox`, this.$store.getters.ticketFocado.id)
+
       socket.on(`${usuario.tenantId}-appMessage`, data => {
+        if (!verifySocketTicketAction(data.message.ticket, data.action)) return
+
         if (data.action === 'create') {
           if (data.ticket.id == this.$store.getters.ticketFocado.id) {
             this.$store.commit('ADD_MESSAGE', data.message)
             // this.scrollToBottom()
+            this.handlerNotifications(data)
           }
         }
 
@@ -69,6 +73,8 @@ export default {
           //   message: 'Tudo ok!'
           // })
           this.$store.commit('TICKET_FOCADO', {})
+          this.$store.commit('DELETE_TICKET', data.ticketId)
+          this.$router.push({ name: 'chat-empty' })
         }
 
         // preprar notificação
@@ -119,6 +125,7 @@ export default {
       })
 
       socket.on(`${usuario.tenantId}-appMessage`, data => {
+        if (!verifySocketTicketAction(data.message.ticket, data.action)) return // refatorar para verificar corretamente os parametros
         if (
           data.action === 'create' && (!data.ticket.userId || data.ticket.userId === userId || this.showAll)
         ) {
@@ -126,6 +133,14 @@ export default {
             ticket: data.ticket,
             searchParam
           })
+        }
+
+        if (
+          data.action === 'create' &&
+          !data.message.read &&
+          (data.ticket.userId === userId || !data.ticket.userId)
+        ) {
+          this.handlerNotifications(data)
         }
       })
 

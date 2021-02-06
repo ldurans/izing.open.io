@@ -12,8 +12,10 @@
       <q-drawer
         v-model="drawerTickets"
         show-if-above
+        behavior="desktop"
         bordered
         :width="450"
+        persistent
         content-class="bg-white hide-scrollbar"
       >
 
@@ -21,41 +23,49 @@
           class="text-primary q-pr-none"
           style="height: 60px"
         >
-
-          <q-btn
+          <q-btn-dropdown
             color="primary"
-            round
-            push
+            :label="username"
+            no-caps
+            outline
+            ripple
           >
-            <q-avatar size="32px">
-              <q-icon name="mdi-account" />
-            </q-avatar>
-            <q-menu>
-              <q-list style="min-width: 100px">
-                <q-item-label header> Olá! {{ username }} </q-item-label>
-                <q-separator />
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="abrirModalUsuario"
-                >
-                  <q-item-section>Perfil</q-item-section>
-                </q-item>
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="efetuarLogout"
-                >
-                  <q-item-section>Sair</q-item-section>
-                </q-item>
-                <q-separator />
+            <q-list style="min-width: 100px">
+              <q-item
+                clickable
+                v-close-popup
+                @click="abrirModalUsuario"
+              >
+                <q-item-section>Perfil</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
+                @click="efetuarLogout"
+              >
+                <q-item-section>Sair</q-item-section>
+              </q-item>
+              <q-separator />
 
-              </q-list>
-            </q-menu>
-
-          </q-btn>
+            </q-list>
+          </q-btn-dropdown>
 
           <q-space />
+          <q-btn
+            round
+            flat
+            color="primary"
+            icon="mdi-backburger"
+            @click="() => $router.push({name: 'contatos'})"
+          >
+            <q-tooltip
+              :delay="1000"
+              content-class="bg-primary"
+            >
+              Retornar aos menus
+            </q-tooltip>
+          </q-btn>
+
           <q-btn
             round
             flat
@@ -135,6 +145,7 @@
                     <q-select
                       :disable="pesquisaTickets.showAll"
                       square
+                      dense
                       outlined
                       hide-bottom-space
                       emit-value
@@ -145,7 +156,7 @@
                       label="Filas"
                       color="primary"
                       v-model="pesquisaTickets.queuesIds"
-                      :options="filas"
+                      :options="cUserQueues"
                       :input-debounce="700"
                       option-value="id"
                       option-label="queue"
@@ -211,7 +222,7 @@
                     </q-list>
                     <q-separator class="q-mb-md" />
                     <q-toggle
-                      v-if="!isNotViewTicketsQueueUndefined()"
+                      v-if="!isNotViewTicketsQueueUndefined() || profile === 'admin'"
                       v-model="pesquisaTickets.includeNotQueueDefined"
                       label="Incluir Tickets sem filas definidas"
                       @input="debounce(BuscarTicketFiltro(), 700)"
@@ -403,14 +414,13 @@
         :modalUsuario.sync="modalUsuario"
         :usuarioEdicao.sync="usuario"
       />
-
-      <audio ref="audioNotification">
-        <source
-          :src="alertSound"
-          type="audio/mp3"
-        >
-      </audio>
     </q-layout>
+    <audio ref="audioNotificationPlay">
+      <source
+        :src="alertSound"
+        type="audio/mp3"
+      >
+    </audio>
   </div>
 </template>
 
@@ -423,7 +433,7 @@ import mixinSockets from './mixinSockets'
 import socketInitial from 'src/layouts/socketInitial'
 import ModalNovoTicket from './ModalNovoTicket'
 import { ListarFilas } from 'src/service/filas'
-const UserQueues = localStorage.getItem('queues')
+const UserQueues = JSON.parse(localStorage.getItem('queues'))
 const profile = localStorage.getItem('profile')
 const username = localStorage.getItem('username')
 const usuario = JSON.parse(localStorage.getItem('usuario'))
@@ -496,16 +506,17 @@ export default {
       'hasMore'
     ]),
     cUserQueues () {
-      try {
-        const filasUsuario = JSON.parse(UserQueues).map(q => {
-          if (q.isActive) {
-            return q.id
-          }
-        })
-        return this.filas.filter(f => filasUsuario.includes(f.id)) || []
-      } catch (error) {
-        return []
-      }
+      // try {
+      //   const filasUsuario = JSON.parse(UserQueues).map(q => {
+      //     if (q.isActive) {
+      //       return q.id
+      //     }
+      //   })
+      //   return this.filas.filter(f => filasUsuario.includes(f.id)) || []
+      // } catch (error) {
+      //   return []
+      // }
+      return UserQueues
     },
     style () {
       return {
@@ -534,7 +545,7 @@ export default {
     isNotViewTicketsQueueUndefined () {
       const configuracoes = JSON.parse(localStorage.getItem('configuracoes'))
       const conf = configuracoes.find(c => c.key === 'NotViewTicketsQueueUndefined')
-      return (conf.value === 'enabled' && profile !== 'admin')
+      return (conf?.value === 'enabled')
     },
     onScroll (info) {
       if (info.verticalPercentage <= 0.85) return
@@ -646,7 +657,7 @@ export default {
       }
       this.$nextTick(() => {
         // utilizar refs do layout
-        this.$refs.audioNotification.play()
+        this.$refs.audioNotificationPlay.play()
       })
     },
     async abrirModalUsuario () {

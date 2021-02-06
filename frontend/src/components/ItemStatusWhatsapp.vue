@@ -66,13 +66,13 @@ export default {
           color: 'warning',
           icon: 'mdi-timer-outline',
           status: 'Timeout',
-          description: 'Tentativas de conexão falharam. Verifique a internet no celular.'
+          description: 'As tentativas de conexão falharam. Verifique a internet no celular.'
         },
         DISCONNECTED: {
           color: 'negative',
           icon: 'mdi-wifi-strength-1-alert',
           status: 'Desconectado',
-          description: 'Whatsapp desconectado.'
+          description: 'Verifique se o celular do Whatsapp possui conexão com internet.'
         },
         qrcode: {
           color: 'positive',
@@ -84,7 +84,7 @@ export default {
           color: 'primary',
           icon: 'mdi-close-network-outline',
           status: 'Inativo',
-          description: 'Necessário iniciar a sessão com o Whatsapp.'
+          description: 'Necessário iniciar a conexão com o Whatsapp e Ler o Qr Code.'
         },
         CONFLICT: {
           color: 'warning',

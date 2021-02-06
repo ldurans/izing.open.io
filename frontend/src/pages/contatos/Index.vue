@@ -3,6 +3,7 @@
     <q-table
       class="my-sticky-dynamic"
       title="Contatos"
+      :id="`tabela-contatos-${isChatContact ? 'atendimento' : ''}`"
       :data="contacts"
       :columns="columns"
       :loading="loading"
@@ -16,12 +17,26 @@
       :bordered="isChatContact"
       :square="isChatContact"
       :flat="isChatContact"
+      :separator="isChatContact ? 'vertical' : 'horizontal'"
       :class="{
         'q-ma-lg': !isChatContact,
-        'q-ma-none heightChat': isChatContact
+        'q-ml-md heightChat': isChatContact
       }"
     >
-      <template v-slot:top-right>
+      <template v-slot:top>
+        <div class="row col-2 q-table__title items-center ">
+          <q-btn
+            v-if="isChatContact"
+            class="q-mr-sm"
+            color="black"
+            round
+            flat
+            icon="mdi-close"
+            @click="$router.push({name: 'chat-empty'})"
+          />
+          Contatos
+        </div>
+        <q-space />
         <q-input
           style="width: 300px"
           filled
@@ -296,5 +311,12 @@ export default {
     top: 0
 
 .heightChat
-  height: calc(100vh - 2px)
+  height: calc(100vh - 0px)
+  .q-table__top
+    padding: 8px
+
+#tabela-contatos-atendimento
+  thead
+    th
+      height: 55px
 </style>

@@ -3,12 +3,12 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    redirect: { name: 'conexoes' },
+    redirect: { name: 'contatos' },
     children: [
-      // { path: '', component: () => import('pages/Index.vue') },
+      { path: '', component: () => import('pages/contatos/Index.vue') },
       { path: '/painel-tickets', name: 'painel-tickets', component: () => import('pages/dashboard/DashTicketsFilas.vue') },
       // { path: '/ConsultarTicketsQueuesService', name: 'dashboard', component: () => import('pages/dashboard/Index.vue') },
-      { path: '/conexoes', name: 'conexoes', component: () => import('pages/sessaoWhatsapp/Index.vue') },
+      { path: '/sessoes', name: 'sessoes', component: () => import('pages/sessaoWhatsapp/Index.vue') },
       { path: '/contatos', name: 'contatos', component: () => import('pages/contatos/Index.vue') },
       { path: '/usuarios', name: 'usuarios', component: () => import('pages/usuarios/Index.vue') },
       { path: '/auto-resposta', name: 'auto-resposta', component: () => import('pages/fluxoAutoResposta/Index.vue') },
@@ -19,8 +19,14 @@ const routes = [
   {
     path: '/atendimento',
     name: 'atendimento',
+    redirect: { name: 'chat-empty' },
     component: () => import('pages/atendimento/Index.vue'),
     children: [
+      {
+        path: '/atendimento/chats/',
+        name: 'chat-empty',
+        component: () => import('pages/atendimento/Chat.vue')
+      },
       {
         path: 'contatos',
         name: 'chat-contatos',

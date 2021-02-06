@@ -5,12 +5,6 @@
         style="min-height: 60px; height: 60px;"
         class="no-border-radius q-pa-none text-primary"
       >
-        <q-btn
-          round
-          flat
-          icon="mdi-arrow-left"
-          @click="leftDrawerOpen = true"
-        />
         <q-item
           clickable
           v-ripple

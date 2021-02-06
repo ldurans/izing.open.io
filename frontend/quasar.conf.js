@@ -80,6 +80,7 @@ module.exports = function (ctx) {
             preventExtract: true
           }
         })
+        cfg.devtool = 'source-map'
       }
     },
 
