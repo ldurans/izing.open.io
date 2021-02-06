@@ -7,16 +7,18 @@ import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
 const CheckIsValidContact = async (
   number: string,
   tenantId: string | number
-): Promise<void> => {
+): Promise<any> => {
   const defaultWhatsapp = await GetDefaultWhatsApp(tenantId);
 
   const wbot = getWbot(defaultWhatsapp.id);
 
   try {
-    const isValidNumber = await wbot.isRegisteredUser(`${number}@c.us`);
-    if (!isValidNumber) {
+    // const isValidNumber = await wbot.isRegisteredUser(`${number}@c.us`);
+    const idNumber = await wbot.getNumberId(number);
+    if (!idNumber) {
       throw new AppError("invalidNumber");
     }
+    return idNumber;
   } catch (err) {
     logger.error(`CheckIsValidContact | Error: ${err}`);
     StartWhatsAppSessionVerify(defaultWhatsapp.id, err);

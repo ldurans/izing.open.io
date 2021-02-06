@@ -59,12 +59,13 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     throw new AppError(err.message);
   }
 
-  await CheckIsValidContact(newContact.number, tenantId);
+  const waNumber = await CheckIsValidContact(newContact.number, tenantId);
 
   const profilePicUrl = await GetProfilePicUrl(newContact.number, tenantId);
 
   const contact = await CreateContactService({
     ...newContact,
+    number: waNumber.user,
     profilePicUrl,
     tenantId
   });
@@ -108,7 +109,9 @@ export const update = async (
     throw new AppError(err.message);
   }
 
-  await CheckIsValidContact(contactData.number, tenantId);
+  const waNumber = await CheckIsValidContact(contactData.number, tenantId);
+
+  contactData.number = waNumber.user;
 
   const { contactId } = req.params;
 

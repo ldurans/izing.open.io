@@ -32,8 +32,8 @@ class Contact extends Model<Contact> {
   @Column
   number: string;
 
-  @AllowNull(false)
-  @Default("")
+  @AllowNull(true)
+  @Default(null)
   @Column
   email: string;
 
