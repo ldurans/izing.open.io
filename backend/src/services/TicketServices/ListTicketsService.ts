@@ -95,65 +95,104 @@ const ListTicketsService = async ({
   }
 
   if (withUnreadMessages == "true" && !isAdminShowAll) {
-    includeCondition = [
-      ...includeCondition,
-      {
-        model: Message,
-        as: "messages",
-        attributes: [],
-        where: {
-          read: false,
-          fromMe: false
-        }
-      }
-    ];
-  }
-
-  if (includeNotQueueDefined == "true" && isNotAssignedUser == "true") {
     whereCondition = {
       ...whereCondition,
-      [Op.or]: [
-        {
-          queueId: {
-            [Op.or]: [{ [Op.in]: queuesIdsUser }, { [Op.is]: null }]
-          }
-        },
-        {
-          userId: {
-            [Op.is]: null
-          }
-        }
-      ]
+      unreadMessages: {
+        [Op.gt]: 0
+      }
+      // {
+      //   model: Message,
+      //   as: "messages",
+      //   attributes: [],
+      //   where: {
+      //     read: false,
+      //     fromMe: false
+      //   }
+      // }
     };
-  } else if (includeNotQueueDefined == "true" && isNotAssignedUser == "false") {
+  }
+
+  // tratar as configurações do sistema
+  const settings = await ListSettingsService(tenantId);
+  const isNotViewTicketsQueueUndefined =
+    settings?.find(s => {
+      return s.key === "NotViewTicketsQueueUndefined";
+    })?.value === "enabled" || false;
+  const isNotViewAssignedTickets =
+    settings?.find(s => {
+      return s.key === "NotViewAssignedTickets";
+    })?.value === "enabled" || false;
+
+  const isIncludeNotQueueDefined =
+    includeNotQueueDefined == "true" && profile === "admin";
+
+  /// definições da fila
+  if (
+    isNotViewTicketsQueueUndefined &&
+    !isAdminShowAll &&
+    !isIncludeNotQueueDefined
+  ) {
+    whereCondition = {
+      ...whereCondition,
+      queueId: {
+        [Op.and]: [{ [Op.in]: queuesIdsUser }, { [Op.not]: null }]
+      }
+    };
+  }
+
+  if (
+    isNotViewTicketsQueueUndefined &&
+    !isAdminShowAll &&
+    isIncludeNotQueueDefined
+  ) {
     whereCondition = {
       ...whereCondition,
       queueId: {
         [Op.or]: [{ [Op.in]: queuesIdsUser }, { [Op.is]: null }]
       }
     };
-  } else if (includeNotQueueDefined == "false" && isNotAssignedUser == "true") {
+  }
+
+  if (
+    !isNotViewTicketsQueueUndefined &&
+    !isAdminShowAll &&
+    isIncludeNotQueueDefined
+  ) {
     whereCondition = {
       ...whereCondition,
-      [Op.and]: [
-        {
-          queueId: {
-            [Op.in]: queuesIdsUser
-          }
-        },
-        {
-          userId: {
-            [Op.is]: null
-          }
-        }
-      ]
+      queueId: {
+        [Op.or]: [{ [Op.in]: queuesIdsUser }, { [Op.is]: null }]
+      }
     };
-  } else {
+  }
+
+  if (
+    !isNotViewTicketsQueueUndefined &&
+    !isAdminShowAll &&
+    !isIncludeNotQueueDefined
+  ) {
     whereCondition = {
       ...whereCondition,
       queueId: {
         [Op.in]: queuesIdsUser
       }
+    };
+  }
+
+  /// definições do usuário
+  if (
+    isNotViewAssignedTickets &&
+    !isAdminShowAll &&
+    isNotAssignedUser == "false"
+  ) {
+    whereCondition = {
+      ...whereCondition,
+      userId: { [Op.or]: [userId, null] }
+    };
+  } else if (!isAdminShowAll && isNotAssignedUser == "true") {
+    whereCondition = {
+      ...whereCondition,
+      userId: { [Op.is]: null }
     };
   }
 
@@ -213,35 +252,6 @@ const ListTicketsService = async ({
     };
   }
 
-  // tratar as configurações do sistema
-  const settings = await ListSettingsService(tenantId);
-  const NotViewTicketsQueueUndefined =
-    settings?.find(s => s.key === "NotViewTicketsQueueUndefined")?.value ||
-    "disabled";
-  const NotViewAssignedTickets =
-    settings?.find(s => s.key === "NotViewAssignedTickets")?.value ||
-    "disabled";
-
-  if (NotViewTicketsQueueUndefined === "enabled" && !isAdminShowAll) {
-    whereCondition = {
-      ...whereCondition,
-      [Op.and]: [{ queueId: { [Op.ne]: null } }]
-    };
-  }
-
-  if (NotViewAssignedTickets === "enabled" && !isAdminShowAll) {
-    whereCondition = {
-      ...whereCondition,
-      [Op.and]: [
-        {
-          userId: {
-            [Op.or]: [userId, null]
-          }
-        }
-      ]
-    };
-  }
-
   const limit = 50;
   const offset = limit * (+pageNumber - 1);
 
@@ -251,7 +261,8 @@ const ListTicketsService = async ({
     distinct: true,
     limit,
     offset,
-    order: [["updatedAt", "DESC"]]
+    order: [["updatedAt", "DESC"]],
+    logging: console.log
   });
 
   const hasMore = count > offset + tickets.length;
