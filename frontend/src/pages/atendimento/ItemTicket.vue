@@ -100,16 +100,19 @@
           >
             {{ `Fila: ${obterNomeFila(ticket.queueId)}` }}
           </span>
-          <span
-            class="absolute-bottom-right q-mb-xs"
-            v-if="buscaTicket"
-          >
-            <q-badge
-              style="border-radius: 10px; z-index: 9999;"
-              dense
-              :color="color[ticket.status]"
-              :label="status[ticket.status]"
-            />
+          <span class="absolute-bottom-right q-mb-xs q-mr-xs">
+            <q-icon
+              v-if="ticket.status === 'closed'"
+              name="mdi-check-circle-outline"
+              color="positive"
+              size="1.5em"
+            >
+              <q-tooltip>
+                Atendimento Resolvido
+              </q-tooltip>
+
+            </q-icon>
+
           </span>
         </q-item-label>
         <q-item-label
