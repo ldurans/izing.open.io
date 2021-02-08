@@ -9,6 +9,7 @@ import whatsappRoutes from "./whatsappRoutes";
 import messageRoutes from "./messageRoutes";
 import whatsappSessionRoutes from "./whatsappSessionRoutes";
 import autoReplyRoutes from "./autoReplyRoutes";
+import fastReplyRoutes from "./fastReplyRoutes";
 import queueRoutes from "./queueRoutes";
 import statisticsRoutes from "./statisticsRoutes";
 
@@ -25,6 +26,7 @@ routes.use(messageRoutes);
 routes.use(whatsappSessionRoutes);
 routes.use(autoReplyRoutes);
 routes.use(queueRoutes);
+routes.use(fastReplyRoutes);
 routes.use(statisticsRoutes);
 
 export default routes;

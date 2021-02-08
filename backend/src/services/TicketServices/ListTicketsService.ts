@@ -134,9 +134,16 @@ const ListTicketsService = async ({
   ) {
     whereCondition = {
       ...whereCondition,
-      queueId: {
-        [Op.and]: [{ [Op.in]: queuesIdsUser }, { [Op.not]: null }]
-      }
+      [Op.or]: [
+        {
+          queueId: {
+            [Op.and]: [{ [Op.in]: queuesIdsUser }, { [Op.not]: null }]
+          }
+        },
+        {
+          userId
+        }
+      ]
     };
   }
 
@@ -147,9 +154,16 @@ const ListTicketsService = async ({
   ) {
     whereCondition = {
       ...whereCondition,
-      queueId: {
-        [Op.or]: [{ [Op.in]: queuesIdsUser }, { [Op.is]: null }]
-      }
+      [Op.or]: [
+        {
+          queueId: {
+            [Op.and]: [{ [Op.in]: queuesIdsUser }, { [Op.is]: null }]
+          }
+        },
+        {
+          userId
+        }
+      ]
     };
   }
 
@@ -160,9 +174,16 @@ const ListTicketsService = async ({
   ) {
     whereCondition = {
       ...whereCondition,
-      queueId: {
-        [Op.or]: [{ [Op.in]: queuesIdsUser }, { [Op.is]: null }]
-      }
+      [Op.or]: [
+        {
+          queueId: {
+            [Op.or]: [{ [Op.in]: queuesIdsUser }, { [Op.is]: null }]
+          }
+        },
+        {
+          userId
+        }
+      ]
     };
   }
 
@@ -173,9 +194,16 @@ const ListTicketsService = async ({
   ) {
     whereCondition = {
       ...whereCondition,
-      queueId: {
-        [Op.in]: queuesIdsUser
-      }
+      [Op.or]: [
+        {
+          queueId: {
+            [Op.in]: queuesIdsUser
+          }
+        },
+        {
+          userId
+        }
+      ]
     };
   }
 
