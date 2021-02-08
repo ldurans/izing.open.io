@@ -6,18 +6,18 @@ import routes from './routes'
 
 // Ajuste para desativar error por navegação duplicada
 // https://github.com/vuejs/vue-router/issues/2881#issuecomment-520554378
-const originalPush = VueRouter.prototype.push
-VueRouter.prototype.push = function push (location, onResolve, onReject) {
-  if (onResolve || onReject) { return originalPush.call(this, location, onResolve, onReject) }
-  return originalPush.call(this, location).catch((err) => {
-    if (VueRouter.isNavigationFailure(err)) {
-      // resolve err
-      return err
-    }
-    // rethrow error
-    return Promise.reject(err)
-  })
-}
+// const originalPush = VueRouter.prototype.push
+// VueRouter.prototype.push = function push (location, onResolve, onReject) {
+//   if (onResolve || onReject) { return originalPush.call(this, location, onResolve, onReject) }
+//   return originalPush.call(this, location).catch((err) => {
+//     if (VueRouter.isNavigationFailure(err)) {
+//       // resolve err
+//       return err
+//     }
+//     // rethrow error
+//     return Promise.reject(err)
+//   })
+// }
 
 Vue.use(VueRouter)
 

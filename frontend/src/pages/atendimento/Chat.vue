@@ -109,7 +109,7 @@
                 {{ replyingMessage.contact.name }}
               </q-item-label>
               <q-item-label
-                lines="5"
+                lines="4"
                 v-html="farmatarMensagemWhatsapp(replyingMessage.body)"
               >
               </q-item-label>

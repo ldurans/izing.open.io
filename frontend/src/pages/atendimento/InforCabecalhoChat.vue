@@ -271,7 +271,8 @@ export default {
       }
       await AtualizarTicket(this.ticketFocado.id, {
         userId: this.usuarioSelecionado,
-        status: 'open'
+        status: 'open',
+        isTransference: 1
       })
       this.$q.notify({
         type: 'positive',

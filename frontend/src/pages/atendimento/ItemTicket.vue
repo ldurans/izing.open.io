@@ -47,10 +47,11 @@
         <q-avatar
           size="45px"
           v-if="ticket.status !== 'pending'"
+          class="relative-position"
         >
           <q-badge
             v-if="ticket.unreadMessages"
-            style="border-radius: 10px;"
+            style="border-radius: 10px; z-index: 99"
             class="text-center"
             floating
             dense
@@ -58,12 +59,15 @@
             color="green"
             :label="ticket.unreadMessages"
           />
-          <img :src="ticket.contact.profilePicUrl" />
-          <!-- <template v-slot:error>
-              <div class="absolute-full flex flex-center bg-negative text-white">
-                <q-icon size="40px" name="mdi-account-circle-outline" />
-              </div>
-            </template> -->
+          <img
+            :src="ticket.contact.profilePicUrl"
+            onerror="this.style.display='none'"
+          />
+          <q-icon
+            size="50px"
+            name="mdi-account-circle"
+            color="grey-4"
+          />
         </q-avatar>
       </q-item-section>
       <q-item-section id="ListItemsTicket">
@@ -135,11 +139,14 @@
 import { formatDistance, parseJSON } from 'date-fns'
 import pt from 'date-fns/locale/pt-BR'
 import mixinAtualizarStatusTicket from './mixinAtualizarStatusTicket'
+import { outlinedAccountCircle } from '@quasar/extras/material-icons-outlined'
+
 export default {
   name: 'ItemTicket',
   mixins: [mixinAtualizarStatusTicket],
   data () {
     return {
+      outlinedAccountCircle,
       recalcularHora: 1,
       statusAbreviado: {
         open: 'A',
@@ -204,6 +211,21 @@ export default {
 </script>
 
 <style lang="sass">
+img:after
+  content: ""
+  vertical-align: middle
+  display: inline-block
+  border-radius: 50%
+  font-size: 48px
+  position: absolute
+  top: 0
+  left: 0
+  width: inherit
+  height: inherit
+  z-index: 10
+  background: #ebebeb url('http://via.placeholder.com/300?text=PlaceHolder') no-repeat center
+  color: transparent
+
 .ticket-active-item
   // border: 2px solid rgb(21, 120, 173)
   // border-left: 3px solid $light //rgb(21, 120, 173)

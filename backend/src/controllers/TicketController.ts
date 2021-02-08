@@ -98,12 +98,14 @@ export const update = async (
 ): Promise<Response> => {
   const { ticketId } = req.params;
   const { tenantId } = req.user;
+  const { isTransference } = req.body;
 
   const ticketData: TicketData = { ...req.body, tenantId };
 
   const { ticket } = await UpdateTicketService({
     ticketData,
-    ticketId
+    ticketId,
+    isTransference
   });
 
   // const io = getIO();

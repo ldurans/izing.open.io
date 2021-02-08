@@ -171,12 +171,11 @@ const atendimentoTicket = {
         // commit('SET_HAS_MORE', true)
         const params = {
           ticketId: data.id,
-          pageNumber: 1,
-          timestamp: new Date().getTime()
+          pageNumber: 1
         }
         await dispatch('LocalizarMensagensTicket', params)
 
-        await $router.push({ name: 'chat', params })
+        await $router.push({ name: 'chat', params, query: { t: new Date().getTime() } })
       } catch (error) {
         // posteriormente é necessário investigar o motivo de está caindo em erro
         if (!error) return

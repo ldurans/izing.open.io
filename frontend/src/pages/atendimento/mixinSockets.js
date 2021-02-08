@@ -38,17 +38,22 @@ export default {
       socket.emit(`${usuario.tenantId}-joinChatBox`, this.$store.getters.ticketFocado.id)
 
       socket.on(`${usuario.tenantId}-appMessage`, data => {
-        if (!verifySocketTicketAction(data.message.ticket, data.action)) return
+        console.log('socketMessagesList: ADD_MESSAGE', data.message)
+
+        verifySocketTicketAction(data.message.ticket, data.action)
 
         if (data.action === 'create') {
           if (data.ticket.id == this.$store.getters.ticketFocado.id) {
             this.$store.commit('ADD_MESSAGE', data.message)
             // this.scrollToBottom()
-            this.handlerNotifications(data)
+            if (!data.message.fromMe) {
+              this.$root.$emit('handlerNotifications', data)
+            }
           }
         }
 
         if (data.action === 'update') {
+          console.log('UPDATE_MESSAGE', data.message)
           this.$store.commit('UPDATE_MESSAGE', data.message)
         }
 
@@ -59,9 +64,11 @@ export default {
     },
     socketTicket () {
       socket.on(`${usuario.tenantId}-ticket`, data => {
-        if (!verifySocketTicketAction(data.ticket, data.action)) return
+        verifySocketTicketAction(data.ticket, data.action)
+
         if (data.action === 'update' && data.ticket.userId === userId) {
-          if (data.ticket.status === 'open') {
+          console.log('data.ticket - ticket', data.ticket)
+          if (data.ticket.status === 'open' && !data.ticket.isTransference) {
             this.$store.commit('TICKET_FOCADO', data.ticket)
           }
         }
@@ -103,7 +110,7 @@ export default {
       // }
 
       socket.on(`${usuario.tenantId}-ticket`, data => {
-        if (!verifySocketTicketAction(data.ticket, data.action)) return // refatorar para verificar corretamente os parametros
+        verifySocketTicketAction(data.ticket, data.action) // refatorar para verificar corretamente os parametros
         if (data.action === 'updateQueue' || data.action === 'create') {
           this.$store.commit('UPDATE_TICKET', data.ticket)
         }
@@ -125,7 +132,7 @@ export default {
       })
 
       socket.on(`${usuario.tenantId}-appMessage`, data => {
-        if (!verifySocketTicketAction(data.message.ticket, data.action)) return // refatorar para verificar corretamente os parametros
+        verifySocketTicketAction(data.message.ticket, data.action) // refatorar para verificar corretamente os parametros
         if (
           data.action === 'create' && (!data.ticket.userId || data.ticket.userId === userId || this.showAll)
         ) {
@@ -140,7 +147,7 @@ export default {
           !data.message.read &&
           (data.ticket.userId === userId || !data.ticket.userId)
         ) {
-          this.handlerNotifications(data)
+          this.$root.$emit('handlerNotifications', data)
         }
       })
 

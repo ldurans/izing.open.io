@@ -18,6 +18,7 @@ interface TicketData {
 interface Request {
   ticketData: TicketData;
   ticketId: string | number;
+  isTransference?: string | boolean | null;
 }
 
 interface Response {
@@ -28,7 +29,8 @@ interface Response {
 
 const UpdateTicketService = async ({
   ticketData,
-  ticketId
+  ticketId,
+  isTransference
 }: Request): Promise<Response> => {
   const { status, userId, tenantId, queueId } = ticketData;
 
@@ -79,6 +81,10 @@ const UpdateTicketService = async ({
       action: "delete",
       ticketId: ticket.id
     });
+  }
+
+  if (isTransference) {
+    await ticket.setDataValue("isTransference", true);
   }
 
   io.to(`${tenantId}-${ticket.status}`)

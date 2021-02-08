@@ -10,7 +10,8 @@ import {
   HasMany,
   AutoIncrement,
   Default,
-  AfterCreate
+  AfterCreate,
+  DataType
 } from "sequelize-typescript";
 
 import Contact from "./Contact";
@@ -98,6 +99,10 @@ class Ticket extends Model<Ticket> {
   @ForeignKey(() => Tenant)
   @Column
   tenantId: number;
+
+  @Default(null)
+  @Column(DataType.VIRTUAL)
+  isTransference: string | boolean | null;
 
   @BelongsTo(() => Tenant)
   tenant: Tenant;
