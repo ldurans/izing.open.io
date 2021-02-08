@@ -12,6 +12,7 @@ const routes = [
       { path: '/contatos', name: 'contatos', component: () => import('pages/contatos/Index.vue') },
       { path: '/usuarios', name: 'usuarios', component: () => import('pages/usuarios/Index.vue') },
       { path: '/auto-resposta', name: 'auto-resposta', component: () => import('pages/fluxoAutoResposta/Index.vue') },
+      { path: '/mensagens-rapidas', name: 'mensagens-rapidas', component: () => import('pages/mensagensRapidas/Index.vue') },
       { path: '/filas', name: 'filas', component: () => import('pages/filas/Index.vue') },
       { path: '/configuracoes', name: 'configuracoes', component: () => import('pages/configuracoes/Index.vue') }
     ]
@@ -36,7 +37,13 @@ const routes = [
       {
         path: '/atendimento/:ticketId',
         name: 'chat',
-        component: () => import('pages/atendimento/Chat.vue')
+        component: () => import('pages/atendimento/Chat.vue'),
+        beforeEnter (to, from, next) {
+          if (!from.params.ticketId) {
+            next({ name: 'chat-empty' })
+          }
+          next()
+        }
       }
 
     ]

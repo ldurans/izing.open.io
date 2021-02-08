@@ -142,6 +142,12 @@ const objMenuAdmin = [
     routeName: 'filas'
   },
   {
+    title: 'Mensagens Rápidas',
+    caption: 'Mensagens pré-definidas para envio rápido',
+    icon: 'mdi-reply-all-outline',
+    routeName: 'mensagens-rapidas'
+  },
+  {
     title: 'Auto Resposta',
     caption: 'Configuração auto resposta',
     icon: 'mdi-message-reply-text',

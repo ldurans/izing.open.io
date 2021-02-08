@@ -155,7 +155,7 @@ const atendimentoTicket = {
   actions: {
     async LocalizarMensagensTicket ({ commit, dispatch }, params) {
       const mensagens = await LocalizarMensagens(params)
-      commit('TICKET_FOCADO', mensagens.data.ticket)
+      // commit('TICKET_FOCADO', mensagens.data.ticket)
       commit('SET_HAS_MORE', mensagens.data.hasMore)
       if (params.pageNumber === 1) {
         commit('LOAD_INITIAL_MESSAGES', mensagens.data)
@@ -168,22 +168,19 @@ const atendimentoTicket = {
         await commit('TICKET_FOCADO', {})
         await commit('RESET_MESSAGE')
         await commit('TICKET_FOCADO', data)
-        commit('SET_HAS_MORE', true)
+        // commit('SET_HAS_MORE', true)
         const params = {
           ticketId: data.id,
-          pageNumber: 1
+          pageNumber: 1,
+          timestamp: new Date().getTime()
         }
         await dispatch('LocalizarMensagensTicket', params)
 
-        // evitar error de duplicidade de rota navegada.
-        // Se o ticket selecionado já estiver focado no rota
-        // não fazer o push de navegação.
-        const paramsRoute = this.$router.app.$route.params
-        if (paramsRoute.ticketId === params.ticketId) return
-
         await $router.push({ name: 'chat', params })
       } catch (error) {
-        const errorMsg = error.response?.data?.error
+        // posteriormente é necessário investigar o motivo de está caindo em erro
+        if (!error) return
+        const errorMsg = error?.response?.data?.error
         if (errorMsg) {
           Notify.create({
             type: 'negative',
@@ -194,7 +191,7 @@ const atendimentoTicket = {
         } else {
           Notify.create({
             type: 'negative',
-            message: 'Ops... Ocorreu um problema não identificado.',
+            message: `Ops... Ocorreu um problema não identificado. ${JSON.stringify(error)}`,
             progress: true,
             position: 'top'
           })

@@ -301,7 +301,10 @@
       </q-drawer>
 
       <q-page-container>
-        <router-view :key="ticketFocado.id"></router-view>
+        <router-view
+          :mensagensRapidas="mensagensRapidas"
+          :key="ticketFocado.id"
+        ></router-view>
       </q-page-container>
 
       <q-drawer
@@ -444,6 +447,7 @@ import { debounce } from 'quasar'
 import { format } from 'date-fns'
 import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { ListarConfiguracoes } from 'src/service/configuracoes'
+import { ListarMensagensRapidas } from 'src/service/mensagensRapidas'
 
 export default {
   name: 'IndexAtendimento',
@@ -487,7 +491,8 @@ export default {
         includeNotQueueDefined: true
         // date: new Date(),
       },
-      filas: []
+      filas: [],
+      mensagensRapidas: []
     }
   },
   watch: {
@@ -538,6 +543,38 @@ export default {
     }
   },
   methods: {
+    handlerNotifications (data) {
+      const { message, contact, ticket } = data
+
+      const options = {
+        body: `${message.body} - ${format(new Date(), 'HH:mm')}`,
+        icon: contact.profilePicUrl,
+        tag: ticket.id,
+        renotify: true
+      }
+
+      const notification = new Notification(
+        `Mensagem de ${contact.name}`,
+        options
+      )
+
+      setTimeout(() => {
+        notification.close()
+      }, 4000)
+
+      notification.onclick = e => {
+        e.preventDefault()
+        window.focus()
+        this.$store.dispatch('AbrirChatMensagens', ticket)
+        this.$router.push({ name: 'atendimento' })
+        // history.push(`/tickets/${ticket.id}`);
+      }
+
+      this.$nextTick(() => {
+        // utilizar refs do layout
+        this.$refs.audioNotificationPlay.play()
+      })
+    },
     async listarConfiguracoes () {
       const { data } = await ListarConfiguracoes()
       localStorage.setItem('configuracoes', JSON.stringify(data))
@@ -632,34 +669,6 @@ export default {
       const { data } = await ListarWhatsapps()
       this.$store.commit('LOAD_WHATSAPPS', data)
     },
-    handlerNotifications (data) {
-      const { message, contact, ticket } = data
-
-      const options = {
-        body: `${message.body} - ${format(new Date(), 'HH:mm')}`,
-        icon: contact.profilePicUrl,
-        tag: ticket.id,
-        renotify: true
-      }
-
-      const notification = new Notification(
-        `Mensagem de ${contact.name}`,
-        options
-      )
-
-      notification.onclick = e => {
-        e.preventDefault()
-        window.focus()
-        this.$store.dispatch('AbrirChatMensagens', ticket)
-        this.$router.push({ name: 'atendimento' })
-
-        // history.push(`/tickets/${ticket.id}`);
-      }
-      this.$nextTick(() => {
-        // utilizar refs do layout
-        this.$refs.audioNotificationPlay.play()
-      })
-    },
     async abrirModalUsuario () {
       // if (!usuario.id) {
       //   await this.dadosUsuario()
@@ -683,8 +692,11 @@ export default {
     this.listarConfiguracoes()
   },
   async mounted () {
+    this.$root.$on('handlerNotifications', this.handlerNotifications)
     await this.listarWhatsapps()
     await this.consultarTickets()
+    const { data } = await ListarMensagensRapidas()
+    this.mensagensRapidas = data
     if (!('Notification' in window)) {
     } else {
       Notification.requestPermission()
@@ -693,6 +705,7 @@ export default {
     // this.socketInitial()
   },
   destroyed () {
+    this.$root.$off('handlerNotifications', this.handlerNotifications)
     this.socketDisconnect()
     this.$store.commit('TICKET_FOCADO', {})
   }

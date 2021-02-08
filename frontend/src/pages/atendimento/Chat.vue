@@ -126,7 +126,10 @@
           </q-item>
         </q-list>
       </q-card-section>
-      <InputMensagem :replyingMessage.sync="replyingMessage" />
+      <InputMensagem
+        :mensagensRapidas="mensagensRapidas"
+        :replyingMessage.sync="replyingMessage"
+      />
       <q-resize-observer @resize="onResizeInputMensagem" />
     </q-footer>
 
@@ -145,6 +148,9 @@ import InfiniteLoading from 'vue-infinite-loading'
 export default {
   name: 'Chat',
   mixins: [mixinCommon, mixinAtualizarStatusTicket, mixinSockets],
+  props: {
+    mensagensRapidas: Array
+  },
   components: {
     InforCabecalhoChat,
     MensagemChat,

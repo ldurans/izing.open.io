@@ -1,7 +1,7 @@
 <template>
   <div
     style="min-height: 80px"
-    class="row bg-white justify-center items-start text-primary q-pt-md "
+    class="row bg-white justify-center items-start text-primary q-pt-md relative-position"
   >
     <q-btn
       round
@@ -57,8 +57,49 @@
       v-model="textChat"
       :value="textChat"
       @paste="handleInputPaste"
-      hint="Quebra linha/Parágrafo: Shift + Enter ||| Enviar Mensagem: Enter"
+      hint="Quebra linha/Parágrafo: Shift + Enter || Enviar Mensagem: Enter || Mensagens Rápidas: /"
     />
+    <div class="full-width absolute-top">
+      <q-menu
+        max-width="600px"
+        :key="cMensagensRapidas.length"
+        square
+        no-focus
+        class="no-box-shadow no-shadow"
+        fit
+        persistent
+        max-height="200px"
+        :offset="cMensagensRapidas.length === 1 ? [0,-45] : [0,0]"
+        :value="textChat.startsWith('/')"
+      >
+        <q-list
+          class="no-shadow no-box-shadow"
+          style="min-width: 100px"
+          separator
+        >
+          <q-item
+            v-for="resposta in cMensagensRapidas"
+            :key="resposta.key"
+            clickable
+            v-close-popup
+            @click="mensagemRapidaSelecionada(resposta.message)"
+          >
+            <q-item-section>
+              <q-item-label> {{ resposta.key }} </q-item-label>
+              <q-item-label
+                caption
+                lines="2"
+              > {{ resposta.message }} </q-item-label>
+            </q-item-section>
+            <q-tooltip :delay="1500">
+              {{ resposta.message }}
+            </q-tooltip>
+          </q-item>
+        </q-list>
+      </q-menu>
+
+    </div>
+
     <!-- tamanho maximo por arquivo de 10mb -->
     <q-file
       :loading="loading"
@@ -200,6 +241,10 @@ export default {
     replyingMessage: {
       type: Object,
       default: null
+    },
+    mensagensRapidas: {
+      type: Array,
+      default: () => []
     }
   },
   components: {
@@ -227,6 +272,13 @@ export default {
     },
     cDisableActions () {
       return (this.loading || this.isRecordingAudio || this.ticketFocado.status !== 'open')
+    },
+    cMensagensRapidas () {
+      let search = this.textChat?.toLowerCase()
+      if (search && search.trim().startsWith('/')) {
+        search = search.replace('/', '')
+      }
+      return !search ? this.mensagensRapidas : this.mensagensRapidas.filter(r => r.key.toLowerCase().indexOf(search) !== -1)
     }
   },
   methods: {
@@ -247,6 +299,9 @@ export default {
         }
         this.$refs.inputEnvioMensagem.focus()
       }
+    },
+    mensagemRapidaSelecionada (mensagem) {
+      this.textChat = mensagem
     },
     onInsertSelectEmoji (emoji) {
       const self = this
@@ -364,6 +419,34 @@ export default {
     prepararMensagemTexto () {
       if (this.textChat.trim() === '') {
         throw new Error('Mensagem Inexistente')
+      }
+
+      if (this.textChat.trim() && this.textChat.trim().startsWith('/')) {
+        let search = this.textChat.trim().toLowerCase()
+        search = search.replace('/', '')
+        const mensagemRapida = this.cMensagensRapidas.find(m => m.key.toLowerCase() === search)
+        console.log(mensagemRapida)
+        if (mensagemRapida?.message) {
+          this.textChat = mensagemRapida.message
+        } else {
+          const error = this.cMensagensRapidas.length > 1
+            ? 'Várias mensagens rápidas encontradas. Selecione uma ou digite uma chave única da mensagem.'
+            : '/ indica que você deseja enviar uma mensagem rápida, mas nenhuma foi localizada. Cadastre ou apague a / e digite sua mensagem.'
+          this.$q.notify({
+            html: true,
+            message: `Ops...<br> ${error}`,
+            type: 'negative',
+            progress: true,
+            position: 'top',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
+          })
+          this.loading = false
+          throw new Error(error)
+        }
       }
       let mensagem = this.textChat.trim()
       const username = localStorage.getItem('username')
