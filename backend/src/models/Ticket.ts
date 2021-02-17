@@ -104,6 +104,10 @@ class Ticket extends Model<Ticket> {
   @Column(DataType.VIRTUAL)
   isTransference: string | boolean | null;
 
+  @Default(null)
+  @Column(DataType.VIRTUAL)
+  isCreated: boolean | null;
+
   @BelongsTo(() => Tenant)
   tenant: Tenant;
 

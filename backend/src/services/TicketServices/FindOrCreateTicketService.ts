@@ -2,6 +2,7 @@
 import { Op } from "sequelize";
 import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
+import User from "../../models/User";
 import ShowTicketService from "./ShowTicketService";
 
 const FindOrCreateTicketService = async (
@@ -19,7 +20,14 @@ const FindOrCreateTicketService = async (
       tenantId,
       contactId: groupContact ? groupContact.id : contact.id
     },
-    include: ["contact"]
+    include: [
+      "contact",
+      {
+        model: User,
+        as: "user",
+        attributes: ["id", "name", "profile"]
+      }
+    ]
   });
 
   if (ticket) {
@@ -61,7 +69,14 @@ const FindOrCreateTicketService = async (
         contactId: contact.id
       },
       order: [["updatedAt", "DESC"]],
-      include: ["contact"]
+      include: [
+        "contact",
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name", "profile"]
+        }
+      ]
     });
 
     if (ticket) {
@@ -85,7 +100,7 @@ const FindOrCreateTicketService = async (
   });
 
   ticket = await ShowTicketService({ id, tenantId });
-
+  ticket.setDataValue("isCreated", true);
   return ticket;
 };
 

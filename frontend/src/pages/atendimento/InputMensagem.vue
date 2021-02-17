@@ -302,6 +302,9 @@ export default {
     },
     mensagemRapidaSelecionada (mensagem) {
       this.textChat = mensagem
+      setTimeout(() => {
+        this.$refs.inputEnvioMensagem.focus()
+      }, 300)
     },
     onInsertSelectEmoji (emoji) {
       const self = this
@@ -425,7 +428,6 @@ export default {
         let search = this.textChat.trim().toLowerCase()
         search = search.replace('/', '')
         const mensagemRapida = this.cMensagensRapidas.find(m => m.key.toLowerCase() === search)
-        console.log(mensagemRapida)
         if (mensagemRapida?.message) {
           this.textChat = mensagemRapida.message
         } else {
@@ -504,6 +506,9 @@ export default {
       }
       this.isRecordingAudio = false
       this.loading = false
+      setTimeout(() => {
+        this.$refs.inputEnvioMensagem.focus()
+      }, 300)
     },
     handlerInputMenssagem (v) {
       this.textChat = v.target.value

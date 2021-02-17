@@ -44,7 +44,7 @@ const TicketsQueuesService = async ({
 
   const isExistsQueues = await Queue.count({ where: { tenantId } });
   // eslint-disable-next-line eqeqeq
-  if (isExistsQueues && (showAll == "false" || !showAll)) {
+  if (isExistsQueues) {
     const queues = await UsersQueues.findAll({
       where: {
         userId
@@ -69,6 +69,11 @@ const TicketsQueuesService = async ({
         [Op.in]: queuesIdsUser
       }
     };
+  }
+
+  // eslint-disable-next-line eqeqeq
+  if (showAll == "true") {
+    whereCondition = {};
   }
 
   if (status) {
