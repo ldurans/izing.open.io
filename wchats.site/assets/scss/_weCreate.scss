@@ -1,0 +1,106 @@
+.we-create-area{
+    position: relative;
+    &::before{
+        background-image: url(../img/shape/we-create_bg.png);
+        position: absolute;
+        content: "";
+        top: 0;
+        z-index: -1;
+        min-height: 819px;
+        min-width: 1006px;
+        background-repeat: no-repeat;
+        left: -117px;
+        @media #{$laptop}{
+		    display: none;
+		}
+        @media #{$lg}{
+		    display: none;
+		}
+        @media #{$md}{
+		    display: none;
+		}
+        @media #{$sm}{
+		    display: none;
+		}
+        @media #{$xs}{
+		    display: none;
+		}
+    }
+    &::after{
+        background-image: url(../img/shape/we_create_right.png);
+        position: absolute;
+        content: "";
+        z-index: -1;
+        min-height: 262px;
+        min-width: 207px;
+        background-repeat: no-repeat;
+        right: 0px;
+        bottom: 178px;
+        @media #{$lg}{
+		    display: none;
+        }
+        @media #{$md}{
+		    display: none;
+		}
+        @media #{$sm}{
+		    display: none;
+		}
+        @media #{$xs}{
+		    display: none;
+		}
+    }
+  .we-create-img{
+      img{
+          width: 100%;
+          @media #{$lg}{
+            padding-top: 30px;
+        }
+      }
+  }
+    .we-create-cap{
+        h3{
+            color: $heading_color;
+            font-size: 50px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 29px;
+            padding-right: 25px;
+            @media #{$lg}{
+                font-size: 29px;
+            } 
+            @media #{$md}{
+                font-size: 42px;
+            }
+            @media #{$sm}{
+                font-size: 36px;
+                line-height: 1.3;
+                padding-right: 0px;
+            }
+            @media #{$xs}{
+                font-size: 25px;
+                line-height: 1.3;
+                padding-right: 0px;
+            }
+        }
+        p{
+            padding-right: 50px;
+            margin-bottom: 56px;
+            @media #{$lg}{
+                padding-right: 10px;
+              
+            }
+            @media #{$md}{
+                padding-right: 10px;
+                
+            }
+             @media #{$sm}{
+                padding-right: 10px;
+               
+            }  
+            @media #{$xs}{
+                padding-right: 10px;
+               
+            }
+        }
+    }
+}

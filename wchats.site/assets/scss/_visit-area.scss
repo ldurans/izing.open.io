@@ -1,0 +1,47 @@
+.visit-area{
+    .single-visited{
+        .visited-img{
+            position: relative;
+            img{
+                width: 100%;
+            }
+        }
+        .visited-cap{
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            background: #fff;
+            width: 80%;
+            border-radius:0 10px 0 0;
+            padding: 29px 10px 10px 50px;
+            @media #{$lg}{
+                padding: 20px 10px 10px 20px;
+            }
+             @media #{$md}{
+                padding: 14px 10px 1px 32px;
+            }
+            
+            h3{
+                font-size: 30PX;
+                font-weight: 600;
+                margin-bottom: 8px;
+                @media #{$lg}{
+                    font-size: 23px;
+                }
+                @media #{$md}{
+                    font-size: 23px;
+                }
+
+               a{
+                color: $heading-color;
+                &:hover{
+                    color: $theme_color;
+                }
+               }
+            }
+            p{
+                margin: 0;
+            }
+        }
+    }
+}
