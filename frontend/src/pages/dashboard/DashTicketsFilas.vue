@@ -194,7 +194,7 @@ import { ListarFilas } from 'src/service/filas'
 const UserQueues = localStorage.getItem('queues')
 import { groupBy } from 'lodash'
 const profile = localStorage.getItem('profile')
-import { format } from 'date-fns'
+import { format, sub } from 'date-fns'
 export default {
   name: 'DashBoard',
   components: { ItemTicket },
@@ -213,8 +213,8 @@ export default {
       visao: 'U',
       pesquisaTickets: {
         showAll: false,
-        dateStart: format(new Date(2021, 0, 1), 'yyyy-MM-dd'),
-        dateEnd: format(new Date(2021, 0, 31), 'yyyy-MM-dd'),
+        dateStart: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd'),
+        dateEnd: format(new Date(), 'yyyy-MM-dd'),
         queuesIds: []
       },
       tickets: [],

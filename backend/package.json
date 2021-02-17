@@ -39,7 +39,9 @@
     "sequelize-typescript": "^1.1.0",
     "socket.io": "^2.3.0",
     "socket.io-redis": "^5.4.0",
-    "whatsapp-web.js": "1.12.1",
+    "telegraf": "^4.0.3",
+    "telegraf-session-redis": "^5.1.0",
+    "whatsapp-web.js": "1.12.4",
     "yup": "^0.29.3"
   },
   "devDependencies": {

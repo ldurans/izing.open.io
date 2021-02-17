@@ -14,7 +14,12 @@ const verifyAutoReplyActionTicket = async (
   const celularContato = ticket.contact.number;
   let celularTeste = "";
 
-  if (ticket.autoReplyId && ticket.status === "pending" && !msg.fromMe) {
+  if (
+    ticket.autoReplyId &&
+    ticket.status === "pending" &&
+    !msg.fromMe &&
+    !ticket.isGroup
+  ) {
     if (ticket.autoReplyId) {
       const stepAutoReplyAtual = await ShowStepAutoReplyMessageService(
         0,
@@ -105,12 +110,15 @@ const verifyAutoReplyActionTicket = async (
           return;
         }
 
-        await SendWhatsAppMessage({
-          body:
-            "Desculpe! Não entendi sua resposta. Vamos tentar novamente! Escolha uma opção válida.",
-          ticket,
-          quotedMsg: undefined
-        });
+        // se ticket tiver sido criado, ingnorar na primeria passagem
+        if (!ticket.isCreated) {
+          await SendWhatsAppMessage({
+            body:
+              "Desculpe! Não entendi sua resposta. Vamos tentar novamente! Escolha uma opção válida.",
+            ticket,
+            quotedMsg: undefined
+          });
+        }
 
         await SendWhatsAppMessage({
           body: stepAutoReplyAtual.reply,

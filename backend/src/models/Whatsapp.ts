@@ -60,6 +60,15 @@ class Whatsapp extends Model<Whatsapp> {
   @Column
   isDefault: boolean;
 
+  @Default(null)
+  @AllowNull
+  @Column
+  tokenTelegram: string;
+
+  @Default("w")
+  @Column(DataType.ENUM("w", "t"))
+  type: string;
+
   @CreatedAt
   createdAt: Date;
 
