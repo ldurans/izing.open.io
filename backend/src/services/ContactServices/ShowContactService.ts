@@ -10,7 +10,9 @@ const ShowContactService = async ({
   id,
   tenantId
 }: Request): Promise<Contact> => {
-  const contact = await Contact.findByPk(id, { include: ["extraInfo"] });
+  const contact = await Contact.findByPk(id, {
+    include: ["extraInfo", "tags"]
+  });
 
   if (!contact || contact.tenantId !== tenantId) {
     throw new AppError("ERR_NO_CONTACT_FOUND", 404);

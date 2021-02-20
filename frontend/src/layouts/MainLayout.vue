@@ -130,6 +130,12 @@ const objMenu = [
 
 const objMenuAdmin = [
   {
+    title: 'Relatórios',
+    caption: 'Relatórios gerais',
+    icon: 'mdi-file-chart',
+    routeName: 'relatorios'
+  },
+  {
     title: 'Usuarios',
     caption: 'Admin de usuários',
     icon: 'mdi-account-group',
@@ -152,6 +158,12 @@ const objMenuAdmin = [
     caption: 'Configuração auto resposta',
     icon: 'mdi-message-reply-text',
     routeName: 'auto-resposta'
+  },
+  {
+    title: 'Etiquetas',
+    caption: 'Cadastro de etiquetas',
+    icon: 'mdi-tag-text',
+    routeName: 'etiquetas'
   },
   {
     title: 'Configurações',

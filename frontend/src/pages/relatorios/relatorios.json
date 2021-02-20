@@ -1,0 +1,22 @@
+  [
+    {
+      "name": "lista-contatos",
+      "titulo": "Contatos",
+      "objetivo": "Apresenta todos os contatos cadastratos"
+    },
+    {
+      "name": "lista-por-etiquetas",
+      "titulo": "Contados por Etiqueta",
+      "objetivo": "Apresenta os contatos que foram sinalizados com a etiqueta filtrada."
+    },
+    {
+      "name": "tickets-por-usuario",
+      "titulo": "Tickets por usuário",
+      "objetivo": "Lista dos tickets por usuários."
+    },
+    {
+      "name": "tickets-por-fila",
+      "titulo": "Tickets por fila",
+      "objetivo": "Lista dos tickets por Fila"
+    }
+  ]

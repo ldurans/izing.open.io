@@ -37,3 +37,14 @@ export function DeletarContato (contactId) {
     method: 'delete'
   })
 }
+
+export function EditarEtiquetasContato (contactId, tags) {
+  const data = {
+    tags
+  }
+  return request({
+    url: `/contact-tags/${contactId}`,
+    method: 'put',
+    data
+  })
+}

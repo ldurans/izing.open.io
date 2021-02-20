@@ -14,7 +14,21 @@ const routes = [
       { path: '/auto-resposta', name: 'auto-resposta', component: () => import('pages/fluxoAutoResposta/Index.vue') },
       { path: '/mensagens-rapidas', name: 'mensagens-rapidas', component: () => import('pages/mensagensRapidas/Index.vue') },
       { path: '/filas', name: 'filas', component: () => import('pages/filas/Index.vue') },
-      { path: '/configuracoes', name: 'configuracoes', component: () => import('pages/configuracoes/Index.vue') }
+      { path: '/configuracoes', name: 'configuracoes', component: () => import('pages/configuracoes/Index.vue') },
+      { path: '/etiquetas', name: 'etiquetas', component: () => import('pages/etiquetas/Index.vue') }
+
+    ]
+  },
+  {
+    path: '/relatorios',
+    redirect: 'relatorios',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'relatorios',
+        component: () => import('pages/relatorios/ccListaRelatorios')
+      }
     ]
   },
   {
