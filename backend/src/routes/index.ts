@@ -13,6 +13,7 @@ import fastReplyRoutes from "./fastReplyRoutes";
 import queueRoutes from "./queueRoutes";
 import statisticsRoutes from "./statisticsRoutes";
 import tagRoutes from "./tagRoutes";
+import tenantRoutes from "./tenantRoutes";
 
 const routes = Router();
 
@@ -30,5 +31,6 @@ routes.use(queueRoutes);
 routes.use(fastReplyRoutes);
 routes.use(statisticsRoutes);
 routes.use(tagRoutes);
+routes.use(tenantRoutes);
 
 export default routes;

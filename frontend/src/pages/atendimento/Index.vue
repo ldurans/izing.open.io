@@ -62,7 +62,7 @@
               :delay="1000"
               content-class="bg-primary"
             >
-              Retornar aos menus
+              Retornar ao menu
             </q-tooltip>
           </q-btn>
 
@@ -94,7 +94,7 @@
             </q-tooltip>
           </q-btn>
           <StatusWhatsapp
-            class="q-mx-sm"
+            class="q-mr-sm"
             isIconStatusMenu
           />
           <!-- <q-toolbar

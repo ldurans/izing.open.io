@@ -157,6 +157,7 @@ const atendimentoTicket = {
       const mensagens = await LocalizarMensagens(params)
       // commit('TICKET_FOCADO', mensagens.data.ticket)
       commit('SET_HAS_MORE', mensagens.data.hasMore)
+      commit('UPDATE_TICKET_CONTACT', mensagens.data.ticket.contact)
       if (params.pageNumber === 1) {
         commit('LOAD_INITIAL_MESSAGES', mensagens.data)
       } else {

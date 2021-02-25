@@ -7,3 +7,12 @@ export function ConsultarTicketsQueuesService (params) {
     params
   })
 }
+
+export function RelatorioContatos (params) {
+  console.log('RelatorioContatos', params)
+  return request({
+    url: '/contacts-report',
+    method: 'get',
+    params
+  })
+}

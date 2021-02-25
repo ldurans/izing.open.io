@@ -16,7 +16,7 @@
         >
           <q-item
             style="min-width: 340px; max-width: 340px; width: 340px;
-            min-height: 80px; height: 80px; max-height: 80px;
+            min-height: 90px; height: 90px; max-height: 90px;
             border-left: solid #3E72AF 3px
             "
             class="shadow-1 q-px-sm items-start"

@@ -7,7 +7,8 @@ import {
   PrimaryKey,
   ForeignKey,
   BelongsTo,
-  AutoIncrement
+  AutoIncrement,
+  DataType
 } from "sequelize-typescript";
 import User from "./User";
 
@@ -30,6 +31,12 @@ class Tenant extends Model<Tenant> {
 
   @BelongsTo(() => User)
   owner: User;
+
+  @Column(DataType.JSONB)
+  businessHours: [];
+
+  @Column
+  messageBusinessHours: string;
 
   @CreatedAt
   createdAt: Date;

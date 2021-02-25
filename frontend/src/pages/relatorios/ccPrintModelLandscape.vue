@@ -7,7 +7,7 @@
           <div class="row">
             <div class="column left">
               <div class="container-header">
-                <div class="row text-left negrita h3">{{dadosUnidadeNegocioSelecionada.st_nome_unidade}}</div>
+                <!-- <div class="row text-left negrita h3">{{dadosUnidadeNegocioSelecionada.st_nome_unidade}}</div> -->
                 <div
                   class="row text-center"
                   style="font-weight: bold; font-size: 18px;"
@@ -30,7 +30,7 @@
               </div>
             </div>
 
-            <div class="column right column-rigth-header">
+            <!-- <div class="column right column-rigth-header">
               <div style="background: black; margin-top: -4px; width: 110px; height: 80px;">
                 <img
                   class="logo"
@@ -39,9 +39,9 @@
                   width="110"
                   height="80"
                 >
-                <!-- <div class="row text-center h3">&nbsp;</div> -->
+                <div class="row text-center h3">&nbsp;</div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -236,7 +236,6 @@ const cssText = `
     }
   }
 `
-import { mapGetters } from 'vuex'
 import { Printd } from 'printd'
 
 export default {
@@ -261,12 +260,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'dadosUnidadeNegocioSelecionada',
-      'dadosUsuario'
-    ]),
     conteudoTexto () {
-      let data = this.corpo
+      const data = this.corpo
       // data = data.replace(/<p>/g, this.styleP)
       return data
     }
@@ -290,6 +285,7 @@ export default {
       this.d = new Printd()
       const { contentWindow } = this.d.getIFrame() //eslint-disable-line
       const elemento = `#pagePrint-${this.id}`
+      console.log('elemento', elemento)
       this.d.print(document.querySelector(elemento), [cssText, this.styleP])
     },
     printNomal () {

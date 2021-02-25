@@ -20,13 +20,13 @@
           v-model="autoResposta.name"
           label="Descrição"
         />
-        <div class="row col q-mt-md">
+        <!-- <div class="row col q-mt-md">
           <q-option-group
             v-model="autoResposta.action"
             :options="options"
             color="primary"
           />
-        </div>
+        </div> -->
         <div class="row col q-mt-md">
           <q-checkbox
             v-model="autoResposta.isActive"
@@ -93,11 +93,11 @@ export default {
         userId,
         celularTeste: null,
         isActive: true
-      },
-      options: [
-        { value: 0, label: 'Entrada (Criação do Ticket)' },
-        { value: 1, label: 'Encerramento (Resolução Ticket)' }
-      ]
+      }
+      // options: [
+      //   { value: 0, label: 'Entrada (Criação do Ticket)' },
+      //   { value: 1, label: 'Encerramento (Resolução Ticket)' }
+      // ]
     }
   },
   methods: {
