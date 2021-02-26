@@ -6,7 +6,7 @@ const routes = [
     redirect: { name: 'contatos' },
     children: [
       { path: '', component: () => import('pages/contatos/Index.vue') },
-      { path: '/painel-tickets', name: 'painel-tickets', component: () => import('pages/dashboard/DashTicketsFilas.vue') },
+      { path: '/painel-atendimentos', name: 'painel-atendimentos', component: () => import('pages/dashboard/DashTicketsFilas.vue') },
       // { path: '/ConsultarTicketsQueuesService', name: 'dashboard', component: () => import('pages/dashboard/Index.vue') },
       { path: '/sessoes', name: 'sessoes', component: () => import('pages/sessaoWhatsapp/Index.vue') },
       { path: '/contatos', name: 'contatos', component: () => import('pages/contatos/Index.vue') },
@@ -14,7 +14,37 @@ const routes = [
       { path: '/auto-resposta', name: 'auto-resposta', component: () => import('pages/fluxoAutoResposta/Index.vue') },
       { path: '/mensagens-rapidas', name: 'mensagens-rapidas', component: () => import('pages/mensagensRapidas/Index.vue') },
       { path: '/filas', name: 'filas', component: () => import('pages/filas/Index.vue') },
-      { path: '/configuracoes', name: 'configuracoes', component: () => import('pages/configuracoes/Index.vue') }
+      { path: '/configuracoes', name: 'configuracoes', component: () => import('pages/configuracoes/Index.vue') },
+      { path: '/etiquetas', name: 'etiquetas', component: () => import('pages/etiquetas/Index.vue') },
+      { path: '/horario-atendimento', name: 'horarioAtendimento', component: () => import('pages/horarioAtendimento/Index.vue') }
+
+    ]
+  },
+  {
+    path: '/relatorios',
+    redirect: 'relatorios',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'relatorios',
+        component: () => import('pages/relatorios/ccListaRelatorios')
+      },
+      {
+        path: 'lista-contatos',
+        name: 'lista-contatos',
+        component: () => import('pages/relatorios/RelatorioContatosGeral')
+      },
+      {
+        path: 'contatos-por-etiquetas',
+        name: 'contatos-por-etiquetas',
+        component: () => import('pages/relatorios/RelatorioContatosEtiquetas')
+      },
+      {
+        path: 'contatos-por-estado',
+        name: 'contatos-por-estado',
+        component: () => import('pages/relatorios/RelatorioContatosEstado')
+      }
     ]
   },
   {

@@ -54,8 +54,7 @@ const ListTicketsService = async ({
     {
       model: Contact,
       as: "contact",
-      attributes: ["id", "name", "number", "profilePicUrl"],
-      include: ["extraInfo"]
+      attributes: ["id", "name", "number", "profilePicUrl"]
     },
     {
       model: User,
@@ -290,7 +289,8 @@ const ListTicketsService = async ({
     distinct: true,
     limit,
     offset,
-    order: [["updatedAt", "DESC"]]
+    order: [["updatedAt", "DESC"]],
+    logging: console.log
   });
 
   const hasMore = count > offset + tickets.length;

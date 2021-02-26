@@ -336,7 +336,7 @@ export default {
     async deleteWhatsapp (whatsapp) {
       this.$q.dialog({
         title: 'Atenção!! Deseja realmente deletar? ',
-        message: 'Não é uma boa ideia apagar se já tiver gerado tickets para esse whatsapp.',
+        message: 'Não é uma boa ideia apagar se já tiver gerado atendimentos para esse whatsapp.',
         cancel: {
           label: 'Não',
           color: 'primary',

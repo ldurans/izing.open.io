@@ -18,6 +18,7 @@
     "@sentry/node": "5.27.0",
     "@types/pino": "^6.3.5",
     "bcryptjs": "^2.4.3",
+    "bull": "^3.20.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "date-fns": "^2.16.1",
@@ -41,12 +42,13 @@
     "socket.io-redis": "^5.4.0",
     "telegraf": "^4.0.3",
     "telegraf-session-redis": "^5.1.0",
-    "whatsapp-web.js": "1.12.4",
+    "whatsapp-web.js": "^1.12.5",
     "yup": "^0.29.3"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/bluebird": "^3.5.32",
+    "@types/bull": "^3.15.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.7",
     "@types/express": "^4.17.8",

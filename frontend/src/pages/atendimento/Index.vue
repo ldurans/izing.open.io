@@ -62,7 +62,7 @@
               :delay="1000"
               content-class="bg-primary"
             >
-              Retornar aos menus
+              Retornar ao menu
             </q-tooltip>
           </q-btn>
 
@@ -94,7 +94,7 @@
             </q-tooltip>
           </q-btn>
           <StatusWhatsapp
-            class="q-mx-sm"
+            class="q-mr-sm"
             isIconStatusMenu
           />
           <!-- <q-toolbar
@@ -402,6 +402,68 @@
               </q-list>
             </q-card-section>
           </q-card>
+          <q-card
+            class="bg-white q-mt-sm"
+            style="width: 100%"
+            bordered
+            flat
+            square
+          >
+            <q-card-section class="text-bold q-pb-none">
+              Etiquetas
+              <q-separator />
+            </q-card-section>
+            <q-card-section class="q-pa-none">
+              <q-select
+                square
+                borderless
+                :value="ticketFocado.contact.tags"
+                multiple
+                :options="etiquetas"
+                use-chips
+                option-value="id"
+                option-label="tag"
+                emit-value
+                map-options
+                dropdown-icon="add"
+                @input="tagSelecionada"
+              >
+                <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
+                  <q-item
+                    v-bind="itemProps"
+                    v-on="itemEvents"
+                  >
+                    <q-item-section>
+                      <q-item-label v-html="opt.tag"></q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-checkbox
+                        :value="selected"
+                        @input="toggleOption(opt)"
+                      />
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:selected-item="{opt}">
+                  <q-chip
+                    dense
+                    square
+                    color="white"
+                    text-color="primary"
+                    class="q-ma-xs row col-12 text-body1"
+                  >
+                    <q-icon
+                      :style="`color: ${opt.color}`"
+                      name="mdi-pound-box-outline"
+                      size="28px"
+                      class="q-mr-sm"
+                    />
+                    {{ opt.tag }}
+                  </q-chip>
+                </template>
+              </q-select>
+            </q-card-section>
+          </q-card>
         </div>
       </q-drawer>
 
@@ -448,6 +510,8 @@ import { format } from 'date-fns'
 import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { ListarConfiguracoes } from 'src/service/configuracoes'
 import { ListarMensagensRapidas } from 'src/service/mensagensRapidas'
+import { ListarEtiquetas } from 'src/service/etiquetas'
+import { EditarEtiquetasContato } from 'src/service/contatos'
 
 export default {
   name: 'IndexAtendimento',
@@ -492,7 +556,9 @@ export default {
         // date: new Date(),
       },
       filas: [],
-      mensagensRapidas: []
+      etiquetas: [],
+      mensagensRapidas: [],
+      modalEtiquestas: false
     }
   },
   watch: {
@@ -669,6 +735,10 @@ export default {
       const { data } = await ListarWhatsapps()
       this.$store.commit('LOAD_WHATSAPPS', data)
     },
+    async listarEtiquetas () {
+      const { data } = await ListarEtiquetas(true)
+      this.etiquetas = data
+    },
     async abrirModalUsuario () {
       // if (!usuario.id) {
       //   await this.dadosUsuario()
@@ -685,10 +755,17 @@ export default {
       localStorage.removeItem('queues')
       localStorage.removeItem('usuario')
       this.$router.go({ name: 'login', replace: true })
+    },
+    async tagSelecionada (tags) {
+      console.log('tagSelecionada', tags)
+      const data = await EditarEtiquetasContato(this.ticketFocado.contact.id, [...tags])
+      console.log('tagSelecionada - contact data', data)
+      // this.contatoEditado(data)
     }
   },
   beforeMount () {
     this.listarFilas()
+    this.listarEtiquetas()
     this.listarConfiguracoes()
   },
   async mounted () {

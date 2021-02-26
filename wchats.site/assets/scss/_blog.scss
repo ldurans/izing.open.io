@@ -1,0 +1,82 @@
+.blog-area{
+    .single-blog{
+        &:hover{
+            .blog-img{
+                img{
+                    transform: rotate(1deg) scale(1.1);
+                }
+            }
+        }
+        box-shadow: 1.395px 19.951px 38px 0px rgba(0, 0, 0, 0.05);
+        transition: .4s;
+        .blog-img{
+            overflow: hidden;
+            & img{
+                width: 100%;
+                transform: rotate(0deg) scale(1);
+                @include transition(.4s);
+            }
+        }
+        .blog-caption{
+            padding: 22px 40px 20px 40px;
+            @media #{$xs}{
+                    padding: 22px 22px 20px 20px;
+            }
+            .blog-cap-top{
+                & span{
+                    color: #fff;
+                    background: $theme-color;
+                    padding: 4px 13px;
+                    text-transform: uppercase;
+                    font-size: 14px;
+                    font-weight: 300;
+                    border-radius: 5px;
+                }
+                ul{
+                    li{
+                        color:#c7c7c7;
+                        font-size: 14px;
+                        font-family: 'Lato', sans-serif;
+                        & a{
+                            color: $theme-color;
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+
+            .blog-cap-mid{
+                & p{
+                   & a{
+                        color: #444444;
+                        font-size: 18px;
+                        font-family: 'Lato', sans-serif;
+                        @media #{$xs}{
+                            font-size: 14px;
+                        }
+                        line-height: 28px;
+                        margin-bottom: 30px;
+                        &:hover{
+                            color:$theme-color;
+                        }
+
+                   }
+                }
+            }
+            .blog-cap-bottom{
+                padding-top: 20px;
+                border-top: 1px solid rgb(249, 249, 249);
+                & span{
+                    color: #adadad;
+                    font-size: 14px;
+                    & img{
+                        margin-right: 5px;
+                    }
+                }
+            }
+        }
+    }
+}
+.pb-168{
+    padding-bottom: 168px;
+}

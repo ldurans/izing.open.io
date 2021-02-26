@@ -94,7 +94,7 @@
             round
             flat
             color="primary"
-            class="q-ml-m q-mr-md"
+            class="q-ml-sm q-mr-md"
           >
             <q-icon name="mdi-transfer" />
             <q-tooltip>

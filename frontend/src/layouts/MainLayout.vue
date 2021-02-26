@@ -102,10 +102,10 @@ const objMenu = [
   //   routeName: 'dashboard'
   // },
   {
-    title: 'Painel Tickets',
-    caption: 'Visão dos tickets por usuário e filas',
+    title: 'Painel Atendimentos',
+    caption: 'Visão dos atendimentos por usuário e filas',
     icon: 'mdi-view-dashboard-variant',
-    routeName: 'painel-tickets'
+    routeName: 'painel-atendimentos'
   },
   {
     title: 'Sessões',
@@ -130,6 +130,12 @@ const objMenu = [
 
 const objMenuAdmin = [
   {
+    title: 'Relatórios',
+    caption: 'Relatórios gerais',
+    icon: 'mdi-file-chart',
+    routeName: 'relatorios'
+  },
+  {
     title: 'Usuarios',
     caption: 'Admin de usuários',
     icon: 'mdi-account-group',
@@ -152,6 +158,18 @@ const objMenuAdmin = [
     caption: 'Configuração auto resposta',
     icon: 'mdi-message-reply-text',
     routeName: 'auto-resposta'
+  },
+  {
+    title: 'Etiquetas',
+    caption: 'Cadastro de etiquetas',
+    icon: 'mdi-tag-text',
+    routeName: 'etiquetas'
+  },
+  {
+    title: 'Horário de Atendimento',
+    caption: 'Horário de funcionamento da empresa',
+    icon: 'mdi-calendar-clock',
+    routeName: 'horarioAtendimento'
   },
   {
     title: 'Configurações',

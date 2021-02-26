@@ -13,6 +13,7 @@ import VerifyAutoReplyActionTicket from "./VerifyAutoReplyActionTicket";
 import VerifyContact from "./VerifyContact";
 import VerifyMediaMessage from "./VerifyMediaMessage";
 import VerifyMessage from "./VerifyMessage";
+import verifyBusinessHours from "./VerifyBusinessHours";
 
 interface Session extends Client {
   id?: number;
@@ -82,6 +83,8 @@ const HandleMessage = async (
           await VerifyMessage(msg, ticket, contact);
         }
         await VerifyAutoReplyActionTicket(msg, ticket);
+
+        await verifyBusinessHours(msg, ticket);
         resolve();
       } catch (err) {
         Sentry.captureException(err);

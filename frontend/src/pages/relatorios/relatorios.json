@@ -1,0 +1,17 @@
+  [
+    {
+      "name": "lista-contatos",
+      "titulo": "Contatos",
+      "objetivo": "Apresenta todos os contatos cadastratos"
+    },
+    {
+      "name": "contatos-por-etiquetas",
+      "titulo": "Contatos por Etiqueta",
+      "objetivo": "Apresenta os contatos que foram sinalizados com a etiqueta filtrada."
+    },
+    {
+      "name": "contatos-por-estado",
+      "titulo": "Contatos por Estado",
+      "objetivo": "Apresenta os contatos separados por estado (considera o DDD)."
+    }
+  ]

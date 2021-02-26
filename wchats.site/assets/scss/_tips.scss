@@ -1,0 +1,82 @@
+.tips-triks-area{
+    position: relative;
+    &::before{
+        background-image: url(../img/shape/tips.png);
+        position: absolute;
+        content: "";
+        z-index: -1;
+        min-height: 769px;
+        min-width: 331px;
+        background-repeat: no-repeat;
+        left: 0;
+        @media #{$sm}{
+			display: none;
+		}
+        @media #{$md}{
+			display: none;
+		}
+        @media #{$xs}{
+			display: none;
+		}
+    }
+    .single-tips{
+        .tips-img{
+            overflow:hidden;
+            border-radius: 10px;
+            img{
+                width: 100%;
+                border-radius: 10px;
+                margin-bottom: 40px;
+                @include transition(.4s);
+                transform: rotate(1deg) scale(1);
+            }
+        }
+        .tips-caption{
+            h4{
+                font-size: 24px;
+                font-weight: 700;
+                line-height: 1.4;
+                margin-bottom: 26px;
+                padding-right: 27px;
+                a{
+                    color: $heading_color;
+                    &:hover{
+                        color: $theme_color;
+                    }
+                }
+            }
+            span{
+                color: #233d63;
+                font-size: 16px;
+                font-weight: 400;
+                margin-bottom:27px;
+                display: block;
+                padding-left: 65px;  
+                position: relative;
+                &::before{
+                    position: absolute;
+                    content: "";
+                    width:40px;
+                    height:3px;
+                    background:#7b40c0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 0;
+
+                }    
+            }
+            p{
+                color: $theme_color;
+            }
+        }
+    }
+}
+
+
+.single-tips:hover{
+    .tips-img{
+        img{
+            transform: rotate(1deg) scale(1.1);
+        }
+    }
+}

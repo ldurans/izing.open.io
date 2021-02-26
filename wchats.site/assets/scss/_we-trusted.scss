@@ -1,0 +1,51 @@
+.we-trusted-area{
+    .trusted-img{
+        & img{
+            width: 100%;
+            @media #{$md}{
+               margin-bottom: 30px;
+            }
+            @media #{$sm}{
+               margin-bottom: 30px;
+            }
+            @media #{$xs}{
+               margin-bottom: 30px;
+            }
+        }
+    }
+    .trusted-caption{
+        background: rgba(255, 255, 255,.8);
+        padding: 57px 115px 50px 60px;
+        margin-left: -152px;
+        @media #{$lg}{
+			padding:30px 5px 30px 30px;
+		}
+        @media #{$md}{
+            padding:30px;
+            margin-left: 0px;
+		}
+        @media #{$sm}{
+            padding:0px;
+            margin-left: 0px;
+		}
+        @media #{$xs}{
+            padding:0px;
+            margin-left: 0px;
+		}
+        & h2{
+            color: $heading_color;
+            font-size: 40px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 40px;
+            display: block;
+            @media #{$xs}{
+                font-size: 24px;
+                line-height: 1.3;
+            }
+        }
+        & p{
+            margin-bottom: 57px;
+        }
+    }
+}

@@ -11,10 +11,13 @@ import {
   HasMany,
   BeforeCreate,
   ForeignKey,
-  BelongsTo
+  BelongsTo,
+  BelongsToMany
 } from "sequelize-typescript";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
 import ContactCustomField from "./ContactCustomField";
+import ContactTag from "./ContactTag";
+import Tags from "./Tag";
 import Tenant from "./Tenant";
 import Ticket from "./Ticket";
 
@@ -68,6 +71,12 @@ class Contact extends Model<Contact> {
 
   @HasMany(() => ContactCustomField)
   extraInfo: ContactCustomField[];
+
+  // @HasMany(() => ContactTag)
+  // tags: ContactTag[];
+
+  @BelongsToMany(() => Tags, () => ContactTag, "contactId", "tagId")
+  tags: Tags[];
 
   @ForeignKey(() => Tenant)
   @Column

@@ -2,6 +2,7 @@ import { Message as WbotMessage } from "whatsapp-web.js";
 import SetTicketMessagesAsRead from "../../../helpers/SetTicketMessagesAsRead";
 import { getIO } from "../../../libs/socket";
 import Ticket from "../../../models/Ticket";
+import { sleepRandomTime } from "../../../utils/sleepRandomTime";
 import CreateAutoReplyLogsService from "../../AutoReplyServices/CreateAutoReplyLogsService";
 import ShowStepAutoReplyMessageService from "../../AutoReplyServices/ShowStepAutoReplyMessageService";
 import VerifyActionStepAutoReplyService from "../../AutoReplyServices/VerifyActionStepAutoReplyService";
@@ -56,6 +57,10 @@ const verifyAutoReplyActionTicket = async (
             return;
           }
 
+          await sleepRandomTime({
+            minMilliseconds: +(process.env.MIN_SLEEP_AUTO_REPLY || 4000),
+            maxMilliseconds: +(process.env.MAX_SLEEP_AUTO_REPLY || 6000)
+          });
           await SendWhatsAppMessage({
             body: stepAutoReply.reply,
             ticket,
@@ -92,6 +97,10 @@ const verifyAutoReplyActionTicket = async (
         );
 
         if (actionAutoReply.replyDefinition) {
+          await sleepRandomTime({
+            minMilliseconds: +(process.env.MIN_SLEEP_AUTO_REPLY || 4000),
+            maxMilliseconds: +(process.env.MAX_SLEEP_AUTO_REPLY || 6000)
+          });
           await SendWhatsAppMessage({
             body: actionAutoReply.replyDefinition,
             ticket,
@@ -112,6 +121,10 @@ const verifyAutoReplyActionTicket = async (
 
         // se ticket tiver sido criado, ingnorar na primeria passagem
         if (!ticket.isCreated) {
+          await sleepRandomTime({
+            minMilliseconds: +(process.env.MIN_SLEEP_AUTO_REPLY || 4000),
+            maxMilliseconds: +(process.env.MAX_SLEEP_AUTO_REPLY || 6000)
+          });
           await SendWhatsAppMessage({
             body:
               "Desculpe! Não entendi sua resposta. Vamos tentar novamente! Escolha uma opção válida.",
@@ -120,6 +133,10 @@ const verifyAutoReplyActionTicket = async (
           });
         }
 
+        await sleepRandomTime({
+          minMilliseconds: +(process.env.MIN_SLEEP_AUTO_REPLY || 4000),
+          maxMilliseconds: +(process.env.MAX_SLEEP_AUTO_REPLY || 6000)
+        });
         await SendWhatsAppMessage({
           body: stepAutoReplyAtual.reply,
           ticket,

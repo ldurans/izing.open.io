@@ -7,6 +7,7 @@ import CreateContactService from "../services/ContactServices/CreateContactServi
 import ShowContactService from "../services/ContactServices/ShowContactService";
 import UpdateContactService from "../services/ContactServices/UpdateContactService";
 import DeleteContactService from "../services/ContactServices/DeleteContactService";
+import UpdateContactTagsService from "../services/ContactServices/UpdateContactTagsService";
 
 import CheckIsValidContact from "../services/WbotServices/CheckIsValidContact";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
@@ -146,4 +147,27 @@ export const remove = async (
   });
 
   return res.status(200).json({ message: "Contact deleted" });
+};
+
+export const updateContactTags = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { tags } = req.body;
+  const { contactId } = req.params;
+  const { tenantId } = req.user;
+
+  const contact = await UpdateContactTagsService({
+    tags,
+    contactId,
+    tenantId
+  });
+
+  const io = getIO();
+  io.emit(`${tenantId}-contact`, {
+    action: "update",
+    contact
+  });
+
+  return res.status(200).json(contact);
 };

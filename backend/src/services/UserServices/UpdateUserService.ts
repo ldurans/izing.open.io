@@ -64,8 +64,8 @@ const UpdateUserService = async ({
     await UsersQueues.destroy({ where: { userId } });
     await Promise.all(
       queues.map(async queue => {
-        const { id: queueId } = queue;
-        await UsersQueues.upsert({ queueId, userId });
+        // const { id: queueId } = queue;
+        await UsersQueues.upsert({ queueId: queue, userId });
       })
     );
   }

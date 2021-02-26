@@ -11,4 +11,10 @@ statisticsRoutes.get(
   StatisticsController.DashTicketsQueues
 );
 
+statisticsRoutes.get(
+  "/contacts-report",
+  isAuth,
+  StatisticsController.ContactsReport
+);
+
 export default statisticsRoutes;
