@@ -83,7 +83,7 @@
               class="absolute-bottom-right q-pr-xs q-pb-xs"
               :name="ackIcons[mensagem.ack]"
               size="1.2em"
-              :color="mensagem.ack >= 3 ? 'green-4' : ''"
+              :color="mensagem.ack >= 3 ? 'blue-12' : ''"
             />
             <template v-if="mensagem.mediaType === 'audio'">
               <audio
