@@ -15,6 +15,8 @@ import {
   BelongsToMany
 } from "sequelize-typescript";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
+import Campaign from "./Campaign";
+import CampaignContacts from "./CampaignContacts";
 import ContactCustomField from "./ContactCustomField";
 import ContactTag from "./ContactTag";
 import Tags from "./Tag";
@@ -77,6 +79,17 @@ class Contact extends Model<Contact> {
 
   @BelongsToMany(() => Tags, () => ContactTag, "contactId", "tagId")
   tags: Tags[];
+
+  @HasMany(() => CampaignContacts)
+  campaignContacts: CampaignContacts[];
+
+  @BelongsToMany(
+    () => Campaign,
+    () => CampaignContacts,
+    "contactId",
+    "campaignId"
+  )
+  campaign: Campaign[];
 
   @ForeignKey(() => Tenant)
   @Column

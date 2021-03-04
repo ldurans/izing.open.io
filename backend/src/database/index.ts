@@ -18,6 +18,8 @@ import UserMessagesLog from "../models/UserMessagesLog";
 import FastReply from "../models/FastReply";
 import Tag from "../models/Tag";
 import ContactTag from "../models/ContactTag";
+import Campaign from "../models/Campaign";
+import CampaignContacts from "../models/CampaignContacts";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -44,7 +46,9 @@ const models = [
   UserMessagesLog,
   FastReply,
   Tag,
-  ContactTag
+  ContactTag,
+  Campaign,
+  CampaignContacts
 ];
 
 sequelize.addModels(models);

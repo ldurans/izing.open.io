@@ -17,8 +17,10 @@
   "dependencies": {
     "@sentry/node": "5.27.0",
     "@types/pino": "^6.3.5",
+    "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "bull": "^3.20.1",
+    "bull-board": "^1.4.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "date-fns": "^2.16.1",
@@ -42,6 +44,7 @@
     "socket.io-redis": "^5.4.0",
     "telegraf": "^4.0.3",
     "telegraf-session-redis": "^5.1.0",
+    "uuid": "^8.3.2",
     "whatsapp-web.js": "^1.12.5",
     "yup": "^0.29.3"
   },
@@ -62,6 +65,7 @@
     "@types/socket.io": "^2.1.11",
     "@types/socket.io-redis": "^1.0.26",
     "@types/supertest": "^2.0.10",
+    "@types/uuid": "^8.3.0",
     "@types/validator": "^13.1.0",
     "@types/yup": "^0.29.8",
     "@typescript-eslint/eslint-plugin": "^4.4.0",

@@ -6,15 +6,22 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import * as Sentry from "@sentry/node";
 
+import { setQueues, BullAdapter, router as bullRoute } from "bull-board";
+
 import "./database";
 import uploadConfig from "./config/upload";
 import AppError from "./errors/AppError";
 import routes from "./routes";
 import { logger } from "./utils/logger";
+import Queue from "./libs/Queue";
 
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
+
+Queue.process();
+setQueues(Queue.queues.map((q: any) => new BullAdapter(q.bull)));
+app.use("/admin/queues", bullRoute);
 
 // em produção estou usando assim:
 // if (process.env.NODE_ENV === "prod") {

@@ -7,6 +7,7 @@
     >
       <template v-for="(mensagem, index) in mensagens">
         <hr
+          v-if="isLineDate"
           :key="'hr-'+index"
           class="hr-text q-mt-lg q-mb-md"
           :data-content="formatarData(mensagem.createdAt)"
@@ -21,7 +22,7 @@
           />
         </template>
         <q-chat-message
-          size="5"
+          :size="size"
           :key="mensagem.id"
           :stamp="dataInWords(mensagem.createdAt)"
           :sent="mensagem.fromMe"
@@ -112,10 +113,10 @@
             <template v-if="mensagem.mediaType === 'image'">
               <!-- @click="buscarImageCors(mensagem.mediaUrl)" -->
               <q-img
-                @click="urlMedia=mensagem.mediaUrl;abrirModalImagem=true"
+                @click="urlMedia=mensagem.mediaUrl; abrirModalImagem=true"
                 :src="mensagem.mediaUrl"
                 spinner-color="primary"
-                style="height: 140px; width: 100%"
+                style="height: 100%; width: 100%; "
                 class="q-mt-md"
               />
               <VueEasyLightbox
@@ -193,6 +194,14 @@ export default {
     mensagens: {
       type: Array,
       default: () => []
+    },
+    size: {
+      type: [String, Number],
+      default: '5'
+    },
+    isLineDate: {
+      type: Boolean,
+      default: true
     },
     replyingMessage: {
       type: Object,

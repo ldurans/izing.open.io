@@ -18,7 +18,6 @@
         persistent
         content-class="bg-white hide-scrollbar"
       >
-
         <q-toolbar
           class="text-primary q-pr-none"
           style="height: 60px"

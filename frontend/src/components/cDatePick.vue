@@ -2,7 +2,6 @@
   <div>
     <q-input
       class="full-width"
-      dense
       hide-bottom-space
       outlined
       stack-label

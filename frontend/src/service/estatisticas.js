@@ -9,7 +9,6 @@ export function ConsultarTicketsQueuesService (params) {
 }
 
 export function RelatorioContatos (params) {
-  console.log('RelatorioContatos', params)
   return request({
     url: '/contacts-report',
     method: 'get',

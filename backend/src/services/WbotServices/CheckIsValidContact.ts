@@ -2,7 +2,7 @@ import AppError from "../../errors/AppError";
 import GetDefaultWhatsApp from "../../helpers/GetDefaultWhatsApp";
 import { getWbot } from "../../libs/wbot";
 import { logger } from "../../utils/logger";
-import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
+// import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
 
 const CheckIsValidContact = async (
   number: string,
@@ -21,7 +21,7 @@ const CheckIsValidContact = async (
     return idNumber;
   } catch (err) {
     logger.error(`CheckIsValidContact | Error: ${err}`);
-    StartWhatsAppSessionVerify(defaultWhatsapp.id, err);
+    // StartWhatsAppSessionVerify(defaultWhatsapp.id, err);
     if (err.message === "invalidNumber") {
       throw new AppError("ERR_WAPP_INVALID_CONTACT");
     }
