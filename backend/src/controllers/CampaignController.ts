@@ -7,7 +7,7 @@ import ListCampaignService from "../services/CampaignServices/ListCampaignServic
 import DeleteCampaignService from "../services/CampaignServices/DeleteCampaignService";
 import UpdateCampaignService from "../services/CampaignServices/UpdateCampaignService";
 import StartCampaignService from "../services/CampaignServices/StartCampaignService";
-import { logger } from "../utils/logger";
+import CancelCampaignService from "../services/CampaignServices/CancelCampaignService";
 
 interface CampaignData {
   name: string;
@@ -16,7 +16,6 @@ interface CampaignData {
   message1: string;
   message2: string;
   message3: string;
-  message4: string;
   mediaUrl: string;
   userId: string;
   sessionId: string;
@@ -39,11 +38,9 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     start: Yup.string().required(),
-    end: Yup.string().required(),
     message1: Yup.string().required(),
     message2: Yup.string().required(),
     message3: Yup.string().required(),
-    message4: Yup.string().required(),
     userId: Yup.string().required(),
     sessionId: Yup.string().required(),
     tenantId: Yup.number().required()
@@ -90,11 +87,9 @@ export const update = async (
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     start: Yup.string().required(),
-    end: Yup.string().required(),
     message1: Yup.string().required(),
     message2: Yup.string().required(),
     message3: Yup.string().required(),
-    message4: Yup.string().required(),
     mediaUrl: Yup.string().required(),
     userId: Yup.string().required(),
     sessionId: Yup.string().required(),
@@ -136,24 +131,37 @@ export const startCampaign = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  try {
-    const { tenantId } = req.user;
-    if (req.user.profile !== "admin") {
-      throw new AppError("ERR_NO_PERMISSION", 403);
-    }
-    const { campaignId } = req.params;
-
-    await StartCampaignService({
-      campaignId,
-      tenantId,
-      options: {
-        delay: 20000
-      }
-    });
-
-    return res.status(200).json({ message: "Campaign started" });
-  } catch (error) {
-    logger.error(`ERROR_STARTING_CAMPAIGN: ${error}`);
-    throw new AppError("ERROR_STARTING_CAMPAIGN", 404);
+  const { tenantId } = req.user;
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
   }
+  const { campaignId } = req.params;
+
+  await StartCampaignService({
+    campaignId,
+    tenantId,
+    options: {
+      delay: 15000
+    }
+  });
+
+  return res.status(200).json({ message: "Campaign started" });
+};
+
+export const cancelCampaign = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { tenantId } = req.user;
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const { campaignId } = req.params;
+
+  await CancelCampaignService({
+    campaignId,
+    tenantId
+  });
+
+  return res.status(200).json({ message: "Campaign canceled" });
 };

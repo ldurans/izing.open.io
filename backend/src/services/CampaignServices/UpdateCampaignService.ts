@@ -1,16 +1,21 @@
 import * as Sentry from "@sentry/node";
+import { setMinutes, setHours, parseISO } from "date-fns";
 import AppError from "../../errors/AppError";
 import Campaign from "../../models/Campaign";
 import { logger } from "../../utils/logger";
 
+const cArquivoName = (url: string | undefined) => {
+  if (!url) return "";
+  const split = url.split("/");
+  const name = split[split.length - 1];
+  return name;
+};
 interface CampaignData {
   name: string;
   start: string;
-  end: string;
   message1: string;
   message2: string;
   message3: string;
-  message4: string;
   mediaUrl?: string;
   mediaType?: string;
   userId: string;
@@ -31,7 +36,12 @@ const UpdateCampaignService = async ({
   tenantId
 }: Request): Promise<Campaign> => {
   let mediaData: Express.Multer.File | undefined;
-  let data = campaignData;
+  let data: any = {
+    ...campaignData,
+    mediaUrl: cArquivoName(campaignData.mediaUrl),
+    start: setHours(setMinutes(parseISO(campaignData.start), 0), 8)
+  };
+
   if (medias && Array.isArray(medias) && medias.length) {
     await Promise.all(
       medias.map(async (media: Express.Multer.File) => {

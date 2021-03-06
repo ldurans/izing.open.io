@@ -17,25 +17,27 @@
         <div class="row q-gutter-sm">
           <div class="col-xs-12 col-md-5">
             <q-input
+              class="required"
               outlined
               v-model="campanha.name"
               label="Nome da Campanha"
+              @blur="$v.campanha.name.$touch"
+              :error="$v.campanha.name.$error"
+              error-message="Obrigatório"
             />
           </div>
           <div class="col-xs-12 col-md-3">
             <DatePick
               hint="Data início de envio"
               v-model="campanha.start"
-            />
-          </div>
-          <div class="col-xs-12 col-md-3">
-            <DatePick
-              hint="Data fim de envio"
-              v-model="campanha.end"
+              @blur="$v.campanha.start.$touch"
+              :error="$v.campanha.start.$error"
+              error-message="Não pode ser inferior ao dia atual"
             />
           </div>
           <div class="col-xs-12 col-md-4">
             <q-select
+              class="required"
               outlined
               emit-value
               map-options
@@ -47,6 +49,9 @@
               option-value="id"
               option-label="name"
               input-style="width: 280px; max-width: 280px;"
+              @blur="$v.campanha.sessionId.$touch"
+              :error="$v.campanha.sessionId.$error"
+              error-message="Obrigatório"
             />
           </div>
           <div class="col-xs-12 col-md-4">
@@ -133,7 +138,11 @@
               <textarea
                 ref="message1"
                 style="min-height: 9vh; max-height: 9vh;"
-                class="q-pa-sm bg-white full-width rounded-borders"
+                class="q-pa-sm full-width rounded-borders"
+                :class="{
+                'bg-red-1': $v.campanha.message1.$error
+                }"
+                @blur="$v.campanha.message1.$touch"
                 placeholder="Digite a mensagem"
                 autogrow
                 dense
@@ -179,11 +188,15 @@
               <textarea
                 ref="message2"
                 style="min-height: 9vh; max-height: 9vh;"
-                class="q-pa-sm bg-white full-width rounded-borders"
+                class="q-pa-sm full-width rounded-borders"
                 placeholder="Digite a mensagem"
                 autogrow
                 dense
                 outlined
+                :class="{
+                'bg-red-1': $v.campanha.message2.$error
+                }"
+                @blur="$v.campanha.message2.$touch"
                 @input="(v) => campanha.message2 = v.target.value"
                 :value="campanha.message2"
               />
@@ -231,6 +244,10 @@
                 autogrow
                 dense
                 outlined
+                :class="{
+                'bg-red-1': $v.campanha.message3.$error
+                }"
+                @blur="$v.campanha.message3.$touch"
                 @input="(v) => campanha.message3 = v.target.value"
                 :value="campanha.message3"
               />
@@ -290,12 +307,17 @@
 </template>
 
 <script>
+import { required } from 'vuelidate/lib/validators'
 import { VEmojiPicker } from 'v-emoji-picker'
 import axios from 'axios'
 import cMolduraCelular from 'src/components/cMolduraCelular'
 import MensagemChat from 'src/pages/atendimento/MensagemChat'
 import { mapGetters } from 'vuex'
 import { CriarCampanha, AlterarCampanha } from 'src/service/campanhas'
+import { parseISO, startOfDay } from 'date-fns'
+const isValidDate = (v) => {
+  return startOfDay(new Date(parseISO(v))).getTime() >= startOfDay(new Date()).getTime()
+}
 
 const downloadImageCors = axios.create({
   baseURL: process.env.API,
@@ -332,15 +354,12 @@ export default {
       abrirModalImagem: false,
       urlMedia: '',
       campanha: {
-        id: null,
         name: null,
         start: null,
-        end: null,
         mediaUrl: null,
         message1: null,
         message2: null,
         message3: null,
-        userId: null,
         sessionId: null
       },
       messageTemplate: {
@@ -362,6 +381,16 @@ export default {
         quotedMsg: null
       },
       arquivos: []
+    }
+  },
+  validations: {
+    campanha: {
+      name: { required },
+      start: { required, isValidDate },
+      message1: { required },
+      message2: { required },
+      message3: { required },
+      sessionId: { required }
     }
   },
   computed: {
@@ -441,7 +470,6 @@ export default {
         id: null,
         name: null,
         start: null,
-        end: null,
         message1: null,
         message2: null,
         message3: null,
@@ -507,6 +535,14 @@ export default {
       this.loading = false
     },
     async handleCampanha () {
+      this.$v.campanha.$touch()
+      if (this.$v.campanha.$error) {
+        this.$q.notify({
+          type: 'negative',
+          message: 'Verifique se todas os campos obrigatórios estão preenchidos '
+        })
+        return
+      }
       try {
         this.loading = true
         const campanha = { ...this.campanha }
@@ -556,5 +592,9 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
+border-error {
+  border: 3px solid red;
+  background: red !important;
+}
 </style>

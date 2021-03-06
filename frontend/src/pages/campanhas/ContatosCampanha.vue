@@ -11,10 +11,7 @@
           Campanha: {{ $route.params.campanha.name }}
         </div>
         <div class="row text-caption">
-          Início: {{ formatDate($route.params.campanha.start) }} - Fim: {{ formatDate($route.params.campanha.end) }}
-        </div>
-        <div class="row text-caption">
-          Status: {{ $route.params.campanha.status }}
+          Início: {{ formatDate($route.params.campanha.start) }} - Status: {{ $route.params.campanha.status }}
         </div>
         <q-btn
           class="absolute-top-right q-ma-md"
@@ -60,11 +57,16 @@
           outline
           label="Limpar Campanha"
           @click="deletarTodosContatosCampanha"
+          v-if="$route.params.campanha.status === 'pending' ||
+            $route.params.campanha.status === 'canceled'"
         />
         <q-btn
           class="q-ml-md"
           color="primary"
-          label="Adicionar"
+          label="Incluir Contatos"
+          icon="add"
+          v-if="$route.params.campanha.status === 'pending' ||
+            $route.params.campanha.status === 'canceled'"
           @click="modalAddContatosCampanha = !modalAddContatosCampanha"
         />
       </template>
@@ -95,6 +97,7 @@
       <template v-slot:body-cell-acoes="props">
         <q-td class="text-center">
           <q-btn
+            v-if="$route.params.campanha.status === 'pending'"
             flat
             round
             icon="mdi-delete"
@@ -332,11 +335,29 @@ export default {
         rowsNumber: 0,
         lastIndex: 0
       },
+      ACK: { // Se ACK == 3 ou 4 entao color green
+        '-1': 'Error',
+        0: 'Envio Pendente',
+        1: 'Entrega Pendente',
+        2: 'Recebida',
+        3: 'Lida',
+        4: 'Reproduzido'
+      },
       loading: false,
       columns: [
         { name: 'profilePicUrl', label: '', field: 'profilePicUrl', style: 'width: 50px', align: 'center' },
         { name: 'name', label: 'Nome', field: 'name', align: 'left', style: 'width: 300px' },
         { name: 'number', label: 'WhatsApp', field: 'number', align: 'center', style: 'width: 300px' },
+        {
+          name: 'campaignContacts',
+          label: 'Status',
+          field: 'campaignContacts',
+          align: 'center',
+          style: 'width: 200px',
+          format: (v) => {
+            return v ? this.ACK[v[0].ack] : ''
+          }
+        },
         {
           name: 'tags',
           label: 'Etiquetas',

@@ -33,4 +33,10 @@ campaignsRoutes.post(
   CampaignController.startCampaign
 );
 
+campaignsRoutes.post(
+  "/campaigns/cancel/:campaignId",
+  isAuth,
+  CampaignController.cancelCampaign
+);
+
 export default campaignsRoutes;

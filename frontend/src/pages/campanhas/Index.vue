@@ -16,6 +16,17 @@
     >
       <template v-slot:top-right>
         <q-btn
+          class="q-mr-md"
+          color="primary"
+          icon="refresh"
+          outline
+          @click="listarCampanhas"
+        >
+          <q-tooltip>
+            Atualizar Listagem
+          </q-tooltip>
+        </q-btn>
+        <q-btn
           color="primary"
           label="Adicionar"
           @click="campanhaEdicao = {}; modalCampanha = true"
@@ -45,7 +56,7 @@
           <q-btn
             flat
             round
-            icon="mdi-playlist-edit"
+            icon="mdi-account-details-outline"
             @click="contatosCampanha(props.row)"
           >
             <q-tooltip>
@@ -65,15 +76,33 @@
           <q-btn
             flat
             round
+            icon="mdi-close-box-multiple"
+            @click="cancelarCampanha(props.row)"
+          >
+            <q-tooltip>
+              Cancelar Campanha
+            </q-tooltip>
+          </q-btn>
+          <q-btn
+            flat
+            round
             icon="edit"
             @click="editarCampanha(props.row)"
-          />
+          >
+            <q-tooltip>
+              Editar Campanha
+            </q-tooltip>
+          </q-btn>
           <q-btn
             flat
             round
             icon="mdi-delete"
             @click="deletarCampanha(props.row)"
-          />
+          >
+            <q-tooltip>
+              Excluir Campanha
+            </q-tooltip>
+          </q-btn>
         </q-td>
       </template>
     </q-table>
@@ -88,9 +117,10 @@
 </template>
 
 <script>
-import { DeletarCampanha, IniciarCampanha, ListarCampanhas } from 'src/service/campanhas'
+import { CancelarCampanha, DeletarCampanha, IniciarCampanha, ListarCampanhas } from 'src/service/campanhas'
 import ModalCampanha from './ModalCampanha'
-import { format, parseISO } from 'date-fns'
+import { format, parseISO, startOfDay } from 'date-fns'
+
 export default {
   name: 'Campanhas',
   components: {
@@ -111,17 +141,36 @@ export default {
         { name: 'id', label: '#', field: 'id', align: 'left' },
         { name: 'name', label: 'Campanha', field: 'name', align: 'left' },
         { name: 'start', label: 'Início', field: 'start', align: 'center', format: (v) => format(parseISO(v), 'dd/MM/yyyy') },
-        { name: 'end', label: 'Fim', field: 'end', align: 'center', format: (v) => format(parseISO(v), 'dd/MM/yyyy') },
-        { name: 'status', label: 'Status', field: 'status', align: 'center' },
+        {
+          name: 'status',
+          label: 'Status',
+          field: 'status',
+          align: 'center',
+          format: (v) => v ? this.status[v] : ''
+        },
         { name: 'contactsCount', label: 'Qtd. Contatos', field: 'contactsCount', align: 'center' },
+        { name: 'pendentesEnvio', label: 'À Enviar', field: 'pendentesEnvio', align: 'center' },
+        { name: 'pendentesEntrega', label: 'À Entregar', field: 'pendentesEntrega', align: 'center' },
+        { name: 'recebidas', label: 'Recebidas', field: 'recebidas', align: 'center' },
+        { name: 'lidas', label: 'Lidas', field: 'lidas', align: 'center' },
         { name: 'acoes', label: 'Ações', field: 'acoes', align: 'center' }
-      ]
+      ],
+      status: {
+        pending: 'Pendente',
+        scheduled: 'Programada',
+        processing: 'Processando',
+        canceled: 'Cancelada',
+        finished: 'Finalizada'
+      }
     }
   },
   methods: {
     async listarCampanhas () {
       const { data } = await ListarCampanhas()
       this.campanhas = data
+    },
+    isValidDate (v) {
+      return startOfDay(new Date(parseISO(v))).getTime() >= startOfDay(new Date()).getTime()
     },
     campanhaCriada (campanha) {
       // const newCampanhas = [...this.campanhas]
@@ -139,7 +188,9 @@ export default {
       this.listarCampanhas()
     },
     editarCampanha (campanha) {
-      console.log('campanha', campanha)
+      if (campanha.status !== 'pending' && campanha.status !== 'canceled') {
+        this.$notificarError('Só é permitido editar campanhas que estejam pendentes ou canceladas.')
+      }
       this.campanhaEdicao = {
         ...campanha,
         start: format(parseISO(campanha.start), 'yyyy-MM-dd'),
@@ -148,6 +199,9 @@ export default {
       this.modalCampanha = true
     },
     deletarCampanha (campanha) {
+      if (campanha.status !== 'pending' && campanha.status !== 'canceled' && campanha.contactsCount) {
+        this.$notificarError('Só é permitido deletar campanhas que estejam pendentes ou canceladas e não possuam contatos vinculados.')
+      }
       this.$q.dialog({
         title: 'Atenção!!',
         message: `Deseja realmente deletar a Campanha "${campanha.tag}"?`,
@@ -168,19 +222,8 @@ export default {
           .then(res => {
             let newCampanhas = [...this.campanhas]
             newCampanhas = newCampanhas.filter(f => f.id !== campanha.id)
-
             this.campanhas = [...newCampanhas]
-            this.$q.notify({
-              type: 'positive',
-              progress: true,
-              position: 'top',
-              message: `Campanha ${campanha.tag} deletada!`,
-              actions: [{
-                icon: 'close',
-                round: true,
-                color: 'white'
-              }]
-            })
+            this.$notificarSucesso(`Campanha ${campanha.tag} deletada!`)
           })
         this.loading = false
       })
@@ -194,31 +237,49 @@ export default {
         }
       })
     },
+    cancelarCampanha (campanha) {
+      this.$q.dialog({
+        title: 'Atenção!!',
+        message: `Deseja realmente deletar a Campanha "${campanha.name}"?`,
+        cancel: {
+          label: 'Não',
+          color: 'primary',
+          push: true
+        },
+        ok: {
+          label: 'Sim',
+          color: 'negative',
+          push: true
+        },
+        persistent: true
+      }).onOk(() => {
+        CancelarCampanha(campanha.id)
+          .then(res => {
+            this.$notificarSucesso('Campanha cancelada.')
+            this.listarCampanhas()
+          }).catch(err => {
+            this.$notificarError('Não foi possível cancelar a campanha.', err)
+          })
+      })
+    },
     iniciarCampanha (campanha) {
+      if (!this.isValidDate(campanha.start)) {
+        this.$notificarError('Não é possível programar campanha com data menor que a atual')
+      }
+
+      if (campanha.contactsCount == 0) {
+        this.$notificarError('Necessário ter contatos vinculados para programar a campanha.')
+      }
+
+      if (campanha.status !== 'pending' && campanha.status !== 'canceled') {
+        this.$notificarError('Só é permitido programar campanhas que estejam pendentes ou canceladas.')
+      }
+
       IniciarCampanha(campanha.id).then(res => {
-        this.$q.notify({
-          type: 'positive',
-          progress: true,
-          position: 'top',
-          message: 'Campanha iniciada.',
-          actions: [{
-            icon: 'close',
-            round: true,
-            color: 'white'
-          }]
-        })
+        this.$notificarSucesso('Campanha iniciada.')
+        this.listarCampanhas()
       }).catch(err => {
-        this.$q.notify({
-          type: 'negatice',
-          progress: true,
-          position: 'top',
-          message: `Não foi possível iniciar a campanha. ${err.message || err.msg}`,
-          actions: [{
-            icon: 'close',
-            round: true,
-            color: 'white'
-          }]
-        })
+        this.$notificarError('Não foi possível iniciar a campanha.', err)
       })
     }
   },

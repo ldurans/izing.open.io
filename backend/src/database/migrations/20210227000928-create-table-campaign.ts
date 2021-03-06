@@ -18,12 +18,8 @@ module.exports = {
           type: DataTypes.DATE,
           allowNull: false
         },
-        end: {
-          type: DataTypes.DATE,
-          allowNull: false
-        },
         status: {
-          type: DataTypes.ENUM("pending", "processing", "canceled", "finished"),
+          type: DataTypes.STRING,
           allowNull: false,
           defaultValue: "pending"
         },
@@ -42,10 +38,6 @@ module.exports = {
           allowNull: false
         },
         message3: {
-          type: DataTypes.TEXT,
-          allowNull: false
-        },
-        message4: {
           type: DataTypes.TEXT,
           allowNull: false
         },

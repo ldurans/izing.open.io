@@ -50,8 +50,7 @@
 </template>
 <script>
 import { singleErrorExtractorMixin } from 'vuelidate-error-extractor'
-import { isValid } from 'date-fns'
-import { format, parse } from 'date-fns/esm'
+import { format, parse, isValid } from 'date-fns'
 
 export default {
   name: 'ccInputDate',
@@ -127,8 +126,12 @@ export default {
     }
   },
   methods: {
-    emitDate (d) {
-      const parseDate = parse(d, 'dd/MM/yyyy', new Date())
+    emitDate (d, r, dt) {
+      let date = d
+      if (!date) {
+        date = `${dt.day}/${dt.month}/${dt.year}`
+      }
+      const parseDate = parse(date, 'dd/MM/yyyy', new Date())
       this.$emit('input', format(parseDate, 'yyyy-MM-dd'))
       this.$refs.qDateProxy.hide()
     },

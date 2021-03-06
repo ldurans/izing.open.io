@@ -1,5 +1,6 @@
 // import AppError from "../../errors/AppError";
 import * as Sentry from "@sentry/node";
+import { parseISO, setHours, setMinutes } from "date-fns";
 import { logger } from "../../utils/logger";
 
 import Campaign from "../../models/Campaign";
@@ -7,11 +8,9 @@ import Campaign from "../../models/Campaign";
 interface CampaignRequest {
   name: string;
   start: string;
-  end: string;
   message1: string;
   message2: string;
   message3: string;
-  message4: string;
   mediaUrl?: string;
   mediaType?: string;
   userId: string;
@@ -45,14 +44,12 @@ const CreateCampaignService = async ({
       })
     );
   }
-  const data: CampaignRequest = {
+  const data: any = {
     name: campaign.name,
-    start: campaign.start,
-    end: campaign.end,
+    start: setHours(setMinutes(parseISO(campaign.start), 0), 8),
     message1: campaign.message1,
     message2: campaign.message2,
     message3: campaign.message3,
-    message4: campaign.message4,
     userId: campaign.userId,
     mediaUrl: mediaData?.filename,
     mediaType: mediaData?.mimetype.substr(0, mediaData.mimetype.indexOf("/")),

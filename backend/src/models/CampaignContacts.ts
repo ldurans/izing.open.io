@@ -7,7 +7,10 @@ import {
   BelongsTo,
   AutoIncrement,
   CreatedAt,
-  UpdatedAt
+  UpdatedAt,
+  Default,
+  DataType,
+  AllowNull
 } from "sequelize-typescript";
 import Campaign from "./Campaign";
 import Contact from "./Contact";
@@ -20,8 +23,25 @@ class CampaignContacts extends Model<CampaignContacts> {
   @Column
   id: number;
 
+  @Default(0)
+  @Column
+  ack: number;
+
+  @Column(DataType.TEXT)
+  body: string;
+
   @Column
   messageRandom: string;
+
+  @AllowNull
+  @Default(null)
+  @Column
+  mediaName: string;
+
+  @Default(null)
+  @AllowNull
+  @Column(DataType.INTEGER)
+  timestamp: number;
 
   @ForeignKey(() => Message)
   @Column

@@ -14,11 +14,35 @@ module.exports = {
           type: DataTypes.STRING,
           allowNull: false
         },
+        body: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          defaultValue: null
+        },
+        mediaName: {
+          type: DataTypes.STRING,
+          allowNull: true,
+          defaultValue: null
+        },
         messageId: {
           type: DataTypes.STRING,
-          references: { model: "Messages", key: "id" },
-          onUpdate: "CASCADE",
-          onDelete: "SET NULL"
+          allowNull: true,
+          defaultValue: null
+        },
+        jobId: {
+          type: DataTypes.STRING,
+          allowNull: true,
+          defaultValue: null
+        },
+        ack: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0
+        },
+        timestamp: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          defaultValue: null
         },
         contactId: {
           type: DataTypes.INTEGER,

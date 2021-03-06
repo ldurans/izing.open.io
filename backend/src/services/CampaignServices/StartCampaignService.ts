@@ -1,5 +1,16 @@
 import { JobOptions } from "bull";
-import { setHours, setMinutes, getDate, getMonth } from "date-fns";
+import {
+  setHours,
+  setMinutes,
+  addSeconds,
+  isWithinInterval,
+  parse,
+  getDay,
+  addDays,
+  differenceInSeconds,
+  startOfDay
+} from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import Campaign from "../../models/Campaign";
 import AppError from "../../errors/AppError";
 import CampaignContacts from "../../models/CampaignContacts";
@@ -11,6 +22,12 @@ interface Request {
   // eslint-disable-next-line @typescript-eslint/ban-types
   options?: JobOptions;
 }
+
+const isValidDate = (date: Date) => {
+  return (
+    startOfDay(new Date(date)).getTime() >= startOfDay(new Date()).getTime()
+  );
+};
 
 const cArquivoName = (url: string | null) => {
   if (!url) return "";
@@ -47,52 +64,93 @@ const mountMessageData = (
   };
 };
 
+const nextDayHoursValid = (date: Date) => {
+  let dateVerify = date;
+  const isValidHour = isWithinInterval(dateVerify, {
+    start: parse("08:00", "HH:mm", new Date()),
+    end: parse("18:00", "HH:mm", new Date())
+  });
+
+  if (!isValidHour) {
+    dateVerify = setHours(dateVerify, 8);
+  }
+
+  // Se a data da programação for mario que a
+  // data atual, pular para o proximo dia.
+  if (dateVerify.getTime() < new Date().getTime()) {
+    dateVerify = addDays(dateVerify, 1);
+  }
+
+  const isValidDay = getDay(dateVerify) !== 0 && getDay(dateVerify) !== 6;
+
+  if (!isValidDay) {
+    // Se for domingo add 1 dia para segunda
+    if (getDay(dateVerify) === 0) {
+      dateVerify = addDays(dateVerify, 1);
+    }
+    // SE for Sabado add 2 dias para segunda
+    if (getDay(dateVerify) === 6) {
+      dateVerify = addDays(dateVerify, 2);
+    }
+  }
+
+  return dateVerify;
+};
+
+const calcDelay = (nextDate: Date, delay: number) => {
+  const diffSeconds = differenceInSeconds(nextDate, new Date());
+  // se a diferença for negativa, a hora em que a tarefa está sendo
+  // programada é menor que a
+  // if (diffSeconds < 0)
+  return diffSeconds * 1000 + delay;
+};
+
 const StartCampaignService = async ({
   campaignId,
   tenantId,
   options
 }: Request): Promise<void> => {
-  try {
-    const campaign = await Campaign.findOne({
-      where: { id: campaignId, tenantId },
-      include: ["session"]
-    });
+  const campaign = await Campaign.findOne({
+    where: { id: campaignId, tenantId },
+    include: ["session"]
+  });
 
-    if (!campaign) {
-      throw new AppError("ERROR_CAMPAIGN_NOT_EXISTS", 404);
-    }
-
-    const campaignContacts = await CampaignContacts.findAll({
-      where: { campaignId },
-      include: ["contact"]
-    });
-
-    if (!campaignContacts) {
-      throw new AppError("ERROR_CAMPAIGN_CONTACTS_NOT_EXISTS", 404);
-    }
-
-    const data = campaignContacts.map(
-      (campaignContact: CampaignContacts, index) => {
-        const date = setHours(setMinutes(campaign.start, 0), 8);
-        const cron = `30 8 ${getDate(date)} ${getMonth(date)} 1-5`;
-        return mountMessageData(campaign, campaignContact, {
-          ...options,
-          delay: (options?.delay || 20000) * (index + 1),
-          repeat: {
-            cron,
-            tz: "UTC",
-            startDate: setHours(setMinutes(campaign.start, 0), 8),
-            endDate: setHours(setMinutes(campaign.start, 0), 18),
-            limit: 1
-          }
-        });
-      }
-    );
-
-    Queue.add("SendMessageWhatsappCampaign", data);
-  } catch (error) {
-    throw new Error(`ERROR_CAMPAIGN_NOT_EXISTS ${error}`);
+  if (!campaign) {
+    throw new AppError("ERROR_CAMPAIGN_NOT_EXISTS", 404);
   }
+
+  if (!isValidDate(campaign.start)) {
+    throw new AppError("ERROR_CAMPAIGN_DATE_NOT_VALID", 404);
+  }
+
+  const campaignContacts = await CampaignContacts.findAll({
+    where: { campaignId },
+    include: ["contact"]
+  });
+
+  if (!campaignContacts) {
+    throw new AppError("ERROR_CAMPAIGN_CONTACTS_NOT_EXISTS", 404);
+  }
+
+  const timeDelay = options?.delay || 15000;
+  let dateDelay = setHours(
+    setMinutes(zonedTimeToUtc(campaign.start, "America/Sao_Paulo"), 30),
+    8
+  );
+  const data = campaignContacts.map((campaignContact: CampaignContacts) => {
+    dateDelay = addSeconds(nextDayHoursValid(dateDelay), timeDelay / 1000);
+    return mountMessageData(campaign, campaignContact, {
+      ...options,
+      jobId: `campaginId_${campaign.id}_contact_${campaignContact.contactId}_id_${campaignContact.id}`,
+      delay: calcDelay(dateDelay, timeDelay)
+    });
+  });
+
+  Queue.add("SendMessageWhatsappCampaign", data);
+
+  await campaign.update({
+    status: "scheduled"
+  });
 };
 
 export default StartCampaignService;

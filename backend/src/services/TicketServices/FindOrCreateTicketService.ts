@@ -1,17 +1,31 @@
 // import { subHours } from "date-fns";
 import { Op } from "sequelize";
+import { Message } from "whatsapp-web.js";
 import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
 import User from "../../models/User";
 import ShowTicketService from "./ShowTicketService";
+import CampaignContacts from "../../models/CampaignContacts";
 
 const FindOrCreateTicketService = async (
   contact: Contact,
   whatsappId: number,
   unreadMessages: number,
   tenantId: number | string,
-  groupContact?: Contact
-): Promise<Ticket> => {
+  groupContact?: Contact,
+  msg?: Message
+  // eslint-disable-next-line @typescript-eslint/ban-types
+): Promise<Ticket | any> => {
+  // se for uma mensagem de campanha, não abrir tícket
+  if (msg && msg.fromMe) {
+    const msgCampaign = await CampaignContacts.findOne({
+      where: { contactId: contact.id, messageId: msg.id.id }
+    });
+    if (msgCampaign?.id) {
+      return { isCampaignMessage: true };
+    }
+  }
+
   let ticket = await Ticket.findOne({
     where: {
       status: {

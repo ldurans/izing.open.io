@@ -18,6 +18,16 @@ export function IniciarCampanha (campaignId) {
   })
 }
 
+export function CancelarCampanha (campaignId) {
+  return request({
+    url: `/campaigns/cancel/${campaignId}/`,
+    method: 'post',
+    data: {
+      campaignId
+    }
+  })
+}
+
 export function ListarCampanhas () {
   return request({
     url: '/campaigns/',

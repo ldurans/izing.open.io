@@ -22,6 +22,30 @@ const ListCampaignService = async ({
         [
           Sequelize.fn("COUNT", Sequelize.col("campaignContacts.id")),
           "contactsCount"
+        ],
+        [
+          Sequelize.literal(
+            '(select count(1) from "CampaignContacts" as "w" where "w"."campaignId" = "Campaign"."id" and "w"."ack" = 0 )'
+          ),
+          "pendentesEnvio"
+        ],
+        [
+          Sequelize.literal(
+            '(select count(1) from "CampaignContacts" as "w" where "w"."campaignId" = "Campaign"."id" and "w"."ack" = 1 )'
+          ),
+          "pendentesEntrega"
+        ],
+        [
+          Sequelize.literal(
+            '(select count(1) from "CampaignContacts" as "w" where "w"."campaignId" = "Campaign"."id" and "w"."ack" = 2 )'
+          ),
+          "recebidas"
+        ],
+        [
+          Sequelize.literal(
+            '(select count(1) from "CampaignContacts" as "w" where "w"."campaignId" = "Campaign"."id" and "w"."ack" = 3 )'
+          ),
+          "lidas"
         ]
       ]
     },

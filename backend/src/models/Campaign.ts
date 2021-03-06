@@ -9,7 +9,9 @@ import {
   DataType,
   CreatedAt,
   UpdatedAt,
-  HasMany
+  HasMany,
+  Default,
+  AfterFind
 } from "sequelize-typescript";
 import CampaignContacts from "./CampaignContacts";
 import Tenant from "./Tenant";
@@ -29,10 +31,10 @@ class Campaign extends Model<Campaign> {
   @Column
   start: Date;
 
-  @Column
-  end: Date;
-
-  @Column
+  @Default("pending")
+  @Column(
+    DataType.ENUM("pending", "scheduled", "processing", "canceled", "finished")
+  )
   status: string;
 
   @Column
@@ -43,9 +45,6 @@ class Campaign extends Model<Campaign> {
 
   @Column
   message3: string;
-
-  @Column
-  message4: string;
 
   @Column(DataType.STRING)
   get mediaUrl(): string | null {
@@ -89,6 +88,47 @@ class Campaign extends Model<Campaign> {
 
   @UpdatedAt
   updatedAt: Date;
+
+  @AfterFind
+  static async updatedInstances(instances: any): Promise<void | any> {
+    if (!Array.isArray(instances)) return instances;
+    const newInstances = await Promise.all(
+      // eslint-disable-next-line consistent-return
+      instances.map(async (instance: any) => {
+        if (!["pending", "finished", "canceled"].includes(instance.status)) {
+          const pendentesEntrega = +instance.dataValues.pendentesEntrega;
+          const pendentesEnvio = +instance.dataValues.pendentesEnvio;
+          const recebidas = +instance.dataValues.recebidas;
+          const lidas = +instance.dataValues.lidas;
+          const contactsCount = +instance.dataValues.contactsCount;
+
+          const totalTransacionado =
+            pendentesEntrega + pendentesEnvio + recebidas + lidas;
+
+          if (
+            instance.status === "scheduled" &&
+            contactsCount === pendentesEnvio
+          ) {
+            return instance;
+          }
+
+          if (contactsCount !== totalTransacionado) {
+            instance.status = "processing";
+            await instance.update({ status: "processing" });
+          }
+
+          if (contactsCount === totalTransacionado) {
+            instance.status = "finished";
+            await instance.update({ status: "finished" });
+          }
+
+          return instance;
+        }
+        // ("pending", "scheduled", "processing", "canceled", "finished")
+      })
+    );
+    return newInstances;
+  }
 }
 
 export default Campaign;

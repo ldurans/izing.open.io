@@ -8,7 +8,12 @@ import CampaignContacts from "../models/CampaignContacts";
 export default {
   key: "SendMessageWhatsappCampaign",
   options: {
-    delay: 5000
+    delay: 15000,
+    attempts: 10,
+    backoff: {
+      type: "fixed",
+      delay: 60000 * 5 // 5 min
+    }
   },
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   async handle({ data }: any) {
@@ -32,10 +37,19 @@ export default {
           linkPreview: false
         });
       }
+
       await CampaignContacts.update(
-        { messageId: message.id.id, messageRandom: data.messageRandom },
+        {
+          messageId: message.id.id,
+          messageRandom: data.messageRandom,
+          body: data.message,
+          mediaName: data.mediaName,
+          timestamp: message.timestamp,
+          jobId: data.jobId
+        },
         { where: { id: data.campaignContact.id } }
       );
+
       return message;
     } catch (error) {
       logger.error(`Error enviar message campaign: ${error}`);

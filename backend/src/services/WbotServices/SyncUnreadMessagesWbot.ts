@@ -34,6 +34,10 @@ const SyncUnreadMessagesWbot = async (
           tenantId
         );
 
+        if (ticket?.isCampaignMessage) {
+          return;
+        }
+
         unreadMessages.map(async msg => {
           logger.info(`MSG: ${msg}`);
           if (msg.hasMedia) {
