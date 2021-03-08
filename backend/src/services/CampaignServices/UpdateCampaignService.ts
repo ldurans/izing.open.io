@@ -42,6 +42,17 @@ const UpdateCampaignService = async ({
     start: setHours(setMinutes(parseISO(campaignData.start), 0), 8)
   };
 
+  const campaignModel = await Campaign.findOne({
+    where: { id: campaignId, tenantId }
+  });
+
+  if (
+    campaignModel?.status !== "pending" &&
+    campaignModel?.status !== "canceled"
+  ) {
+    throw new AppError("ERR_NO_UPDATE_CAMPAIGN_NOT_IN_CANCELED_PENDING", 404);
+  }
+
   if (medias && Array.isArray(medias) && medias.length) {
     await Promise.all(
       medias.map(async (media: Express.Multer.File) => {
@@ -69,10 +80,6 @@ const UpdateCampaignService = async ({
       mediaType: ""
     };
   }
-
-  const campaignModel = await Campaign.findOne({
-    where: { id: campaignId, tenantId }
-  });
 
   if (!campaignModel) {
     throw new AppError("ERR_NO_CAMPAIGN_FOUND", 404);

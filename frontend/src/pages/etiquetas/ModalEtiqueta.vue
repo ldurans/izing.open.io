@@ -163,6 +163,7 @@ export default {
         this.fecharModal()
       } catch (error) {
         console.error(error)
+        this.$notificarError('Ocorreu um erro ao criar a etiqueta', error)
       }
     }
   }

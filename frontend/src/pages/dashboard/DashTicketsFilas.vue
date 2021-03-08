@@ -389,6 +389,7 @@ export default {
         })
         .catch(error => {
           console.error(error)
+          this.$notificarError('Erro ao consultar atendimentos', error)
         })
     },
     onResize ({ height }) {

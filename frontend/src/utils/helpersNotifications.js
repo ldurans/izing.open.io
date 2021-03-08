@@ -1,7 +1,15 @@
 import { Notify } from 'quasar'
 
 export const notificarError = (msg, error) => {
-  const message = `Ops... <br>${msg}. ${error ? 'Detalhe: ' + error?.data?.error || error?.data?.msg || error?.data?.message || 'Não identificado' : ''}`
+  let erro = ''
+  if (error) {
+    erro = 'Detalhe: ' + error?.data?.error || error?.data?.msg || error?.data?.message || error?.response?.data.error || 'Não identificado'
+  }
+  const message = `
+  <p>Ops...</p>
+  <p>${msg}.</p>
+  <p>${erro}</p>
+  `
   Notify.create({
     type: 'negative',
     progress: true,

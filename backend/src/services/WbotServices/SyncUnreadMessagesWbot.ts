@@ -1,6 +1,7 @@
 import { Client } from "whatsapp-web.js";
 import { logger } from "../../utils/logger";
 import FindOrCreateTicketService from "../TicketServices/FindOrCreateTicketService";
+// import verifyBusinessHours from "./helpers/VerifyBusinessHours";
 import VerifyContact from "./helpers/VerifyContact";
 import VerifyMediaMessage from "./helpers/VerifyMediaMessage";
 import VerifyMessage from "./helpers/VerifyMessage";
@@ -45,6 +46,7 @@ const SyncUnreadMessagesWbot = async (
           } else {
             await VerifyMessage(msg, ticket, contact);
           }
+          // await verifyBusinessHours(msg, ticket);
         });
       }
     })

@@ -414,6 +414,7 @@ export default {
           })
           .catch(error => {
             console.error(error)
+            this.$notificarError('Não é possível deletar o Chatbot', error)
           })
         this.loading = false
       })
@@ -500,6 +501,7 @@ export default {
           })
           .catch(error => {
             console.error(error)
+            this.$notificarError('Não é possível deletar a etapa', error)
           })
         this.loading = false
       })
@@ -553,7 +555,7 @@ export default {
               type: 'positive',
               progress: true,
               position: 'top',
-              message: `Etapa ${etapa.id} deletada!`,
+              message: `Ação Etapa ${etapa.id} deletada!`,
               actions: [{
                 icon: 'close',
                 round: true,
@@ -563,6 +565,7 @@ export default {
           })
           .catch(error => {
             console.error(error)
+            this.$notificarError('Não é possível deletar a ação da etapa', error)
           })
         this.loading = false
       })

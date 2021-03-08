@@ -28,7 +28,10 @@
           :sent="mensagem.fromMe"
           :bg-color="mensagem.fromMe ? 'teal-2' : 'white' "
         >
-          <div :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''">
+          <div
+            style="max-width: 300px"
+            :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
+          >
             <div
               v-if="mensagem.isDeleted"
               class="text-italic"
@@ -116,8 +119,10 @@
                 @click="urlMedia=mensagem.mediaUrl; abrirModalImagem=true"
                 :src="mensagem.mediaUrl"
                 spinner-color="primary"
-                style="height: 100%; width: 100%; "
+                height="330px"
+                width="100%"
                 class="q-mt-md"
+                style="cursor: pointer;"
               />
               <VueEasyLightbox
                 moveDisabled
@@ -252,16 +257,7 @@ export default {
         this.urlMedia = url
         this.abrirModalImagem = true
       } catch (error) {
-        this.$q.notify({
-          message: JSON.stringify(error.response),
-          type: 'negative',
-          progress: true,
-          actions: [{
-            icon: 'close',
-            round: true,
-            color: 'white'
-          }]
-        })
+        this.$notificarError('Ocorreu um erro!', error)
       }
       this.loading = false
     },
@@ -294,6 +290,7 @@ export default {
           .catch(error => {
             this.loading = false
             console.error(error)
+            this.$notificarError('Não foi possível apagar a mensagem', error)
           })
       }).onCancel(() => {
       })

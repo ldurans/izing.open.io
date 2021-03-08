@@ -64,7 +64,8 @@ export default class QueueListener {
   // eslint-disable-next-line consistent-return
   static onFailed(job: Job<JobConfig>, err: Error) {
     console.log(
-      `Job with ID ${job.id} failed. Attempts made ${job.attemptsMade}. Max attempts ${job.opts.attempts}`
+      `Job with ID ${job.id} failed. Attempts made ${job.attemptsMade}. Max attempts ${job.opts.attempts}`,
+      err
     );
     if (job.opts.attempts && job.attemptsMade === job.opts.attempts) {
       // if max attempts reached, execute fallback logic.

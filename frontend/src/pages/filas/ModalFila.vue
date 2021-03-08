@@ -130,6 +130,7 @@ export default {
         this.fecharModal()
       } catch (error) {
         console.error(error)
+        this.$notificarError('Ocorreu um erro!', error)
       }
     }
   }

@@ -17,6 +17,11 @@ const DeleteCampaignService = async ({
   if (!campaign) {
     throw new AppError("ERR_NO_CAMPAIGN_FOUND", 404);
   }
+
+  if (campaign?.status !== "pending" && campaign?.status !== "canceled") {
+    throw new AppError("ERR_NO_UPDATE_CAMPAIGN_NOT_IN_CANCELED_PENDING", 404);
+  }
+
   try {
     await campaign.destroy();
   } catch (error) {

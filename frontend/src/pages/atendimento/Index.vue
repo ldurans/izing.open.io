@@ -687,17 +687,7 @@ export default {
             }]
           })
         } else {
-          this.$q.notify({
-            message: 'Ops... Ocorreu um problema de rede não identificado.',
-            type: 'negative',
-            progress: true,
-            position: 'top',
-            actions: [{
-              icon: 'close',
-              round: true,
-              color: 'white'
-            }]
-          })
+          this.$notificarError('Algum problema ao consultar atendimentos', err)
           console.error(err)
         }
       }

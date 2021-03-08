@@ -438,6 +438,7 @@ export default {
         })
       } catch (error) {
         console.error(error)
+        this.$notificarError('Ocorreu um erro!', error)
       }
     },
     deletarContatoCampanha (contato) {
@@ -458,17 +459,7 @@ export default {
         })
         .catch(error => {
           console.log(error)
-          this.$q.notify({
-            type: 'warning',
-            progress: true,
-            position: 'top',
-            message: `Ops! Verifique os erros... ${error}`,
-            actions: [{
-              icon: 'close',
-              round: true,
-              color: 'white'
-            }]
-          })
+          this.$notificarError('Verifique os erros...', error)
         })
     },
     deletarTodosContatosCampanha () {
@@ -490,20 +481,11 @@ export default {
         DeletarTodosContatosCampanha(this.$route.params.campanhaId)
           .then(res => {
             this.contatosCampanha = []
-            this.$q.notify({
-              type: 'positive',
-              progress: true,
-              position: 'top',
-              message: 'Contato excluído desta campanha',
-              actions: [{
-                icon: 'close',
-                round: true,
-                color: 'white'
-              }]
-            })
+            this.$notificarSucesso('Contato excluído desta campanha')
           })
           .catch(error => {
             console.error(error)
+            this.$notificarError('Não foi possível excluir o contato da campanha', error)
           })
       })
     }

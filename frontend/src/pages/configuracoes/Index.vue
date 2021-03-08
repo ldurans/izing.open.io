@@ -100,18 +100,7 @@ export default {
       } catch (error) {
         console.error('error - AlterarConfiguracao', error)
         this.$data[key] = this.$data[key] === 'enabled' ? 'disabled' : 'enabled'
-        this.$q.notify({
-          html: true,
-          message: `Ops... Ocorreu um erro! <br>${JSON.stringify(error.data)}`,
-          type: 'negative',
-          progress: true,
-          position: 'top',
-          actions: [{
-            icon: 'close',
-            round: true,
-            color: 'white'
-          }]
-        })
+        this.$notificarError('Ocorreu um erro!', error)
       }
     }
   },

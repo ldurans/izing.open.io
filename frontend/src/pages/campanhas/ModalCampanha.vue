@@ -521,16 +521,7 @@ export default {
         this.urlMedia = url
         this.abrirModalImagem = true
       } catch (error) {
-        this.$q.notify({
-          message: JSON.stringify(error.response),
-          type: 'negative',
-          progress: true,
-          actions: [{
-            icon: 'close',
-            round: true,
-            color: 'white'
-          }]
-        })
+        this.$notificarError('Algum problema ao carregar a imagem', error)
       }
       this.loading = false
     },
@@ -585,6 +576,7 @@ export default {
         this.fecharModal()
       } catch (error) {
         console.error(error)
+        this.$notificarError('Algum problema ao criar campanha', error)
       }
     }
   }
