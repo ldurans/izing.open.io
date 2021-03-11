@@ -237,6 +237,7 @@ export default {
         this.$router.push({ name: 'atendimento' })
       } catch (error) {
         console.error(error)
+        this.$notificarErro('Ocorreu um erro!', error)
       }
       this.loading = false
     },
@@ -278,6 +279,7 @@ export default {
           })
           .catch(error => {
             console.error(error)
+            this.$notificarErro('Não é possível deletar o contato', error)
           })
         this.loading = false
       })

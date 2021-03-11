@@ -21,6 +21,7 @@ export default {
       return format(parseJSON(date), 'HH:mm', { locale: pt })
     },
     farmatarMensagemWhatsapp (body) {
+      if (!body) return
       let format = body
       function is_aplhanumeric (c) {
         var x = c.charCodeAt()

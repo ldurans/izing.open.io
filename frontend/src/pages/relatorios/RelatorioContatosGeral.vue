@@ -10,11 +10,17 @@
           <div class="row q-gutter-md items-end">
             <div class="col-grow">
               <label>Início</label>
-              <DatePick v-model="pesquisa.startDate" />
+              <DatePick
+                dense
+                v-model="pesquisa.startDate"
+              />
             </div>
             <div class="col-grow">
               <label>Final</label>
-              <DatePick v-model="pesquisa.endDate" />
+              <DatePick
+                dense
+                v-model="pesquisa.endDate"
+              />
             </div>
             <div class="col-grow text-center">
               <q-btn

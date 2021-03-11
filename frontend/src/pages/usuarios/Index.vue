@@ -220,6 +220,7 @@ export default {
           })
           .catch(error => {
             console.error(error)
+            this.$notificarErro('Não é possível deletar o usuário', error)
           })
         this.loading = false
       })

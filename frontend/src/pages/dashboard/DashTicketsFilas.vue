@@ -22,10 +22,12 @@
         </q-card-section>
         <q-card-section class="q-gutter-md">
           <DatePick
+            dense
             class="row col"
             v-model="pesquisaTickets.dateStart"
           />
           <DatePick
+            dense
             class="row col"
             v-model="pesquisaTickets.dateEnd"
           />
@@ -387,6 +389,7 @@ export default {
         })
         .catch(error => {
           console.error(error)
+          this.$notificarErro('Erro ao consultar atendimentos', error)
         })
     },
     onResize ({ height }) {

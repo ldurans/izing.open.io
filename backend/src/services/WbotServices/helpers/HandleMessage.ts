@@ -74,8 +74,14 @@ const HandleMessage = async (
           wbot.id!,
           unreadMessages,
           tenantId,
-          groupContact
+          groupContact,
+          msg
         );
+
+        if (ticket?.isCampaignMessage) {
+          resolve();
+          return;
+        }
 
         if (msg.hasMedia) {
           await VerifyMediaMessage(msg, ticket, contact);

@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from "express";
 
 import AppError from "../errors/AppError";
 import authConfig from "../config/auth";
-import { logger } from "../utils/logger";
 
 interface TokenPayload {
   id: string;

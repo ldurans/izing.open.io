@@ -1,5 +1,5 @@
 {
-  "compile-hero.disable-compile-files-on-did-save-code": true,
+  "compile-hero.disable-compile-files-on-did-save-code": false,
   "workbench.colorTheme": "Dracula Soft",
   "html.format.contentUnformatted": "",
   "workbench.preferredDarkColorTheme": "Palenight Theme"

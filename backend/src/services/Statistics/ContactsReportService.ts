@@ -110,7 +110,7 @@ const ListContactsService = async ({
 
   const contacts = await Contact.findAll({
     where,
-    attributes: ["name", "number", "email"],
+    attributes: ["id", "name", "number", "email"],
     include: includeCondition,
     order: [["name", "ASC"]]
   });

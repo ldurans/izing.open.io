@@ -373,18 +373,7 @@ export default {
       } catch (error) {
         this.isRecordingAudio = false
         this.loading = false
-        this.$q.notify({
-          html: true,
-          message: `Ops... Ocorreu um erro! <br>${JSON.stringify(error)}`,
-          type: 'negative',
-          progress: true,
-          position: 'top',
-          actions: [{
-            icon: 'close',
-            round: true,
-            color: 'white'
-          }]
-        })
+        this.$notificarErro('Ocorreu um erro!', error)
       }
     },
     async handleCancelRecordingAudio () {
@@ -393,18 +382,7 @@ export default {
         this.isRecordingAudio = false
         this.loading = false
       } catch (error) {
-        this.$q.notify({
-          html: true,
-          message: `Ops... Ocorreu um erro! <br>${JSON.stringify(error)}`,
-          type: 'negative',
-          progress: true,
-          position: 'top',
-          actions: [{
-            icon: 'close',
-            round: true,
-            color: 'white'
-          }]
-        })
+        this.$notificarErro('Ocorreu um erro!', error)
       }
     },
     prepararUploadMedia () {
@@ -484,25 +462,7 @@ export default {
       } catch (error) {
         this.isRecordingAudio = false
         this.loading = false
-        const errorMsg = error.response?.data?.error
-        if (errorMsg) {
-          this.$q.notify({
-            type: 'negative',
-            message: error.response.data.error,
-            progress: true
-          })
-        } else {
-          this.$q.notify({
-            type: 'negative',
-            message: 'Ops... Ocorreu um problema não identificado.',
-            progress: true,
-            actions: [{
-              icon: 'close',
-              round: true,
-              color: 'white'
-            }]
-          })
-        }
+        this.$notificarErro('Ocorreu um erro!', error)
       }
       this.isRecordingAudio = false
       this.loading = false

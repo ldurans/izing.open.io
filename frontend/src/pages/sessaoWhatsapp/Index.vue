@@ -387,6 +387,7 @@ export default {
           })
         }).catch(error => {
           console.error(error)
+          this.$notificarErro('Não foi possível sincronizar os contatos', error)
         })
         this.loading = false
       })

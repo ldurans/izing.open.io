@@ -4,6 +4,7 @@ import { getIO } from "../../../libs/socket";
 import Message from "../../../models/Message";
 import Ticket from "../../../models/Ticket";
 import { logger } from "../../../utils/logger";
+import CampaignContacts from "../../../models/CampaignContacts";
 
 const HandleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
   await new Promise(r => setTimeout(r, 500));
@@ -26,9 +27,18 @@ const HandleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
         }
       ]
     });
+
     if (!messageToUpdate) {
+      const messageCampaign = await CampaignContacts.findOne({
+        where: { messageId: msg.id.id }
+      });
+
+      if (!messageCampaign) return;
+
+      await messageCampaign.update({ ack });
       return;
     }
+
     await messageToUpdate.update({ ack });
     const { ticket } = messageToUpdate;
     io.to(`${ticket.tenantId}-${ticket.id.toString()}`).emit(

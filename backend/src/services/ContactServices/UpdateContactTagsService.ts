@@ -23,8 +23,7 @@ const UpdateContactService = async ({
     where: {
       tenantId,
       contactId
-    },
-    logging: console.log
+    }
   });
 
   const contactTags: Tag[] = [];

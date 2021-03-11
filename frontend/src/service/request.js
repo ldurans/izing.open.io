@@ -66,7 +66,7 @@ service.interceptors.request.use(
     return config
   },
   error => {
-    handlerError(error)
+    // handlerError(error)
     Promise.reject(error)
   }
 )
@@ -77,7 +77,7 @@ service.interceptors.response.use(
     const res = response
     const status = res.status
     if (status.toString().substr(0, 1) !== '2') {
-      handlerError(res)
+      // handlerError(res)
       return Promise.reject('error')
     } else {
       return response
@@ -117,7 +117,7 @@ service.interceptors.response.use(
         html: true
       })
     } else {
-      handlerError(error)
+      // handlerError(error)
     }
     return Promise.reject(error.response)
   }

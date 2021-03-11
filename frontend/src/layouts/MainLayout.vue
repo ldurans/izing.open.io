@@ -4,7 +4,7 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
-      content-class="bg-grey-1"
+      content-class="bg-grey-2"
     >
       <q-toolbar
         class="text-primary q-pr-none"
@@ -154,8 +154,8 @@ const objMenuAdmin = [
     routeName: 'mensagens-rapidas'
   },
   {
-    title: 'Auto Resposta',
-    caption: 'Configuração auto resposta',
+    title: 'Chatbot',
+    caption: 'Robô de atendimento',
     icon: 'mdi-message-reply-text',
     routeName: 'auto-resposta'
   },
@@ -177,6 +177,19 @@ const objMenuAdmin = [
     icon: 'mdi-cog',
     routeName: 'configuracoes'
   }
+  /// / criar rotina para liberar pelo backend
+  // {
+  //   title: 'Campanha',
+  //   caption: 'Campanhas de envio',
+  //   icon: 'mdi-message-bookmark-outline',
+  //   routeName: 'campanhas'
+  // },
+  // {
+  //   title: 'API',
+  //   caption: 'Integração sistemas externos',
+  //   icon: 'mdi-call-split',
+  //   routeName: 'api-service'
+  // }
 
 ]
 

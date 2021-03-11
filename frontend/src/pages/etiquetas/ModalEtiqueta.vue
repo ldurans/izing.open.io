@@ -137,7 +137,7 @@ export default {
             progress: true,
             position: 'top',
             textColor: 'black',
-            message: 'Etapa editada!',
+            message: 'Etiqueta editada!',
             actions: [{
               icon: 'close',
               round: true,
@@ -163,6 +163,7 @@ export default {
         this.fecharModal()
       } catch (error) {
         console.error(error)
+        this.$notificarErro('Ocorreu um erro ao criar a etiqueta', error)
       }
     }
   }

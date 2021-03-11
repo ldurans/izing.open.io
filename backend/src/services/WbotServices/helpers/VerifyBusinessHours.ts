@@ -2,10 +2,11 @@ import { Message as WbotMessage } from "whatsapp-web.js";
 import { fromUnixTime, parse, isWithinInterval } from "date-fns";
 // import { getIO } from "../../../libs/socket";
 // import SetTicketMessagesAsRead from "../../../helpers/SetTicketMessagesAsRead";
-import SendWhatsAppMessage from "../SendWhatsAppMessage";
+// import SendWhatsAppMessage from "../SendWhatsAppMessage";
+import Queue from "../../../libs/Queue";
 import Ticket from "../../../models/Ticket";
 import ShowBusinessHoursAndMessageService from "../../TenantServices/ShowBusinessHoursAndMessageService";
-import { sleepRandomTime } from "../../../utils/sleepRandomTime";
+// import { sleepRandomTime } from "../../../utils/sleepRandomTime";
 
 const verifyBusinessHours = async (
   msg: WbotMessage,
@@ -59,16 +60,21 @@ const verifyBusinessHours = async (
       businessDay.type === "C" ||
       (!isHoursFistInterval && !isHoursLastInterval)
     ) {
-      await sleepRandomTime({
-        minMilliseconds: +(process.env.MIN_SLEEP_BUSINESS_HOURS || 10000),
-        maxMilliseconds: +(process.env.MAX_SLEEP_BUSINESS_HOURS || 20000)
-      });
-      await SendWhatsAppMessage({
-        body: tenant.messageBusinessHours,
+      // await sleepRandomTime({
+      //   minMilliseconds: +(process.env.MIN_SLEEP_BUSINESS_HOURS || 10000),
+      //   maxMilliseconds: +(process.env.MAX_SLEEP_BUSINESS_HOURS || 20000)
+      // });
+      // await SendWhatsAppMessage({
+      //   body: tenant.messageBusinessHours,
+      //   ticket,
+      //   quotedMsg: undefined
+      // });
+
+      Queue.add("SendMessageWhatsappBusinessHours", {
+        tenant,
         ticket,
-        quotedMsg: undefined
+        msg
       });
-      // await SetTicketMessagesAsRead(ticket);
     }
   }
 };
