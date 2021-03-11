@@ -5,15 +5,14 @@ import AppError from "../errors/AppError";
 import authConfig from "../config/auth";
 
 interface TokenPayload {
-  id: string;
-  username: string;
-  profile: string;
+  apiId: string;
+  sessionId: number;
   tenantId: number;
   iat: number;
   exp: number;
 }
 
-const isAuth = (req: Request, res: Response, next: NextFunction): void => {
+const isAPIAuth = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -24,11 +23,11 @@ const isAuth = (req: Request, res: Response, next: NextFunction): void => {
 
   try {
     const decoded = verify(token, authConfig.secret);
-    const { id, profile, tenantId } = decoded as TokenPayload;
+    const { apiId, sessionId, tenantId } = decoded as TokenPayload;
 
-    req.user = {
-      id,
-      profile,
+    req.APIAuth = {
+      apiId,
+      sessionId,
       tenantId
     };
   } catch (err) {
@@ -38,4 +37,4 @@ const isAuth = (req: Request, res: Response, next: NextFunction): void => {
   return next();
 };
 
-export default isAuth;
+export default isAPIAuth;

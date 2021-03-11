@@ -169,7 +169,7 @@ export default {
         }
       } catch (error) {
         console.error(error)
-        this.$notificarError('Ocorreu um erro ao iniciar o atendimento!', error)
+        this.$notificarErro('Ocorreu um erro ao iniciar o atendimento!', error)
       }
       this.loading = false
     }

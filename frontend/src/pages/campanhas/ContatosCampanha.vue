@@ -438,7 +438,7 @@ export default {
         })
       } catch (error) {
         console.error(error)
-        this.$notificarError('Ocorreu um erro!', error)
+        this.$notificarErro('Ocorreu um erro!', error)
       }
     },
     deletarContatoCampanha (contato) {
@@ -459,7 +459,7 @@ export default {
         })
         .catch(error => {
           console.log(error)
-          this.$notificarError('Verifique os erros...', error)
+          this.$notificarErro('Verifique os erros...', error)
         })
     },
     deletarTodosContatosCampanha () {
@@ -485,7 +485,7 @@ export default {
           })
           .catch(error => {
             console.error(error)
-            this.$notificarError('Não foi possível excluir o contato da campanha', error)
+            this.$notificarErro('Não foi possível excluir o contato da campanha', error)
           })
       })
     }

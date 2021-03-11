@@ -100,7 +100,7 @@ export default {
       } catch (error) {
         console.error('error - AlterarConfiguracao', error)
         this.$data[key] = this.$data[key] === 'enabled' ? 'disabled' : 'enabled'
-        this.$notificarError('Ocorreu um erro!', error)
+        this.$notificarErro('Ocorreu um erro!', error)
       }
     }
   },

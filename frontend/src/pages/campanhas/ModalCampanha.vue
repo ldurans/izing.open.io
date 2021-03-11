@@ -521,7 +521,7 @@ export default {
         this.urlMedia = url
         this.abrirModalImagem = true
       } catch (error) {
-        this.$notificarError('Algum problema ao carregar a imagem', error)
+        this.$notificarErro('Algum problema ao carregar a imagem', error)
       }
       this.loading = false
     },
@@ -576,7 +576,7 @@ export default {
         this.fecharModal()
       } catch (error) {
         console.error(error)
-        this.$notificarError('Algum problema ao criar campanha', error)
+        this.$notificarErro('Algum problema ao criar campanha', error)
       }
     }
   }

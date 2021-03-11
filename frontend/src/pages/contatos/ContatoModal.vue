@@ -157,7 +157,7 @@ export default {
         }
       } catch (error) {
         console.error(error)
-        this.$notificarError('Ocorreu um erro!', error)
+        this.$notificarErro('Ocorreu um erro!', error)
       }
     },
     removeExtraInfo (index) {
@@ -220,7 +220,7 @@ export default {
         this.$emit('update:modalContato', false)
       } catch (error) {
         console.error(error)
-        this.$notificarError('Ocorreu um erro ao criar o contato', error)
+        this.$notificarErro('Ocorreu um erro ao criar o contato', error)
       }
     }
 

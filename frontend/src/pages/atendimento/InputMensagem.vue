@@ -373,7 +373,7 @@ export default {
       } catch (error) {
         this.isRecordingAudio = false
         this.loading = false
-        this.$notificarError('Ocorreu um erro!', error)
+        this.$notificarErro('Ocorreu um erro!', error)
       }
     },
     async handleCancelRecordingAudio () {
@@ -382,7 +382,7 @@ export default {
         this.isRecordingAudio = false
         this.loading = false
       } catch (error) {
-        this.$notificarError('Ocorreu um erro!', error)
+        this.$notificarErro('Ocorreu um erro!', error)
       }
     },
     prepararUploadMedia () {
@@ -462,7 +462,7 @@ export default {
       } catch (error) {
         this.isRecordingAudio = false
         this.loading = false
-        this.$notificarError('Ocorreu um erro!', error)
+        this.$notificarErro('Ocorreu um erro!', error)
       }
       this.isRecordingAudio = false
       this.loading = false

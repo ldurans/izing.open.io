@@ -1,6 +1,6 @@
 import { Notify } from 'quasar'
 
-export const notificarError = (msg, error) => {
+export const notificarErro = (msg, error) => {
   let erro = ''
   if (error) {
     erro = 'Detalhe: ' + error?.data?.error || error?.data?.msg || error?.data?.message || error?.response?.data.error || 'Não identificado'

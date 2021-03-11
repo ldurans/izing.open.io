@@ -21,6 +21,7 @@ const app = express();
 
 Queue.process();
 setQueues(Queue.queues.map((q: any) => new BullAdapter(q.bull)));
+
 app.use("/admin/queues", bullRoute);
 
 // em produção estou usando assim:

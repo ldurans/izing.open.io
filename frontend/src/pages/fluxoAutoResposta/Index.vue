@@ -414,7 +414,7 @@ export default {
           })
           .catch(error => {
             console.error(error)
-            this.$notificarError('Não é possível deletar o Chatbot', error)
+            this.$notificarErro('Não é possível deletar o Chatbot', error)
           })
         this.loading = false
       })
@@ -501,7 +501,7 @@ export default {
           })
           .catch(error => {
             console.error(error)
-            this.$notificarError('Não é possível deletar a etapa', error)
+            this.$notificarErro('Não é possível deletar a etapa', error)
           })
         this.loading = false
       })
@@ -565,7 +565,7 @@ export default {
           })
           .catch(error => {
             console.error(error)
-            this.$notificarError('Não é possível deletar a ação da etapa', error)
+            this.$notificarErro('Não é possível deletar a ação da etapa', error)
           })
         this.loading = false
       })

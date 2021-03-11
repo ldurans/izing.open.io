@@ -687,7 +687,7 @@ export default {
             }]
           })
         } else {
-          this.$notificarError('Algum problema ao consultar atendimentos', err)
+          this.$notificarErro('Algum problema ao consultar atendimentos', err)
           console.error(err)
         }
       }

@@ -176,13 +176,20 @@ const objMenuAdmin = [
     caption: 'Configurações gerais',
     icon: 'mdi-cog',
     routeName: 'configuracoes'
-  },
-  {
-    title: 'Campanha',
-    caption: 'Campanhas de envio',
-    icon: 'mdi-message-bookmark-outline',
-    routeName: 'campanhas'
   }
+  /// / criar rotina para liberar pelo backend
+  // {
+  //   title: 'Campanha',
+  //   caption: 'Campanhas de envio',
+  //   icon: 'mdi-message-bookmark-outline',
+  //   routeName: 'campanhas'
+  // },
+  // {
+  //   title: 'API',
+  //   caption: 'Integração sistemas externos',
+  //   icon: 'mdi-call-split',
+  //   routeName: 'api-service'
+  // }
 
 ]
 

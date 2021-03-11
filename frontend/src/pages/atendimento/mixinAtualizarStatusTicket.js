@@ -26,7 +26,7 @@ export default {
         .catch(error => {
           this.loading = false
           console.error(error)
-          this.$notificarError('Não foi possível atualizar o status', error)
+          this.$notificarErro('Não foi possível atualizar o status', error)
         })
     },
     atualizarStatusTicket (status) {
@@ -77,7 +77,7 @@ export default {
           .catch(error => {
             this.loading = false
             console.error(error)
-            this.$notificarError('Não foi possível atuaizar o status', error)
+            this.$notificarErro('Não foi possível atuaizar o status', error)
           })
       })
     }

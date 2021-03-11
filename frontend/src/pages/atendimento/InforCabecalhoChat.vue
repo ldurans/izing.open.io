@@ -239,7 +239,7 @@ export default {
         this.modalTransferirTicket = true
       } catch (error) {
         console.error(error)
-        this.$notificarError('Problema ao carregar usuários', error)
+        this.$notificarErro('Problema ao carregar usuários', error)
       }
     },
     async confirmarTransferenciaTicket () {

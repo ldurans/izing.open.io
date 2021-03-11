@@ -189,7 +189,7 @@ export default {
     },
     editarCampanha (campanha) {
       if (campanha.status !== 'pending' && campanha.status !== 'canceled') {
-        this.$notificarError('Só é permitido editar campanhas que estejam pendentes ou canceladas.')
+        this.$notificarErro('Só é permitido editar campanhas que estejam pendentes ou canceladas.')
       }
       this.campanhaEdicao = {
         ...campanha,
@@ -200,7 +200,7 @@ export default {
     },
     deletarCampanha (campanha) {
       if (campanha.status !== 'pending' && campanha.status !== 'canceled' && campanha.contactsCount) {
-        this.$notificarError('Só é permitido deletar campanhas que estejam pendentes ou canceladas e não possuam contatos vinculados.')
+        this.$notificarErro('Só é permitido deletar campanhas que estejam pendentes ou canceladas e não possuam contatos vinculados.')
       }
       this.$q.dialog({
         title: 'Atenção!!',
@@ -258,28 +258,28 @@ export default {
             this.$notificarSucesso('Campanha cancelada.')
             this.listarCampanhas()
           }).catch(err => {
-            this.$notificarError('Não foi possível cancelar a campanha.', err)
+            this.$notificarErro('Não foi possível cancelar a campanha.', err)
           })
       })
     },
     iniciarCampanha (campanha) {
       if (!this.isValidDate(campanha.start)) {
-        this.$notificarError('Não é possível programar campanha com data menor que a atual')
+        this.$notificarErro('Não é possível programar campanha com data menor que a atual')
       }
 
       if (campanha.contactsCount == 0) {
-        this.$notificarError('Necessário ter contatos vinculados para programar a campanha.')
+        this.$notificarErro('Necessário ter contatos vinculados para programar a campanha.')
       }
 
       if (campanha.status !== 'pending' && campanha.status !== 'canceled') {
-        this.$notificarError('Só é permitido programar campanhas que estejam pendentes ou canceladas.')
+        this.$notificarErro('Só é permitido programar campanhas que estejam pendentes ou canceladas.')
       }
 
       IniciarCampanha(campanha.id).then(res => {
         this.$notificarSucesso('Campanha iniciada.')
         this.listarCampanhas()
       }).catch(err => {
-        this.$notificarError('Não foi possível iniciar a campanha.', err)
+        this.$notificarErro('Não foi possível iniciar a campanha.', err)
       })
     }
   },

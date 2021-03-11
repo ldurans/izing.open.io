@@ -257,7 +257,7 @@ export default {
         this.urlMedia = url
         this.abrirModalImagem = true
       } catch (error) {
-        this.$notificarError('Ocorreu um erro!', error)
+        this.$notificarErro('Ocorreu um erro!', error)
       }
       this.loading = false
     },
@@ -290,7 +290,7 @@ export default {
           .catch(error => {
             this.loading = false
             console.error(error)
-            this.$notificarError('Não foi possível apagar a mensagem', error)
+            this.$notificarErro('Não foi possível apagar a mensagem', error)
           })
       }).onCancel(() => {
       })
