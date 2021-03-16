@@ -22,14 +22,13 @@
           />
         </template>
         <q-chat-message
-          :size="size"
           :key="mensagem.id"
           :stamp="dataInWords(mensagem.createdAt)"
           :sent="mensagem.fromMe"
           :bg-color="mensagem.fromMe ? 'teal-2' : 'white' "
         >
           <div
-            style="max-width: 300px"
+            style="max-width: 350px"
             :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
           >
             <div
@@ -90,15 +89,17 @@
               :color="mensagem.ack >= 3 ? 'blue-12' : ''"
             />
             <template v-if="mensagem.mediaType === 'audio'">
-              <audio
-                class="q-mt-md full-width"
-                controls
-              >
-                <source
-                  :src="mensagem.mediaUrl"
-                  type="audio/ogg"
-                />
-              </audio>
+              <div style="width: 330px; heigth: 300px">
+                <audio
+                  class="q-mt-md full-width"
+                  controls
+                >
+                  <source
+                    :src="mensagem.mediaUrl"
+                    type="audio/ogg"
+                  />
+                </audio>
+              </div>
             </template>
             <template v-if="mensagem.mediaType === 'vcard'">
               <q-btn
@@ -119,8 +120,8 @@
                 @click="urlMedia=mensagem.mediaUrl; abrirModalImagem=true"
                 :src="mensagem.mediaUrl"
                 spinner-color="primary"
-                height="330px"
-                width="100%"
+                height="300px"
+                width="330px"
                 class="q-mt-md"
                 style="cursor: pointer;"
               />
@@ -138,8 +139,8 @@
                 controls
                 class="q-mt-md"
                 style="objectFit: cover;
-                  width: 100%;
-                  height: 200px;
+                  width: 330px;
+                  height: 300px;
                   borderTopLeftRadius: 8px;
                   borderTopRightRadius: 8px;
                   borderBottomLeftRadius: 8px;
@@ -148,17 +149,39 @@
               />
             </template>
             <template v-if="mensagem.mediaType === 'application'">
-              <q-btn
+              <div class="text-center">
+                <object
+                  v-if="isPDF(mensagem.mediaUrl)"
+                  :data="mensagem.mediaUrl"
+                  type="application/pdf"
+                  width="330px"
+                  height="330px"
+                >
+                  alt : <a href="mensagem.mediaUrl"></a>
+                </object>
+                <q-btn
+                  type="a"
+                  color="grey-10"
+                  dense
+                  glossy
+                  class="q-px-md q-my-md text-center "
+                  target="_blank"
+                  :href="mensagem.mediaUrl"
+                >
+                  Download
+                </q-btn>
+              </div>
+              <!-- <q-btn
                 type="a"
                 color="primary"
                 outline
                 dense
                 class="q-px-sm text-center"
                 target="_blank"
-                :href="mensagem.mediaUrl"
+                :href="`http://docs.google.com/gview?url=${mensagem.mediaUrl}&embedded=true`"
               >
-                Download
-              </q-btn>
+                Visualizar
+              </q-btn> -->
             </template>
             <div
               v-linkified
@@ -232,6 +255,12 @@ export default {
     MensagemRespondida
   },
   methods: {
+    isPDF (url) {
+      if (!url) return false
+      const split = url.split('.')
+      const ext = split[split.length - 1]
+      return ext === 'pdf'
+    },
     isGroupLabel (mensagem) {
       try {
         return this.ticketFocado.isGroup ? mensagem.contact.name : ''

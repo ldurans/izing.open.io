@@ -1,7 +1,6 @@
 import ApiMessage from "../../models/ApiMessage";
 
 interface MessageData {
-  id?: string;
   sessionId: number;
   messageId: string;
   body: string;
@@ -18,7 +17,6 @@ interface MessageData {
 }
 
 const UpsertMessageAPIService = async ({
-  id,
   sessionId,
   messageId,
   body,
@@ -31,9 +29,14 @@ const UpsertMessageAPIService = async ({
   apiConfig,
   tenantId
 }: MessageData): Promise<ApiMessage> => {
-  const message = await ApiMessage.upsert(
-    {
-      id,
+  let message;
+
+  const messageExists = await ApiMessage.findOne({
+    where: { messageId, tenantId }
+  });
+
+  if (messageExists) {
+    await messageExists.update({
       sessionId,
       messageId,
       body,
@@ -45,23 +48,30 @@ const UpsertMessageAPIService = async ({
       messageWA,
       apiConfig,
       tenantId
-    },
-    { returning: true }
-  );
+    });
+    message = await messageExists.reload();
+  } else {
+    message = await ApiMessage.create({
+      sessionId,
+      messageId,
+      body,
+      ack,
+      number,
+      media,
+      timestamp,
+      externalKey,
+      messageWA,
+      apiConfig,
+      tenantId
+    });
+  }
 
   if (!message) {
     // throw new AppError("ERR_CREATING_MESSAGE", 501);
     throw new Error("ERR_CREATING_MESSAGE");
   }
 
-  const apiMessage = await ApiMessage.findByPk(message[0].id);
-
-  if (!apiMessage) {
-    // throw new AppError("ERR_CREATING_MESSAGE", 501);
-    throw new Error("ERR_CREATING_MESSAGE");
-  }
-
-  return apiMessage;
+  return message;
 };
 
 export default UpsertMessageAPIService;

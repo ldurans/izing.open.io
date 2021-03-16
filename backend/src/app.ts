@@ -6,9 +6,12 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import * as Sentry from "@sentry/node";
 
+import helmet from "helmet";
+
 import { setQueues, BullAdapter, router as bullRoute } from "bull-board";
 
 import "./database";
+// import bodyParser from "body-parser";
 import uploadConfig from "./config/upload";
 import AppError from "./errors/AppError";
 import routes from "./routes";
@@ -18,6 +21,8 @@ import Queue from "./libs/Queue";
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
+
+app.use(helmet());
 
 Queue.process();
 setQueues(Queue.queues.map((q: any) => new BullAdapter(q.bull)));
@@ -43,7 +48,10 @@ app.use("/admin/queues", bullRoute);
 
 app.use(cors({ origin: "*" }));
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "20MB" }));
+app.use(express.urlencoded({ extended: true, limit: "20MB" }));
+// app.use(bodyParser.json({ limit: "20MB" }));
+// app.use(bodyParser.urlencoded({ extended: true, limit: "20MB" }));
 app.use(Sentry.Handlers.requestHandler());
 app.use("/public", express.static(uploadConfig.directory));
 app.use(routes);
@@ -61,7 +69,7 @@ app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
   }
 
   logger.error(err);
-  return res.status(500).json({ error: "Internal server error" });
+  return res.status(500).json({ error: `Internal server error: ${err}` });
 });
 
 export default app;

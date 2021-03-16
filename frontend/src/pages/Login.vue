@@ -8,21 +8,20 @@
           size="5px"
         />
         <q-card
+          bordered
           class="card q-pa-md shadow-10"
-          square
+          style="border-top: 5px solid #3E72AF"
         >
-          <!-- <div class="row">
-            <div class="col text-center q-ma-lg">
-              <q-img
-                height="50px"
-                width="180px"
-                transition="fade"
-                src="/statics/clinico.png"
-              />
 
-            </div>
-          </div> -->
-
+          <q-card-section class="text-primary text-center">
+            <q-img
+              src="/logo-wchats-transp.png"
+              spinner-color="white"
+              style="height: 100px; max-width: 200px"
+              class="q-mb-lg q-px-md"
+            />
+            <q-separator spaced />
+          </q-card-section>
           <q-card-section class="text-primary">
             <div class="text-h6">Bem vindo!</div>
             <div class="text-caption text-grey">Faça login...</div>
@@ -38,6 +37,7 @@
               :error="$v.form.email.$error"
               error-message="Deve ser um e-mail válido."
               outlined
+              @keypress.enter="fazerLogin"
             >
               <template v-slot:prepend>
                 <q-icon
@@ -52,6 +52,7 @@
               outlined
               v-model="form.password"
               :type="isPwd ? 'password' : 'text'"
+              @keypress.enter="fazerLogin"
             >
               <template v-slot:prepend>
                 <q-icon
@@ -72,7 +73,7 @@
           <q-card-actions>
             <q-space />
             <q-btn
-              class="q-mr-sm"
+              class="q-mr-sm q-my-lg"
               style="width: 150px"
               color="primary"
               :loading="loading"

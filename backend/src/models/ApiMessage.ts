@@ -18,7 +18,7 @@ import Whatsapp from "./Whatsapp";
 // @Table({ freezeTableName: true })
 class ApiMessage extends Model<ApiMessage> {
   @PrimaryKey
-  @Default(uuidV4())
+  @Default(uuidV4)
   @Column(DataType.UUID)
   id: string;
 
@@ -46,6 +46,9 @@ class ApiMessage extends Model<ApiMessage> {
 
   @Column
   media: string;
+
+  @Column
+  mediaUrl: string;
 
   @Column
   externalKey: string;

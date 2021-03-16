@@ -49,7 +49,7 @@
           </div>
         </fieldset>
         <fieldset class="q-pa-md full-width q-mt-lg">
-          <legend class="q-px-sm">WebHoos</legend>
+          <legend class="q-px-sm">WebHook</legend>
           <div class="row q-col-gutter-md">
             <div class="col-12 ">
               <q-input

@@ -1,5 +1,8 @@
 <template>
-  <div class="bg-grey-2 vac-col-messages">
+  <div
+    class="bg-grey-2 vac-col-messages"
+    :style="style"
+  >
     <InforCabecalhoChat
       @updateTicket:resolver="atualizarStatusTicket('closed')"
       @updateTicket:retornar="atualizarStatusTicket('pending')"
@@ -45,12 +48,12 @@
         <q-icon
           style="margin-left: 10vw"
           size="10em"
-          color="grey-4"
+          color="grey-6"
           name="mdi-emoticon-cool-outline"
           class="row col"
         >
         </q-icon>
-        <h1 class="text-grey-4 row col justify-center">
+        <h1 class="text-grey-6 row col justify-center">
           Selecione um ticket!
         </h1>
       </div>
@@ -144,6 +147,7 @@ import InputMensagem from './InputMensagem'
 import mixinAtualizarStatusTicket from './mixinAtualizarStatusTicket'
 import mixinSockets from './mixinSockets'
 import InfiniteLoading from 'vue-infinite-loading'
+import whatsBackground from 'src/assets/wa-background.png'
 
 export default {
   name: 'Chat',
@@ -175,6 +179,14 @@ export default {
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.replyingMessage = null
       return this.mensagensTicket
+    },
+    style () {
+      return {
+        backgroundImage: `url(${whatsBackground}) !important`
+        // backgroundRepeat: 'no-repeat !important'
+        // backgroundPosition: 'center !important',
+        // backgroundSize: '50% !important'
+      }
     },
     cStyleScroll () {
       const loading = 0 // this.loading ? 72 : 0

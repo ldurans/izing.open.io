@@ -673,23 +673,8 @@ export default {
         this.$store.commit('LOAD_TICKETS', data.tickets)
         this.$store.commit('SET_HAS_MORE', data.hasMore)
       } catch (err) {
-        const errorMsg = err.response?.data?.error
-        if (errorMsg) {
-          this.$q.notify({
-            message: err.response.data.error,
-            type: 'negative',
-            progress: true,
-            position: 'top',
-            actions: [{
-              icon: 'close',
-              round: true,
-              color: 'white'
-            }]
-          })
-        } else {
-          this.$notificarErro('Algum problema ao consultar atendimentos', err)
-          console.error(err)
-        }
+        this.$notificarErro('Algum problema', err)
+        console.error(err)
       }
       // return () => clearTimeout(delayDebounceFn)
     },

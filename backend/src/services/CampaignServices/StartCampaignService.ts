@@ -129,7 +129,7 @@ const StartCampaignService = async ({
   });
 
   if (!campaignContacts) {
-    throw new AppError("ERROR_CAMPAIGN_CONTACTS_NOT_EXISTS", 404);
+    throw new AppError("ERR_CAMPAIGN_CONTACTS_NOT_EXISTS", 404);
   }
 
   const timeDelay = options?.delay || 15000;

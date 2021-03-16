@@ -7,7 +7,7 @@ const DeleteStepsReplyService = async (id: string): Promise<void> => {
   });
 
   if (!stepsReply) {
-    throw new AppError("ERR_NO_STEPS_REPLY_FOUND", 404);
+    throw new AppError("ERR_NO_STEP_AUTO_REPLY_FOUND", 404);
   }
 
   await stepsReply.destroy();

@@ -412,18 +412,7 @@ export default {
           const error = this.cMensagensRapidas.length > 1
             ? 'Várias mensagens rápidas encontradas. Selecione uma ou digite uma chave única da mensagem.'
             : '/ indica que você deseja enviar uma mensagem rápida, mas nenhuma foi localizada. Cadastre ou apague a / e digite sua mensagem.'
-          this.$q.notify({
-            html: true,
-            message: `Ops...<br> ${error}`,
-            type: 'negative',
-            progress: true,
-            position: 'top',
-            actions: [{
-              icon: 'close',
-              round: true,
-              color: 'white'
-            }]
-          })
+          this.$notificarErro(error)
           this.loading = false
           throw new Error(error)
         }

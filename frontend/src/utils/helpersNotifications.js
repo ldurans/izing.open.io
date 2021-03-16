@@ -1,15 +1,33 @@
 import { Notify } from 'quasar'
+import Errors from 'src/utils/errors'
 
-export const notificarErro = (msg, error) => {
+export const notificarErro = (msg, error = null) => {
+  console.log('notificarErro', msg, error)
   let erro = ''
   if (error) {
-    erro = 'Detalhe: ' + error?.data?.error || error?.data?.msg || error?.data?.message || error?.response?.data.error || 'Não identificado'
+    erro = error?.data?.error || error?.data?.msg || error?.data?.message || error?.response?.data.error || 'Não identificado'
   }
-  const message = `
-  <p>Ops...</p>
-  <p>${msg}.</p>
-  <p>${erro}</p>
-  `
+  const findErro = Errors.find(e => e.error == erro)
+  let message = ''
+
+  if (error && findErro.error) {
+    message = `
+      <p class="text-bold">
+      Ops...<br>
+      <span class="text-bold">${findErro.description}.</span>
+      </p>
+      <p>${findErro.detail}</p>
+    `
+  } else {
+    message = `
+    <p class="text-bold">
+      Ops...<br>
+      <span class="text-bold">${msg}</span>
+    </p>
+    <p>Detail: ${erro}</p>
+    `
+  }
+
   Notify.create({
     type: 'negative',
     progress: true,
