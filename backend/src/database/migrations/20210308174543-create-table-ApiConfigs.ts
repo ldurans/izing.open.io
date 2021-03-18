@@ -45,14 +45,6 @@ module.exports = {
           allowNull: false,
           defaultValue: 1
         },
-        urlDelivery: {
-          type: DataTypes.TEXT,
-          allowNull: true,
-          defaultValue: null,
-          validate: {
-            isUrl: true
-          }
-        },
         urlServiceStatus: {
           type: DataTypes.TEXT,
           allowNull: true,

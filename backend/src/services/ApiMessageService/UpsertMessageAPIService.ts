@@ -6,7 +6,8 @@ interface MessageData {
   body: string;
   ack: number;
   number: number;
-  media?: string;
+  mediaName?: string;
+  mediaUrl?: string;
   timestamp: number;
   externalKey: string;
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -22,7 +23,8 @@ const UpsertMessageAPIService = async ({
   body,
   ack,
   number,
-  media,
+  mediaName,
+  mediaUrl,
   timestamp,
   externalKey,
   messageWA,
@@ -42,7 +44,8 @@ const UpsertMessageAPIService = async ({
       body,
       ack,
       number,
-      media,
+      mediaName,
+      mediaUrl,
       timestamp,
       externalKey,
       messageWA,
@@ -57,7 +60,8 @@ const UpsertMessageAPIService = async ({
       body,
       ack,
       number,
-      media,
+      mediaName,
+      mediaUrl,
       timestamp,
       externalKey,
       messageWA,

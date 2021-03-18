@@ -41,19 +41,15 @@ export default {
             error: "number invalid in whatsapp",
             type: "hookMessageStatus"
           };
+
+          // excluir o arquivo se o número não existir
+          fs.unlinkSync(data.media.path);
           if (data?.apiConfig?.urlMessageStatus) {
-            axios
-              .post(data.apiConfig.urlMessageStatus, payload)
-              .then(() => {
-                logger.info(`hookMessageStatus error: ${payload}`);
-              })
-              .catch(() => {
-                Queue.add("WebHooksAPI", {
-                  url: data.apiConfig.urlMessageStatus,
-                  type: payload.type,
-                  payload
-                });
-              });
+            Queue.add("WebHooksAPI", {
+              url: data.apiConfig.urlMessageStatus,
+              type: payload.type,
+              payload
+            });
           }
           return payload;
         }
@@ -110,18 +106,11 @@ export default {
               type: "hookMessageStatus"
             };
             if (data?.apiConfig?.urlMessageStatus) {
-              axios
-                .post(data.apiConfig.urlMessageStatus, payload)
-                .then(() => {
-                  logger.info(`hookMessageStatus error: ${payload}`);
-                })
-                .catch(() => {
-                  Queue.add("WebHooksAPI", {
-                    url: data.apiConfig.urlMessageStatus,
-                    type: payload.type,
-                    payload
-                  });
-                });
+              Queue.add("WebHooksAPI", {
+                url: data.apiConfig.urlMessageStatus,
+                type: payload.type,
+                payload
+              });
             }
             return payload;
           }
@@ -135,6 +124,8 @@ export default {
           sendAudioAsVoice: true,
           caption: data.body
         });
+
+        fs.unlinkSync(data.media.path);
       }
 
       if (!data.media && !data.mediaUrl) {
@@ -149,36 +140,14 @@ export default {
         body: data.body,
         ack: message.ack,
         number: data.number,
-        media: data.media,
+        mediaName: data?.media?.filename,
+        mediaUrl: data.mediaUrl,
         timestamp: message.timestamp,
         externalKey: data.externalKey,
         messageWA: message,
-        apiConfig: data.APIConfig,
+        apiConfig: data.apiConfig,
         tenantId: data.tenantId
       });
-
-      if (data?.apiConfig?.urlDelivery) {
-        const payload = {
-          ack: apiMessage.ack,
-          body: apiMessage.body,
-          messageId: message.id.id,
-          number: data.number,
-          externalKey: data.externalKey,
-          type: "hookDelivery"
-        };
-        axios
-          .post(data.apiConfig.urlDelivery, payload)
-          .then(() => {
-            logger.info(`hookDelivery success: ${apiMessage}`);
-          })
-          .catch(() => {
-            Queue.add("WebHooksAPI", {
-              url: data.apiConfig.urlDelivery,
-              type: payload.type,
-              payload
-            });
-          });
-      }
 
       return apiMessage;
     } catch (error) {

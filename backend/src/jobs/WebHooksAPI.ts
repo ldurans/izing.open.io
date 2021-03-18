@@ -26,16 +26,6 @@ export default {
   async handle({ data }: HandlerPayload) {
     try {
       let payload = {};
-      if (data.type === "hookDelivery") {
-        payload = {
-          ack: data.payload.ack,
-          body: data.payload.body,
-          messageId: data.payload.messageId,
-          number: data.payload.number,
-          externalKey: data.payload.externalKey,
-          type: data.type
-        };
-      }
 
       if (data.type === "hookMessageStatus") {
         payload = {
@@ -49,6 +39,8 @@ export default {
 
       if (data.type === "hookSessionStatus") {
         payload = {
+          name: data.payload.name,
+          number: data.payload.number,
           timestamp: data.payload.timestamp,
           msg: data.payload.msg,
           status: data.payload.status,

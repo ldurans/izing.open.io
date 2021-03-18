@@ -6,7 +6,6 @@ import authConfig from "../../config/auth";
 interface Request {
   name: string;
   sessionId: string | number;
-  urlDelivery?: string;
   urlServiceStatus?: string;
   urlMessageStatus?: string;
   userId: string | number;
@@ -16,7 +15,6 @@ interface Request {
 const CreateApiConfigService = async ({
   name,
   sessionId,
-  urlDelivery,
   urlServiceStatus,
   urlMessageStatus,
   userId,
@@ -40,7 +38,6 @@ const CreateApiConfigService = async ({
     name,
     sessionId,
     token,
-    urlDelivery,
     urlServiceStatus,
     urlMessageStatus,
     userId,

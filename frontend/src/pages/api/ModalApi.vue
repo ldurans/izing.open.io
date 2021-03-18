@@ -51,17 +51,6 @@
         <fieldset class="q-pa-md full-width q-mt-lg">
           <legend class="q-px-sm">WebHook</legend>
           <div class="row q-col-gutter-md">
-            <div class="col-12 ">
-              <q-input
-                square
-                outlined
-                v-model="api.urlDelivery"
-                @blur="$v.api.urlDelivery.$touch"
-                :error="$v.api.urlDelivery.$error"
-                label="URL WebHook Envio"
-                hint="Dispara a ação sempre que uma mensagem é enviada."
-              />
-            </div>
             <div class="col-12 q-mt-md">
               <q-input
                 square
@@ -141,7 +130,6 @@ export default {
         id: null,
         name: null,
         sessionId: null,
-        urlDelivery: null,
         urlServiceStatus: null,
         urlMessageStatus: null,
         isActive: true
@@ -152,7 +140,6 @@ export default {
     api: {
       name: { required },
       sessionId: { required },
-      urlDelivery: { isValidURL },
       urlServiceStatus: { isValidURL },
       urlMessageStatus: { isValidURL }
     }

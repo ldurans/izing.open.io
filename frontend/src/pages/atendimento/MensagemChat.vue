@@ -149,26 +149,41 @@
               />
             </template>
             <template v-if="mensagem.mediaType === 'application'">
-              <div class="text-center">
-                <object
+              <div class="text-center full-width">
+                <iframe
                   v-if="isPDF(mensagem.mediaUrl)"
-                  :data="mensagem.mediaUrl"
-                  type="application/pdf"
                   width="330px"
                   height="330px"
+                  frameBorder="0"
+                  :src="mensagem.mediaUrl"
+                  :id="mensagem.id"
                 >
-                  alt : <a href="mensagem.mediaUrl"></a>
-                </object>
+                  Faça download do PDF
+                  <!-- alt : <a href="mensagem.mediaUrl"></a> -->
+                </iframe>
                 <q-btn
                   type="a"
-                  color="grey-10"
-                  dense
-                  glossy
-                  class="q-px-md q-my-md text-center "
-                  target="_blank"
+                  color="grey-3"
+                  no-wrap
+                  no-caps
+                  stack
+                  class="q-mt-sm text-center text-black no-border-radius text-grey-9 ellipsis"
+                  download
+                  :target="isPDF(mensagem.mediaUrl) ? '_blank' : ''"
                   :href="mensagem.mediaUrl"
                 >
-                  Download
+                  <q-tooltip v-if="mensagem.mediaUrl">
+                    Baixar: {{ mensagem.body }}
+                  </q-tooltip>
+                  <div class="row items-center q-my-md ">
+                    <div
+                      class="ellipsis col-grow q-pr-sm"
+                      style="max-width: 290px"
+                    >
+                      {{ farmatarMensagemWhatsapp(mensagem.body) }}
+                    </div>
+                    <q-icon name="mdi-download" />
+                  </div>
                 </q-btn>
               </div>
               <!-- <q-btn
@@ -185,7 +200,7 @@
             </template>
             <div
               v-linkified
-              v-if="mensagem.mediaType !== 'vcard'"
+              v-if="!['vcard', 'application' ].includes(mensagem.mediaType)"
               :class="{'q-mt-sm': mensagem.mediaType !== 'chat'}"
               class="q-message-container row items-end no-wrap"
             >

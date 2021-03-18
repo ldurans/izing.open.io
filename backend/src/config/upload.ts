@@ -12,7 +12,7 @@ export default {
       const { originalname } = file;
       const ext = path.extname(originalname);
       const name = originalname.replace(ext, "");
-      const date = format(new Date(), "ddMMyyyyHHmmss");
+      const date = format(new Date(), "ddMMyyyyHHmmssSSS");
       const fileName = `${name}_${date}${ext}`;
 
       return cb(null, fileName);

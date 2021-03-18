@@ -12,9 +12,12 @@ import {
   HasMany,
   Unique,
   ForeignKey,
-  BelongsTo
+  BelongsTo,
+  AfterUpdate
   // DefaultScope
 } from "sequelize-typescript";
+import Queue from "../libs/Queue";
+import ApiConfig from "./ApiConfig";
 import Tenant from "./Tenant";
 import Ticket from "./Ticket";
 
@@ -91,6 +94,46 @@ class Whatsapp extends Model<Whatsapp> {
 
   @BelongsTo(() => Tenant)
   tenant: Tenant;
+
+  @AfterUpdate
+  static async HookStatus(instance: Whatsapp): Promise<void> {
+    const statusHook = ["DESTROYED", "DISCONNECTED", "CONNECTED"];
+
+    if (statusHook.includes(instance.status)) {
+      const messages: any = {
+        DESTROYED:
+          "Desconectado devido à várias tentativas de extabelecimento da conexão sem sucesso. Verifique o celular e internet do aparelho.",
+        DISCONNECTED:
+          "Desconectado por: Telefone sem internet / Número despareado / Utilizado no whatsapp web.",
+        CONNECTED: "Sessão conectada."
+      };
+      const { status, name, number, tenantId, id: sessionId } = instance;
+      const payload = {
+        name,
+        number,
+        status,
+        timestamp: Date.now(),
+        msg: messages[status],
+        type: "hookSessionStatus"
+      };
+
+      const apiConfig = await ApiConfig.findAll({
+        where: { tenantId, sessionId }
+      });
+
+      if (!apiConfig) return;
+
+      await Promise.all(
+        apiConfig.map((api: ApiConfig) => {
+          return Queue.add("WebHooksAPI", {
+            url: api.urlServiceStatus,
+            type: payload.type,
+            payload
+          });
+        })
+      );
+    }
+  }
 }
 
 export default Whatsapp;

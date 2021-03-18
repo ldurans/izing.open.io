@@ -11,7 +11,6 @@ import RenewApiConfigTokenService from "../services/ApiConfigServices/RenewApiCo
 interface ApiData {
   name: string;
   sessionId: string | number;
-  urlDelivery?: string;
   urlServiceStatus?: string;
   urlMessageStatus?: string;
   userId: string | number;
@@ -36,7 +35,6 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     sessionId: Yup.number().required(),
-    urlDelivery: Yup.string().url().nullable(),
     urlServiceStatus: Yup.string().url().nullable(),
     urlMessageStatus: Yup.string().url().nullable(),
     userId: Yup.number().required(),
@@ -78,7 +76,6 @@ export const update = async (
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     sessionId: Yup.number().required(),
-    urlDelivery: Yup.string().url().nullable(),
     urlServiceStatus: Yup.string().url().nullable(),
     urlMessageStatus: Yup.string().url().nullable(),
     userId: Yup.number().required(),
