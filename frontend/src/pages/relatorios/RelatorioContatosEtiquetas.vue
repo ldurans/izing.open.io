@@ -269,17 +269,7 @@ export default {
     },
     async gerarRelatorio () {
       if (!this.pesquisa.tags.length) {
-        this.$q.notify({
-          message: 'Ops... Para gerar o relatório, é necessário selecionar pelo menos uma etiqueta.',
-          type: 'negative',
-          progress: true,
-          position: 'top',
-          actions: [{
-            icon: 'close',
-            round: true,
-            color: 'white'
-          }]
-        })
+        this.$notificarErro('Ops... Para gerar o relatório, é necessário selecionar pelo menos uma etiqueta.')
         return
       }
       const { data } = await RelatorioContatos(this.pesquisa)

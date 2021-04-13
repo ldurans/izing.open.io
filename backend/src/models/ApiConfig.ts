@@ -40,9 +40,6 @@ class ApiConfig extends Model<ApiConfig> {
   token: string;
 
   @Column
-  urlDelivery: string;
-
-  @Column
   urlServiceStatus: string;
 
   @Column

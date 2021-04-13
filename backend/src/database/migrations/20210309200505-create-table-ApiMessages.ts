@@ -40,7 +40,7 @@ module.exports = {
             len: [12, 14]
           }
         },
-        media: {
+        mediaName: {
           type: DataTypes.TEXT,
           allowNull: true,
           defaultValue: null

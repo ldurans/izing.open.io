@@ -1,13 +1,13 @@
 import ApiMessage from "../../models/ApiMessage";
 
 interface MessageData {
-  id?: string;
   sessionId: number;
   messageId: string;
   body: string;
   ack: number;
   number: number;
-  media?: string;
+  mediaName?: string;
+  mediaUrl?: string;
   timestamp: number;
   externalKey: string;
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -18,50 +18,64 @@ interface MessageData {
 }
 
 const UpsertMessageAPIService = async ({
-  id,
   sessionId,
   messageId,
   body,
   ack,
   number,
-  media,
+  mediaName,
+  mediaUrl,
   timestamp,
   externalKey,
   messageWA,
   apiConfig,
   tenantId
 }: MessageData): Promise<ApiMessage> => {
-  const message = await ApiMessage.upsert(
-    {
-      id,
+  let message;
+
+  const messageExists = await ApiMessage.findOne({
+    where: { messageId, tenantId }
+  });
+
+  if (messageExists) {
+    await messageExists.update({
       sessionId,
       messageId,
       body,
       ack,
       number,
-      media,
+      mediaName,
+      mediaUrl,
       timestamp,
       externalKey,
       messageWA,
       apiConfig,
       tenantId
-    },
-    { returning: true }
-  );
+    });
+    message = await messageExists.reload();
+  } else {
+    message = await ApiMessage.create({
+      sessionId,
+      messageId,
+      body,
+      ack,
+      number,
+      mediaName,
+      mediaUrl,
+      timestamp,
+      externalKey,
+      messageWA,
+      apiConfig,
+      tenantId
+    });
+  }
 
   if (!message) {
     // throw new AppError("ERR_CREATING_MESSAGE", 501);
     throw new Error("ERR_CREATING_MESSAGE");
   }
 
-  const apiMessage = await ApiMessage.findByPk(message[0].id);
-
-  if (!apiMessage) {
-    // throw new AppError("ERR_CREATING_MESSAGE", 501);
-    throw new Error("ERR_CREATING_MESSAGE");
-  }
-
-  return apiMessage;
+  return message;
 };
 
 export default UpsertMessageAPIService;

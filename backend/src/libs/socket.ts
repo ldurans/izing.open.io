@@ -1,6 +1,7 @@
 import socketIo, { Server as SocketIO } from "socket.io";
 import socketRedis from "socket.io-redis";
 import { Server } from "http";
+import { WAState } from "whatsapp-web.js";
 import AppError from "../errors/AppError";
 import decodeTokenSocket from "./decodeTokenSocket";
 import { logger } from "../utils/logger";
@@ -34,12 +35,16 @@ export const initIO = (httpServer: Server): SocketIO => {
   });
 
   io.on("connection", socket => {
-    logger.info(`Client Connected: ${socket}`);
     const { tenantId } = socket.handshake.query;
     if (tenantId) {
-      logger.info(`Client Connected in tenant: ${tenantId}`);
+      logger.info({
+        message: "Client connected in tenant",
+        data: socket.handshake.query
+      });
       socket.on(`${tenantId}-joinChatBox`, ticketId => {
-        console.info(`Client joined a ticket channel ${tenantId}-${ticketId}`);
+        console.info({
+          message: `Client joined a ticket channel ${tenantId}-${ticketId}`
+        });
         socket.join(`${tenantId}-${ticketId}`);
       });
 
@@ -57,8 +62,8 @@ export const initIO = (httpServer: Server): SocketIO => {
       });
     }
 
-    socket.on("disconnect", () => {
-      logger.info("Client disconnected");
+    socket.on("disconnect", (reason: WAState) => {
+      logger.info({ message: "Client disconnected", tenantId, reason });
     });
   });
   return io;

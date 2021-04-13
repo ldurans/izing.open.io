@@ -22,8 +22,8 @@ const ListCampaignContactsService = async ({
         required: true
       }
     ],
-    order: [["name", "ASC"]],
-    logging: console.log
+    order: [["name", "ASC"]]
+    // logging: console.log
   });
 
   return contactsData;

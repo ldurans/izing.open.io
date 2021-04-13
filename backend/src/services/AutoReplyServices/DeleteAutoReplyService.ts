@@ -21,7 +21,7 @@ const DeleteAutoReplyService = async ({
   }
 
   if (!autoReply) {
-    throw new AppError("ERR_NO_CONTACT_FOUND", 404);
+    throw new AppError("ERR_NO_AUTO_REPLY_FOUND", 404);
   }
 
   await autoReply.destroy();

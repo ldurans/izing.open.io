@@ -16,7 +16,7 @@ const CheckIsValidContact = async (
     // const isValidNumber = await wbot.isRegisteredUser(`${number}@c.us`);
     const idNumber = await wbot.getNumberId(number);
     if (!idNumber) {
-      throw new AppError("invalidNumber");
+      throw new AppError("invalidNumber", 400);
     }
     return idNumber;
   } catch (err) {

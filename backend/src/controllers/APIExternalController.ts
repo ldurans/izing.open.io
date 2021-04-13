@@ -1,6 +1,5 @@
 import * as Yup from "yup";
 import { Request, Response } from "express";
-import isValid from "is-base64";
 
 import AppError from "../errors/AppError";
 import ApiConfig from "../models/ApiConfig";
@@ -11,7 +10,7 @@ interface MessageDataRequest {
   sessionId: number;
   body: string;
   number: string;
-  media?: string;
+  media?: Express.Multer.File | string;
   externalKey: string;
   tenantId: number;
 }
@@ -20,15 +19,21 @@ export const sendMessageAPI = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { tenantId, apiId, sessionId } = req.APIAuth;
-  const apiIdParam = req.params.apiId;
+  const { tenantId, sessionId } = req.APIAuth;
+  const { apiId } = req.params;
+  const media = req.file as Express.Multer.File;
 
   // eslint-disable-next-line eqeqeq
-  if (!apiIdParam || apiId != apiIdParam) {
-    throw new AppError("ERR_APIID_NO_PERMISSION", 403);
-  }
+  // if (!apiIdParam || apiId != apiIdParam) {
+  //   throw new AppError("ERR_APIID_NO_PERMISSION", 403);
+  // }
 
-  const APIConfig = await ApiConfig.findByPk(apiId);
+  const APIConfig = await ApiConfig.findOne({
+    where: {
+      id: apiId,
+      tenantId
+    }
+  });
 
   if (APIConfig?.sessionId !== sessionId) {
     throw new AppError("ERR_SESSION_NOT_AUTH_TOKEN", 403);
@@ -38,7 +43,9 @@ export const sendMessageAPI = async (
     ...req.body,
     apiId,
     sessionId,
-    tenantId
+    tenantId,
+    apiConfig: APIConfig,
+    media
   };
 
   const schema = Yup.object().shape({
@@ -46,7 +53,18 @@ export const sendMessageAPI = async (
     sessionId: Yup.number(),
     body: Yup.string().required(),
     number: Yup.string().required(),
-    media: Yup.string().nullable(),
+    mediaUrl:
+      Yup.string().url().nullable() ||
+      Yup.object().shape({
+        destination: Yup.string().required(),
+        encoding: Yup.string().required(),
+        fieldname: Yup.string().required(),
+        filename: Yup.string().required(),
+        mimetype: Yup.string().required(),
+        originalname: Yup.string().required(),
+        path: Yup.string().required(),
+        size: Yup.number().required()
+      }),
     externalKey: Yup.string().required(),
     tenantId: Yup.number().required()
   });
@@ -57,11 +75,7 @@ export const sendMessageAPI = async (
     throw new AppError(error.message);
   }
 
-  if (!isValid(newMessage.media || "", { mimeRequired: true })) {
-    throw new AppError("Base64 is not valid.", 404);
-  }
-
   Queue.add("SendMessageAPI", newMessage);
 
-  return res.status(200);
+  return res.status(200).json({ message: "Message add queue" });
 };

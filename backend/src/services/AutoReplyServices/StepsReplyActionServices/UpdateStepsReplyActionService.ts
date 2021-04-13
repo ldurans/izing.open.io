@@ -48,7 +48,7 @@ const UpdateStepsReplyActionService = async ({
   });
 
   if (!stepsReplyAction) {
-    throw new AppError("ERR_NO_AUTO_REPLY_FOUND", 404);
+    throw new AppError("ERR_NO_STEP_AUTO_REPLY_FOUND", 404);
   }
 
   await stepsReplyAction.update({

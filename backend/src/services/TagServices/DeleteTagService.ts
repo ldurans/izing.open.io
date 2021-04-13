@@ -17,7 +17,7 @@ const DeleteTagService = async ({ id, tenantId }: Request): Promise<void> => {
   try {
     await tag.destroy();
   } catch (error) {
-    throw new AppError("ERR_TAG_TICKET_EXISTS", 404);
+    throw new AppError("ERR_TAG_CONTACTS_EXISTS", 404);
   }
 };
 

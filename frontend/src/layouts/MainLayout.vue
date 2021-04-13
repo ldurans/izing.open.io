@@ -52,11 +52,13 @@
         <div v-if="userProfile === 'admin'">
           <q-separator spaced />
           <q-item-label header>Administração</q-item-label>
-          <EssentialLink
-            v-for="item in menuDataAdmin"
-            :key="item.title"
-            v-bind="item"
-          />
+          <template v-for="item in menuDataAdmin">
+            <EssentialLink
+              v-if="exibirMenuBeta(item)"
+              :key="item.title"
+              v-bind="item"
+            />
+          </template>
         </div>
 
       </q-list>
@@ -176,20 +178,22 @@ const objMenuAdmin = [
     caption: 'Configurações gerais',
     icon: 'mdi-cog',
     routeName: 'configuracoes'
-  }
+  },
   /// / criar rotina para liberar pelo backend
-  // {
-  //   title: 'Campanha',
-  //   caption: 'Campanhas de envio',
-  //   icon: 'mdi-message-bookmark-outline',
-  //   routeName: 'campanhas'
-  // },
-  // {
-  //   title: 'API',
-  //   caption: 'Integração sistemas externos',
-  //   icon: 'mdi-call-split',
-  //   routeName: 'api-service'
-  // }
+  {
+    title: 'Campanha',
+    caption: 'Campanhas de envio',
+    icon: 'mdi-message-bookmark-outline',
+    routeName: 'campanhas',
+    isBeta: true
+  },
+  {
+    title: 'API',
+    caption: 'Integração sistemas externos',
+    icon: 'mdi-call-split',
+    routeName: 'api-service',
+    isBeta: true
+  }
 
 ]
 
@@ -200,6 +204,10 @@ export default {
   data () {
     return {
       username,
+      domainExperimentalsMenus: [
+        '@wchats.com.br',
+        '@sispolos.com.br'
+      ],
       userProfile: 'user',
       modalUsuario: false,
       usuario: {},
@@ -236,6 +244,13 @@ export default {
     }
   },
   methods: {
+    exibirMenuBeta (itemMenu) {
+      if (!itemMenu?.isBeta) return true
+      for (const domain of this.domainExperimentalsMenus) {
+        if (this.usuario.email.indexOf(domain) !== -1) return true
+      }
+      return false
+    },
     async listarWhatsapps () {
       const { data } = await ListarWhatsapps()
       this.$store.commit('LOAD_WHATSAPPS', data)

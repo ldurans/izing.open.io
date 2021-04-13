@@ -4,7 +4,6 @@ import ApiConfig from "../../models/ApiConfig";
 interface ApiData {
   name: string;
   sessionId: string | number;
-  urlDelivery?: string;
   urlServiceStatus?: string;
   urlMessageStatus?: string;
   userId: string | number;
@@ -34,7 +33,6 @@ const UpdateApiConfigService = async ({
   const {
     name,
     sessionId,
-    urlDelivery,
     urlServiceStatus,
     urlMessageStatus,
     userId,
@@ -44,7 +42,6 @@ const UpdateApiConfigService = async ({
   await api.update({
     name,
     sessionId,
-    urlDelivery,
     urlServiceStatus,
     urlMessageStatus,
     userId,

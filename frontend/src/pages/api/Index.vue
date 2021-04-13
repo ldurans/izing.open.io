@@ -107,15 +107,6 @@
               lines="2"
             >
               <p class="text-weight-medium">
-                <span class="text-bold">WebHook Envio:</span>
-                <span> {{ api.urlDelivery }} </span>
-              </p>
-            </q-item-label>
-            <q-item-label
-              caption
-              lines="2"
-            >
-              <p class="text-weight-medium">
                 <span class="text-bold">WebHook Status Whatsapp:</span> <span> {{ api.urlServiceStatus }} </span>
               </p>
             </q-item-label>

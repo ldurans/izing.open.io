@@ -6,6 +6,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import * as Sentry from "@sentry/node";
 
+import helmet from "helmet";
+
 import { setQueues, BullAdapter, router as bullRoute } from "bull-board";
 
 import "./database";
@@ -18,6 +20,35 @@ import Queue from "./libs/Queue";
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
+
+app.use(helmet());
+
+// Sets all of the defaults, but overrides script-src
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      "default-src": ["'self'"],
+      "base-uri": ["'self'"],
+      "block-all-mixed-content": [],
+      "font-src": ["'self'", "https:", "data:"],
+      "img-src": ["'self'", "data:"],
+      "object-src": ["'none'"],
+      "script-src-attr": ["'none'"],
+      "style-src": ["'self'", "https:", "'unsafe-inline'"],
+      "upgrade-insecure-requests": [],
+      // ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      scriptSrc: [
+        "'self'",
+        `*${process.env.FRONTEND_URL || "localhost: 3003"}`
+        // "localhost"
+      ],
+      frameAncestors: [
+        "'self'",
+        `* ${process.env.FRONTEND_URL || "localhost: 3003"}`
+      ]
+    }
+  })
+);
 
 Queue.process();
 setQueues(Queue.queues.map((q: any) => new BullAdapter(q.bull)));
@@ -41,9 +72,16 @@ app.use("/admin/queues", bullRoute);
 // }, cors());
 // }
 
-app.use(cors({ origin: "*" }));
+// app.use(cors({ origin: "*" }));
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.FRONTEND_URL
+  })
+);
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "20MB" }));
+app.use(express.urlencoded({ extended: true, limit: "20MB" }));
 app.use(Sentry.Handlers.requestHandler());
 app.use("/public", express.static(uploadConfig.directory));
 app.use(routes);
@@ -61,7 +99,7 @@ app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
   }
 
   logger.error(err);
-  return res.status(500).json({ error: "Internal server error" });
+  return res.status(500).json({ error: `Internal server error: ${err}` });
 });
 
 export default app;

@@ -21,6 +21,7 @@ import ContactTag from "../models/ContactTag";
 import Campaign from "../models/Campaign";
 import CampaignContacts from "../models/CampaignContacts";
 import ApiConfig from "../models/ApiConfig";
+import ApiMessage from "../models/ApiMessage";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -50,7 +51,8 @@ const models = [
   ContactTag,
   Campaign,
   CampaignContacts,
-  ApiConfig
+  ApiConfig,
+  ApiMessage
 ];
 
 sequelize.addModels(models);
