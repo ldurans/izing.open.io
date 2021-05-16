@@ -58,6 +58,9 @@ export default {
       };
     } catch (error) {
       logger.error(`Error send message api: ${error}`);
+      if (error.response.status === 404) {
+        return { message: "url configurar no webhook não existe." };
+      }
       throw new Error(error);
     }
   }
