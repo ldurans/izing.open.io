@@ -8,7 +8,8 @@ import StepsReplyAction from "../../models/StepsReplyAction";
 
 const VerifyActionStepAutoReplyService = async (
   stepAutoReplyId: number,
-  msg: string
+  msg: string,
+  tenantId: number | string
 ): Promise<StepsReplyAction | null> => {
   if (!msg) {
     return null;
@@ -23,7 +24,7 @@ const VerifyActionStepAutoReplyService = async (
       {
         model: StepsReply,
         as: "stepsReply",
-        include: [{ model: AutoReply, as: "autoReply" }]
+        include: [{ model: AutoReply, as: "autoReply", where: { tenantId } }]
       }
     ]
     // include: [

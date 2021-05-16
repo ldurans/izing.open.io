@@ -25,11 +25,14 @@ const verifyAutoReplyActionTicket = async (
       const stepAutoReplyAtual = await ShowStepAutoReplyMessageService(
         0,
         ticket.autoReplyId,
-        ticket.stepAutoReplyId
+        ticket.stepAutoReplyId,
+        undefined,
+        ticket.tenantId
       );
       const actionAutoReply = await VerifyActionStepAutoReplyService(
         ticket.stepAutoReplyId,
-        msg.body
+        msg.body,
+        ticket.tenantId
       );
       if (actionAutoReply) {
         const io = getIO();
@@ -44,7 +47,9 @@ const verifyAutoReplyActionTicket = async (
           const stepAutoReply = await ShowStepAutoReplyMessageService(
             0,
             ticket.autoReplyId,
-            actionAutoReply.nextStepId
+            actionAutoReply.nextStepId,
+            undefined,
+            ticket.tenantId
           );
 
           // Verificar se rotina em teste

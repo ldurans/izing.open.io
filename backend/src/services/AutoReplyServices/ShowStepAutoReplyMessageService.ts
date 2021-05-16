@@ -8,7 +8,8 @@ const ShowStepAutoReplyMessageService = async (
   action: number,
   idAutoReply: number,
   stepId: number,
-  initialStep = false
+  initialStep = false,
+  tenantId: number | string
 ): Promise<StepsReply> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
@@ -24,7 +25,7 @@ const ShowStepAutoReplyMessageService = async (
     include: [
       {
         model: AutoReply,
-        where: { action } // action 0 - AutoReply Criacao ticket ou 1 - Resolução do ticket
+        where: { action, tenantId } // action 0 - AutoReply Criacao ticket ou 1 - Resolução do ticket
         // attributes: ["id", "name"]
       }
     ]

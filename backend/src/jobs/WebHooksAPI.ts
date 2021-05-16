@@ -27,6 +27,11 @@ export default {
     try {
       let payload = {};
 
+      // return se não houver url informada
+      if (!data?.url) {
+        return { message: "url configurar no webhook não existe." };
+      }
+
       if (data.type === "hookMessageStatus") {
         payload = {
           ack: data.payload.ack,
@@ -58,6 +63,9 @@ export default {
       };
     } catch (error) {
       logger.error(`Error send message api: ${error}`);
+      if (error?.response?.status === 404) {
+        return { message: "url configurar no webhook não existe." };
+      }
       throw new Error(error);
     }
   }

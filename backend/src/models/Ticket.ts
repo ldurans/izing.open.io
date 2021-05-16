@@ -118,7 +118,13 @@ class Ticket extends Model<Ticket> {
   static async AutoReplyWelcome(instance: Ticket): Promise<void> {
     if (instance.userId) return;
 
-    const stepAutoReply = await ShowStepAutoReplyMessageService(0, 0, 0, true);
+    const stepAutoReply = await ShowStepAutoReplyMessageService(
+      0,
+      0,
+      0,
+      true,
+      instance.tenantId
+    );
 
     if (!stepAutoReply) return;
 

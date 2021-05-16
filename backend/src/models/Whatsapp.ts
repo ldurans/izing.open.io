@@ -96,10 +96,14 @@ class Whatsapp extends Model<Whatsapp> {
   tenant: Tenant;
 
   @AfterUpdate
-  static async HookStatus(instance: Whatsapp): Promise<void> {
+  static async HookStatus(instance: Whatsapp & any): Promise<void> {
     const statusHook = ["DESTROYED", "DISCONNECTED", "CONNECTED"];
 
-    if (statusHook.includes(instance.status)) {
+    if (
+      statusHook.includes(instance.status) &&
+      // eslint-disable-next-line no-underscore-dangle
+      instance._previousDataValues.status !== instance.status
+    ) {
       const messages: any = {
         DESTROYED:
           "Desconectado devido à várias tentativas de extabelecimento da conexão sem sucesso. Verifique o celular e internet do aparelho.",
