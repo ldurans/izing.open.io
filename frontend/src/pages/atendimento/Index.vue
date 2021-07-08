@@ -8,25 +8,26 @@
       container
       view="lHr LpR lFr"
     >
+
       <!-- view="lHr LpR lFr" -->
       <q-drawer
         v-model="drawerTickets"
         show-if-above
         behavior="desktop"
-        bordered
-        :width="450"
+        :width="380"
         persistent
-        content-class="bg-white hide-scrollbar"
+        bordered
+        content-class="hide-scrollbar"
       >
         <q-toolbar
-          class="text-primary q-pr-none"
-          style="height: 60px"
+          class="q-pr-none q-gutter-xs"
+          style="height: 64px"
         >
           <q-btn-dropdown
-            color="primary"
             :label="username"
             no-caps
-            outline
+            flat
+            class="bg-padrao text-bold btn-rounded"
             ripple
           >
             <q-list style="min-width: 100px">
@@ -51,44 +52,34 @@
 
           <q-space />
           <q-btn
-            round
             flat
-            color="primary"
+            class="bg-padrao btn-rounded"
             icon="mdi-backburger"
             @click="() => $router.push({name: 'contatos'})"
           >
-            <q-tooltip
-              :delay="1000"
-              content-class="bg-primary"
-            >
+            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
               Retornar ao menu
             </q-tooltip>
           </q-btn>
 
           <q-btn
-            round
             flat
+            class="bg-padrao btn-rounded "
             icon="mdi-comment-plus-outline"
             @click="modalNovoTicket=true"
           >
-            <q-tooltip
-              :delay="1000"
-              content-class="bg-primary"
-            >
+            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
               Novo atendimento
             </q-tooltip>
           </q-btn>
 
           <q-btn
-            round
             flat
+            class="bg-padrao btn-rounded"
             icon="mdi-book-account-outline"
             @click="$router.push({name:'chat-contatos'})"
           >
-            <q-tooltip
-              :delay="1000"
-              content-class="bg-primary"
-            >
+            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
               Contatos
             </q-tooltip>
           </q-btn>
@@ -252,7 +243,7 @@
                 </div>
               </div>
             </q-menu>
-            <q-tooltip>
+            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
               Filtro Avançado
             </q-tooltip>
           </q-btn>
@@ -287,12 +278,12 @@
           <div v-if="loading">
             <div class="row justify-center q-my-md">
               <q-spinner
-                color="primary"
+                color="white"
                 size="3em"
                 :thickness="3"
               />
             </div>
-            <div class="row col justify-center q-my-sm text-primary">
+            <div class="row col justify-center q-my-sm text-white">
               Carregando...
             </div>
           </div>
@@ -315,7 +306,7 @@
         content-class="bg-grey-1"
       >
         <div
-          class="bg-white text-primary full-width no-border-radius q-pa-sm"
+          class="bg-white full-width no-border-radius q-pa-sm"
           style="height:60px;"
         >
           <span class="q-ml-md text-h6">
