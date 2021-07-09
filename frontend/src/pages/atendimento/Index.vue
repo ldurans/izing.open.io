@@ -54,7 +54,7 @@
           <q-btn
             flat
             class="bg-padrao btn-rounded"
-            icon="mdi-backburger"
+            icon="mdi-home"
             @click="() => $router.push({name: 'contatos'})"
           >
             <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
@@ -62,7 +62,7 @@
             </q-tooltip>
           </q-btn>
 
-          <q-btn
+          <!-- <q-btn
             flat
             class="bg-padrao btn-rounded "
             icon="mdi-comment-plus-outline"
@@ -71,18 +71,7 @@
             <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
               Novo atendimento
             </q-tooltip>
-          </q-btn>
-
-          <q-btn
-            flat
-            class="bg-padrao btn-rounded"
-            icon="mdi-book-account-outline"
-            @click="$router.push({name:'chat-contatos'})"
-          >
-            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
-              Contatos
-            </q-tooltip>
-          </q-btn>
+          </q-btn> -->
           <StatusWhatsapp
             class="q-mr-sm"
             isIconStatusMenu
@@ -97,17 +86,14 @@
         <StatusWhatsapp class="q-mx-sm full-width" />
         <q-toolbar
           v-show="toolbarSearch"
-          class="row q-py-sm items-center"
+          class="row q-gutter-sm q-py-sm items-center"
         >
           <q-separator class="absolute-top" />
           <q-btn
             :icon="!cFiltroSelecionado ? 'mdi-filter-outline' : 'mdi-filter-plus'"
-            round
-            :flat="!cFiltroSelecionado"
-            push
-            dense
+            flat
+            class="bg-padrao btn-rounded"
             :color="cFiltroSelecionado ? 'deep-orange-9' : 'primary'"
-            class="q-mr-md"
           >
             <q-menu
               content-class="shadow-10"
@@ -251,6 +237,7 @@
             v-model="pesquisaTickets.searchParam"
             dense
             outlined
+            rounded
             type="search"
             class="col-grow"
             :debounce="700"
@@ -260,6 +247,16 @@
               <q-icon name="search" />
             </template>
           </q-input>
+          <q-btn
+            flat
+            class="bg-padrao btn-rounded"
+            icon="mdi-book-account-outline"
+            @click="$router.push({name:'chat-contatos'})"
+          >
+            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+              Contatos
+            </q-tooltip>
+          </q-btn>
           <q-separator class="absolute-bottom" />
         </q-toolbar>
 
@@ -319,11 +316,10 @@
           v-if="ticketFocado.id"
         >
           <q-card
-            class="bg-white"
+            class="bg-white btn-rounded"
             style="width: 100%"
             bordered
             flat
-            square
           >
             <q-card-section class="text-center">
               <q-avatar style="border: 1px solid #9e9e9ea1 !important; width: 100px; height: 100px">
@@ -361,21 +357,21 @@
               </div>
               <q-btn
                 color="primary"
-                outline
-                class="q-mt-sm"
+                class="q-mt-sm bg-padrao btn-rounded"
+                flat
+                icon="edit"
                 label="Editar Contato"
                 @click="editContact(ticketFocado.contact.id)"
               />
             </q-card-section>
           </q-card>
           <q-card
-            class="bg-white q-mt-sm"
+            class="bg-white q-mt-sm btn-rounded"
             style="width: 100%"
             bordered
             flat
-            square
           >
-            <q-card-section class="text-bold">
+            <q-card-section class="text-bold q-pb-none">
               Outras Informações
             </q-card-section>
             <q-card-section class="q-pa-none">
@@ -393,11 +389,10 @@
             </q-card-section>
           </q-card>
           <q-card
-            class="bg-white q-mt-sm"
+            class="bg-white q-mt-sm btn-rounded"
             style="width: 100%"
             bordered
             flat
-            square
           >
             <q-card-section class="text-bold q-pb-none">
               Etiquetas
@@ -451,6 +446,22 @@
                     {{ opt.tag }}
                   </q-chip>
                 </template>
+                <template v-slot:no-option="{ itemProps, itemEvents }">
+                  <q-item
+                    v-bind="itemProps"
+                    v-on="itemEvents"
+                  >
+                    <q-item-section>
+                      <q-item-label class="text-negative text-bold">
+                        Ops... Sem etiquetas criadas!
+                      </q-item-label>
+                      <q-item-label caption>
+                        Cadastre novas etiquetas na administração de sistemas.
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
+
               </q-select>
             </q-card-section>
           </q-card>

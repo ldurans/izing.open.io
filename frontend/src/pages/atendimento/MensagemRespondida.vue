@@ -2,12 +2,11 @@
   <q-item
     clickable
     v-ripple
-    class="q-pa-none fit btn-rounded q-mb-sm"
+    class="q-pa-none fit btn-rounded q-mt-md q-mb-sm"
     dense
   >
     <q-chat-message
       :key="mensagem.id"
-      :stamp="dataInWords(mensagem.createdAt)"
       :sent="mensagem.fromMe"
       class="text-weight-medium q-ma-none"
       id="chat-message-resp"
@@ -32,11 +31,11 @@
           {{ isGroupLabel(mensagem) }}
         </div>
         <template v-if="mensagem.mediaType === 'audio'">
-          <div style="width: 330px; heigth: 300px">
+          <div style="width: 200px; heigth: 300px">
             <audio
-              class="q-mt-md full-width"
+              style="max-width: 200px;"
+              class="full-width"
               controls
-              aria-disabled
             >
               <source
                 :src="mensagem.mediaUrl"
@@ -64,9 +63,8 @@
             @click="urlMedia=mensagem.mediaUrl; abrirModalImagem=true"
             :src="mensagem.mediaUrl"
             spinner-color="primary"
-            height="300px"
-            width="330px"
-            class="q-mt-md"
+            height="60px"
+            width="130px"
             style="cursor: pointer;"
           />
           <VueEasyLightbox
@@ -81,10 +79,9 @@
           <video
             :src="mensagem.mediaUrl"
             controls
-            class="q-mt-md"
             style="objectFit: cover;
-                  width: 330px;
-                  height: 300px;
+                  width: 130px;
+                  height: 60px;
                   borderTopLeftRadius: 8px;
                   borderTopRightRadius: 8px;
                   borderBottomLeftRadius: 8px;
@@ -147,7 +144,7 @@
         </template>
         <div
           v-linkified
-          v-if="!['vcard', 'application' ].includes(mensagem.mediaType)"
+          v-if="!['vcard', 'application', 'audio', 'image', 'video' ].includes(mensagem.mediaType)"
           :class="{'q-mt-sm': mensagem.mediaType !== 'chat'}"
           class="q-message-container row items-end no-wrap"
         >
@@ -223,11 +220,6 @@ export default {
     focarElemento (mensagem) {
       this.$emit('mensagem-respondida:focar-mensagem', mensagem)
     }
-  },
-  mounted () {
-    this.scrollToBottom()
-  },
-  destroyed () {
   }
 }
 </script>

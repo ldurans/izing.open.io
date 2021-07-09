@@ -3,154 +3,153 @@
     style="min-height: 80px"
     class="row bg-white justify-center items-center text-grey-9 relative-position"
   >
-    <template v-if="!isRecordingAudio">
-      <q-btn
-        flat
-        @click="abrirEnvioArquivo"
-        icon="mdi-paperclip"
-        :disable="cDisableActions"
-        class="bg-padrao btn-rounded q-mx-xs"
+
+    <div class="full-width absolute-top">
+      <q-menu
+        max-width="600px"
+        :key="cMensagensRapidas.length"
+        square
+        no-focus
+        class="no-box-shadow no-shadow"
+        fit
+        persistent
+        max-height="200px"
+        :offset="cMensagensRapidas.length === 1 ? [0,-45] : [0,0]"
+        :value="textChat.startsWith('/')"
       >
-        <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
-          Enviar arquivo
-        </q-tooltip>
-      </q-btn>
-      <q-btn
-        flat
-        icon="mdi-emoticon-happy-outline"
-        :disable="cDisableActions"
-        class="bg-padrao btn-rounded q-mx-xs"
-      >
-        <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
-          Emoji
-        </q-tooltip>
-        <q-menu
-          anchor="top right"
-          self="bottom middle"
-          :offset="[5, 40]"
+        <q-list
+          class="no-shadow no-box-shadow"
+          style="min-width: 100px"
+          separator
         >
-          <VEmojiPicker
-            style="width: 40vw"
-            :showSearch="false"
-            :emojisByRow="20"
-            labelSearch="Localizar..."
-            lang="pt-BR"
-            @select="onInsertSelectEmoji"
-          />
-        </q-menu>
-      </q-btn>
-      <q-input
-        hide-bottom-space
-        :loading="loading"
-        :disable="cDisableActions"
-        ref="inputEnvioMensagem"
-        type="textarea"
-        @keypress.enter.exact="() => textChat.trim().length ? enviarMensagem() : ''"
-        v-show="!cMostrarEnvioArquivo"
-        class="WAL__field col-grow q-mt-md q-mx-xs"
-        bg-color="blue-grey-1"
-        placeholder="Digita sua mensagem"
-        input-style="max-height: 30vh"
-        autogrow
-        rounded
-        dense
-        outlined
-        v-model="textChat"
-        :value="textChat"
-        @paste="handleInputPaste"
-        hint="Quebra linha/Parágrafo: Shift + Enter || Enviar Mensagem: Enter || Mensagens Rápidas: /"
-      />
-      <div class="full-width absolute-top">
-        <q-menu
-          max-width="600px"
-          :key="cMensagensRapidas.length"
-          square
-          no-focus
-          class="no-box-shadow no-shadow"
-          fit
-          persistent
-          max-height="200px"
-          :offset="cMensagensRapidas.length === 1 ? [0,-45] : [0,0]"
-          :value="textChat.startsWith('/')"
-        >
-          <q-list
-            class="no-shadow no-box-shadow"
-            style="min-width: 100px"
-            separator
+          <q-item
+            v-for="resposta in cMensagensRapidas"
+            :key="resposta.key"
+            clickable
+            v-close-popup
+            @click="mensagemRapidaSelecionada(resposta.message)"
           >
-            <q-item
-              v-for="resposta in cMensagensRapidas"
-              :key="resposta.key"
-              clickable
-              v-close-popup
-              @click="mensagemRapidaSelecionada(resposta.message)"
-            >
-              <q-item-section>
-                <q-item-label> {{ resposta.key }} </q-item-label>
-                <q-item-label
-                  caption
-                  lines="2"
-                > {{ resposta.message }} </q-item-label>
-              </q-item-section>
-              <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
-                {{ resposta.message }}
-              </q-tooltip>
-            </q-item>
-          </q-list>
-        </q-menu>
-
-      </div>
-
-      <!-- tamanho maximo por arquivo de 10mb -->
-      <q-file
-        :loading="loading"
-        :disable="cDisableActions"
-        ref="PickerFileMessage"
-        v-show="cMostrarEnvioArquivo"
-        v-model="arquivos"
-        class="WAL__field col-grow q-mt-md q-mx-xs"
-        bg-color="blue-grey-1"
-        input-style="max-height: 30vh"
-        outlined
-        use-chips
-        multiple
-        autogrow
-        dense
-        rounded
-        append
-        :max-files="5"
-        counter
-        :max-file-size="10485760"
-        :max-total-size="30485760"
-        accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
-        @rejected="onRejectedFiles"
-      />
-      <q-btn
-        v-if="textChat || cMostrarEnvioArquivo"
-        ref="btnEnviarMensagem"
-        @click="enviarMensagem"
-        :disabled="ticketFocado.status !== 'open'"
-        flat
-        icon="mdi-send"
-        class="bg-padrao btn-rounded q-mx-xs"
+            <q-item-section>
+              <q-item-label> {{ resposta.key }} </q-item-label>
+              <q-item-label
+                caption
+                lines="2"
+              > {{ resposta.message }} </q-item-label>
+            </q-item-section>
+            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+              {{ resposta.message }}
+            </q-tooltip>
+          </q-item>
+        </q-list>
+      </q-menu>
+    </div>
+    <q-btn
+      flat
+      @click="abrirEnvioArquivo"
+      icon="mdi-paperclip"
+      :disable="cDisableActions"
+      class="bg-padrao btn-rounded q-mx-xs"
+    >
+      <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+        Enviar arquivo
+      </q-tooltip>
+    </q-btn>
+    <q-btn
+      flat
+      icon="mdi-emoticon-happy-outline"
+      :disable="cDisableActions"
+      class="bg-padrao btn-rounded q-mx-xs"
+    >
+      <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+        Emoji
+      </q-tooltip>
+      <q-menu
+        anchor="top right"
+        self="bottom middle"
+        :offset="[5, 40]"
       >
-        <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
-          Enviar Mensagem
-        </q-tooltip>
-      </q-btn>
-      <q-btn
-        v-if="!textChat && !cMostrarEnvioArquivo && !isRecordingAudio"
-        @click="handleSartRecordingAudio"
-        :disabled="cDisableActions"
-        flat
-        icon="mdi-microphone"
-        class="bg-padrao btn-rounded q-mx-xs"
-      >
-        <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
-          Enviar Áudio
-        </q-tooltip>
-      </q-btn>
-    </template>
+        <VEmojiPicker
+          style="width: 40vw"
+          :showSearch="false"
+          :emojisByRow="20"
+          labelSearch="Localizar..."
+          lang="pt-BR"
+          @select="onInsertSelectEmoji"
+        />
+      </q-menu>
+    </q-btn>
+    <q-input
+      hide-bottom-space
+      :loading="loading"
+      :disable="cDisableActions"
+      ref="inputEnvioMensagem"
+      id="inputEnvioMensagem"
+      type="textarea"
+      @keypress.enter.exact="() => textChat.trim().length ? enviarMensagem() : ''"
+      v-show="!cMostrarEnvioArquivo"
+      class="col-grow q-mt-md q-mx-xs inputEnvioMensagem"
+      bg-color="blue-grey-1"
+      placeholder="Digita sua mensagem"
+      input-style="max-height: 30vh"
+      autogrow
+      rounded
+      dense
+      outlined
+      v-model="textChat"
+      :value="textChat"
+      @paste="handleInputPaste"
+      hint="Quebra linha: Shift + Enter || Mensagens Rápidas: /"
+    />
+    <!-- tamanho maximo por arquivo de 10mb -->
+    <q-file
+      :loading="loading"
+      :disable="cDisableActions"
+      ref="PickerFileMessage"
+      id="PickerFileMessage"
+      v-show="cMostrarEnvioArquivo"
+      v-model="arquivos"
+      class="col-grow q-mt-md q-mx-xs PickerFileMessage"
+      bg-color="blue-grey-1"
+      input-style="max-height: 30vh"
+      outlined
+      use-chips
+      multiple
+      autogrow
+      dense
+      rounded
+      append
+      :max-files="5"
+      counter
+      :max-file-size="10485760"
+      :max-total-size="30485760"
+      accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
+      @rejected="onRejectedFiles"
+    />
+    <q-btn
+      v-if="textChat || cMostrarEnvioArquivo"
+      ref="btnEnviarMensagem"
+      @click="enviarMensagem"
+      :disabled="ticketFocado.status !== 'open'"
+      flat
+      icon="mdi-send"
+      class="bg-padrao btn-rounded q-mx-xs"
+    >
+      <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+        Enviar Mensagem
+      </q-tooltip>
+    </q-btn>
+    <q-btn
+      v-if="!textChat && !cMostrarEnvioArquivo && !isRecordingAudio"
+      @click="handleSartRecordingAudio"
+      :disabled="cDisableActions"
+      flat
+      icon="mdi-microphone"
+      class="bg-padrao btn-rounded q-mx-xs"
+    >
+      <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+        Enviar Áudio
+      </q-tooltip>
+    </q-btn>
     <div
       style="width: 200px"
       class="flex flex-center items-center"
@@ -508,5 +507,14 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="sass" scoped>
+@media (max-width: 850px)
+  .inputEnvioMensagem,
+  .PickerFileMessage
+    width: 150px
+
+@media (min-width: 851px), (max-width: 1360px)
+  .inputEnvioMensagem,
+  .PickerFileMessage
+    width: 200px !important
 </style>

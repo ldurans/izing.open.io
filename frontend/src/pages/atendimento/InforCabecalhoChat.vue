@@ -63,7 +63,7 @@
         </q-item>
         <q-space />
         <div
-          class="q-gutter-xs q-pr-md"
+          class="q-gutter-xs q-pr-sm"
           v-if="Value(cticket.contact, 'name')"
         >
           <q-btn

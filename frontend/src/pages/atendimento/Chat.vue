@@ -212,7 +212,7 @@ export default {
         this.loading = true
         this.params.ticketId = this.ticketFocado.id
         this.params.pageNumber += 1
-        await this.$store.dispatch('LocalizarMensagensTicket', this.params).then(r => { this.loading = false })
+        await this.$store.dispatch('LocalizarMensagensTicket', this.params)
         this.loading = false
         infiniteState.loaded()
       } catch (error) {
@@ -241,6 +241,7 @@ export default {
     this.socketTicket()
   },
   mounted () {
+    console.log('========> mounted chat')
     this.socketMessagesList()
   },
   destroyed () {
