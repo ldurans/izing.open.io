@@ -30,9 +30,10 @@
           :stamp="dataInWords(mensagem.createdAt)"
           :sent="mensagem.fromMe"
           class="text-weight-medium"
-          :bg-color="mensagem.fromMe ? 'grey-2' : 'secondary' "
+          :bg-color="mensagem.fromMe ? 'grey-2' : 'blue-1' "
           :class="{pulseIdentications: identificarMensagem == `chat-message-${mensagem.id}` }"
         >
+          <!-- :bg-color="mensagem.fromMe ? 'grey-2' : 'secondary' " -->
           <div
             style="min-width: 100px; max-width: 350px"
             :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
@@ -55,6 +56,8 @@
               :class="{'textContentItem': !mensagem.isDeleted, 'textContentItemDeleted': mensagem.isDeleted }"
             >
               <MensagemRespondida
+                style="max-width: 240px;"
+                class="row justify-center"
                 @mensagem-respondida:focar-mensagem="focarMensagem"
                 :mensagem="mensagem.quotedMsg"
               />

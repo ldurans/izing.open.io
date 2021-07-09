@@ -103,7 +103,7 @@
               max-height: 110px;
             `"
             :class="{
-              'bg-secondary': !replyingMessage.fromMe,
+              'bg-blue-1': !replyingMessage.fromMe,
               'bg-grey-2': replyingMessage.fromMe
             }"
           >

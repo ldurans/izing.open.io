@@ -2,13 +2,13 @@
   <q-item
     clickable
     v-ripple
-    class="q-pa-none fit btn-rounded q-mt-md q-mb-sm"
+    class="q-pa-none fit btn-rounded q-mt-md q-mb-sm row justify-center"
     dense
   >
     <q-chat-message
       :key="mensagem.id"
       :sent="mensagem.fromMe"
-      class="text-weight-medium q-ma-none"
+      class="text-weight-medium fit q-ma-none"
       id="chat-message-resp"
       @click="focarElemento(mensagem)"
     >
@@ -91,17 +91,6 @@
         </template>
         <template v-if="mensagem.mediaType === 'application'">
           <div class="text-center full-width">
-            <iframe
-              v-if="isPDF(mensagem.mediaUrl)"
-              width="330px"
-              height="330px"
-              frameBorder="0"
-              :src="mensagem.mediaUrl"
-              :id="mensagem.id"
-            >
-              Faça download do PDF
-              <!-- alt : <a href="mensagem.mediaUrl"></a> -->
-            </iframe>
             <q-btn
               type="a"
               color="grey-3"
@@ -146,7 +135,7 @@
           v-linkified
           v-if="!['vcard', 'application', 'audio', 'image', 'video' ].includes(mensagem.mediaType)"
           :class="{'q-mt-sm': mensagem.mediaType !== 'chat'}"
-          class="q-message-container row items-end no-wrap"
+          class="q-message-container row items-end no-wrap ellipsis-3-lines"
         >
           <div v-html="farmatarMensagemWhatsapp(mensagem.body)">
           </div>

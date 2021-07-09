@@ -238,7 +238,7 @@ img:after
   border-radius: 0
   position: relative
   height: 100%
-  background: $active-item-ticket
+  background: $blue-1 //$active-item-ticket
   // background-color: #e6ebf5
 
 #ListItemsTicket
@@ -246,7 +246,7 @@ img:after
     margin-top: 1.5px
 
 #item-ticket-houve:hover
-  background: $active-item-ticket
+  background: $blue-1 //$active-item-ticket
   transition: all .4s
 
 .primary

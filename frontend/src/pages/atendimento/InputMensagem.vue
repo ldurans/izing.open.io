@@ -3,7 +3,6 @@
     style="min-height: 80px"
     class="row bg-white justify-center items-center text-grey-9 relative-position"
   >
-
     <div class="full-width absolute-top">
       <q-menu
         max-width="600px"
@@ -21,6 +20,21 @@
           class="no-shadow no-box-shadow"
           style="min-width: 100px"
           separator
+          v-if="!cMensagensRapidas.length"
+        >
+          <q-item>
+            <q-item-section>
+              <q-item-label class="text-negative text-bold">Ops... Nenhuma mensagem rápida criada.</q-item-label>
+              <q-item-label caption>Cadastre suas mensagens na administração de sistema.</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+
+        <q-list
+          class="no-shadow no-box-shadow"
+          style="min-width: 100px"
+          separator
+          v-else
         >
           <q-item
             v-for="resposta in cMensagensRapidas"
@@ -30,7 +44,7 @@
             @click="mensagemRapidaSelecionada(resposta.message)"
           >
             <q-item-section>
-              <q-item-label> {{ resposta.key }} </q-item-label>
+              <q-item-label class="text-bold"> {{ resposta.key }} </q-item-label>
               <q-item-label
                 caption
                 lines="2"
