@@ -21,20 +21,29 @@
             style="float: 'left', background: 'black', clear: 'both'"
           />
         </template>
+        <div
+          :key="`chat-message-${mensagem.id}`"
+          :id="`chat-message-${mensagem.id}`"
+        />
         <q-chat-message
           :key="mensagem.id"
           :stamp="dataInWords(mensagem.createdAt)"
           :sent="mensagem.fromMe"
-          :bg-color="mensagem.fromMe ? 'teal-2' : 'white' "
+          class="text-weight-medium"
+          :bg-color="mensagem.fromMe ? 'grey-2' : 'blue-1' "
+          :class="{pulseIdentications: identificarMensagem == `chat-message-${mensagem.id}` }"
         >
+          <!-- :bg-color="mensagem.fromMe ? 'grey-2' : 'secondary' " -->
           <div
-            style="max-width: 350px"
+            style="min-width: 100px; max-width: 350px"
             :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
           >
             <div
               v-if="mensagem.isDeleted"
               class="text-italic"
-            > Mensagem apagada em {{ formatarData(mensagem.updatedAt, 'dd/MM/yyyy') }}.</div>
+            >
+              Mensagem apagada em {{ formatarData(mensagem.updatedAt, 'dd/MM/yyyy') }}.
+            </div>
             <div
               v-if="isGroupLabel(mensagem)"
               class="q-mb-sm"
@@ -46,7 +55,12 @@
               v-if="mensagem.quotedMsg"
               :class="{'textContentItem': !mensagem.isDeleted, 'textContentItemDeleted': mensagem.isDeleted }"
             >
-              <MensagemRespondida :mensagem="mensagem" />
+              <MensagemRespondida
+                style="max-width: 240px;"
+                class="row justify-center"
+                @mensagem-respondida:focar-mensagem="focarMensagem"
+                :mensagem="mensagem.quotedMsg"
+              />
             </div>
             <q-btn
               v-if="!mensagem.isDeleted"
@@ -172,7 +186,10 @@
                   :target="isPDF(mensagem.mediaUrl) ? '_blank' : ''"
                   :href="mensagem.mediaUrl"
                 >
-                  <q-tooltip v-if="mensagem.mediaUrl">
+                  <q-tooltip
+                    v-if="mensagem.mediaUrl"
+                    content-class="bg-padrao text-grey-9 text-bold"
+                  >
                     Baixar: {{ mensagem.body }}
                   </q-tooltip>
                   <div class="row items-center q-my-md ">
@@ -255,7 +272,7 @@ export default {
     return {
       abrirModalImagem: false,
       urlMedia: '',
-
+      identificarMensagem: null,
       ackIcons: { // Se ACK == 3 ou 4 entao color green
         0: 'mdi-clock-outline',
         1: 'mdi-check',
@@ -338,6 +355,17 @@ export default {
           })
       }).onCancel(() => {
       })
+    },
+    focarMensagem (mensagem) {
+      const id = `chat-message-${mensagem.id}`
+      this.identificarMensagem = id
+      this.$nextTick(() => {
+        const elem = document.getElementById(id)
+        elem.scrollIntoView()
+      })
+      setTimeout(() => {
+        this.identificarMensagem = null
+      }, 5000)
     }
   },
   mounted () {
@@ -349,8 +377,4 @@ export default {
 </script>
 
 <style lang="scss">
-.q-message-text {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.14),
-    0 2px 1px -1px rgba(0, 0, 0, 0.12);
-}
 </style>

@@ -1,26 +1,80 @@
 <template>
   <div
     style="min-height: 80px"
-    class="row bg-white justify-center items-start text-primary q-pt-md relative-position"
+    class="row bg-white justify-center items-center text-grey-9 relative-position"
   >
+    <div class="full-width absolute-top">
+      <q-menu
+        max-width="600px"
+        :key="cMensagensRapidas.length"
+        square
+        no-focus
+        class="no-box-shadow no-shadow"
+        fit
+        persistent
+        max-height="200px"
+        :offset="cMensagensRapidas.length === 1 ? [0,-45] : [0,0]"
+        :value="textChat.startsWith('/')"
+      >
+        <q-list
+          class="no-shadow no-box-shadow"
+          style="min-width: 100px"
+          separator
+          v-if="!cMensagensRapidas.length"
+        >
+          <q-item>
+            <q-item-section>
+              <q-item-label class="text-negative text-bold">Ops... Nenhuma mensagem rápida criada.</q-item-label>
+              <q-item-label caption>Cadastre suas mensagens na administração de sistema.</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+
+        <q-list
+          class="no-shadow no-box-shadow"
+          style="min-width: 100px"
+          separator
+          v-else
+        >
+          <q-item
+            v-for="resposta in cMensagensRapidas"
+            :key="resposta.key"
+            clickable
+            v-close-popup
+            @click="mensagemRapidaSelecionada(resposta.message)"
+          >
+            <q-item-section>
+              <q-item-label class="text-bold"> {{ resposta.key }} </q-item-label>
+              <q-item-label
+                caption
+                lines="2"
+              > {{ resposta.message }} </q-item-label>
+            </q-item-section>
+            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+              {{ resposta.message }}
+            </q-tooltip>
+          </q-item>
+        </q-list>
+      </q-menu>
+    </div>
     <q-btn
-      round
       flat
       @click="abrirEnvioArquivo"
       icon="mdi-paperclip"
       :disable="cDisableActions"
+      class="bg-padrao btn-rounded q-mx-xs"
     >
-      <q-tooltip>
+      <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
         Enviar arquivo
       </q-tooltip>
     </q-btn>
     <q-btn
-      round
       flat
       icon="mdi-emoticon-happy-outline"
       :disable="cDisableActions"
+      class="bg-padrao btn-rounded q-mx-xs"
     >
-      <q-tooltip>
+      <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
         Emoji
       </q-tooltip>
       <q-menu
@@ -43,10 +97,11 @@
       :loading="loading"
       :disable="cDisableActions"
       ref="inputEnvioMensagem"
+      id="inputEnvioMensagem"
       type="textarea"
       @keypress.enter.exact="() => textChat.trim().length ? enviarMensagem() : ''"
       v-show="!cMostrarEnvioArquivo"
-      class="WAL__field col-grow"
+      class="col-grow q-mt-md q-mx-xs inputEnvioMensagem"
       bg-color="blue-grey-1"
       placeholder="Digita sua mensagem"
       input-style="max-height: 30vh"
@@ -57,57 +112,17 @@
       v-model="textChat"
       :value="textChat"
       @paste="handleInputPaste"
-      hint="Quebra linha/Parágrafo: Shift + Enter || Enviar Mensagem: Enter || Mensagens Rápidas: /"
+      hint="Quebra linha: Shift + Enter || Mensagens Rápidas: /"
     />
-    <div class="full-width absolute-top">
-      <q-menu
-        max-width="600px"
-        :key="cMensagensRapidas.length"
-        square
-        no-focus
-        class="no-box-shadow no-shadow"
-        fit
-        persistent
-        max-height="200px"
-        :offset="cMensagensRapidas.length === 1 ? [0,-45] : [0,0]"
-        :value="textChat.startsWith('/')"
-      >
-        <q-list
-          class="no-shadow no-box-shadow"
-          style="min-width: 100px"
-          separator
-        >
-          <q-item
-            v-for="resposta in cMensagensRapidas"
-            :key="resposta.key"
-            clickable
-            v-close-popup
-            @click="mensagemRapidaSelecionada(resposta.message)"
-          >
-            <q-item-section>
-              <q-item-label> {{ resposta.key }} </q-item-label>
-              <q-item-label
-                caption
-                lines="2"
-              > {{ resposta.message }} </q-item-label>
-            </q-item-section>
-            <q-tooltip :delay="1500">
-              {{ resposta.message }}
-            </q-tooltip>
-          </q-item>
-        </q-list>
-      </q-menu>
-
-    </div>
-
     <!-- tamanho maximo por arquivo de 10mb -->
     <q-file
       :loading="loading"
       :disable="cDisableActions"
       ref="PickerFileMessage"
+      id="PickerFileMessage"
       v-show="cMostrarEnvioArquivo"
       v-model="arquivos"
-      class="WAL__field col-grow "
+      class="col-grow q-mt-md q-mx-xs PickerFileMessage"
       bg-color="blue-grey-1"
       input-style="max-height: 30vh"
       outlined
@@ -129,12 +144,11 @@
       ref="btnEnviarMensagem"
       @click="enviarMensagem"
       :disabled="ticketFocado.status !== 'open'"
-      round
       flat
       icon="mdi-send"
-      color="primary"
+      class="bg-padrao btn-rounded q-mx-xs"
     >
-      <q-tooltip>
+      <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
         Enviar Mensagem
       </q-tooltip>
     </q-btn>
@@ -142,34 +156,33 @@
       v-if="!textChat && !cMostrarEnvioArquivo && !isRecordingAudio"
       @click="handleSartRecordingAudio"
       :disabled="cDisableActions"
-      round
       flat
       icon="mdi-microphone"
-      color="primary"
+      class="bg-padrao btn-rounded q-mx-xs"
     >
-      <q-tooltip>
+      <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
         Enviar Áudio
       </q-tooltip>
     </q-btn>
     <div
-      style="width: 140px"
+      style="width: 200px"
       class="flex flex-center items-center"
       v-if="isRecordingAudio"
     >
       <q-btn
-        round
         flat
         icon="mdi-close"
         color="negative"
         @click="handleCancelRecordingAudio"
+        class="bg-padrao btn-rounded q-mx-xs"
       />
       <RecordingTimer />
       <q-btn
-        round
         flat
         icon="mdi-send-circle-outline"
         color="positive"
         @click="handleStopRecordingAudio"
+        class="bg-padrao btn-rounded q-mx-xs"
       />
     </div>
 
@@ -508,5 +521,14 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="sass" scoped>
+@media (max-width: 850px)
+  .inputEnvioMensagem,
+  .PickerFileMessage
+    width: 150px
+
+@media (min-width: 851px), (max-width: 1360px)
+  .inputEnvioMensagem,
+  .PickerFileMessage
+    width: 200px !important
 </style>

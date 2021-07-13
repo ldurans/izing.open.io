@@ -1,15 +1,15 @@
 <template>
   <div>
-    <q-header class="bg-white no-border-radius">
+    <q-header class="bg-white text-grey-10 no-border-radius">
       <q-toolbar
         style="min-height: 60px; height: 60px;"
-        class="no-border-radius q-pa-none text-primary"
+        class="no-border-radius q-pa-none "
       >
         <q-item
           clickable
           v-ripple
           class="q-ma-none q-pa-none full"
-          style="min-height: 60px; height: 60px; min-width: 400px;"
+          style="min-height: 60px; height: 60px; width: 300px;"
           @click="$emit('updateTicket:info-contato')"
         >
           <q-item-section
@@ -26,7 +26,7 @@
               </q-avatar>
             </q-btn>
           </q-item-section>
-          <q-item-section>
+          <q-item-section id="InfoCabecalhoChat">
             <q-item-label class="text-bold">
               {{ Value(cticket.contact, 'name') }}
               <q-skeleton
@@ -55,49 +55,47 @@
             >
               <span
                 v-if="Value(cticket.contact, 'name')"
-                class="text-primary"
+                class=""
                 style="font-size: 11px"
               > Ticket: {{ cticket.id }}</span>
             </q-item-label>
           </q-item-section>
         </q-item>
         <q-space />
-        <div v-if="Value(cticket.contact, 'name')">
+        <div
+          class="q-gutter-xs q-pr-sm"
+          v-if="Value(cticket.contact, 'name')"
+        >
           <q-btn
             @click="$emit('updateTicket:retornar')"
-            dense
             flat
-            round
             icon="mdi-replay"
             color="negative"
+            class="bg-padrao btn-rounded"
           >
-            <q-tooltip>
+            <q-tooltip content-class="bg-negative text-bold">
               Retornar Ticket para a Fila
             </q-tooltip>
           </q-btn>
           <q-btn
             @click="$emit('updateTicket:resolver')"
-            dense
-            round
             color="positive"
-            class="q-ml-sm"
             flat
+            class="bg-padrao btn-rounded"
             icon="mdi-comment-check"
           >
-            <q-tooltip>
+            <q-tooltip content-class="bg-positive text-bold">
               Resolver
             </q-tooltip>
           </q-btn>
           <q-btn
             @click="listarUsuarios"
-            dense
-            round
             flat
             color="primary"
-            class="q-ml-sm q-mr-md"
+            class="bg-padrao btn-rounded"
           >
             <q-icon name="mdi-transfer" />
-            <q-tooltip>
+            <q-tooltip content-class="bg-primary text-bold">
               Transferir
             </q-tooltip>
           </q-btn>
@@ -292,5 +290,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="sass" scoped>
+#InfoCabecalhoChat
+  .q-item__label + .q-item__label
+    margin-top: 1.5px
 </style>

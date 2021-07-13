@@ -1,14 +1,18 @@
 <template>
-  <div>
+  <q-list
+    padding
+    class="q-px-md "
+    separator
+  >
+    <!-- :clickable="ticket.status !== 'pending' && (ticket.id !== $store.getters['ticketFocado'].id || $route.name !== 'chat')" -->
     <q-item
-      dense
-      :clickable="ticket.status !== 'pending' && (ticket.id !== $store.getters['ticketFocado'].id || $route.name !== 'chat')"
-      style="min-height: 7vh; max-height: 9vh"
+      clickable
+      style="height: 85px;"
       @click="abrirChatContato(ticket)"
-      :style="`border-left: 5px solid ${borderColor[ticket.status]}`"
-      class="q-px-sm"
+      :style="`border-left: 5px solid ${borderColor[ticket.status]}; border-radius: 10px`"
+      id="item-ticket-houve"
       :class="{
-        'ticket-active-item bg-blue-1 text-primary': ticket.id === $store.getters['ticketFocado'].id,
+        'ticket-active-item': ticket.id === $store.getters['ticketFocado'].id,
       }"
     >
       <q-item-section
@@ -71,40 +75,39 @@
         </q-avatar>
       </q-item-section>
       <q-item-section id="ListItemsTicket">
-        <q-item-label lines="1">
-          <div class="col-row">
-            {{ticket.contact.name}}
-            <span class="float-right absolute-top-right">
-              <q-badge
-                dense
-                style="font-size: .7em;"
-                transparent
-                square
-                text-color="grey-10"
-                color="grey-2"
-                :label="dataInWords(ticket.updatedAt)"
-                :key="recalcularHora"
-              />
-            </span>
-          </div>
+        <q-item-label
+          class="text-bold"
+          lines="1"
+        >
+          {{ticket.contact.name}}
+          <span class="absolute-top-right q-pr-xs">
+            <q-badge
+              dense
+              style="font-size: .7em;"
+              transparent
+              square
+              text-color="grey-10"
+              color="secondary"
+              :label="dataInWords(ticket.updatedAt)"
+              :key="recalcularHora"
+            />
+          </span>
         </q-item-label>
         <q-item-label
           lines="1"
           caption
-        >{{ ticket.lastMessage }}</q-item-label>
+        >
+          {{ ticket.lastMessage }}
+        </q-item-label>
         <q-item-label
-          class="text-primary"
           lines="1"
           caption
         >
           #{{ ticket.id }}
-          <span
-            class="q-ml-lg q-mb-xs"
-            style="font-size: .9em;"
-          >
+          <span class="q-ml-sm">
             {{ `Fila: ${obterNomeFila(ticket.queueId)}` }}
           </span>
-          <span class="absolute-bottom-right q-mb-xs q-mr-xs">
+          <span class="absolute-bottom-right ">
             <q-icon
               v-if="ticket.status === 'closed'"
               name="mdi-check-circle-outline"
@@ -114,25 +117,27 @@
               <q-tooltip>
                 Atendimento Resolvido
               </q-tooltip>
-
             </q-icon>
-
           </span>
         </q-item-label>
         <q-item-label
-          class="text-primary"
           lines="1"
           caption
         >
           Usuário: {{ ticket && ticket.user && ticket.user.name }}
         </q-item-label>
+
         <!-- <span class="absolute-bottom-right" v-if="ticket.unreadMessages">
           <q-badge style="font-size: .8em; border-radius: 10px;" class="q-py-xs" dense text-color="white" color="green" :label="ticket.unreadMessages" />
         </span> -->
       </q-item-section>
     </q-item>
-    <q-separator />
-  </div>
+    <q-separator
+      color="grey-2"
+      inset="item"
+    />
+    <!-- <q-separator /> -->
+  </q-list>
 </template>
 
 <script>
@@ -198,6 +203,7 @@ export default {
       return formatDistance(parseJSON(date), new Date(), { locale: pt })
     },
     abrirChatContato (ticket) {
+      if (!(ticket.status !== 'pending' && (ticket.id !== this.$store.getters.ticketFocado.id || this.$route.name !== 'chat'))) return
       this.$store.commit('SET_HAS_MORE', true)
       this.$store.dispatch('AbrirChatMensagens', ticket)
     }
@@ -232,11 +238,16 @@ img:after
   border-radius: 0
   position: relative
   height: 100%
-  font-weight: 600
+  background: $blue-1 //$active-item-ticket
+  // background-color: #e6ebf5
 
 #ListItemsTicket
   .q-item__label + .q-item__label
     margin-top: 1.5px
+
+#item-ticket-houve:hover
+  background: $blue-1 //$active-item-ticket
+  transition: all .4s
 
 .primary
   border-left: 3px solid $primary

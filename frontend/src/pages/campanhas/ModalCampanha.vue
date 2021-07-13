@@ -61,7 +61,7 @@
               label="Mídia composição mensagem"
               ref="PickerFileMessage"
               v-model="arquivos"
-              class="WAL__field col-grow "
+              class="col-grow"
               bg-color="blue-grey-1"
               input-style="max-height: 30vh"
               outlined
@@ -80,7 +80,7 @@
               readonly
               label="Mídia composição mensagem"
               :value="cArquivoName"
-              class="WAL__field col-grow "
+              class=" col-grow "
               bg-color="blue-grey-1"
               input-style="max-height: 30vh"
               outlined

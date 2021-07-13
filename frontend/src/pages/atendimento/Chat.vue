@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-grey-2 vac-col-messages"
+    class="bg-white vac-col-messages"
     :style="style"
   >
     <InforCabecalhoChat
@@ -95,14 +95,17 @@
           class="row items-center col justify-center full-width"
         >
           <q-item
-            class="q-card--bordered shadow-6 q-pb-sm"
+            class="q-card--bordered q-pb-sm btn-rounded"
             :style="`
               width: 460px;
               min-width: 460px;
               max-width: 460px;
               max-height: 110px;
-              background-color: ${replyingMessage.fromMe ? '#b2dfdb' : '#fff'};
             `"
+            :class="{
+              'bg-blue-1': !replyingMessage.fromMe,
+              'bg-grey-2': replyingMessage.fromMe
+            }"
           >
             <q-item-section>
               <q-item-label
@@ -147,7 +150,7 @@ import InputMensagem from './InputMensagem'
 import mixinAtualizarStatusTicket from './mixinAtualizarStatusTicket'
 import mixinSockets from './mixinSockets'
 import InfiniteLoading from 'vue-infinite-loading'
-import whatsBackground from 'src/assets/wa-background.png'
+// import whatsBackground from 'src/assets/wa-background.png'
 
 export default {
   name: 'Chat',
@@ -182,7 +185,7 @@ export default {
     },
     style () {
       return {
-        backgroundImage: `url(${whatsBackground}) !important`
+        // backgroundImage: `url(${whatsBackground}) !important`
         // backgroundRepeat: 'no-repeat !important'
         // backgroundPosition: 'center !important',
         // backgroundSize: '50% !important'
@@ -209,7 +212,7 @@ export default {
         this.loading = true
         this.params.ticketId = this.ticketFocado.id
         this.params.pageNumber += 1
-        await this.$store.dispatch('LocalizarMensagensTicket', this.params).then(r => { this.loading = false })
+        await this.$store.dispatch('LocalizarMensagensTicket', this.params)
         this.loading = false
         infiniteState.loaded()
       } catch (error) {
@@ -238,6 +241,7 @@ export default {
     this.socketTicket()
   },
   mounted () {
+    console.log('========> mounted chat')
     this.socketMessagesList()
   },
   destroyed () {
@@ -300,14 +304,14 @@ audio {
 
 .textContentItem {
   overflow-wrap: break-word;
-  padding: 3px 80px 6px 6px;
+  // padding: 3px 80px 6px 6px;
 }
 
 .textContentItemDeleted {
   font-style: italic;
   color: rgba(0, 0, 0, 0.36);
   overflow-wrap: break-word;
-  padding: 3px 80px 6px 6px;
+  // padding: 3px 80px 6px 6px;
 }
 
 .replyginContactMsgSideColor {

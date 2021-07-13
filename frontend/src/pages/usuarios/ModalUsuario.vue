@@ -170,7 +170,12 @@ export default {
 
       try {
         if (this.usuario.id) {
-          const { data } = await UpdateUsuarios(this.usuario.id, this.usuario)
+          const {
+            email, id, name, tenantId
+          } = this.usuario
+          const { data } = await UpdateUsuarios(this.usuario.id, {
+            email, id, name, tenantId
+          })
           this.$emit('modalUsuario:usuario-editado', data)
           this.$q.notify({
             type: 'info',
