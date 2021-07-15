@@ -3,5 +3,22 @@
   "vetur.format.enable": true,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
   "vetur.experimental.templateInterpolationService": true,
-  "compile-hero.disable-compile-files-on-did-save-code": true
+  "compile-hero.disable-compile-files-on-did-save-code": true,
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#05d21e",
+    "activityBar.activeBorder": "#7663fb",
+    "activityBar.background": "#05d21e",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#7663fb",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "statusBar.background": "#04a017",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#05d21e",
+    "titleBar.activeBackground": "#04a017",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#04a01799",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.color": "#04a017"
 }

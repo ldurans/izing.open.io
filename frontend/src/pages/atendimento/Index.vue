@@ -748,6 +748,12 @@ export default {
     this.listarConfiguracoes()
   },
   async mounted () {
+    // Caso não existam filtros ainda no localstorage, salvar.
+    const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
+    if (!filtros?.pageNumber) {
+      console.log('filtros', filtros)
+      localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
+    }
     this.pesquisaTickets = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     this.$root.$on('handlerNotifications', this.handlerNotifications)
     await this.listarWhatsapps()
