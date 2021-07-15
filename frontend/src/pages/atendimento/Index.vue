@@ -295,7 +295,7 @@
       </q-page-container>
 
       <q-drawer
-        v-if="!cRouteContatos"
+        v-if="!cRouteContatos && ticketFocado.id"
         v-model="drawerContact"
         show-if-above
         bordered
@@ -563,13 +563,14 @@ export default {
     }
   },
   watch: {
-    pesquisaTickets: {
-      handler (v) {
-        localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
-      },
-      deep: true,
-      immediate: true
-    }
+    // pesquisaTickets: {
+    //   handler (v) {
+    //     this.$store.commit('SET_FILTER_PARAMS', extend(true, {}, this.pesquisaTickets))
+    //     localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
+    //   },
+    //   deep: true
+    //   // immediate: true
+    // }
   },
   computed: {
     ...mapGetters([
@@ -683,6 +684,7 @@ export default {
     async BuscarTicketFiltro () {
       this.$store.commit('RESET_TICKETS')
       this.loading = true
+      localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
       this.pesquisaTickets = {
         ...this.pesquisaTickets,
         pageNumber: 1
@@ -730,6 +732,7 @@ export default {
       localStorage.removeItem('userId')
       localStorage.removeItem('queues')
       localStorage.removeItem('usuario')
+      localStorage.removeItem('filtrosAtendimento')
       this.$router.go({ name: 'login', replace: true })
     },
     async tagSelecionada (tags) {
@@ -745,6 +748,7 @@ export default {
     this.listarConfiguracoes()
   },
   async mounted () {
+    this.pesquisaTickets = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     this.$root.$on('handlerNotifications', this.handlerNotifications)
     await this.listarWhatsapps()
     await this.consultarTickets()
