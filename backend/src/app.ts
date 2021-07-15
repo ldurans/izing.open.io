@@ -80,8 +80,8 @@ app.use(
   })
 );
 app.use(cookieParser());
-app.use(express.json({ limit: "20MB" }));
-app.use(express.urlencoded({ extended: true, limit: "20MB" }));
+app.use(express.json({ limit: "6MB" }));
+app.use(express.urlencoded({ extended: true, limit: "6MB" }));
 app.use(Sentry.Handlers.requestHandler());
 app.use("/public", express.static(uploadConfig.directory));
 app.use(routes);

@@ -14,8 +14,10 @@
         persistent
         max-height="200px"
         :offset="[0,-45]"
-        :value="textChat.startsWith('/')"
+        @hide="visualizarMensagensRapidas = false"
+        :value="visualizarMensagensRapidas"
       >
+        <!-- :value="textChat.startsWith('/')" -->
         <q-list
           class="no-shadow no-box-shadow"
           style="min-width: 100px"
@@ -114,8 +116,22 @@
         v-model="textChat"
         :value="textChat"
         @paste="handleInputPaste"
-        hint="Quebra linha: Shift + Enter || Mensagens Rápidas: /"
-      />
+        hint="Quebra linha: Shift + Enter"
+      >
+        <template v-slot:append>
+          <q-btn
+            dense
+            flat
+            round
+            icon="mdi-message-flash-outline"
+            @click="visualizarMensagensRapidas = !visualizarMensagensRapidas"
+          >
+            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+              Mensagens Rápidas
+            </q-tooltip>
+          </q-btn>
+        </template>
+      </q-input>
       <!-- tamanho maximo por arquivo de 10mb -->
       <q-file
         :loading="loading"
@@ -136,8 +152,8 @@
         append
         :max-files="5"
         counter
-        :max-file-size="10485760"
-        :max-total-size="30485760"
+        :max-file-size="5485760"
+        :max-total-size="5485760"
         accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
         @rejected="onRejectedFiles"
       />
@@ -280,6 +296,7 @@ export default {
         title: '',
         src: ''
       },
+      visualizarMensagensRapidas: false,
       arquivos: [],
       textChat: ''
     }
@@ -293,11 +310,12 @@ export default {
       return (this.loading || this.isRecordingAudio || this.ticketFocado.status !== 'open')
     },
     cMensagensRapidas () {
-      let search = this.textChat?.toLowerCase()
-      if (search && search.trim().startsWith('/')) {
-        search = search.replace('/', '')
-      }
-      return !search ? this.mensagensRapidas : this.mensagensRapidas.filter(r => r.key.toLowerCase().indexOf(search) !== -1)
+      // let search = this.textChat?.toLowerCase()
+      // if (search && search.trim().startsWith('/')) {
+      //   search = search.replace('/', '')
+      // }
+      // return !search ? this.mensagensRapidas : this.mensagensRapidas.filter(r => r.key.toLowerCase().indexOf(search) !== -1)
+      return this.mensagensRapidas
     }
   },
   methods: {
