@@ -102,8 +102,9 @@
         type="textarea"
         @keypress.enter.exact="() => textChat.trim().length ? enviarMensagem() : ''"
         v-show="!cMostrarEnvioArquivo"
-        class="col-grow q-mt-md q-mx-xs inputEnvioMensagem"
-        bg-color="blue-grey-1"
+        class="col-grow q-mt-md q-mx-xs text-grey-10 inputEnvioMensagem"
+        bg-color="grey-2"
+        color="grey-7"
         placeholder="Digita sua mensagem"
         input-style="max-height: 30vh"
         autogrow
@@ -141,7 +142,7 @@
         @rejected="onRejectedFiles"
       />
       <q-btn
-        v-if="textChat"
+        v-if="textChat || cMostrarEnvioArquivo"
         ref="btnEnviarMensagem"
         @click="enviarMensagem"
         :disabled="ticketFocado.status !== 'open'"
