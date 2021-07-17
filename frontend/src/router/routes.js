@@ -34,6 +34,11 @@ const routes = [
         component: () => import('pages/relatorios/ccListaRelatorios')
       },
       {
+        path: 'estatisticas-atendimentos-usuarios',
+        name: 'estatisticas-atendimentos-usuarios',
+        component: () => import('pages/relatorios/RelatorioResumoAtendimentosUsuarios')
+      },
+      {
         path: 'lista-contatos',
         name: 'lista-contatos',
         component: () => import('pages/relatorios/RelatorioContatosGeral')

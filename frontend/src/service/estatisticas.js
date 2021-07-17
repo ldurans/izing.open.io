@@ -15,3 +15,11 @@ export function RelatorioContatos (params) {
     params
   })
 }
+
+export function RelatorioResumoAtendimentosUsuarios (params) {
+  return request({
+    url: '/statistics-per-users',
+    method: 'get',
+    params
+  })
+}
