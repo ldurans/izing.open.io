@@ -173,9 +173,14 @@ export default {
           const {
             email, id, name, tenantId
           } = this.usuario
-          const { data } = await UpdateUsuarios(this.usuario.id, {
-            email, id, name, tenantId
-          })
+
+          const params = { email, id, name, tenantId }
+
+          if (this.$store.state.user.isAdmin) {
+            params.profile = this.usuario.profile
+          }
+
+          const { data } = await UpdateUsuarios(this.usuario.id, params)
           this.$emit('modalUsuario:usuario-editado', data)
           this.$q.notify({
             type: 'info',

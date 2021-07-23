@@ -203,6 +203,10 @@ export default {
       return formatDistance(parseJSON(date), new Date(), { locale: pt })
     },
     abrirChatContato (ticket) {
+      // caso esteja em um tamanho mobile, fechar a drawer dos contatos
+      if (this.$q.screen.lt.md && ticket.status !== 'pending') {
+        this.$root.$emit('infor-cabecalo-chat:acao-menu')
+      }
       if (!(ticket.status !== 'pending' && (ticket.id !== this.$store.getters.ticketFocado.id || this.$route.name !== 'chat'))) return
       this.$store.commit('SET_HAS_MORE', true)
       this.$store.dispatch('AbrirChatMensagens', ticket)

@@ -15,7 +15,7 @@
         max-height="200px"
         :offset="[0,-45]"
         @hide="visualizarMensagensRapidas = false"
-        :value="visualizarMensagensRapidas"
+        :value="textChat.startsWith('/') || visualizarMensagensRapidas"
       >
         <!-- :value="textChat.startsWith('/')" -->
         <q-list
@@ -26,7 +26,7 @@
         >
           <q-item>
             <q-item-section>
-              <q-item-label class="text-negative text-bold">Ops... Nenhuma mensagem rápida criada.</q-item-label>
+              <q-item-label class="text-negative text-bold">Ops... Nada por aqui!</q-item-label>
               <q-item-label caption>Cadastre suas mensagens na administração de sistema.</q-item-label>
             </q-item-section>
           </q-item>
@@ -310,12 +310,12 @@ export default {
       return (this.loading || this.isRecordingAudio || this.ticketFocado.status !== 'open')
     },
     cMensagensRapidas () {
-      // let search = this.textChat?.toLowerCase()
-      // if (search && search.trim().startsWith('/')) {
-      //   search = search.replace('/', '')
-      // }
-      // return !search ? this.mensagensRapidas : this.mensagensRapidas.filter(r => r.key.toLowerCase().indexOf(search) !== -1)
-      return this.mensagensRapidas
+      let search = this.textChat?.toLowerCase()
+      if (search && search.trim().startsWith('/')) {
+        search = search.replace('/', '')
+      }
+      return !search ? this.mensagensRapidas : this.mensagensRapidas.filter(r => r.key.toLowerCase().indexOf(search) !== -1)
+      // return this.mensagensRapidas
     }
   },
   methods: {
