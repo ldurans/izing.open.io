@@ -184,28 +184,35 @@
       </q-btn>
     </template>
     <template v-else>
-      <div
-        style="width: 200px"
-        class="flex flex-center items-center"
-        v-if="isRecordingAudio"
-      >
-        <q-btn
-          flat
-          icon="mdi-close"
-          color="negative"
-          @click="handleCancelRecordingAudio"
-          class="bg-padrao btn-rounded q-mx-xs"
+      <div class="full-width items-center row justify-end ">
+        <q-skeleton
+          animation="pulse-y"
+          class="col-grow q-mx-md"
+          type="text"
         />
-        <RecordingTimer />
-        <q-btn
-          flat
-          icon="mdi-send-circle-outline"
-          color="positive"
-          @click="handleStopRecordingAudio"
-          class="bg-padrao btn-rounded q-mx-xs"
-        />
-      </div>
+        <div
+          style="width: 200px"
+          class="flex flex-center items-center"
+          v-if="isRecordingAudio"
+        >
+          <q-btn
+            flat
+            icon="mdi-close"
+            color="negative"
+            @click="handleCancelRecordingAudio"
+            class="bg-padrao btn-rounded q-mx-xs"
+          />
+          <RecordingTimer />
+          <q-btn
+            flat
+            icon="mdi-send-circle-outline"
+            color="positive"
+            @click="handleStopRecordingAudio"
+            class="bg-padrao btn-rounded q-mx-xs"
+          />
+        </div>
 
+      </div>
     </template>
 
     <q-dialog

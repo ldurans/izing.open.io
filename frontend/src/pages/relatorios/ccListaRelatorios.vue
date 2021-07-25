@@ -1,9 +1,8 @@
 <template>
   <div
     class="q-pa-sm q-card q-ma-md"
-    style="height: calc(100vh - 90px)"
+    style="height: calc(100vh - 130px)"
   >
-
     <q-card
       class="q-ma-sm"
       square

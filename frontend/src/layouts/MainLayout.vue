@@ -1,67 +1,133 @@
 <template>
   <q-layout view="hHh Lpr lFf">
+
+    <q-header
+      elevated
+      class="bg-white text-grey-8 q-py-xs"
+      height-hint="58"
+    >
+      <q-toolbar>
+        <q-btn
+          flat
+          dense
+          round
+          @click="leftDrawerOpen = !leftDrawerOpen"
+          aria-label="Menu"
+          icon="menu"
+        >
+          <q-tooltip>Menu</q-tooltip>
+        </q-btn>
+
+        <q-btn
+          flat
+          no-caps
+          no-wrap
+          dense
+          class="q-ml-sm"
+          v-if="$q.screen.gt.xs"
+        >
+          <q-img
+            src="/bg-wchats.png"
+            spinner-color="white"
+            contain
+            style="height: 40px; width: 50px"
+          />
+          <q-toolbar-title
+            shrink
+            class="text-bold text-grey-7"
+          >
+            WChats
+          </q-toolbar-title>
+        </q-btn>
+
+        <q-space />
+
+        <div class="q-gutter-sm row items-center no-wrap">
+          <q-btn
+            round
+            dense
+            flat
+            color="grey-8"
+            icon="notifications"
+          >
+            <q-badge
+              color="red"
+              text-color="white"
+              floating
+            >
+              2
+            </q-badge>
+            <q-tooltip>Notifications</q-tooltip>
+          </q-btn>
+          <q-btn
+            round
+            flat
+            class="bg-padrao text-bold q-mx-sm q-ml-lg"
+          >
+            <q-avatar size="26px">
+              {{ $iniciaisString(username) }}
+            </q-avatar>
+            <q-menu>
+              <q-list style="min-width: 100px">
+                <q-item-label header> Olá! <b> {{ username }} </b> </q-item-label>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="abrirModalUsuario"
+                >
+                  <q-item-section>Perfil</q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="efetuarLogout"
+                >
+                  <q-item-section>Sair</q-item-section>
+                </q-item>
+                <q-separator />
+
+              </q-list>
+            </q-menu>
+
+            <q-tooltip>Usuário</q-tooltip>
+          </q-btn>
+        </div>
+      </q-toolbar>
+    </q-header>
+
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
       bordered
       content-class="bg-grey-2"
     >
-      <q-toolbar
-        class="text-primary q-pr-none"
-        style="height: 60px"
-      >
-        <q-btn-dropdown
-          color="primary"
-          :label="username"
-          no-caps
-          outline
-          ripple
-        >
-          <q-list style="min-width: 100px">
-            <q-item
-              clickable
-              v-close-popup
-              @click="abrirModalUsuario"
-            >
-              <q-item-section>Perfil</q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              v-close-popup
-              @click="efetuarLogout"
-            >
-              <q-item-section>Sair</q-item-section>
-            </q-item>
-            <q-separator />
+      <q-scroll-area class="fit">
+        <q-list :key="userProfile">
+          <q-item-label
+            header
+            class="text-grey-8"
+          >
+            Menu
+          </q-item-label>
+          <EssentialLink
+            v-for="item in menuData"
+            :key="item.title"
+            v-bind="item"
+          />
+          <div v-if="userProfile === 'admin'">
+            <q-separator spaced />
+            <q-item-label header>Administração</q-item-label>
+            <template v-for="item in menuDataAdmin">
+              <EssentialLink
+                v-if="exibirMenuBeta(item)"
+                :key="item.title"
+                v-bind="item"
+              />
+            </template>
+          </div>
 
-          </q-list>
-        </q-btn-dropdown>
-      </q-toolbar>
-      <q-list :key="userProfile">
-        <q-item-label
-          header
-          class="text-grey-8"
-        >
-          Menu
-        </q-item-label>
-        <EssentialLink
-          v-for="item in menuData"
-          :key="item.title"
-          v-bind="item"
-        />
-        <div v-if="userProfile === 'admin'">
-          <q-separator spaced />
-          <q-item-label header>Administração</q-item-label>
-          <template v-for="item in menuDataAdmin">
-            <EssentialLink
-              v-if="exibirMenuBeta(item)"
-              :key="item.title"
-              v-bind="item"
-            />
-          </template>
-        </div>
-
-      </q-list>
+        </q-list>
+      </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
