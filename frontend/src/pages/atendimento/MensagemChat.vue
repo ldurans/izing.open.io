@@ -121,7 +121,7 @@
                 color="black"
                 outline
                 dense
-                class="q-px-sm text-center"
+                class="q-px-sm text-center btn-rounded "
                 download="vCard"
                 :href="`data:text/x-vcard;charset=utf-8;base64,${returnCardContato(mensagem.body)}`"
               >
@@ -181,7 +181,7 @@
                   no-wrap
                   no-caps
                   stack
-                  class="q-mt-sm text-center text-black no-border-radius text-grey-9 ellipsis"
+                  class="q-mt-sm text-center text-black btn-rounded  text-grey-9 ellipsis"
                   download
                   :target="isPDF(mensagem.mediaUrl) ? '_blank' : ''"
                   :href="mensagem.mediaUrl"

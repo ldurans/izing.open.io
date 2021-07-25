@@ -10,13 +10,14 @@
       :sent="mensagem.fromMe"
       class="text-weight-medium fit q-ma-none"
       id="chat-message-resp"
-      @click="focarElemento(mensagem)"
+      style="min-width: 100px; max-width: 350px"
     >
+      <!-- @click="focarElemento(mensagem)" -->
 
       <!-- :bg-color="mensagem.fromMe ? '' : 'green-3' " -->
       <!-- :bg-color="mensagem.fromMe ? 'grey-2' : 'secondary' " -->
       <div
-        style="min-width: 100px; max-width: 350px"
+        class="full-width"
         :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
       >
         <div
@@ -90,14 +91,14 @@
           />
         </template>
         <template v-if="mensagem.mediaType === 'application'">
-          <div class="text-center full-width">
+          <div class="text-center ">
             <q-btn
               type="a"
               color="grey-3"
               no-wrap
               no-caps
               stack
-              class="q-mt-sm text-center text-black no-border-radius text-grey-9 ellipsis"
+              class="q-my-sm text-center text-black btn-rounded text-grey-9 ellipsis"
               download
               :target="isPDF(mensagem.mediaUrl) ? '_blank' : ''"
               :href="mensagem.mediaUrl"
@@ -108,15 +109,21 @@
               >
                 Baixar: {{ mensagem.body }}
               </q-tooltip>
-              <div class="row items-center q-my-md ">
+              <template slot>
                 <div
-                  class="ellipsis col-grow q-pr-sm"
-                  style="max-width: 290px"
+                  class="row items-center q-my-sm"
+                  style="max-width: 180px"
                 >
-                  {{ farmatarMensagemWhatsapp(mensagem.body) }}
+                  <div class="ellipsis col-grow q-pr-sm">
+                    {{ farmatarMensagemWhatsapp(mensagem.body) }}
+                  </div>
+                  <q-icon
+                    class="col"
+                    name="mdi-download"
+                  />
                 </div>
-                <q-icon name="mdi-download" />
-              </div>
+
+              </template>
             </q-btn>
           </div>
           <!-- <q-btn

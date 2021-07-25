@@ -307,7 +307,7 @@ export default {
       return this.arquivos.length > 0
     },
     cDisableActions () {
-      return (this.loading || this.isRecordingAudio || this.ticketFocado.status !== 'open')
+      return (this.isRecordingAudio || this.ticketFocado.status !== 'open')
     },
     cMensagensRapidas () {
       let search = this.textChat?.toLowerCase()
