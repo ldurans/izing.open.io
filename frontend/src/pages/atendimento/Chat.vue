@@ -6,7 +6,6 @@
     <InforCabecalhoChat
       @updateTicket:resolver="atualizarStatusTicket('closed')"
       @updateTicket:retornar="atualizarStatusTicket('pending')"
-      @updateTicket:info-contato="exibirContato = !exibirContato"
     />
     <div
       ref="scrollContainer"
@@ -42,7 +41,11 @@
         v-if="cMessages.length && ticketFocado.id"
       />
       <div
-        class="absolute-center row col items-center "
+        class="absolute-center items-center "
+        :class="{
+        'row col text-center': !$q.screen.xs,
+        'full-width text-center': $q.screen.xs
+        }"
         v-if="!ticketFocado.id"
       >
         <q-icon
@@ -50,10 +53,19 @@
           size="10em"
           color="grey-6"
           name="mdi-emoticon-cool-outline"
-          class="row col"
+          class="row col text-center"
+          :class="{
+        'row col text-center': !$q.screen.xs,
+        'full-width text-center center-block': $q.screen.xs
+        }"
         >
         </q-icon>
-        <h1 class="text-grey-6 row col justify-center">
+        <h1
+          class="text-grey-6 row col justify-center"
+          :class="{
+          'full-width': $q.screen.xs
+        }"
+        >
           Selecione um ticket!
         </h1>
       </div>

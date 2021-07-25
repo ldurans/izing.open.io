@@ -38,8 +38,6 @@ export default {
       socket.emit(`${usuario.tenantId}-joinChatBox`, this.$store.getters.ticketFocado.id)
 
       socket.on(`${usuario.tenantId}-appMessage`, data => {
-        console.log('socketMessagesList: ADD_MESSAGE', data.message)
-
         verifySocketTicketAction(data.message.ticket, data.action)
 
         if (data.action === 'create') {
@@ -53,7 +51,7 @@ export default {
         }
 
         if (data.action === 'update') {
-          console.log('UPDATE_MESSAGE', data.message)
+          console.log('update', data.message)
           this.$store.commit('UPDATE_MESSAGE', data.message)
         }
 
@@ -67,7 +65,6 @@ export default {
         verifySocketTicketAction(data.ticket, data.action)
 
         if (data.action === 'update' && data.ticket.userId === userId) {
-          console.log('data.ticket - ticket', data.ticket)
           if (data.ticket.status === 'open' && !data.ticket.isTransference) {
             this.$store.commit('TICKET_FOCADO', data.ticket)
           }

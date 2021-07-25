@@ -96,7 +96,11 @@ const atendimentoTicket = {
       state.ticketFocado.contact = payload
     },
     TICKET_FOCADO (state, payload) {
-      state.ticketFocado = payload
+      const params = {
+        ...payload,
+        status: payload.status == 'pending' ? 'open' : payload.status
+      }
+      state.ticketFocado = params
       return state.ticketFocado
     },
     LOAD_INITIAL_MESSAGES (state, payload) {

@@ -5,12 +5,21 @@
         style="min-height: 60px; height: 60px;"
         class="no-border-radius q-pa-none "
       >
+        <q-btn
+          flat
+          dense
+          round
+          icon="mdi-menu"
+          v-if="$q.screen.lt.md"
+          class="q-mx-xs-none q-ml-md"
+          @click="$root.$emit('infor-cabecalo-chat:acao-menu')"
+        />
         <q-item
           clickable
           v-ripple
           class="q-ma-none q-pa-none full"
           style="min-height: 60px; height: 60px; width: 300px;"
-          @click="$emit('updateTicket:info-contato')"
+          @click="$root.$emit('update-ticket:info-contato')"
         >
           <q-item-section
             avatar
@@ -66,39 +75,87 @@
           class="q-gutter-xs q-pr-sm"
           v-if="Value(cticket.contact, 'name')"
         >
-          <q-btn
-            @click="$emit('updateTicket:retornar')"
-            flat
-            icon="mdi-replay"
-            color="negative"
-            class="bg-padrao btn-rounded"
-          >
-            <q-tooltip content-class="bg-negative text-bold">
-              Retornar Ticket para a Fila
-            </q-tooltip>
-          </q-btn>
-          <q-btn
-            @click="$emit('updateTicket:resolver')"
-            color="positive"
-            flat
-            class="bg-padrao btn-rounded"
-            icon="mdi-comment-check"
-          >
-            <q-tooltip content-class="bg-positive text-bold">
-              Resolver
-            </q-tooltip>
-          </q-btn>
-          <q-btn
-            @click="listarUsuarios"
-            flat
-            color="primary"
-            class="bg-padrao btn-rounded"
-          >
-            <q-icon name="mdi-transfer" />
-            <q-tooltip content-class="bg-primary text-bold">
-              Transferir
-            </q-tooltip>
-          </q-btn>
+          <template v-if="!$q.screen.xs">
+            <q-btn
+              @click="$emit('updateTicket:retornar')"
+              flat
+              icon="mdi-replay"
+              color="negative"
+              class="bg-padrao btn-rounded"
+            >
+              <q-tooltip content-class="bg-negative text-bold">
+                Retornar Ticket para a Fila
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              @click="$emit('updateTicket:resolver')"
+              color="positive"
+              flat
+              class="bg-padrao btn-rounded"
+              icon="mdi-comment-check"
+            >
+              <q-tooltip content-class="bg-positive text-bold">
+                Resolver
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              @click="listarUsuarios"
+              flat
+              color="primary"
+              class="bg-padrao btn-rounded"
+            >
+              <q-icon name="mdi-transfer" />
+              <q-tooltip content-class="bg-primary text-bold">
+                Transferir
+              </q-tooltip>
+            </q-btn>
+          </template>
+          <template v-else>
+            <q-fab
+              color="primary"
+              flat
+              dense
+              class="bg-padrao text-bold btn-rounded"
+              icon="keyboard_arrow_left"
+              direction="left"
+              padding="10px"
+            >
+              <q-fab-action
+                @click="$emit('updateTicket:resolver')"
+                color="positive"
+                flat
+                class="bg-padrao q-pa-xs "
+                icon="mdi-comment-check"
+              >
+                <q-tooltip content-class="bg-positive text-bold">
+                  Resolver
+                </q-tooltip>
+              </q-fab-action>
+              <q-fab-action
+                @click="$emit('updateTicket:retornar')"
+                flat
+                icon="mdi-replay"
+                color="negative"
+                class="bg-padrao q-pa-xs "
+              >
+                <q-tooltip content-class="bg-negative text-bold">
+                  Retornar Ticket para a Fila
+                </q-tooltip>
+              </q-fab-action>
+
+              <q-fab-action
+                @click="listarUsuarios"
+                flat
+                color="primary"
+                class="bg-padrao q-pa-xs "
+              >
+                <q-icon name="mdi-transfer" />
+                <q-tooltip content-class="bg-primary text-bold">
+                  Transferir
+                </q-tooltip>
+              </q-fab-action>
+            </q-fab>
+          </template>
 
           <!-- <q-btn
             round

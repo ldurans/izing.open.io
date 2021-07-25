@@ -8,28 +8,38 @@
       container
       view="lHr LpR lFr"
     >
-
       <!-- view="lHr LpR lFr" -->
+      <!-- :behavior="!ticketFocado.id ? 'desktop' : 'default'" -->
       <q-drawer
         v-model="drawerTickets"
+        @hide="drawerTickets = false"
         show-if-above
-        behavior="desktop"
-        :width="380"
+        :overlay="$q.screen.lt.md"
         persistent
+        :breakpoint="769"
         bordered
-        content-class="hide-scrollbar"
+        :width="$q.screen.lt.md ? $q.screen.width : 380"
+        content-class="hide-scrollbar full-width"
       >
+        <!-- :behavior="$q.screen.lt.sm && (drawerTickets || !ticketFocado.id) ? 'desktop' : 'default'" -->
         <q-toolbar
           class="q-pr-none q-gutter-xs"
           style="height: 64px"
         >
           <q-btn-dropdown
-            :label="username"
             no-caps
             flat
             class="bg-padrao text-bold btn-rounded"
             ripple
           >
+            <template v-slot:label>
+              <div
+                :style="{maxWidth: $q.screen.lt.sm ? '120px' : ''}"
+                class="ellipsis"
+              >
+                {{ username }}
+              </div>
+            </template>
             <q-list style="min-width: 100px">
               <q-item
                 clickable
@@ -49,7 +59,6 @@
 
             </q-list>
           </q-btn-dropdown>
-
           <q-space />
           <q-btn
             flat
@@ -92,11 +101,11 @@
           <q-btn
             :icon="!cFiltroSelecionado ? 'mdi-filter-outline' : 'mdi-filter-plus'"
             flat
-            class="bg-padrao btn-rounded"
+            class="bg-padrao btn-rounded "
             :color="cFiltroSelecionado ? 'deep-orange-9' : 'primary'"
           >
             <q-menu
-              content-class="shadow-10"
+              content-class="shadow-10 no-scroll"
               square
             >
               <div
@@ -249,9 +258,9 @@
           </q-input>
           <q-btn
             flat
-            class="bg-padrao btn-rounded"
+            class=" bg-padrao btn-rounded"
             icon="mdi-book-account-outline"
-            @click="$router.push({name:'chat-contatos'})"
+            @click="$q.screen.lt.md ? modalNovoTicket=true : $router.push({name:'chat-contatos'})"
           >
             <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
               Contatos
@@ -736,10 +745,14 @@ export default {
       this.$router.go({ name: 'login', replace: true })
     },
     async tagSelecionada (tags) {
-      console.log('tagSelecionada', tags)
-      const data = await EditarEtiquetasContato(this.ticketFocado.contact.id, [...tags])
-      console.log('tagSelecionada - contact data', data)
+      await EditarEtiquetasContato(this.ticketFocado.contact.id, [...tags])
       // this.contatoEditado(data)
+    },
+    setValueMenu () {
+      this.drawerTickets = !this.drawerTickets
+    },
+    setValueMenuContact () {
+      this.drawerContact = !this.drawerContact
     }
   },
   beforeMount () {
@@ -748,6 +761,8 @@ export default {
     this.listarConfiguracoes()
   },
   async mounted () {
+    this.$root.$on('infor-cabecalo-chat:acao-menu', this.setValueMenu)
+    this.$root.$on('update-ticket:info-contato', this.setValueMenuContact)
     // Caso não existam filtros ainda no localstorage, salvar.
     const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     if (!filtros?.pageNumber) {
@@ -769,6 +784,8 @@ export default {
   },
   destroyed () {
     this.$root.$off('handlerNotifications', this.handlerNotifications)
+    this.$root.$off('infor-cabecalo-chat:acao-menu', this.setValueMenu)
+    this.$root.$on('update-ticket:info-contato', this.setValueMenuContact)
     this.socketDisconnect()
     this.$store.commit('TICKET_FOCADO', {})
   }
