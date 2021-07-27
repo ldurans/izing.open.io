@@ -41,21 +41,21 @@
         v-if="cMessages.length && ticketFocado.id"
       />
       <div
-        class="absolute-center items-center "
+        class="absolute-center items-center"
         :class="{
-        'row col text-center': !$q.screen.xs,
+        'row col text-center q-col-gutter-lg': !$q.screen.xs,
         'full-width text-center': $q.screen.xs
         }"
         v-if="!ticketFocado.id"
       >
         <q-icon
-          style="margin-left: 10vw"
-          size="10em"
+          style="margin-left: 30vw"
+          size="6em"
           color="grey-6"
-          name="mdi-emoticon-cool-outline"
+          name="mdi-emoticon-wink-outline"
           class="row col text-center"
           :class="{
-        'row col text-center': !$q.screen.xs,
+        'row col text-center q-mr-lg': !$q.screen.xs,
         'full-width text-center center-block': $q.screen.xs
         }"
         >

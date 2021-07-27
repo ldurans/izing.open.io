@@ -82,9 +82,9 @@ export default {
         }
 
         // preprar notificação
-        if (data.action === 'updateUnread' || data.action === 'delete') {
-
-        }
+        // if (data.action === 'updateUnread') {
+        //   this.$store.commit('RESET_UNREAD', data.ticket)
+        // }
       })
 
       socket.on(`${usuario.tenantId}-contact`, data => {
@@ -113,7 +113,7 @@ export default {
         }
 
         if (data.action === 'updateUnread') {
-          this.$store.commit('RESET_UNREAD', data.ticketId)
+          this.$store.commit('RESET_UNREAD', data.ticket)
         }
 
         if (

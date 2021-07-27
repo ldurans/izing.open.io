@@ -295,7 +295,7 @@ export default {
 <style lang="sass" >
 .my-sticky-dynamic
   /* height or max-height is important */
-  height: 90vh
+  height: 85vh
 
   .q-table__top,
   .q-table__bottom,

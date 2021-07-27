@@ -42,6 +42,18 @@ const arredodar = (num, places) => {
   }
 }
 
+const iniciaisString = nomecompleto => {
+  nomecompleto = nomecompleto.replace(/\s(de|da|dos|das)\s/g, ' ') // Remove os de,da, dos,das.
+  const iniciais = nomecompleto.match(/\b(\w)/gi) // Iniciais de cada parte do nome.
+  // var nome = nomecompleto.split(' ')[0].toLowerCase() // Primeiro nome.
+  const sobrenomes = iniciais
+    .splice(1, iniciais.length - 1)
+    .join('')
+    .toLowerCase() // Iniciais
+  const iniciaisNome = iniciais + sobrenomes
+  return iniciaisNome.toUpperCase()
+}
+
 export default ({
   Vue
 }) => {
@@ -49,6 +61,7 @@ export default ({
   Vue.component('DatePick', DatePick)
   Vue.prototype.$formatarValorMoeda = formatarValorMoeda
   Vue.prototype.$round = arredodar
+  Vue.prototype.$iniciaisString = iniciaisString
   Vue.prototype.$notificarErro = notificarErro
   Vue.prototype.$notificarSucesso = notificarSucesso
 }
