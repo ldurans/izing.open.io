@@ -5,6 +5,38 @@
 </template>
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data () {
+    return {
+      IDLE_TIMEOUT: 5, // seconds
+      idleSecondsCounter: 0
+
+    }
+  },
+  methods: {
+    CheckIdleTime () {
+      this.idleSecondsCounter++
+      // var oPanel = document.getElementById('SecondsUntilExpire')
+      // if (oPanel) { oPanel.innerHTML = (this.IDLE_TIMEOUT - this.idleSecondsCounter) + '' }
+      if (this.idleSecondsCounter >= this.IDLE_TIMEOUT) {
+        alert('Time expired!')
+        // document.location.href = 'logout.html'
+      }
+    }
+  },
+  beforeMount () {
+    //   console.log(document.onclick)
+    //   document.onclick = function () {
+    //     this.idleSecondsCounter = 0
+    //   }
+    //   document.onmousemove = function () {
+    //     this.idleSecondsCounter = 0
+    //   }
+    //   document.onkeypress = function () {
+    //     this.idleSecondsCounter = 0
+    //   }
+    //   window.setInterval(this.CheckIdleTime, 1000)
+  }
+
 }
 </script>

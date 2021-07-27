@@ -522,6 +522,7 @@ import { ListarConfiguracoes } from 'src/service/configuracoes'
 import { ListarMensagensRapidas } from 'src/service/mensagensRapidas'
 import { ListarEtiquetas } from 'src/service/etiquetas'
 import { EditarEtiquetasContato } from 'src/service/contatos'
+import { RealizarLogout } from 'src/service/login'
 
 export default {
   name: 'IndexAtendimento',
@@ -734,7 +735,9 @@ export default {
       // this.usuario = data
       this.modalUsuario = true
     },
-    efetuarLogout () {
+    async efetuarLogout () {
+      console.log('logout - index atendimento', usuario)
+      await RealizarLogout(usuario)
       localStorage.removeItem('token')
       localStorage.removeItem('username')
       localStorage.removeItem('profile')

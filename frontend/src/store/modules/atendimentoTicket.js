@@ -26,6 +26,8 @@ const atendimentoTicket = {
       return state.hasMore
     },
     LOAD_TICKETS (state, payload) {
+      console.log('LOAD_TICKETS', payload)
+
       const newTickets = payload
       newTickets.forEach(ticket => {
         const ticketIndex = state.tickets.findIndex(t => t.id === ticket.id)
@@ -45,14 +47,20 @@ const atendimentoTicket = {
       state.tickets = []
     },
     RESET_UNREAD (state, payload) {
-      const ticketId = payload
-      const ticketIndex = state.tickets.findIndex(t => t.id === ticketId)
+      console.log('RESET_UNREAD', payload)
+      const tickets = [...state.tickets]
+      const ticketId = payload.ticketId
+      const ticketIndex = tickets.findIndex(t => t.id === ticketId)
       if (ticketIndex !== -1) {
-        state.tickets[ticketIndex].unreadMessages = 0
+        tickets[ticketIndex] = payload
+        tickets[ticketIndex].unreadMessages = 0
       }
+      state.ticket = tickets
       return state.tickets
     },
     UPDATE_TICKET (state, payload) {
+      console.log('UPDATE_TICKET', payload)
+
       const newTickets = [...state.tickets]
       const ticket = payload
       const ticketIndex = newTickets.findIndex(t => t.id === ticket.id)
@@ -62,7 +70,7 @@ const atendimentoTicket = {
         newTickets.unshift(ticket)
       }
       state.tickets = newTickets
-      return state.tickets
+      // return state.tickets
     },
     DELETE_TICKET (state, payload) {
       const ticketId = payload
@@ -70,9 +78,11 @@ const atendimentoTicket = {
       if (ticketIndex !== -1) {
         state.tickets.splice(ticketIndex, 1)
       }
-      return state.tickets
+      // return state.tickets
     },
     UPDATE_TICKET_MESSAGES_COUNT (state, payload) {
+      console.log('UPDATE_TICKET_MESSAGES_COUNT', payload)
+
       const { ticket, searchParam } = payload
       const ticketIndex = state.tickets.findIndex(t => t.id === ticket.id)
       if (ticketIndex !== -1) {
@@ -81,7 +91,7 @@ const atendimentoTicket = {
       } else if (!searchParam) {
         state.tickets.unshift(ticket)
       }
-      return state.tickets
+      // return state.tickets
     },
     UPDATE_TICKET_CONTACT (state, payload) {
       const contact = payload
@@ -96,12 +106,13 @@ const atendimentoTicket = {
       state.ticketFocado.contact = payload
     },
     TICKET_FOCADO (state, payload) {
+      console.log('TICKET_FOCADO', payload)
       const params = {
         ...payload,
         status: payload.status == 'pending' ? 'open' : payload.status
       }
       state.ticketFocado = params
-      return state.ticketFocado
+      // return state.ticketFocado
     },
     LOAD_INITIAL_MESSAGES (state, payload) {
       const { messages, messagesOffLine } = payload
@@ -133,7 +144,7 @@ const atendimentoTicket = {
       } else {
         state.mensagens.push(newMessage)
       }
-      return state.mensagens
+      // return state.mensagens
     },
     UPDATE_MESSAGE (state, payload) {
       const messageToUpdate = payload
@@ -143,17 +154,17 @@ const atendimentoTicket = {
         messagesState[messageIndex] = messageToUpdate
       }
       state.mensagens = messagesState
-      return state.mensagens
+      // return state.mensagens
     },
     DELETE_MESSAGE (state, payload) {
       const messagesState = [...state.mensagens]
       const message = messagesState.filter(msg => msg.id !== payload.id)
       state.mensagens = message
-      return state.mensagens
+      // return state.mensagens
     },
     RESET_MESSAGE (state) {
       state.mensagens = []
-      return state.mensagens
+      // return state.mensagens
     }
   },
   actions: {

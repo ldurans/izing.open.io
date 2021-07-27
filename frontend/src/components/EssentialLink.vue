@@ -3,8 +3,9 @@
     clickable
     v-ripple
     :active="routeName == cRouterName"
-    active-class="bg-teal-1 text-grey-8 menu-link-active-item-top"
+    active-class="bg-blue-1 text-grey-8 text-bold menu-link-active-item-top"
     @click=" () => !(routeName == cRouterName) ? $router.push({ name: routeName }) : ''"
+    class="houverList"
     :class="{'text-negative text-bolder': color === 'negative'}"
   >
     <q-item-section
@@ -67,7 +68,9 @@ export default {
 <style lang="sass">
 .menu-link-active-item-top
   border-left: 4px solid rgb(21, 120, 173)
-  border-radius: 0
+  // border-radius: 20px
+  border-top-right-radius: 20px
+  border-bottom-right-radius: 20px
   position: relative
   height: 100%
 </style>

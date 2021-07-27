@@ -8,6 +8,14 @@ export function RealizarLogin (user) {
   })
 }
 
+export function RealizarLogout (user) {
+  return request({
+    url: '/auth/logout/',
+    method: 'post',
+    data: user
+  })
+}
+
 export function RefreshToken () {
   return request({
     url: '/auth/refresh_token',

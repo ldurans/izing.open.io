@@ -2,9 +2,9 @@
   <q-layout view="hHh Lpr lFf">
 
     <q-header
-      elevated
-      class="bg-white text-grey-8 q-py-xs"
+      class="bg-white text-grey-8 q-py-xs "
       height-hint="58"
+      bordered
     >
       <q-toolbar>
         <q-btn
@@ -99,7 +99,7 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
-      content-class="bg-grey-2"
+      content-class="bg-white text-grey-9"
     >
       <q-scroll-area class="fit">
         <q-list :key="userProfile">
@@ -161,6 +161,16 @@ const username = localStorage.getItem('username')
 import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { mapGetters } from 'vuex'
 import { ListarConfiguracoes } from 'src/service/configuracoes'
+const token = JSON.parse(localStorage.getItem('token'))
+const usuario = JSON.parse(localStorage.getItem('usuario'))
+import openSocket from 'socket.io-client'
+import { RealizarLogout } from 'src/service/login'
+const socket = openSocket(process.env.API, {
+  query: {
+    token
+  },
+  forceNew: true
+})
 
 const objMenu = [
   // {
@@ -365,7 +375,10 @@ export default {
       // this.usuario = data
       this.modalUsuario = true
     },
-    efetuarLogout () {
+    async efetuarLogout () {
+      console.log('logout - index atendimento', usuario)
+
+      await RealizarLogout(usuario)
       localStorage.removeItem('token')
       localStorage.removeItem('username')
       localStorage.removeItem('profile')
@@ -377,6 +390,12 @@ export default {
     async listarConfiguracoes () {
       const { data } = await ListarConfiguracoes()
       localStorage.setItem('configuracoes', JSON.stringify(data))
+    },
+    conectarSocket (usuario) {
+      console.log('conectarSocket', usuario)
+      socket.on(`${usuario.tenantId}-users`, data => {
+        console.log('usuarios status', data)
+      })
     }
   },
   async mounted () {
@@ -388,6 +407,10 @@ export default {
     }
     await this.dadosUsuario()
     this.userProfile = localStorage.getItem('profile')
+    await this.conectarSocket(usuario)
+  },
+  destroyed () {
+    socket.disconnect()
   }
 }
 </script>
