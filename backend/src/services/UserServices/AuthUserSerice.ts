@@ -15,6 +15,7 @@ interface Response {
   user: User;
   token: string;
   refreshToken: string;
+  usuariosOnline?: User[];
 }
 
 const AuthUserService = async ({
@@ -36,11 +37,19 @@ const AuthUserService = async ({
 
   const token = createAccessToken(user);
   const refreshToken = createRefreshToken(user);
+  await user.update({ isOnline: true, lastLogin: new Date() });
+
+  // retornar listagem de usuarios online
+  const usuariosOnline = await User.findAll({
+    where: { tenantId: user.tenantId, isOnline: true }
+    // include: [{ model: Queue, as: "queues" }]
+  });
 
   return {
     user,
     token,
-    refreshToken
+    refreshToken,
+    usuariosOnline
   };
 };
 

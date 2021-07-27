@@ -3,7 +3,8 @@ import { getIO } from "../../libs/socket";
 import Ticket from "../../models/Ticket";
 
 interface MessageData {
-  id: string;
+  id?: string;
+  messageId: string;
   ticketId: number;
   body: string;
   contactId?: number;
@@ -22,9 +23,16 @@ const CreateMessageService = async ({
   messageData,
   tenantId
 }: Request): Promise<Message> => {
-  await Message.upsert(messageData);
-
-  const message = await Message.findByPk(messageData.id, {
+  const msg = await Message.findOne({
+    where: { messageId: messageData.messageId }
+  });
+  if (!msg) {
+    await Message.create(messageData);
+  } else {
+    await msg.update(messageData);
+  }
+  const message = await Message.findOne({
+    where: { messageId: messageData.messageId },
     include: [
       "contact",
       {

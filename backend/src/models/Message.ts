@@ -11,6 +11,7 @@ import {
   ForeignKey,
   AllowNull
 } from "sequelize-typescript";
+import { v4 as uuidV4 } from "uuid";
 import Contact from "./Contact";
 import Ticket from "./Ticket";
 import User from "./User";
@@ -18,12 +19,22 @@ import User from "./User";
 @Table
 class Message extends Model<Message> {
   @PrimaryKey
+  @Default(uuidV4)
   @Column
   id: string;
+
+  @Default(null)
+  @AllowNull
+  @Column
+  messageId: string;
 
   @Default(0)
   @Column
   ack: number;
+
+  @Default("pedding")
+  @Column(DataType.ENUM("pedding", "sended", "received"))
+  status: string;
 
   @Default(false)
   @Column
@@ -35,6 +46,11 @@ class Message extends Model<Message> {
 
   @Column(DataType.TEXT)
   body: string;
+
+  @Column(DataType.VIRTUAL)
+  get mediaName(): string | null {
+    return this.getDataValue("mediaUrl");
+  }
 
   @Column(DataType.STRING)
   get mediaUrl(): string | null {
@@ -61,6 +77,7 @@ class Message extends Model<Message> {
   @Column(DataType.DATE(6))
   updatedAt: Date;
 
+  // @HasOne(() => Message, "messageId")
   @ForeignKey(() => Message)
   @Column
   quotedMsgId: string;
@@ -95,6 +112,28 @@ class Message extends Model<Message> {
 
   @BelongsTo(() => User)
   user: User;
+
+  @Default(null)
+  @AllowNull
+  @Column(DataType.DATE)
+  scheduleDate: Date;
+
+  @Default(null)
+  @AllowNull
+  @Column(
+    DataType.ENUM("campaign", "chat", "external", "schedule", "bot", "sync")
+  )
+  sendType: string;
 }
+
+// Message.sequelize?.define("Message", {
+//   quotedMsgId: {
+//     type: DataType.STRING,
+//     references: {
+//       model: Message,
+//       key: "messageId"
+//     }
+//   }
+// });
 
 export default Message;

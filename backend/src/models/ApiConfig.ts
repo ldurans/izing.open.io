@@ -18,7 +18,7 @@ import Whatsapp from "./Whatsapp";
 // @Table({ freezeTableName: true })
 class ApiConfig extends Model<ApiConfig> {
   @PrimaryKey
-  @Default(uuidV4())
+  @Default(uuidV4)
   @Column(DataType.UUID)
   id: string;
 

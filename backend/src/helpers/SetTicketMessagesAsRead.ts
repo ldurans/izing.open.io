@@ -32,7 +32,7 @@ const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
     .to(`${ticket.tenantId}-notification`)
     .emit(`${ticket.tenantId}-ticket`, {
       action: "updateUnread",
-      ticketId: ticket.id
+      ticket
     });
 };
 

@@ -24,6 +24,7 @@ export const initIO = (httpServer: Server): SocketIO => {
       if (verify.isValid) {
         const query = socket?.handshake?.query;
         socket.handshake.query = { ...query, ...verify.data };
+        socket.auth = verify.data;
         next();
       }
       next(new Error("authentication error"));

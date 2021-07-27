@@ -11,12 +11,27 @@ import { getValue, setValue } from "./redisClient";
 import { logger } from "../utils/logger";
 import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesWbot";
 import SendOffLineMessagesWbot from "../services/WbotServices/SendOffLineMessagesWbot";
+import SendMessagesSystemWbot from "../services/WbotServices/SendMessagesSystemWbot";
 
 interface Session extends Client {
   id?: number;
 }
 
 const sessions: Session[] = [];
+
+const checking: any = {};
+
+const checkMessages = async (wbot: Session, tenantId: number | string) => {
+  if (checking[tenantId]) return;
+  checking[tenantId] = true;
+  logger.info(`checking new message tenant ${tenantId}`);
+  try {
+    await SendMessagesSystemWbot(wbot, tenantId);
+  } catch (error) {
+    logger.error(`ERROR: checkMessages Tenant: ${tenantId}:: ${error}`);
+  }
+  checking[tenantId] = false;
+};
 
 // const syncContacts = async (wbot: Session, tenantId: string | number) => {
 //   let contacts;
@@ -282,6 +297,13 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           session: whatsapp
         });
       });
+
+      setInterval(
+        checkMessages,
+        +(process.env.CHECK_INTERVAL || 5000),
+        wbot,
+        tenantId
+      );
     } catch (err) {
       logger.error(`initWbot error | Error: ${err}`);
       // 'Error: Protocol error (Runtime.callFunctionOn): Session closed.'

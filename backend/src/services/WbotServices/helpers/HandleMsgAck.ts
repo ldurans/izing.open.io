@@ -13,7 +13,8 @@ const HandleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
   const io = getIO();
 
   try {
-    const messageToUpdate = await Message.findByPk(msg.id.id, {
+    const messageToUpdate = await Message.findOne({
+      where: { messageId: msg.id.id },
       include: [
         "contact",
         {

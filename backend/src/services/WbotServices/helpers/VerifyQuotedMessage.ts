@@ -9,7 +9,7 @@ const VerifyQuotedMessage = async (
   const wbotQuotedMsg = await msg.getQuotedMessage();
 
   const quotedMsg = await Message.findOne({
-    where: { id: wbotQuotedMsg.id.id }
+    where: { messageId: wbotQuotedMsg.id.id }
   });
 
   if (!quotedMsg) return null;
