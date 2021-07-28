@@ -17,6 +17,7 @@ import AutoReplyLogs from "../models/AutoReplyLogs";
 import UserMessagesLog from "../models/UserMessagesLog";
 import FastReply from "../models/FastReply";
 import Tag from "../models/Tag";
+import ContactWallet from "../models/ContactWallet";
 import ContactTag from "../models/ContactTag";
 import Campaign from "../models/Campaign";
 import CampaignContacts from "../models/CampaignContacts";
@@ -48,6 +49,7 @@ const models = [
   UserMessagesLog,
   FastReply,
   Tag,
+  ContactWallet,
   ContactTag,
   Campaign,
   CampaignContacts,

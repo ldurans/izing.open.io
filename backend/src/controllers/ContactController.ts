@@ -12,6 +12,7 @@ import UpdateContactTagsService from "../services/ContactServices/UpdateContactT
 import CheckIsValidContact from "../services/WbotServices/CheckIsValidContact";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
 import AppError from "../errors/AppError";
+import UpdateContactWalletsService from "../services/ContactServices/UpdateContactWalletsService";
 
 type IndexQuery = {
   searchParam: string;
@@ -159,6 +160,29 @@ export const updateContactTags = async (
 
   const contact = await UpdateContactTagsService({
     tags,
+    contactId,
+    tenantId
+  });
+
+  const io = getIO();
+  io.emit(`${tenantId}-contact`, {
+    action: "update",
+    contact
+  });
+
+  return res.status(200).json(contact);
+};
+
+export const updateContactWallet = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { wallets } = req.body;
+  const { contactId } = req.params;
+  const { tenantId } = req.user;
+
+  const contact = await UpdateContactWalletsService({
+    wallets,
     contactId,
     tenantId
   });

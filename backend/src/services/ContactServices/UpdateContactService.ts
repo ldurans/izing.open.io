@@ -30,7 +30,14 @@ const UpdateContactService = async ({
   const contact = await Contact.findOne({
     where: { id: contactId, tenantId },
     attributes: ["id", "name", "number", "email", "profilePicUrl"],
-    include: ["extraInfo", "tags"]
+    include: [
+      "extraInfo",
+      "tags",
+      {
+        association: "wallets",
+        attributes: ["id", "name"]
+      }
+    ]
   });
 
   if (!contact) {

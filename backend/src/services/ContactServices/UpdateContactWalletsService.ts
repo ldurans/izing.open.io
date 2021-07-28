@@ -1,42 +1,42 @@
 import AppError from "../../errors/AppError";
 import Contact from "../../models/Contact";
-import ContactTag from "../../models/ContactTag";
+import ContactWallet from "../../models/ContactWallet";
 
 interface Request {
-  tags: number[] | string[];
+  wallets: number[] | string[];
   contactId: string;
   tenantId: string | number;
 }
 
-interface Tag {
-  tagId: number | string;
+interface Wallet {
+  walletId: number | string;
   contactId: number | string;
   tenantId: number | string;
 }
 
-const UpdateContactService = async ({
-  tags,
+const UpdateContactWalletsService = async ({
+  wallets,
   contactId,
   tenantId
 }: Request): Promise<Contact> => {
-  await ContactTag.destroy({
+  await ContactWallet.destroy({
     where: {
       tenantId,
       contactId
     }
   });
 
-  const contactTags: Tag[] = [];
+  const contactWallets: Wallet[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tags.forEach((tag: any) => {
-    contactTags.push({
-      tagId: !tag.id ? tag : tag.id,
+  wallets.forEach((wallet: any) => {
+    contactWallets.push({
+      walletId: !wallet.id ? wallet : wallet.id,
       contactId,
       tenantId
     });
   });
 
-  await ContactTag.bulkCreate(contactTags);
+  await ContactWallet.bulkCreate(contactWallets);
 
   const contact = await Contact.findOne({
     where: { id: contactId, tenantId },
@@ -58,4 +58,4 @@ const UpdateContactService = async ({
   return contact;
 };
 
-export default UpdateContactService;
+export default UpdateContactWalletsService;

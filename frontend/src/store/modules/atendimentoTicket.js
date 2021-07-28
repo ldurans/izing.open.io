@@ -15,7 +15,12 @@ const atendimentoTicket = {
     chatTicketDisponivel: false,
     tickets: [],
     ticketsLocalizadosBusca: [],
-    ticketFocado: {},
+    ticketFocado: {
+      contacts: {
+        tags: [],
+        wallets: []
+      }
+    },
     hasMore: false,
     contatos: [],
     mensagens: []

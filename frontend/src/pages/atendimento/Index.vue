@@ -320,161 +320,232 @@
           </span>
         </div>
         <q-separator />
-        <div
-          class="q-pa-sm"
-          v-if="ticketFocado.id"
-        >
-          <q-card
-            class="bg-white btn-rounded"
-            style="width: 100%"
-            bordered
-            flat
+        <q-scroll-area style="height: calc(100vh - 70px)">
+          <div
+            class="q-pa-sm"
+            v-if="ticketFocado.id"
           >
-            <q-card-section class="text-center">
-              <q-avatar style="border: 1px solid #9e9e9ea1 !important; width: 100px; height: 100px">
-                <q-icon
-                  name="mdi-account"
-                  style="width: 100px; height: 100px"
-                  size="6em"
-                  color="grey-5"
-                  v-if="!ticketFocado.contact.profilePicUrl"
-                />
-                <q-img
-                  :src="ticketFocado.contact.profilePicUrl"
-                  style="width: 100px; height: 100px"
-                >
-                  <template v-slot:error>
-                    <q-icon
-                      name="mdi-account"
-                      size="1.5em"
-                      color="grey-5"
-                    />
-                  </template>
-                </q-img>
-              </q-avatar>
-              <div
-                class="text-caption q-mt-md"
-                style="font-size: 14px"
-              >
-                {{ ticketFocado.contact.name || ''  }}
-              </div>
-              <div
-                class="text-caption q-mt-sm"
-                style="font-size: 14px"
-              >
-                {{ ticketFocado.contact.number || ''  }}
-              </div>
-              <q-btn
-                color="primary"
-                class="q-mt-sm bg-padrao btn-rounded"
-                flat
-                icon="edit"
-                label="Editar Contato"
-                @click="editContact(ticketFocado.contact.id)"
-              />
-            </q-card-section>
-          </q-card>
-          <q-card
-            class="bg-white q-mt-sm btn-rounded"
-            style="width: 100%"
-            bordered
-            flat
-          >
-            <q-card-section class="text-bold q-pb-none">
-              Outras Informações
-            </q-card-section>
-            <q-card-section class="q-pa-none">
-              <q-list>
-                <q-item
-                  v-for="(info, idx) in ticketFocado.contact.extraInfo"
-                  :key="idx"
-                >
-                  <q-item-section>
-                    <q-item-label caption>{{info.name}}</q-item-label>
-                    <q-item-label>{{info.value}}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card-section>
-          </q-card>
-          <q-card
-            class="bg-white q-mt-sm btn-rounded"
-            style="width: 100%"
-            bordered
-            flat
-          >
-            <q-card-section class="text-bold q-pb-none">
-              Etiquetas
-              <q-separator />
-            </q-card-section>
-            <q-card-section class="q-pa-none">
-              <q-select
-                square
-                borderless
-                :value="ticketFocado.contact.tags"
-                multiple
-                :options="etiquetas"
-                use-chips
-                option-value="id"
-                option-label="tag"
-                emit-value
-                map-options
-                dropdown-icon="add"
-                @input="tagSelecionada"
-              >
-                <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
-                  <q-item
-                    v-bind="itemProps"
-                    v-on="itemEvents"
+            <q-card
+              class="bg-white btn-rounded"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-center">
+                <q-avatar style="border: 1px solid #9e9e9ea1 !important; width: 100px; height: 100px">
+                  <q-icon
+                    name="mdi-account"
+                    style="width: 100px; height: 100px"
+                    size="6em"
+                    color="grey-5"
+                    v-if="!ticketFocado.contact.profilePicUrl"
+                  />
+                  <q-img
+                    :src="ticketFocado.contact.profilePicUrl"
+                    style="width: 100px; height: 100px"
                   >
-                    <q-item-section>
-                      <q-item-label v-html="opt.tag"></q-item-label>
-                    </q-item-section>
-                    <q-item-section side>
-                      <q-checkbox
-                        :value="selected"
-                        @input="toggleOption(opt)"
+                    <template v-slot:error>
+                      <q-icon
+                        name="mdi-account"
+                        size="1.5em"
+                        color="grey-5"
                       />
-                    </q-item-section>
-                  </q-item>
-                </template>
-                <template v-slot:selected-item="{opt}">
-                  <q-chip
-                    dense
-                    square
-                    color="white"
-                    text-color="primary"
-                    class="q-ma-xs row col-12 text-body1"
-                  >
-                    <q-icon
-                      :style="`color: ${opt.color}`"
-                      name="mdi-pound-box-outline"
-                      size="28px"
-                      class="q-mr-sm"
-                    />
-                    {{ opt.tag }}
-                  </q-chip>
-                </template>
-                <template v-slot:no-option="{ itemProps, itemEvents }">
+                    </template>
+                  </q-img>
+                </q-avatar>
+                <div
+                  class="text-caption q-mt-md"
+                  style="font-size: 14px"
+                >
+                  {{ ticketFocado.contact.name || ''  }}
+                </div>
+                <div
+                  class="text-caption q-mt-sm"
+                  style="font-size: 14px"
+                >
+                  {{ ticketFocado.contact.number || ''  }}
+                </div>
+                <q-btn
+                  color="primary"
+                  class="q-mt-sm bg-padrao btn-rounded"
+                  flat
+                  icon="edit"
+                  label="Editar Contato"
+                  @click="editContact(ticketFocado.contact.id)"
+                />
+              </q-card-section>
+            </q-card>
+
+            <q-card
+              class="bg-white q-mt-sm btn-rounded"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-bold q-pb-none">
+                Etiquetas
+                <q-separator />
+              </q-card-section>
+              <q-card-section class="q-pa-none">
+                <q-select
+                  square
+                  borderless
+                  :value="ticketFocado.contact.tags"
+                  multiple
+                  :options="etiquetas"
+                  use-chips
+                  option-value="id"
+                  option-label="tag"
+                  emit-value
+                  map-options
+                  dropdown-icon="add"
+                  @input="tagSelecionada"
+                >
+                  <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
+                    <q-item
+                      v-bind="itemProps"
+                      v-on="itemEvents"
+                    >
+                      <q-item-section>
+                        <q-item-label v-html="opt.tag"></q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-checkbox
+                          :value="selected"
+                          @input="toggleOption(opt)"
+                        />
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:selected-item="{opt}">
+                    <q-chip
+                      dense
+                      square
+                      color="white"
+                      text-color="primary"
+                      class="q-ma-xs row col-12 text-body1"
+                    >
+                      <q-icon
+                        :style="`color: ${opt.color}`"
+                        name="mdi-pound-box-outline"
+                        size="28px"
+                        class="q-mr-sm"
+                      />
+                      {{ opt.tag }}
+                    </q-chip>
+                  </template>
+                  <template v-slot:no-option="{ itemProps, itemEvents }">
+                    <q-item
+                      v-bind="itemProps"
+                      v-on="itemEvents"
+                    >
+                      <q-item-section>
+                        <q-item-label class="text-negative text-bold">
+                          Ops... Sem etiquetas criadas!
+                        </q-item-label>
+                        <q-item-label caption>
+                          Cadastre novas etiquetas na administração de sistemas.
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+
+                </q-select>
+              </q-card-section>
+            </q-card>
+            <q-card
+              class="bg-white q-mt-sm btn-rounded"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-bold q-pb-none">
+                Carteira
+                <q-separator />
+              </q-card-section>
+              <q-card-section class="q-pa-none">
+                <q-select
+                  square
+                  borderless
+                  :value="ticketFocado.contact.wallets"
+                  multiple
+                  :options="usuarios"
+                  use-chips
+                  option-value="id"
+                  option-label="name"
+                  emit-value
+                  map-options
+                  dropdown-icon="add"
+                  @input="carteiraDefinida"
+                >
+                  <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
+                    <q-item
+                      v-bind="itemProps"
+                      v-on="itemEvents"
+                    >
+                      <q-item-section>
+                        <q-item-label v-html="opt.name"></q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-checkbox
+                          :value="selected"
+                          @input="toggleOption(opt)"
+                        />
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:selected-item="{opt}">
+                    <q-chip
+                      dense
+                      square
+                      color="white"
+                      text-color="primary"
+                      class="q-ma-xs row col-12 text-body1"
+                    >
+                      {{ opt.name }}
+                    </q-chip>
+                  </template>
+                  <template v-slot:no-option="{ itemProps, itemEvents }">
+                    <q-item
+                      v-bind="itemProps"
+                      v-on="itemEvents"
+                    >
+                      <q-item-section>
+                        <q-item-label class="text-negative text-bold">
+                          Ops... Sem carteiras disponíveis!!
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+
+                </q-select>
+              </q-card-section>
+            </q-card>
+            <q-card
+              class="bg-white q-mt-sm btn-rounded"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-bold q-pb-none">
+                Outras Informações
+              </q-card-section>
+              <q-card-section class="q-pa-none">
+                <q-list>
                   <q-item
-                    v-bind="itemProps"
-                    v-on="itemEvents"
+                    v-for="(info, idx) in ticketFocado.contact.extraInfo"
+                    :key="idx"
                   >
                     <q-item-section>
-                      <q-item-label class="text-negative text-bold">
-                        Ops... Sem etiquetas criadas!
-                      </q-item-label>
-                      <q-item-label caption>
-                        Cadastre novas etiquetas na administração de sistemas.
-                      </q-item-label>
+                      <q-item-label caption>{{info.name}}</q-item-label>
+                      <q-item-label>{{info.value}}</q-item-label>
                     </q-item-section>
                   </q-item>
-                </template>
-
-              </q-select>
-            </q-card-section>
-          </q-card>
-        </div>
+                </q-list>
+              </q-card-section>
+            </q-card>
+          </div>
+        </q-scroll-area>
       </q-drawer>
 
       <ModalNovoTicket :modalNovoTicket.sync="modalNovoTicket" />
@@ -521,8 +592,9 @@ import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { ListarConfiguracoes } from 'src/service/configuracoes'
 import { ListarMensagensRapidas } from 'src/service/mensagensRapidas'
 import { ListarEtiquetas } from 'src/service/etiquetas'
-import { EditarEtiquetasContato } from 'src/service/contatos'
+import { EditarEtiquetasContato, EditarCarteiraContato } from 'src/service/contatos'
 import { RealizarLogout } from 'src/service/login'
+import { ListarUsuarios } from 'src/service/user'
 
 export default {
   name: 'IndexAtendimento',
@@ -748,8 +820,22 @@ export default {
       this.$router.go({ name: 'login', replace: true })
     },
     async tagSelecionada (tags) {
+      console.log('tagSelecionada', tags)
       await EditarEtiquetasContato(this.ticketFocado.contact.id, [...tags])
       // this.contatoEditado(data)
+    },
+    async carteiraDefinida (wallets) {
+      console.log('carteiraDefinida', wallets)
+      await EditarCarteiraContato(this.ticketFocado.contact.id, [...wallets])
+    },
+    async listarUsuarios () {
+      try {
+        const { data } = await ListarUsuarios()
+        this.usuarios = data.users
+      } catch (error) {
+        console.error(error)
+        this.$notificarErro('Problema ao carregar usuários', error)
+      }
     },
     setValueMenu () {
       this.drawerTickets = !this.drawerTickets
@@ -776,6 +862,7 @@ export default {
     this.$root.$on('handlerNotifications', this.handlerNotifications)
     await this.listarWhatsapps()
     await this.consultarTickets()
+    await this.listarUsuarios()
     const { data } = await ListarMensagensRapidas()
     this.mensagensRapidas = data
     if (!('Notification' in window)) {
