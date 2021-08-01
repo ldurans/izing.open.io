@@ -207,12 +207,6 @@
                     </q-list>
                     <q-separator class="q-mb-md" />
                     <q-toggle
-                      v-if="!isNotViewTicketsQueueUndefined() || profile === 'admin'"
-                      v-model="pesquisaTickets.includeNotQueueDefined"
-                      label="Incluir Tickets sem filas definidas"
-                      @input="debounce(BuscarTicketFiltro(), 700)"
-                    />
-                    <q-toggle
                       v-model="pesquisaTickets.withUnreadMessages"
                       label="Somente Tickets com mensagens não lidas"
                       @input="debounce(BuscarTicketFiltro(), 700)"
@@ -531,17 +525,20 @@
                 Outras Informações
               </q-card-section>
               <q-card-section class="q-pa-none">
-                <q-list>
-                  <q-item
-                    v-for="(info, idx) in ticketFocado.contact.extraInfo"
-                    :key="idx"
-                  >
-                    <q-item-section>
-                      <q-item-label caption>{{info.name}}</q-item-label>
-                      <q-item-label>{{info.value}}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
+                <template v-if="cIsExtraInfo">
+                  <q-list>
+                    <q-item
+                      v-for="(info, idx) in ticketFocado.contact.extraInfo"
+                      :key="idx"
+                    >
+                      <q-item-section>
+                        <q-item-label caption> asaasasasa {{info.name}}</q-item-label>
+                        <q-item-label>{{info.value}}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </template>
+
               </q-card-section>
             </q-card>
           </div>
@@ -612,6 +609,7 @@ export default {
       debounce,
       alertSound,
       usuario,
+      usuarios: [],
       username,
       modalUsuario: false,
       toolbarSearch: true,
@@ -690,6 +688,9 @@ export default {
     cFiltroSelecionado () {
       const { queuesIds, showAll, withUnreadMessages, isNotAssignedUser } = this.pesquisaTickets
       return !!(queuesIds?.length || showAll || withUnreadMessages || isNotAssignedUser)
+    },
+    cIsExtraInfo () {
+      return this.ticketFocado?.contact?.extraInfo?.length > 0
     }
   },
   methods: {
@@ -729,11 +730,6 @@ export default {
       const { data } = await ListarConfiguracoes()
       localStorage.setItem('configuracoes', JSON.stringify(data))
     },
-    isNotViewTicketsQueueUndefined () {
-      const configuracoes = JSON.parse(localStorage.getItem('configuracoes'))
-      const conf = configuracoes.find(c => c.key === 'NotViewTicketsQueueUndefined')
-      return (conf?.value === 'enabled')
-    },
     onScroll (info) {
       if (info.verticalPercentage <= 0.85) return
       this.onLoadMore()
@@ -743,8 +739,8 @@ export default {
       this.modalContato = true
     },
     contatoEditado (contato) {
-      this.$store.commit('UPDATE_TICKET_FOCADO_CONTACT', contato)
-      this.$store.commit('UPDATE_TICKET_CONTACT', contato)
+      // this.$store.commit('UPDATE_TICKET_FOCADO_CONTACT', contato)
+      // this.$store.commit('UPDATE_TICKET_CONTACT', contato)
     },
     async consultarTickets (paramsInit = {}) {
       const params = {
@@ -790,6 +786,7 @@ export default {
     async listarFilas () {
       const { data } = await ListarFilas()
       this.filas = data
+      localStorage.setItem('filasCadastradas', JSON.stringify(data || []))
     },
     async listarWhatsapps () {
       const { data } = await ListarWhatsapps()
@@ -848,16 +845,21 @@ export default {
     this.listarFilas()
     this.listarEtiquetas()
     this.listarConfiguracoes()
-  },
-  async mounted () {
-    this.$root.$on('infor-cabecalo-chat:acao-menu', this.setValueMenu)
-    this.$root.$on('update-ticket:info-contato', this.setValueMenuContact)
-    // Caso não existam filtros ainda no localstorage, salvar.
     const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     if (!filtros?.pageNumber) {
       console.log('filtros', filtros)
       localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
     }
+  },
+  async mounted () {
+    this.$root.$on('infor-cabecalo-chat:acao-menu', this.setValueMenu)
+    this.$root.$on('update-ticket:info-contato', this.setValueMenuContact)
+    // Caso não existam filtros ainda no localstorage, salvar.
+    // const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
+    // if (!filtros?.pageNumber) {
+    //   console.log('filtros', filtros)
+    //   localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
+    // }
     this.pesquisaTickets = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     this.$root.$on('handlerNotifications', this.handlerNotifications)
     await this.listarWhatsapps()

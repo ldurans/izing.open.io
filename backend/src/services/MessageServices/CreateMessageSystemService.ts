@@ -4,9 +4,9 @@
 import * as Sentry from "@sentry/node";
 import { logger } from "../../utils/logger";
 // import MessageOffLine from "../../models/MessageOffLine";
-import { getIO } from "../../libs/socket";
 import Ticket from "../../models/Ticket";
 import Message from "../../models/Message";
+import socketEmit from "../../helpers/socketEmit";
 
 interface MessageData {
   ticketId: number;
@@ -18,7 +18,7 @@ interface MessageData {
   mediaUrl?: string;
   timestamp?: number;
   internalId?: string;
-  userId: string | number;
+  userId?: string | number;
   quotedMsgId?: string;
   // status?: string;
   scheduleDate?: string | Date;
@@ -41,7 +41,7 @@ interface Request {
   tenantId: string | number;
   medias?: Express.Multer.File[];
   ticket: Ticket;
-  userId: number | string;
+  userId?: number | string;
 }
 
 // const writeFileAsync = promisify(writeFile);
@@ -56,8 +56,6 @@ const CreateMessageSystemService = async ({
   sendType,
   status
 }: Request): Promise<void> => {
-  const io = getIO();
-
   const messageData: MessageData = {
     ticketId: ticket.id,
     body: msg.body,
@@ -104,12 +102,10 @@ const CreateMessageSystemService = async ({
 
           const messageCreated = await Message.findByPk(msgCreated.id, {
             include: [
-              "contact",
               {
                 model: Ticket,
                 as: "ticket",
-                where: { tenantId },
-                include: ["contact"]
+                where: { tenantId }
               },
               {
                 model: Message,
@@ -127,15 +123,11 @@ const CreateMessageSystemService = async ({
             lastMessage: messageCreated.mediaName || messageCreated.body
           });
 
-          io.to(`${tenantId}-${messageCreated.ticketId.toString()}`)
-            .to(`${tenantId}-${messageCreated.ticket.status}`)
-            .to(`${tenantId}-notification`)
-            .emit(`${tenantId}-appMessage`, {
-              action: "create",
-              message: messageCreated,
-              ticket: messageCreated.ticket,
-              contact: messageCreated.ticket.contact
-            });
+          socketEmit({
+            tenantId,
+            type: "chat:create",
+            payload: messageCreated
+          });
         })
       );
     } else {
@@ -146,12 +138,10 @@ const CreateMessageSystemService = async ({
 
       const messageCreated = await Message.findByPk(msgCreated.id, {
         include: [
-          "contact",
           {
             model: Ticket,
             as: "ticket",
-            where: { tenantId },
-            include: ["contact"]
+            where: { tenantId }
           },
           {
             model: Message,
@@ -168,15 +158,11 @@ const CreateMessageSystemService = async ({
 
       await ticket.update({ lastMessage: messageCreated.body });
 
-      io.to(`${tenantId}-${messageCreated.ticketId.toString()}`)
-        .to(`${tenantId}-${messageCreated.ticket.status}`)
-        .to(`${tenantId}-notification`)
-        .emit(`${tenantId}-appMessage`, {
-          action: "create",
-          message: messageCreated,
-          ticket: messageCreated.ticket,
-          contact: messageCreated.ticket.contact
-        });
+      socketEmit({
+        tenantId,
+        type: "chat:create",
+        payload: messageCreated
+      });
     }
   } catch (error) {
     logger.error("CreateMessageSystemService", error);

@@ -77,6 +77,17 @@
         >
           <template v-if="!$q.screen.xs">
             <q-btn
+              @click="$emit('abrir:modalAgendamentoMensagen')"
+              flat
+              icon="mdi-message-text-clock-outline"
+              color="grey-9"
+              class="bg-padrao btn-rounded"
+            >
+              <q-tooltip content-class="bg-grey-9 text-bold">
+                Agendamento de mensagem
+              </q-tooltip>
+            </q-btn>
+            <q-btn
               @click="$emit('updateTicket:retornar')"
               flat
               icon="mdi-replay"
@@ -249,7 +260,6 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-
   </div>
 </template>
 

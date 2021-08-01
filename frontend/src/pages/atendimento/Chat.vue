@@ -6,6 +6,7 @@
     <InforCabecalhoChat
       @updateTicket:resolver="atualizarStatusTicket('closed')"
       @updateTicket:retornar="atualizarStatusTicket('pending')"
+      @abrir:modalAgendamentoMensagen="modalAgendamentoMensagen=true"
     />
     <div
       ref="scrollContainer"
@@ -151,6 +152,35 @@
       <q-resize-observer @resize="onResizeInputMensagem" />
     </q-footer>
 
+    <q-dialog
+      v-model="modalAgendamentoMensagen"
+      persistent
+    >
+      <q-card :style=" $q.screen.width < 770 ? `min-width: 98vw; max-width: 98vw`: 'min-width: 50vw; max-width: 50vw'">
+        <q-card-section>
+          <div class="text-h6">
+            Agendamento de Mensagem
+            <q-btn
+              flat
+              class="bg-padrao btn-rounded float-right"
+              color="negative"
+              icon="close"
+              v-close-popup
+            />
+          </div>
+        </q-card-section>
+        <q-card-section class="q-mb-lg">
+          <InputMensagem
+            isScheduleDate
+            :mensagensRapidas="mensagensRapidas"
+            :replyingMessage.sync="replyingMessage"
+          />
+        </q-card-section>
+
+      </q-card>
+
+    </q-dialog>
+
   </div>
 </template>
 <script>
@@ -186,7 +216,11 @@ export default {
         ticketId: null,
         pageNumber: 1
       },
-      replyingMessage: null
+      agendamentoMensagem: {
+        scheduleDate: ''
+      },
+      replyingMessage: null,
+      modalAgendamentoMensagen: false
     }
   },
   computed: {

@@ -1,7 +1,5 @@
 import * as Yup from "yup";
 import { Request, Response } from "express";
-import { getIO } from "../libs/socket";
-
 import ListContactsService from "../services/ContactServices/ListContactsService";
 import CreateContactService from "../services/ContactServices/CreateContactService";
 import ShowContactService from "../services/ContactServices/ShowContactService";
@@ -72,12 +70,6 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     tenantId
   });
 
-  const io = getIO();
-  io.emit(`${tenantId}-contact`, {
-    action: "create",
-    contact
-  });
-
   return res.status(200).json(contact);
 };
 
@@ -123,12 +115,6 @@ export const update = async (
     tenantId
   });
 
-  const io = getIO();
-  io.emit(`${tenantId}-contact`, {
-    action: "update",
-    contact
-  });
-
   return res.status(200).json(contact);
 };
 
@@ -140,12 +126,6 @@ export const remove = async (
   const { tenantId } = req.user;
 
   await DeleteContactService({ id: contactId, tenantId });
-
-  const io = getIO();
-  io.emit(`${tenantId}-contact`, {
-    action: "delete",
-    contactId
-  });
 
   return res.status(200).json({ message: "Contact deleted" });
 };
@@ -164,12 +144,6 @@ export const updateContactTags = async (
     tenantId
   });
 
-  const io = getIO();
-  io.emit(`${tenantId}-contact`, {
-    action: "update",
-    contact
-  });
-
   return res.status(200).json(contact);
 };
 
@@ -185,12 +159,6 @@ export const updateContactWallet = async (
     wallets,
     contactId,
     tenantId
-  });
-
-  const io = getIO();
-  io.emit(`${tenantId}-contact`, {
-    action: "update",
-    contact
   });
 
   return res.status(200).json(contact);

@@ -1,10 +1,4 @@
 
-const isNotViewTicketsQueueUndefined = () => {
-  const configuracoes = JSON.parse(localStorage.getItem('configuracoes'))
-  const conf = configuracoes?.find(c => c.key === 'NotViewTicketsQueueUndefined')
-  return (conf?.value === 'enabled')
-}
-
 const isNotViewAssignedTickets = () => {
   const configuracoes = JSON.parse(localStorage.getItem('configuracoes'))
   const conf = configuracoes?.find(c => c.key === 'NotViewAssignedTickets')
@@ -51,13 +45,6 @@ const verifySocketTicketAction = (ticket, action = null) => {
   // if (filtros.searchParam) return false
 
   let isValid = false
-
-  // Se o ticket não possuir fila definida, checar se o parametro
-  // permite visualizar tickets sem filas definidas e, se sim, retornar falso
-  if (!ticket.queueId && isNotViewTicketsQueueUndefined()) {
-    console.log('isNotViewTicketsQueueUndefined')
-    return false
-  }
 
   // Se o ticket não possuir fila definida, checar o filtro
   // permite visualizar tickets sem filas definidas é falso.

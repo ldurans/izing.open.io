@@ -6,6 +6,7 @@ import Ticket from "../../models/Ticket";
 import User from "../../models/User";
 import ShowTicketService from "./ShowTicketService";
 import CampaignContacts from "../../models/CampaignContacts";
+import socketEmit from "../../helpers/socketEmit";
 
 const FindOrCreateTicketService = async (
   contact: Contact,
@@ -35,18 +36,33 @@ const FindOrCreateTicketService = async (
       contactId: groupContact ? groupContact.id : contact.id
     },
     include: [
-      "contact",
+      {
+        model: Contact,
+        as: "contact",
+        include: [
+          "extraInfo",
+          "tags",
+          {
+            association: "wallets",
+            attributes: ["id", "name"]
+          }
+        ]
+      },
       {
         model: User,
         as: "user",
-        attributes: ["id", "name", "profile"]
+        attributes: ["id", "name"]
       }
     ]
   });
 
   if (ticket) {
     await ticket.update({ unreadMessages });
-
+    socketEmit({
+      tenantId,
+      type: "ticket:update",
+      payload: ticket
+    });
     return ticket;
   }
 
@@ -57,7 +73,25 @@ const FindOrCreateTicketService = async (
         tenantId
       },
       order: [["updatedAt", "DESC"]],
-      include: ["contact"]
+      include: [
+        {
+          model: Contact,
+          as: "contact",
+          include: [
+            "extraInfo",
+            "tags",
+            {
+              association: "wallets",
+              attributes: ["id", "name"]
+            }
+          ]
+        },
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name"]
+        }
+      ]
     });
 
     if (ticket) {
@@ -65,6 +99,12 @@ const FindOrCreateTicketService = async (
         status: "pending",
         userId: null,
         unreadMessages
+      });
+
+      socketEmit({
+        tenantId,
+        type: "ticket:update",
+        payload: ticket
       });
 
       return ticket;
@@ -84,11 +124,22 @@ const FindOrCreateTicketService = async (
       },
       order: [["updatedAt", "DESC"]],
       include: [
-        "contact",
+        {
+          model: Contact,
+          as: "contact",
+          include: [
+            "extraInfo",
+            "tags",
+            {
+              association: "wallets",
+              attributes: ["id", "name"]
+            }
+          ]
+        },
         {
           model: User,
           as: "user",
-          attributes: ["id", "name", "profile"]
+          attributes: ["id", "name"]
         }
       ]
     });
@@ -98,6 +149,12 @@ const FindOrCreateTicketService = async (
         status: "pending",
         userId: null,
         unreadMessages
+      });
+
+      socketEmit({
+        tenantId,
+        type: "ticket:update",
+        payload: ticket
       });
 
       return ticket;
@@ -115,6 +172,13 @@ const FindOrCreateTicketService = async (
 
   ticket = await ShowTicketService({ id, tenantId });
   ticket.setDataValue("isCreated", true);
+
+  socketEmit({
+    tenantId,
+    type: "ticket:update",
+    payload: ticket
+  });
+
   return ticket;
 };
 

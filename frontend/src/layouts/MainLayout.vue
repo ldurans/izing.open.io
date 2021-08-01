@@ -150,13 +150,11 @@
 </template>
 
 <script>
-import { DadosUsuario } from 'src/service/user'
 import { ListarWhatsapps } from 'src/service/sessoesWhatsapp'
 import EssentialLink from 'components/EssentialLink.vue'
 import socketInitial from './socketInitial'
 import alertSound from 'src/assets/sound.mp3'
 import { format } from 'date-fns'
-const userId = +localStorage.getItem('userId')
 const username = localStorage.getItem('username')
 import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { mapGetters } from 'vuex'
@@ -359,20 +357,7 @@ export default {
         this.$refs.audioNotification.play()
       })
     },
-    async dadosUsuario () {
-      const { data } = await DadosUsuario(userId)
-      this.usuario = data
-      localStorage.setItem('usuario', JSON.stringify(data))
-      localStorage.setItem('queues', JSON.stringify(data.queues))
-      this.$store.commit('SET_IS_SUPORTE', data)
-      this.$store.commit('SET_IS_ADMIN', data)
-    },
     async abrirModalUsuario () {
-      if (!this.usuario.id) {
-        await this.dadosUsuario()
-      }
-      // const { data } = await DadosUsuario(userId)
-      // this.usuario = data
       this.modalUsuario = true
     },
     async efetuarLogout () {
@@ -405,7 +390,7 @@ export default {
     } else {
       Notification.requestPermission()
     }
-    await this.dadosUsuario()
+    this.usuario = JSON.parse(localStorage.getItem('usuario'))
     this.userProfile = localStorage.getItem('profile')
     await this.conectarSocket(usuario)
   },

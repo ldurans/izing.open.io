@@ -35,9 +35,16 @@
         >
           <!-- :bg-color="mensagem.fromMe ? 'grey-2' : 'secondary' " -->
           <div
-            style="min-width: 100px; max-width: 350px"
+            style="min-width: 100px; max-width: 350px;"
             :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
           >
+            <q-chip
+              color="blue-1"
+              dense
+              v-if="mensagem.scheduleDate"
+              icon="mdi-calendar"
+              size="10px"
+            > {{ formatarData(mensagem.scheduleDate, 'dd/MM/yyyy HH:mm')}} </q-chip>
             <div
               v-if="mensagem.isDeleted"
               class="text-italic"
@@ -56,7 +63,7 @@
               :class="{'textContentItem': !mensagem.isDeleted, 'textContentItemDeleted': mensagem.isDeleted }"
             >
               <MensagemRespondida
-                style="max-width: 240px;"
+                style="max-width: 240px; max-height: 150px"
                 class="row justify-center"
                 @mensagem-respondida:focar-mensagem="focarMensagem"
                 :mensagem="mensagem.quotedMsg"
@@ -134,7 +141,7 @@
                 @click="urlMedia=mensagem.mediaUrl; abrirModalImagem=true"
                 :src="mensagem.mediaUrl"
                 spinner-color="primary"
-                height="300px"
+                height="150px"
                 width="330px"
                 class="q-mt-md"
                 style="cursor: pointer;"
@@ -154,7 +161,7 @@
                 class="q-mt-md"
                 style="objectFit: cover;
                   width: 330px;
-                  height: 300px;
+                  height: 150px;
                   borderTopLeftRadius: 8px;
                   borderTopRightRadius: 8px;
                   borderBottomLeftRadius: 8px;
@@ -167,7 +174,7 @@
                 <iframe
                   v-if="isPDF(mensagem.mediaUrl)"
                   width="330px"
-                  height="330px"
+                  height="150px"
                   frameBorder="0"
                   :src="mensagem.mediaUrl"
                   :id="mensagem.id"

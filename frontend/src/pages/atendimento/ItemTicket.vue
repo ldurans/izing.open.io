@@ -64,7 +64,7 @@
             :label="ticket.unreadMessages"
           />
           <img
-            :src="ticket.contact.profilePicUrl"
+            :src="ticket.profilePicUrl"
             onerror="this.style.display='none'"
           />
           <q-icon
@@ -79,7 +79,7 @@
           class="text-bold"
           lines="1"
         >
-          {{ticket.contact.name}}
+          {{ticket.name}}
           <span class="absolute-top-right q-pr-xs">
             <q-badge
               dense
@@ -105,7 +105,7 @@
         >
           #{{ ticket.id }}
           <span class="q-ml-sm">
-            {{ `Fila: ${obterNomeFila(ticket.queueId)}` }}
+            {{ `Fila: ${ticket.queue || ''}` }}
           </span>
           <span class="absolute-bottom-right ">
             <q-icon
@@ -124,7 +124,7 @@
           lines="1"
           caption
         >
-          Usuário: {{ ticket && ticket.user && ticket.user.name }}
+          Usuário: {{ ticket.username }}
         </q-item-label>
 
         <!-- <span class="absolute-bottom-right" v-if="ticket.unreadMessages">

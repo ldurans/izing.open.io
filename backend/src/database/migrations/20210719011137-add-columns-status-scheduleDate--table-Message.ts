@@ -10,7 +10,16 @@ module.exports = {
       queryInterface.addColumn("Messages", "sendType", {
         type: DataTypes.STRING,
         defaultValue: null,
-        values: ["campaign", "chat", "external", "schedule", "bot", "sync"]
+        values: [
+          "campaign",
+          "chat",
+          "external",
+          "schedule",
+          "web",
+          "celular",
+          "bot",
+          "sync"
+        ]
       }),
       queryInterface.addColumn("Messages", "messageId", {
         type: DataTypes.STRING,
@@ -19,7 +28,8 @@ module.exports = {
       }),
       queryInterface.addColumn("Messages", "status", {
         type: DataTypes.STRING,
-        defaultValue: "pending",
+        allowNull: true,
+        defaultValue: null,
         values: ["pending", "sended", "received"]
       })
     ]);

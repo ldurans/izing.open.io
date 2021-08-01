@@ -64,13 +64,13 @@ export const logout = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { id } = req.body;
-  if (!id) {
+  const { userId } = req.body;
+  if (!userId) {
     throw new AppError("ERR_USER_NOT_FOUND", 404);
   }
   const io = getIO();
 
-  const userLogout = await User.findByPk(id);
+  const userLogout = await User.findByPk(userId);
 
   if (userLogout) {
     userLogout.update({ isOnline: false, lastLogout: new Date() });

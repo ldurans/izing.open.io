@@ -1,4 +1,5 @@
 import AppError from "../../errors/AppError";
+import socketEmit from "../../helpers/socketEmit";
 import Contact from "../../models/Contact";
 import ContactTag from "../../models/ContactTag";
 
@@ -54,6 +55,12 @@ const UpdateContactService = async ({
   if (!contact) {
     throw new AppError("ERR_NO_CONTACT_FOUND", 404);
   }
+
+  socketEmit({
+    tenantId,
+    type: "contact:update",
+    payload: contact
+  });
 
   return contact;
 };

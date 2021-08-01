@@ -3,9 +3,10 @@ import { fromUnixTime, parse, isWithinInterval } from "date-fns";
 // import { getIO } from "../../../libs/socket";
 // import SetTicketMessagesAsRead from "../../../helpers/SetTicketMessagesAsRead";
 // import SendWhatsAppMessage from "../SendWhatsAppMessage";
-import Queue from "../../../libs/Queue";
+// import Queue from "../../../libs/Queue";
 import Ticket from "../../../models/Ticket";
 import ShowBusinessHoursAndMessageService from "../../TenantServices/ShowBusinessHoursAndMessageService";
+import CreateMessageSystemService from "../../MessageServices/CreateMessageSystemService";
 // import { sleepRandomTime } from "../../../utils/sleepRandomTime";
 
 const verifyBusinessHours = async (
@@ -70,10 +71,18 @@ const verifyBusinessHours = async (
       //   quotedMsg: undefined
       // });
 
-      Queue.add("SendMessageWhatsappBusinessHours", {
-        tenant,
+      const messageData = {
+        body: tenant.messageBusinessHours,
+        fromMe: msg.fromMe,
+        read: true,
+        sendType: "bot"
+      };
+      await CreateMessageSystemService({
+        msg: messageData,
+        tenantId: tenant.id,
         ticket,
-        msg
+        sendType: messageData.sendType,
+        status: "pending"
       });
     }
   }

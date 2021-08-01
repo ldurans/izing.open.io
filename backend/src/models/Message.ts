@@ -32,8 +32,9 @@ class Message extends Model<Message> {
   @Column
   ack: number;
 
-  @Default("pedding")
-  @Column(DataType.ENUM("pedding", "sended", "received"))
+  @Default(null)
+  @AllowNull
+  @Column(DataType.ENUM("pending", "sended", "received"))
   status: string;
 
   @Default(false)

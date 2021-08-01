@@ -1,4 +1,4 @@
-import { getIO } from "../../libs/socket";
+import socketEmit from "../../helpers/socketEmit";
 import Contact from "../../models/Contact";
 
 interface ExtraInfo {
@@ -33,7 +33,6 @@ const CreateOrUpdateContactService = async ({
 }: Request): Promise<Contact> => {
   const number = isGroup ? rawNumber : rawNumber.replace(/[^0-9]/g, "");
 
-  const io = getIO();
   let contact: Contact | null;
 
   contact = await Contact.findOne({ where: { number, tenantId } });
@@ -44,11 +43,6 @@ const CreateOrUpdateContactService = async ({
       pushname,
       isUser,
       isWAContact
-    });
-
-    io.emit(`${tenantId}-contact`, {
-      action: "update",
-      contact
     });
   } else {
     contact = await Contact.create({
@@ -63,12 +57,13 @@ const CreateOrUpdateContactService = async ({
       tenantId,
       extraInfo
     });
-
-    io.emit(`${tenantId}-contact`, {
-      action: "create",
-      contact
-    });
   }
+
+  socketEmit({
+    tenantId,
+    type: "contact:update",
+    payload: contact
+  });
 
   return contact;
 };

@@ -3,62 +3,84 @@
     style="min-height: 80px"
     class="row bg-white justify-center items-center text-grey-9 relative-position"
   >
-    <div class="full-width absolute-top">
-      <q-menu
-        max-width="600px"
-        :key="cMensagensRapidas.length"
-        square
-        no-focus
-        class="no-box-shadow no-shadow"
-        fit
-        persistent
-        max-height="200px"
-        :offset="[0,-45]"
-        @hide="visualizarMensagensRapidas = false"
-        :value="textChat.startsWith('/') || visualizarMensagensRapidas"
-      >
-        <!-- :value="textChat.startsWith('/')" -->
-        <q-list
-          class="no-shadow no-box-shadow"
-          style="min-width: 100px"
-          separator
-          v-if="!cMensagensRapidas.length"
-        >
-          <q-item>
-            <q-item-section>
-              <q-item-label class="text-negative text-bold">Ops... Nada por aqui!</q-item-label>
-              <q-item-label caption>Cadastre suas mensagens na administração de sistema.</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-
-        <q-list
-          class="no-shadow no-box-shadow"
-          style="min-width: 100px"
-          separator
-          v-else
-        >
-          <q-item
-            v-for="resposta in cMensagensRapidas"
-            :key="resposta.key"
-            clickable
-            v-close-popup
-            @click="mensagemRapidaSelecionada(resposta.message)"
-          >
-            <q-item-section>
-              <q-item-label class="text-bold"> {{ resposta.key }} </q-item-label>
-              <q-item-label
-                caption
-                lines="2"
-              > {{ resposta.message }} </q-item-label>
-            </q-item-section>
-            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
-              {{ resposta.message }}
-            </q-tooltip>
-          </q-item>
-        </q-list>
-      </q-menu>
+    <div
+      class="row col-12 q-pa-sm"
+      v-if="isScheduleDate"
+    >
+      <q-datetime-picker
+        style="width: 300px"
+        dense
+        rounded
+        hide-bottom-space
+        outlined
+        stack-label
+        bottom-slots
+        label="Data/Hora Agendamento"
+        mode="datetime"
+        color="primary"
+        v-model="scheduleDate"
+        format24h
+      />
     </div>
+    <div class="full-width relative-position">
+      <div class="full-width absolute-top">
+        <q-menu
+          max-width="600px"
+          :key="cMensagensRapidas.length"
+          square
+          no-focus
+          class="no-box-shadow no-shadow"
+          fit
+          persistent
+          max-height="200px"
+          :offset="[0,-45]"
+          @hide="visualizarMensagensRapidas = false"
+          :value="textChat.startsWith('/') || visualizarMensagensRapidas"
+        >
+          <!-- :value="textChat.startsWith('/')" -->
+          <q-list
+            class="no-shadow no-box-shadow"
+            style="min-width: 100px"
+            separator
+            v-if="!cMensagensRapidas.length"
+          >
+            <q-item>
+              <q-item-section>
+                <q-item-label class="text-negative text-bold">Ops... Nada por aqui!</q-item-label>
+                <q-item-label caption>Cadastre suas mensagens na administração de sistema.</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+
+          <q-list
+            class="no-shadow no-box-shadow"
+            style="min-width: 100px"
+            separator
+            v-else
+          >
+            <q-item
+              v-for="resposta in cMensagensRapidas"
+              :key="resposta.key"
+              clickable
+              v-close-popup
+              @click="mensagemRapidaSelecionada(resposta.message)"
+            >
+              <q-item-section>
+                <q-item-label class="text-bold"> {{ resposta.key }} </q-item-label>
+                <q-item-label
+                  caption
+                  lines="2"
+                > {{ resposta.message }} </q-item-label>
+              </q-item-section>
+              <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+                {{ resposta.message }}
+              </q-tooltip>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </div>
+    </div>
+
     <template v-if="!isRecordingAudio">
       <q-btn
         flat
@@ -284,6 +306,10 @@ export default {
       type: Object,
       default: null
     },
+    isScheduleDate: {
+      type: Boolean,
+      default: false
+    },
     mensagensRapidas: {
       type: Array,
       default: () => []
@@ -305,7 +331,8 @@ export default {
       },
       visualizarMensagensRapidas: false,
       arquivos: [],
-      textChat: ''
+      textChat: '',
+      scheduleDate: null
     }
   },
   computed: {
@@ -438,6 +465,7 @@ export default {
       this.arquivos.forEach(media => {
         formData.append('medias', media)
         formData.append('body', media.name)
+        formData.append('scheduleDate', this.isScheduleDate ? this.scheduleDate : null)
       })
       return formData
     },
@@ -471,11 +499,16 @@ export default {
         fromMe: true,
         mediaUrl: '',
         body: mensagem,
+        scheduleDate: this.isScheduleDate ? this.scheduleDate : null,
         quotedMsg: this.replyingMessage
       }
       return message
     },
     async enviarMensagem () {
+      if (this.isScheduleDate && !this.scheduleDate) {
+        this.$notificarErro('Para agendar uma mensagem, informe o campo Data/Hora Agendamento.')
+        return
+      }
       this.loading = true
       const ticketId = this.ticketFocado.id
       const message = !this.cMostrarEnvioArquivo

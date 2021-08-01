@@ -6,6 +6,7 @@ import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
 import { sleepRandomTime } from "../../utils/sleepRandomTime";
+import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 interface Session extends Client {
   id?: number;
@@ -20,12 +21,12 @@ const SendMessagesSystemWbot = async (
       fromMe: true,
       [Op.or]: [
         {
-          status: "pedding",
+          status: "pending",
           scheduleDate: {
             [Op.lte]: new Date()
           }
         },
-        { status: "pedding", scheduleDate: { [Op.is]: null } }
+        { status: "pending", scheduleDate: { [Op.is]: null } }
       ]
     },
     include: [
@@ -89,6 +90,8 @@ const SendMessagesSystemWbot = async (
           { ...messageToUpdate },
           { where: { id: message.id } }
         );
+
+        await SetTicketMessagesAsRead(ticket);
 
         // delay para processamento da mensagem
         await sleepRandomTime({

@@ -2,6 +2,7 @@ import cInput from 'src/components/cInput'
 import { notificarErro, notificarSucesso } from 'src/utils/helpersNotifications'
 
 import DatePick from 'src/components/cDatePick'
+import cDateTimePick from 'src/components/cDateTimePick'
 
 const formatarValorMoeda = (num, black = false, intl = {}) => {
   const config = {
@@ -59,6 +60,7 @@ export default ({
 }) => {
   Vue.component('cInput', cInput)
   Vue.component('DatePick', DatePick)
+  Vue.component('cDateTimePick', cDateTimePick)
   Vue.prototype.$formatarValorMoeda = formatarValorMoeda
   Vue.prototype.$round = arredodar
   Vue.prototype.$iniciaisString = iniciaisString

@@ -4,7 +4,7 @@ import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
 import User from "../../models/User";
-import { getIO } from "../../libs/socket";
+import socketEmit from "../../helpers/socketEmit";
 
 interface TicketData {
   status?: string;
@@ -40,7 +40,14 @@ const UpdateTicketService = async ({
       {
         model: Contact,
         as: "contact",
-        attributes: ["id", "name", "number", "profilePicUrl"]
+        include: [
+          "extraInfo",
+          "tags",
+          {
+            association: "wallets",
+            attributes: ["id", "name"]
+          }
+        ]
       },
       {
         model: User,
@@ -74,26 +81,15 @@ const UpdateTicketService = async ({
 
   await ticket.reload();
 
-  const io = getIO();
-
-  if (ticket.status !== oldStatus || ticket.user?.id !== oldUserId) {
-    io.to(`${tenantId}-${oldStatus}`).emit(`${tenantId}-ticket`, {
-      action: "delete",
-      ticketId: ticket.id
-    });
-  }
-
   if (isTransference) {
     await ticket.setDataValue("isTransference", true);
   }
 
-  io.to(`${tenantId}-${ticket.status}`)
-    .to(`${tenantId}-notification`)
-    .to(`${tenantId}-${ticketId.toString()}`)
-    .emit(`${tenantId}-ticket`, {
-      action: "update",
-      ticket
-    });
+  socketEmit({
+    tenantId,
+    type: "ticket:update",
+    payload: ticket
+  });
 
   return { ticket, oldStatus, oldUserId };
 };

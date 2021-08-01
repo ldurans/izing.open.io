@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 // import GetTicketWbot from "../helpers/GetTicketWbot";
 
 import SetTicketMessagesAsRead from "../helpers/SetTicketMessagesAsRead";
-import { getIO } from "../libs/socket";
 import Message from "../models/Message";
 // import CreateMessageOffilineService from "../services/MessageServices/CreateMessageOfflineService";
 import CreateMessageSystemService from "../services/MessageServices/CreateMessageSystemService";
@@ -95,7 +94,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       userId,
       scheduleDate: messageData.scheduleDate,
       sendType: messageData.sendType || "chat",
-      status: "pedding"
+      status: "pending"
     });
   } catch (error) {
     console.log("try CreateMessageSystemService", error);
@@ -111,16 +110,7 @@ export const remove = async (
   const { messageId } = req.params;
   const { tenantId } = req.user;
 
-  const message = await DeleteWhatsAppMessage(messageId, tenantId);
-
-  const io = getIO();
-  io.to(`${tenantId}-${message.ticketId.toString()}`).emit(
-    `${tenantId}-appMessage`,
-    {
-      action: "update",
-      message
-    }
-  );
+  await DeleteWhatsAppMessage(messageId, tenantId);
 
   return res.send();
 };
