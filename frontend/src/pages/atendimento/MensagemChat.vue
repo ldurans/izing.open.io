@@ -38,13 +38,50 @@
             style="min-width: 100px; max-width: 350px;"
             :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
           >
-            <q-chip
-              color="blue-1"
-              dense
+
+            <q-icon
+              class="q-ma-xs"
+              name="mdi-calendar"
+              size="18px"
+              :class="{
+                'text-primary': mensagem.scheduleDate && mensagem.status === 'pending',
+                'text-positive': !['pending', 'canceled'].includes(mensagem.status)
+              }"
               v-if="mensagem.scheduleDate"
-              icon="mdi-calendar"
-              size="10px"
-            > {{ formatarData(mensagem.scheduleDate, 'dd/MM/yyyy HH:mm')}} </q-chip>
+            >
+              <q-tooltip content-class="bg-secondary text-grey-8">
+                <div class="row col">
+                  Mensagem agendada
+                </div>
+                <div
+                  class="row col"
+                  v-if="mensagem.isDeleted"
+                >
+                  <q-chip
+                    color="red-3"
+                    icon="mdi-trash-can-outline"
+                  >
+                    Envio cancelado: {{ formatarData(mensagem.updatedAt, 'dd/MM/yyyy')}}
+                  </q-chip>
+                </div>
+                <div class="row col">
+                  <q-chip
+                    color="blue-1"
+                    icon="mdi-calendar-import"
+                  >
+                    Criado em: {{ formatarData(mensagem.createdAt, 'dd/MM/yyyy HH:mm')}}
+                  </q-chip>
+                </div>
+                <div class="row col">
+                  <q-chip
+                    color="blue-1"
+                    icon="mdi-calendar-start"
+                  >
+                    Programado para: {{ formatarData(mensagem.scheduleDate, 'dd/MM/yyyy HH:mm')}}
+                  </q-chip>
+                </div>
+              </q-tooltip>
+            </q-icon>
             <div
               v-if="mensagem.isDeleted"
               class="text-italic"
@@ -97,7 +134,18 @@
                     clickable
                     v-if="mensagem.fromMe"
                   >
-                    <q-item-section>Deletar</q-item-section>
+                    <q-item-section>
+                      <q-item-label>Deletar</q-item-label>
+                      <q-item-label caption>
+                        Apagará mensagem: {{ isDesactivatDelete(mensagem) ? 'PARA TODOS' : 'PARAM MIN' }}
+                      </q-item-label>
+                      <q-tooltip
+                        :delay="500"
+                        content-class="text-black bg-red-3 text-body1"
+                      >
+                        Após 7 min do envio, não é possível apagar mensagem para no cliente.
+                      </q-tooltip>
+                    </q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
@@ -170,14 +218,20 @@
               />
             </template>
             <template v-if="mensagem.mediaType === 'application'">
-              <div class="text-center full-width">
+              <div class="text-center full-width hide-scrollbar no-scroll">
                 <iframe
                   v-if="isPDF(mensagem.mediaUrl)"
-                  width="330px"
-                  height="150px"
                   frameBorder="0"
+                  scrolling="no"
+                  style="
+                    width: 330px;
+                    height: 150px;
+                    overflow-y: hidden;
+                    -ms-overflow-y: hidden;
+                  "
+                  class="no-scroll hide-scrollbar"
                   :src="mensagem.mediaUrl"
-                  :id="mensagem.id"
+                  id="frame-pdf"
                 >
                   Faça download do PDF
                   <!-- alt : <a href="mensagem.mediaUrl"></a> -->
@@ -188,6 +242,7 @@
                   no-wrap
                   no-caps
                   stack
+                  dense
                   class="q-mt-sm text-center text-black btn-rounded  text-grey-9 ellipsis"
                   download
                   :target="isPDF(mensagem.mediaUrl) ? '_blank' : ''"
@@ -199,7 +254,7 @@
                   >
                     Baixar: {{ mensagem.body }}
                   </q-tooltip>
-                  <div class="row items-center q-my-md ">
+                  <div class="row items-center q-ma-xs ">
                     <div
                       class="ellipsis col-grow q-pr-sm"
                       style="max-width: 290px"
@@ -240,7 +295,7 @@
 </template>
 
 <script>
-
+import { differenceInMinutes, fromUnixTime } from 'date-fns'
 import mixinCommon from './mixinCommon'
 import axios from 'axios'
 import VueEasyLightbox from 'vue-easy-lightbox'
@@ -313,6 +368,13 @@ export default {
     returnCardContato (str) {
       return btoa(str)
     },
+    isDesactivatDelete (msg) {
+      if (msg) {
+        const dataMensagem = msg.timestamp ? fromUnixTime(msg.timestamp) : new Date(msg.updatedAt)
+        return !(differenceInMinutes(new Date(), dataMensagem) > 7)
+      }
+      return false
+    },
     async buscarImageCors (imageUrl) {
       this.loading = true
       try {
@@ -384,4 +446,7 @@ export default {
 </script>
 
 <style lang="scss">
+.frame-pdf {
+  overflow: hidden;
+}
 </style>

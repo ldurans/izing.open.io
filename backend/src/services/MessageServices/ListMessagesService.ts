@@ -47,12 +47,12 @@ const ListMessagesService = async ({
     ],
     offset,
     logging: console.log,
-    // order: [["createdAt", "DESC"]]
-    order: [
-      Sequelize.literal(
-        'coalesce(to_timestamp("Message"."timestamp") , "Message"."createdAt") desc'
-      )
-    ]
+    order: [["createdAt", "DESC"]]
+    // order: [
+    //   Sequelize.literal(
+    //     'coalesce(to_timestamp("Message"."timestamp") , "Message"."createdAt") desc'
+    //   )
+    // ]
   });
 
   let messagesOffLine: MessagesOffLine[] = [];

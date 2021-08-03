@@ -7,6 +7,7 @@ import User from "../../models/User";
 import ShowTicketService from "./ShowTicketService";
 import CampaignContacts from "../../models/CampaignContacts";
 import socketEmit from "../../helpers/socketEmit";
+import CheckChatBotWelcome from "../../helpers/CheckChatBotWelcome";
 
 const FindOrCreateTicketService = async (
   contact: Contact,
@@ -161,7 +162,7 @@ const FindOrCreateTicketService = async (
     }
   }
 
-  const { id } = await Ticket.create({
+  const ticketCreated = await Ticket.create({
     contactId: groupContact ? groupContact.id : contact.id,
     status: "pending",
     isGroup: !!groupContact,
@@ -170,7 +171,11 @@ const FindOrCreateTicketService = async (
     tenantId
   });
 
-  ticket = await ShowTicketService({ id, tenantId });
+  if (msg && !msg.fromMe) {
+    await CheckChatBotWelcome(ticketCreated);
+  }
+
+  ticket = await ShowTicketService({ id: ticketCreated.id, tenantId });
   ticket.setDataValue("isCreated", true);
 
   socketEmit({

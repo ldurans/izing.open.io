@@ -15,6 +15,7 @@
           style="width: 300px"
           filled
           dense
+          class="col-grow"
           debounce="500"
           v-model="filter"
           clearable
@@ -26,7 +27,10 @@
           </template>
         </q-input>
         <q-btn
-          class="q-ml-md"
+          class="q-ml-md col"
+          :class="{
+            'q-ml-none q-mt-md q-mr-md': $q.screen.width < 500
+          }"
           color="primary"
           label="Adicionar"
           @click="usuarioSelecionado = {}; modalUsuario = true"

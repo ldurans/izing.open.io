@@ -6,9 +6,37 @@ import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
 import socketEmit from "../../helpers/socketEmit";
 
 const DeleteWhatsAppMessage = async (
+  id: string,
   messageId: string,
   tenantId: string | number
-): Promise<Message> => {
+): Promise<void> => {
+  if (!messageId || messageId === "null") {
+    await Message.update(
+      {
+        isDeleted: true,
+        status: "canceled"
+      },
+      { where: { id } }
+    );
+    const message = await Message.findByPk(id, {
+      include: [
+        {
+          model: Ticket,
+          as: "ticket",
+          include: ["contact"],
+          where: { tenantId }
+        }
+      ]
+    });
+    if (message) {
+      socketEmit({
+        tenantId,
+        type: "chat:delete",
+        payload: message
+      });
+    }
+    return;
+  }
   const message = await Message.findOne({
     where: { messageId },
     include: [
@@ -43,8 +71,6 @@ const DeleteWhatsAppMessage = async (
     type: "chat:delete",
     payload: message
   });
-
-  return message;
 };
 
 export default DeleteWhatsAppMessage;

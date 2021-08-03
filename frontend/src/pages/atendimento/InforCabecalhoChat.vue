@@ -48,6 +48,7 @@
               caption
               lines="1"
               style="margin-top: 2px !important;"
+              :style="$q.screen.width < 500 ? 'max-width: 170px' : ''"
             >
               <span v-if="Value(cticket.user, 'name')"> Atribuido à: {{ Value(cticket.user, 'name') }} </span>
               <q-skeleton
@@ -126,10 +127,11 @@
               color="primary"
               flat
               dense
-              class="bg-padrao text-bold btn-rounded"
+              class="bg-padrao text-bold "
               icon="keyboard_arrow_left"
-              direction="left"
-              padding="10px"
+              direction="down"
+              padding="5px"
+              label="Ações"
             >
               <q-fab-action
                 @click="$emit('updateTicket:resolver')"
@@ -163,6 +165,17 @@
                 <q-icon name="mdi-transfer" />
                 <q-tooltip content-class="bg-primary text-bold">
                   Transferir
+                </q-tooltip>
+              </q-fab-action>
+              <q-fab-action
+                @click="$emit('abrir:modalAgendamentoMensagen')"
+                flat
+                color="grey-9"
+                class="bg-padrao q-pa-xs "
+              >
+                <q-icon name="mdi-message-text-clock-outline" />
+                <q-tooltip content-class="bg-grey-9 text-bold">
+                  Agendamento de mensagem
                 </q-tooltip>
               </q-fab-action>
             </q-fab>

@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
+import { Op } from "sequelize";
 import { getIO } from "../libs/socket";
+import Message from "../models/Message";
 
 import CreateTicketService from "../services/TicketServices/CreateTicketService";
 import DeleteTicketService from "../services/TicketServices/DeleteTicketService";
@@ -87,9 +89,19 @@ export const show = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
   const { tenantId } = req.user;
 
-  const contact = await ShowTicketService({ id: ticketId, tenantId });
+  const ticket = await ShowTicketService({ id: ticketId, tenantId });
+  const scheduledMessages = await Message.findAll({
+    where: {
+      contactId: ticket.contactId,
+      scheduleDate: { [Op.not]: null },
+      status: "pending"
+    },
+    logging: console.log
+  });
 
-  return res.status(200).json(contact);
+  ticket.setDataValue("scheduledMessages", scheduledMessages);
+
+  return res.status(200).json(ticket);
 };
 
 export const update = async (

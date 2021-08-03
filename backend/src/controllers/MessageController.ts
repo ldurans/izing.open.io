@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import AppError from "../errors/AppError";
 // import GetTicketWbot from "../helpers/GetTicketWbot";
 
 import SetTicketMessagesAsRead from "../helpers/SetTicketMessagesAsRead";
@@ -9,6 +10,7 @@ import CreateMessageSystemService from "../services/MessageServices/CreateMessag
 import ListMessagesService from "../services/MessageServices/ListMessagesService";
 import ShowTicketService from "../services/TicketServices/ShowTicketService";
 import DeleteWhatsAppMessage from "../services/WbotServices/DeleteWhatsAppMessage";
+import { logger } from "../utils/logger";
 // import SendWhatsAppMedia from "../services/WbotServices/SendWhatsAppMedia";
 // import SendWhatsAppMessage from "../services/WbotServices/SendWhatsAppMessage";
 
@@ -109,8 +111,12 @@ export const remove = async (
 ): Promise<Response> => {
   const { messageId } = req.params;
   const { tenantId } = req.user;
-
-  await DeleteWhatsAppMessage(messageId, tenantId);
+  try {
+    await DeleteWhatsAppMessage(req.body.id, messageId, tenantId);
+  } catch (error) {
+    logger.error(`ERR_DELETE_SYSTEM_MSG: ${error}`);
+    throw new AppError("ERR_DELETE_SYSTEM_MSG");
+  }
 
   return res.send();
 };

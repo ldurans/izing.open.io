@@ -4,6 +4,9 @@ import { notificarErro, notificarSucesso } from 'src/utils/helpersNotifications'
 import DatePick from 'src/components/cDatePick'
 import cDateTimePick from 'src/components/cDateTimePick'
 
+import { format, parseISO } from 'date-fns'
+import pt from 'date-fns/locale/pt-BR'
+
 const formatarValorMoeda = (num, black = false, intl = {}) => {
   const config = {
     language: 'pt-br',
@@ -55,6 +58,10 @@ const iniciaisString = nomecompleto => {
   return iniciaisNome.toUpperCase()
 }
 
+const formatarData = (data, formato = 'dd/MM/yyyy') => {
+  return format(parseISO(data), formato, { locale: pt })
+}
+
 export default ({
   Vue
 }) => {
@@ -63,6 +70,7 @@ export default ({
   Vue.component('cDateTimePick', cDateTimePick)
   Vue.prototype.$formatarValorMoeda = formatarValorMoeda
   Vue.prototype.$round = arredodar
+  Vue.prototype.$formatarData = formatarData
   Vue.prototype.$iniciaisString = iniciaisString
   Vue.prototype.$notificarErro = notificarErro
   Vue.prototype.$notificarSucesso = notificarSucesso

@@ -322,6 +322,9 @@ const atendimentoTicket = {
           mensagens.push(payload)
         }
         state.mensagens = mensagens
+        if (payload.scheduleDate && payload.status == 'pending') {
+          state.ticketFocado.scheduledMessages.push(payload)
+        }
       }
 
       const TicketIndexUpdate = state.tickets.findIndex(t => t.id == payload.ticket.id)
@@ -348,6 +351,14 @@ const atendimentoTicket = {
       if (messageIndex !== -1) {
         mensagens[messageIndex] = payload
         state.mensagens = mensagens
+      }
+
+      // Se existir mensagens agendadas no ticket focado,
+      // tratar a atualização das mensagens deletadas.
+      if (state.ticketFocado?.scheduledMessages) {
+        const scheduledMessages = [...state.ticketFocado.scheduledMessages]
+        const scheduled = scheduledMessages.filter(m => m.id != payload.id)
+        state.ticketFocado.scheduledMessages = scheduled
       }
     },
     // OK

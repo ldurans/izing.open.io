@@ -54,7 +54,8 @@ export function EnviarMensagemTexto (ticketId, data) {
 export function DeletarMensagem (mensagem) {
   return request({
     url: `/messages/${mensagem.messageId}`,
-    method: 'delete'
+    method: 'delete',
+    data: mensagem
   })
 }
 

@@ -361,16 +361,24 @@ export default {
       this.modalUsuario = true
     },
     async efetuarLogout () {
-      console.log('logout - index atendimento', usuario)
+      console.log('logout - main atendimento', usuario)
+      try {
+        await RealizarLogout(usuario)
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        localStorage.removeItem('profile')
+        localStorage.removeItem('userId')
+        localStorage.removeItem('queues')
+        localStorage.removeItem('usuario')
+        localStorage.removeItem('filtrosAtendimento')
 
-      await RealizarLogout(usuario)
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
-      localStorage.removeItem('profile')
-      localStorage.removeItem('userId')
-      localStorage.removeItem('queues')
-      localStorage.removeItem('usuario')
-      this.$router.go({ name: 'login', replace: true })
+        this.$router.go({ name: 'login', replace: true })
+      } catch (error) {
+        this.$notificarErro(
+          'Não foi possível realizar logout',
+          error
+        )
+      }
     },
     async listarConfiguracoes () {
       const { data } = await ListarConfiguracoes()

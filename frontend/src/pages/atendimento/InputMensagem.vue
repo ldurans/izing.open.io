@@ -1,7 +1,7 @@
 <template>
   <div
     style="min-height: 80px"
-    class="row bg-white justify-center items-center text-grey-9 relative-position"
+    class="row q-pb-md q-pt-sm bg-white justify-start items-center text-grey-9 relative-position"
   >
     <div
       class="row col-12 q-pa-sm"
@@ -83,6 +83,7 @@
 
     <template v-if="!isRecordingAudio">
       <q-btn
+        v-if="$q.screen.width > 500"
         flat
         @click="abrirEnvioArquivo"
         icon="mdi-paperclip"
@@ -94,6 +95,7 @@
         </q-tooltip>
       </q-btn>
       <q-btn
+        v-if="$q.screen.width > 500"
         flat
         icon="mdi-emoticon-happy-outline"
         :disable="cDisableActions"
@@ -126,7 +128,7 @@
         type="textarea"
         @keypress.enter.exact="() => textChat.trim().length ? enviarMensagem() : ''"
         v-show="!cMostrarEnvioArquivo"
-        class="col-grow q-mt-md q-mx-xs text-grey-10 inputEnvioMensagem"
+        class="col-grow q-mx-xs text-grey-10 inputEnvioMensagem"
         bg-color="grey-2"
         color="grey-7"
         placeholder="Digita sua mensagem"
@@ -138,9 +140,54 @@
         v-model="textChat"
         :value="textChat"
         @paste="handleInputPaste"
-        hint="Quebra linha: Shift + Enter"
       >
+        <!-- <template v-slot:hint>
+          "Quebra linha: Shift + Enter"
+        </template> -->
+        <template
+          v-slot:prepend
+          v-if="$q.screen.width < 500"
+        >
+          <q-btn
+            flat
+            icon="mdi-emoticon-happy-outline"
+            :disable="cDisableActions"
+            dense
+            round
+          >
+            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+              Emoji
+            </q-tooltip>
+            <q-menu
+              anchor="top right"
+              self="bottom middle"
+              :offset="[5, 40]"
+            >
+              <VEmojiPicker
+                style="width: 40vw"
+                :showSearch="false"
+                :emojisByRow="20"
+                labelSearch="Localizar..."
+                lang="pt-BR"
+                @select="onInsertSelectEmoji"
+              />
+            </q-menu>
+          </q-btn>
+        </template>
         <template v-slot:append>
+          <q-btn
+            flat
+            @click="abrirEnvioArquivo"
+            icon="mdi-paperclip"
+            :disable="cDisableActions"
+            dense
+            round
+            v-if="$q.screen.width < 500"
+          >
+            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+              Enviar arquivo
+            </q-tooltip>
+          </q-btn>
           <q-btn
             dense
             flat
@@ -162,7 +209,7 @@
         id="PickerFileMessage"
         v-show="cMostrarEnvioArquivo"
         v-model="arquivos"
-        class="col-grow q-mt-md q-mx-xs PickerFileMessage"
+        class="col-grow q-mx-xs PickerFileMessage"
         bg-color="blue-grey-1"
         input-style="max-height: 30vh"
         outlined
@@ -173,7 +220,6 @@
         rounded
         append
         :max-files="5"
-        counter
         :max-file-size="5485760"
         :max-total-size="5485760"
         accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
@@ -429,6 +475,9 @@ export default {
         formData.append('medias', blob, filename)
         formData.append('body', filename)
         formData.append('fromMe', true)
+        if (this.isScheduleDate) {
+          formData.append('scheduleDate', this.scheduleDate)
+        }
         const ticketId = this.ticketFocado.id
         await EnviarMensagemTexto(ticketId, formData)
         this.arquivos = []
@@ -465,7 +514,9 @@ export default {
       this.arquivos.forEach(media => {
         formData.append('medias', media)
         formData.append('body', media.name)
-        formData.append('scheduleDate', this.isScheduleDate ? this.scheduleDate : null)
+        if (this.isScheduleDate) {
+          formData.append('scheduleDate', this.scheduleDate)
+        }
       })
       return formData
     },
@@ -501,6 +552,9 @@ export default {
         body: mensagem,
         scheduleDate: this.isScheduleDate ? this.scheduleDate : null,
         quotedMsg: this.replyingMessage
+      }
+      if (this.isScheduleDate) {
+        message.scheduleDate = this.scheduleDate
       }
       return message
     },

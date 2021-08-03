@@ -522,6 +522,51 @@
               flat
             >
               <q-card-section class="text-bold q-pb-none">
+                Mensagens Agendadas
+                <q-separator />
+              </q-card-section>
+              <q-card-section class="q-pa-none">
+                <template v-if="ticketFocado.scheduledMessages">
+                  <q-list>
+                    <q-item
+                      v-for="(message, idx) in ticketFocado.scheduledMessages"
+                      :key="idx"
+                      clickable
+                    >
+                      <q-item-section>
+                        <q-item-label caption>
+                          <b>Agendado para:</b> {{ $formatarData(message.scheduleDate, 'dd/MM/yyyy HH:mm') }}
+                          <q-btn
+                            flat
+                            round
+                            dense
+                            icon="mdi-trash-can-outline"
+                            class="absolute-top-right q-mr-sm"
+                            size="sm"
+                            @click="deletarMenssagem(message)"
+                          />
+                        </q-item-label>
+                        <q-item-label
+                          caption
+                          lines="2"
+                        > <b>Msg:</b> {{ message.mediaName || message.body }}
+                        </q-item-label>
+                      </q-item-section>
+                      <q-tooltip :delay="500">
+                        <MensagemChat :mensagens="[message]" />
+                      </q-tooltip>
+                    </q-item>
+                  </q-list>
+                </template>
+              </q-card-section>
+            </q-card>
+            <q-card
+              class="bg-white q-mt-sm btn-rounded"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-bold q-pb-none">
                 Outras Informações
               </q-card-section>
               <q-card-section class="q-pa-none">
@@ -570,7 +615,7 @@
 <script>
 import ContatoModal from 'src/pages/contatos/ContatoModal'
 import ItemTicket from './ItemTicket'
-import { ConsultarTickets } from 'src/service/tickets'
+import { ConsultarTickets, DeletarMensagem } from 'src/service/tickets'
 import { mapGetters } from 'vuex'
 import mixinSockets from './mixinSockets'
 import socketInitial from 'src/layouts/socketInitial'
@@ -592,7 +637,7 @@ import { ListarEtiquetas } from 'src/service/etiquetas'
 import { EditarEtiquetasContato, EditarCarteiraContato } from 'src/service/contatos'
 import { RealizarLogout } from 'src/service/login'
 import { ListarUsuarios } from 'src/service/user'
-
+import MensagemChat from './MensagemChat.vue'
 export default {
   name: 'IndexAtendimento',
   mixins: [mixinSockets, socketInitial],
@@ -601,7 +646,8 @@ export default {
     ModalNovoTicket,
     StatusWhatsapp,
     ContatoModal,
-    ModalUsuario
+    ModalUsuario,
+    MensagemChat
   },
   data () {
     return {
@@ -806,15 +852,53 @@ export default {
     },
     async efetuarLogout () {
       console.log('logout - index atendimento', usuario)
-      await RealizarLogout(usuario)
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
-      localStorage.removeItem('profile')
-      localStorage.removeItem('userId')
-      localStorage.removeItem('queues')
-      localStorage.removeItem('usuario')
-      localStorage.removeItem('filtrosAtendimento')
-      this.$router.go({ name: 'login', replace: true })
+      try {
+        await RealizarLogout(usuario)
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        localStorage.removeItem('profile')
+        localStorage.removeItem('userId')
+        localStorage.removeItem('queues')
+        localStorage.removeItem('usuario')
+        localStorage.removeItem('filtrosAtendimento')
+
+        this.$router.go({ name: 'login', replace: true })
+      } catch (error) {
+        this.$notificarErro(
+          'Não foi possível realizar logout',
+          error
+        )
+      }
+    },
+    deletarMenssagem (mensagem) {
+      const data = { ...mensagem }
+      this.$q.dialog({
+        title: 'Atenção!! Deseja realmente deletar a mensagem? ',
+        message: 'Mensagens antigas não serão apagadas no whatsapp.',
+        cancel: {
+          label: 'Não',
+          color: 'primary',
+          push: true
+        },
+        ok: {
+          label: 'Sim',
+          color: 'negative',
+          push: true
+        },
+        persistent: true
+      }).onOk(() => {
+        this.loading = true
+        DeletarMensagem(data)
+          .then(res => {
+            this.loading = false
+          })
+          .catch(error => {
+            this.loading = false
+            console.error(error)
+            this.$notificarErro('Não foi possível apagar a mensagem', error)
+          })
+      }).onCancel(() => {
+      })
     },
     async tagSelecionada (tags) {
       console.log('tagSelecionada', tags)
