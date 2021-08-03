@@ -68,7 +68,8 @@ const ListTicketsService = async ({
 
   if (!status && !isAdminShowAll) {
     // if not informed status and not admin, reject request
-    throw new AppError("ERR_NO_STATUS_SELECTED", 403);
+    status = ["open", "pending"];
+    // throw new AppError("ERR_NO_STATUS_SELECTED", 404);
   }
 
   // Verificar se existem filas cadastradas, caso contrário,

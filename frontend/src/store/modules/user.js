@@ -1,6 +1,19 @@
 import { RealizarLogin } from '../../service/login'
 import { Notify } from 'quasar'
 
+const pesquisaTicketsFiltroPadrao = {
+  searchParam: '',
+  pageNumber: 1,
+  status: ['open', 'pending'],
+  showAll: false,
+  count: null,
+  queuesIds: [],
+  withUnreadMessages: false,
+  isNotAssignedUser: false,
+  includeNotQueueDefined: true
+  // date: new Date(),
+}
+
 const user = {
   state: {
     token: null,
@@ -34,6 +47,9 @@ const user = {
         localStorage.setItem('userId', data.userId)
         localStorage.setItem('usuario', JSON.stringify(data))
         localStorage.setItem('queues', JSON.stringify(data.queues))
+        localStorage.setItem('queues', JSON.stringify(data.queues))
+        localStorage.setItem('filtrosAtendimento', JSON.stringify(pesquisaTicketsFiltroPadrao))
+
         commit('SET_IS_SUPORTE', data)
         commit('SET_IS_ADMIN', data)
 
