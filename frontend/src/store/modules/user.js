@@ -12,7 +12,7 @@ const pesquisaTicketsFiltroPadrao = {
   isNotAssignedUser: false,
   includeNotQueueDefined: true
   // date: new Date(),
-},
+}
 
 const user = {
   state: {
