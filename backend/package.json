@@ -30,7 +30,7 @@
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "helmet": "^4.4.1",
-    "http-graceful-shutdown": "^2.3.2",
+    "http-graceful-shutdown": "^2.4.0",
     "is-base64": "^1.1.0",
     "jsonwebtoken": "^8.5.1",
     "mime-types": "^2.1.29",

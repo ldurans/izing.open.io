@@ -44,7 +44,7 @@ const VerifyMediaMessage = async (
   }
 
   const messageData = {
-    id: msg.id.id,
+    messageId: msg.id.id,
     ticketId: ticket.id,
     contactId: msg.fromMe ? undefined : contact.id,
     body: msg.body || media.filename,
@@ -53,7 +53,8 @@ const VerifyMediaMessage = async (
     mediaUrl: media.filename,
     mediaType: media.mimetype.split("/")[0],
     quotedMsgId: quotedMsg?.id,
-    timestamp: msg.timestamp
+    timestamp: msg.timestamp,
+    status: msg.fromMe ? "sended" : "received"
   };
 
   await ticket.update({ lastMessage: msg.body || media.filename });

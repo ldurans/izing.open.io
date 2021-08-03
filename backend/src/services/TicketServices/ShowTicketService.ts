@@ -16,7 +16,14 @@ const ShowTicketService = async ({
       {
         model: Contact,
         as: "contact",
-        include: ["extraInfo", "tags"]
+        include: [
+          "extraInfo",
+          "tags",
+          {
+            association: "wallets",
+            attributes: ["id", "name"]
+          }
+        ]
       },
       {
         model: User,

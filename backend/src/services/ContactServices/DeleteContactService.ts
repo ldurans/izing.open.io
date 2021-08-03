@@ -1,6 +1,7 @@
 import Contact from "../../models/Contact";
 import AppError from "../../errors/AppError";
 import Ticket from "../../models/Ticket";
+import socketEmit from "../../helpers/socketEmit";
 
 interface Request {
   id: string | number;
@@ -28,6 +29,12 @@ const DeleteContactService = async ({
   }
 
   await contact.destroy();
+
+  socketEmit({
+    tenantId,
+    type: "contact:delete",
+    payload: contact
+  });
 };
 
 export default DeleteContactService;

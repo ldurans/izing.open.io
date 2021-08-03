@@ -7,6 +7,7 @@ const authRoutes = Router();
 authRoutes.post("/signup", UserController.store);
 
 authRoutes.post("/login", SessionController.store);
+authRoutes.post("/logout", SessionController.logout);
 
 authRoutes.post("/refresh_token", SessionController.update);
 

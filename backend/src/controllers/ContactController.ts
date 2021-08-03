@@ -1,7 +1,5 @@
 import * as Yup from "yup";
 import { Request, Response } from "express";
-import { getIO } from "../libs/socket";
-
 import ListContactsService from "../services/ContactServices/ListContactsService";
 import CreateContactService from "../services/ContactServices/CreateContactService";
 import ShowContactService from "../services/ContactServices/ShowContactService";
@@ -12,6 +10,7 @@ import UpdateContactTagsService from "../services/ContactServices/UpdateContactT
 import CheckIsValidContact from "../services/WbotServices/CheckIsValidContact";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
 import AppError from "../errors/AppError";
+import UpdateContactWalletsService from "../services/ContactServices/UpdateContactWalletsService";
 
 type IndexQuery = {
   searchParam: string;
@@ -71,12 +70,6 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     tenantId
   });
 
-  const io = getIO();
-  io.emit(`${tenantId}-contact`, {
-    action: "create",
-    contact
-  });
-
   return res.status(200).json(contact);
 };
 
@@ -122,12 +115,6 @@ export const update = async (
     tenantId
   });
 
-  const io = getIO();
-  io.emit(`${tenantId}-contact`, {
-    action: "update",
-    contact
-  });
-
   return res.status(200).json(contact);
 };
 
@@ -139,12 +126,6 @@ export const remove = async (
   const { tenantId } = req.user;
 
   await DeleteContactService({ id: contactId, tenantId });
-
-  const io = getIO();
-  io.emit(`${tenantId}-contact`, {
-    action: "delete",
-    contactId
-  });
 
   return res.status(200).json({ message: "Contact deleted" });
 };
@@ -163,10 +144,21 @@ export const updateContactTags = async (
     tenantId
   });
 
-  const io = getIO();
-  io.emit(`${tenantId}-contact`, {
-    action: "update",
-    contact
+  return res.status(200).json(contact);
+};
+
+export const updateContactWallet = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { wallets } = req.body;
+  const { contactId } = req.params;
+  const { tenantId } = req.user;
+
+  const contact = await UpdateContactWalletsService({
+    wallets,
+    contactId,
+    tenantId
   });
 
   return res.status(200).json(contact);

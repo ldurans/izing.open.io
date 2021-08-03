@@ -38,6 +38,9 @@
         </div>
         <q-space />
         <q-input
+          :class="{
+            'order-last q-mt-md': $q.screen.width < 500
+          }"
           style="width: 300px"
           filled
           dense

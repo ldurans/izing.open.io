@@ -1,4 +1,5 @@
 import AppError from "../../errors/AppError";
+import socketEmit from "../../helpers/socketEmit";
 import Contact from "../../models/Contact";
 
 interface ExtraInfo {
@@ -39,9 +40,22 @@ const CreateContactService = async ({
       tenantId
     },
     {
-      include: ["extraInfo"]
+      include: [
+        "extraInfo",
+        "tags",
+        {
+          association: "wallets",
+          attributes: ["id", "name"]
+        }
+      ]
     }
   );
+
+  socketEmit({
+    tenantId,
+    type: "contact:update",
+    payload: contact
+  });
 
   return contact;
 };

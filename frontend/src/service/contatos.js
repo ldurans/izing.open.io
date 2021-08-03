@@ -48,3 +48,14 @@ export function EditarEtiquetasContato (contactId, tags) {
     data
   })
 }
+
+export function EditarCarteiraContato (contactId, wallets) {
+  const data = {
+    wallets
+  }
+  return request({
+    url: `/contact-wallet/${contactId}`,
+    method: 'put',
+    data
+  })
+}

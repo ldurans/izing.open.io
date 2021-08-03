@@ -3,12 +3,42 @@ import GetWbotMessage from "../../helpers/GetWbotMessage";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
+import socketEmit from "../../helpers/socketEmit";
 
 const DeleteWhatsAppMessage = async (
+  id: string,
   messageId: string,
   tenantId: string | number
-): Promise<Message> => {
-  const message = await Message.findByPk(messageId, {
+): Promise<void> => {
+  if (!messageId || messageId === "null") {
+    await Message.update(
+      {
+        isDeleted: true,
+        status: "canceled"
+      },
+      { where: { id } }
+    );
+    const message = await Message.findByPk(id, {
+      include: [
+        {
+          model: Ticket,
+          as: "ticket",
+          include: ["contact"],
+          where: { tenantId }
+        }
+      ]
+    });
+    if (message) {
+      socketEmit({
+        tenantId,
+        type: "chat:delete",
+        payload: message
+      });
+    }
+    return;
+  }
+  const message = await Message.findOne({
+    where: { messageId },
     include: [
       {
         model: Ticket,
@@ -36,7 +66,11 @@ const DeleteWhatsAppMessage = async (
 
   await message.update({ isDeleted: true });
 
-  return message;
+  socketEmit({
+    tenantId: ticket.tenantId,
+    type: "chat:delete",
+    payload: message
+  });
 };
 
 export default DeleteWhatsAppMessage;

@@ -1,26 +1,19 @@
 import { Message as WbotMessage, MessageAck } from "whatsapp-web.js";
 import * as Sentry from "@sentry/node";
-import { getIO } from "../../../libs/socket";
 import Message from "../../../models/Message";
 import Ticket from "../../../models/Ticket";
 import { logger } from "../../../utils/logger";
 import CampaignContacts from "../../../models/CampaignContacts";
 import ApiMessage from "../../../models/ApiMessage";
+import socketEmit from "../../../helpers/socketEmit";
 
 const HandleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
   await new Promise(r => setTimeout(r, 500));
 
-  const io = getIO();
-
   try {
-    const messageToUpdate = await Message.findByPk(msg.id.id, {
+    const messageToUpdate = await Message.findOne({
+      where: { messageId: msg.id.id },
       include: [
-        "contact",
-        {
-          model: Message,
-          as: "quotedMsg",
-          include: ["contact"]
-        },
         {
           model: Ticket,
           as: "ticket",
@@ -32,13 +25,11 @@ const HandleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
     if (messageToUpdate) {
       await messageToUpdate.update({ ack });
       const { ticket } = messageToUpdate;
-      io.to(`${ticket.tenantId}-${ticket.id.toString()}`).emit(
-        `${ticket.tenantId}-appMessage`,
-        {
-          action: "update",
-          message: messageToUpdate
-        }
-      );
+      socketEmit({
+        tenantId: ticket.tenantId,
+        type: "chat:ack",
+        payload: messageToUpdate
+      });
     }
 
     const messageAPI = await ApiMessage.findOne({

@@ -207,12 +207,6 @@
                     </q-list>
                     <q-separator class="q-mb-md" />
                     <q-toggle
-                      v-if="!isNotViewTicketsQueueUndefined() || profile === 'admin'"
-                      v-model="pesquisaTickets.includeNotQueueDefined"
-                      label="Incluir Tickets sem filas definidas"
-                      @input="debounce(BuscarTicketFiltro(), 700)"
-                    />
-                    <q-toggle
                       v-model="pesquisaTickets.withUnreadMessages"
                       label="Somente Tickets com mensagens não lidas"
                       @input="debounce(BuscarTicketFiltro(), 700)"
@@ -320,161 +314,280 @@
           </span>
         </div>
         <q-separator />
-        <div
-          class="q-pa-sm"
-          v-if="ticketFocado.id"
-        >
-          <q-card
-            class="bg-white btn-rounded"
-            style="width: 100%"
-            bordered
-            flat
+        <q-scroll-area style="height: calc(100vh - 70px)">
+          <div
+            class="q-pa-sm"
+            v-if="ticketFocado.id"
           >
-            <q-card-section class="text-center">
-              <q-avatar style="border: 1px solid #9e9e9ea1 !important; width: 100px; height: 100px">
-                <q-icon
-                  name="mdi-account"
-                  style="width: 100px; height: 100px"
-                  size="6em"
-                  color="grey-5"
-                  v-if="!ticketFocado.contact.profilePicUrl"
-                />
-                <q-img
-                  :src="ticketFocado.contact.profilePicUrl"
-                  style="width: 100px; height: 100px"
-                >
-                  <template v-slot:error>
-                    <q-icon
-                      name="mdi-account"
-                      size="1.5em"
-                      color="grey-5"
-                    />
-                  </template>
-                </q-img>
-              </q-avatar>
-              <div
-                class="text-caption q-mt-md"
-                style="font-size: 14px"
-              >
-                {{ ticketFocado.contact.name || ''  }}
-              </div>
-              <div
-                class="text-caption q-mt-sm"
-                style="font-size: 14px"
-              >
-                {{ ticketFocado.contact.number || ''  }}
-              </div>
-              <q-btn
-                color="primary"
-                class="q-mt-sm bg-padrao btn-rounded"
-                flat
-                icon="edit"
-                label="Editar Contato"
-                @click="editContact(ticketFocado.contact.id)"
-              />
-            </q-card-section>
-          </q-card>
-          <q-card
-            class="bg-white q-mt-sm btn-rounded"
-            style="width: 100%"
-            bordered
-            flat
-          >
-            <q-card-section class="text-bold q-pb-none">
-              Outras Informações
-            </q-card-section>
-            <q-card-section class="q-pa-none">
-              <q-list>
-                <q-item
-                  v-for="(info, idx) in ticketFocado.contact.extraInfo"
-                  :key="idx"
-                >
-                  <q-item-section>
-                    <q-item-label caption>{{info.name}}</q-item-label>
-                    <q-item-label>{{info.value}}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card-section>
-          </q-card>
-          <q-card
-            class="bg-white q-mt-sm btn-rounded"
-            style="width: 100%"
-            bordered
-            flat
-          >
-            <q-card-section class="text-bold q-pb-none">
-              Etiquetas
-              <q-separator />
-            </q-card-section>
-            <q-card-section class="q-pa-none">
-              <q-select
-                square
-                borderless
-                :value="ticketFocado.contact.tags"
-                multiple
-                :options="etiquetas"
-                use-chips
-                option-value="id"
-                option-label="tag"
-                emit-value
-                map-options
-                dropdown-icon="add"
-                @input="tagSelecionada"
-              >
-                <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
-                  <q-item
-                    v-bind="itemProps"
-                    v-on="itemEvents"
+            <q-card
+              class="bg-white btn-rounded"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-center">
+                <q-avatar style="border: 1px solid #9e9e9ea1 !important; width: 100px; height: 100px">
+                  <q-icon
+                    name="mdi-account"
+                    style="width: 100px; height: 100px"
+                    size="6em"
+                    color="grey-5"
+                    v-if="!ticketFocado.contact.profilePicUrl"
+                  />
+                  <q-img
+                    :src="ticketFocado.contact.profilePicUrl"
+                    style="width: 100px; height: 100px"
                   >
-                    <q-item-section>
-                      <q-item-label v-html="opt.tag"></q-item-label>
-                    </q-item-section>
-                    <q-item-section side>
-                      <q-checkbox
-                        :value="selected"
-                        @input="toggleOption(opt)"
+                    <template v-slot:error>
+                      <q-icon
+                        name="mdi-account"
+                        size="1.5em"
+                        color="grey-5"
                       />
-                    </q-item-section>
-                  </q-item>
+                    </template>
+                  </q-img>
+                </q-avatar>
+                <div
+                  class="text-caption q-mt-md"
+                  style="font-size: 14px"
+                >
+                  {{ ticketFocado.contact.name || ''  }}
+                </div>
+                <div
+                  class="text-caption q-mt-sm"
+                  style="font-size: 14px"
+                >
+                  {{ ticketFocado.contact.number || ''  }}
+                </div>
+                <q-btn
+                  color="primary"
+                  class="q-mt-sm bg-padrao btn-rounded"
+                  flat
+                  icon="edit"
+                  label="Editar Contato"
+                  @click="editContact(ticketFocado.contact.id)"
+                />
+              </q-card-section>
+            </q-card>
+
+            <q-card
+              class="bg-white q-mt-sm btn-rounded"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-bold q-pb-none">
+                Etiquetas
+                <q-separator />
+              </q-card-section>
+              <q-card-section class="q-pa-none">
+                <q-select
+                  square
+                  borderless
+                  :value="ticketFocado.contact.tags"
+                  multiple
+                  :options="etiquetas"
+                  use-chips
+                  option-value="id"
+                  option-label="tag"
+                  emit-value
+                  map-options
+                  dropdown-icon="add"
+                  @input="tagSelecionada"
+                >
+                  <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
+                    <q-item
+                      v-bind="itemProps"
+                      v-on="itemEvents"
+                    >
+                      <q-item-section>
+                        <q-item-label v-html="opt.tag"></q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-checkbox
+                          :value="selected"
+                          @input="toggleOption(opt)"
+                        />
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:selected-item="{opt}">
+                    <q-chip
+                      dense
+                      square
+                      color="white"
+                      text-color="primary"
+                      class="q-ma-xs row col-12 text-body1"
+                    >
+                      <q-icon
+                        :style="`color: ${opt.color}`"
+                        name="mdi-pound-box-outline"
+                        size="28px"
+                        class="q-mr-sm"
+                      />
+                      {{ opt.tag }}
+                    </q-chip>
+                  </template>
+                  <template v-slot:no-option="{ itemProps, itemEvents }">
+                    <q-item
+                      v-bind="itemProps"
+                      v-on="itemEvents"
+                    >
+                      <q-item-section>
+                        <q-item-label class="text-negative text-bold">
+                          Ops... Sem etiquetas criadas!
+                        </q-item-label>
+                        <q-item-label caption>
+                          Cadastre novas etiquetas na administração de sistemas.
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+
+                </q-select>
+              </q-card-section>
+            </q-card>
+            <q-card
+              class="bg-white q-mt-sm btn-rounded"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-bold q-pb-none">
+                Carteira
+                <q-separator />
+              </q-card-section>
+              <q-card-section class="q-pa-none">
+                <q-select
+                  square
+                  borderless
+                  :value="ticketFocado.contact.wallets"
+                  multiple
+                  :options="usuarios"
+                  use-chips
+                  option-value="id"
+                  option-label="name"
+                  emit-value
+                  map-options
+                  dropdown-icon="add"
+                  @input="carteiraDefinida"
+                >
+                  <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
+                    <q-item
+                      v-bind="itemProps"
+                      v-on="itemEvents"
+                    >
+                      <q-item-section>
+                        <q-item-label v-html="opt.name"></q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-checkbox
+                          :value="selected"
+                          @input="toggleOption(opt)"
+                        />
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:selected-item="{opt}">
+                    <q-chip
+                      dense
+                      square
+                      color="white"
+                      text-color="primary"
+                      class="q-ma-xs row col-12 text-body1"
+                    >
+                      {{ opt.name }}
+                    </q-chip>
+                  </template>
+                  <template v-slot:no-option="{ itemProps, itemEvents }">
+                    <q-item
+                      v-bind="itemProps"
+                      v-on="itemEvents"
+                    >
+                      <q-item-section>
+                        <q-item-label class="text-negative text-bold">
+                          Ops... Sem carteiras disponíveis!!
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+
+                </q-select>
+              </q-card-section>
+            </q-card>
+            <q-card
+              class="bg-white q-mt-sm btn-rounded"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-bold q-pb-none">
+                Mensagens Agendadas
+                <q-separator />
+              </q-card-section>
+              <q-card-section class="q-pa-none">
+                <template v-if="ticketFocado.scheduledMessages">
+                  <q-list>
+                    <q-item
+                      v-for="(message, idx) in ticketFocado.scheduledMessages"
+                      :key="idx"
+                      clickable
+                    >
+                      <q-item-section>
+                        <q-item-label caption>
+                          <b>Agendado para:</b> {{ $formatarData(message.scheduleDate, 'dd/MM/yyyy HH:mm') }}
+                          <q-btn
+                            flat
+                            round
+                            dense
+                            icon="mdi-trash-can-outline"
+                            class="absolute-top-right q-mr-sm"
+                            size="sm"
+                            @click="deletarMenssagem(message)"
+                          />
+                        </q-item-label>
+                        <q-item-label
+                          caption
+                          lines="2"
+                        > <b>Msg:</b> {{ message.mediaName || message.body }}
+                        </q-item-label>
+                      </q-item-section>
+                      <q-tooltip :delay="500">
+                        <MensagemChat :mensagens="[message]" />
+                      </q-tooltip>
+                    </q-item>
+                  </q-list>
                 </template>
-                <template v-slot:selected-item="{opt}">
-                  <q-chip
-                    dense
-                    square
-                    color="white"
-                    text-color="primary"
-                    class="q-ma-xs row col-12 text-body1"
-                  >
-                    <q-icon
-                      :style="`color: ${opt.color}`"
-                      name="mdi-pound-box-outline"
-                      size="28px"
-                      class="q-mr-sm"
-                    />
-                    {{ opt.tag }}
-                  </q-chip>
-                </template>
-                <template v-slot:no-option="{ itemProps, itemEvents }">
-                  <q-item
-                    v-bind="itemProps"
-                    v-on="itemEvents"
-                  >
-                    <q-item-section>
-                      <q-item-label class="text-negative text-bold">
-                        Ops... Sem etiquetas criadas!
-                      </q-item-label>
-                      <q-item-label caption>
-                        Cadastre novas etiquetas na administração de sistemas.
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
+              </q-card-section>
+            </q-card>
+            <q-card
+              class="bg-white q-mt-sm btn-rounded"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-bold q-pb-none">
+                Outras Informações
+              </q-card-section>
+              <q-card-section class="q-pa-none">
+                <template v-if="cIsExtraInfo">
+                  <q-list>
+                    <q-item
+                      v-for="(info, idx) in ticketFocado.contact.extraInfo"
+                      :key="idx"
+                    >
+                      <q-item-section>
+                        <q-item-label caption> asaasasasa {{info.name}}</q-item-label>
+                        <q-item-label>{{info.value}}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
                 </template>
 
-              </q-select>
-            </q-card-section>
-          </q-card>
-        </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </q-scroll-area>
       </q-drawer>
 
       <ModalNovoTicket :modalNovoTicket.sync="modalNovoTicket" />
@@ -502,7 +615,7 @@
 <script>
 import ContatoModal from 'src/pages/contatos/ContatoModal'
 import ItemTicket from './ItemTicket'
-import { ConsultarTickets } from 'src/service/tickets'
+import { ConsultarTickets, DeletarMensagem } from 'src/service/tickets'
 import { mapGetters } from 'vuex'
 import mixinSockets from './mixinSockets'
 import socketInitial from 'src/layouts/socketInitial'
@@ -521,9 +634,10 @@ import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { ListarConfiguracoes } from 'src/service/configuracoes'
 import { ListarMensagensRapidas } from 'src/service/mensagensRapidas'
 import { ListarEtiquetas } from 'src/service/etiquetas'
-import { EditarEtiquetasContato } from 'src/service/contatos'
+import { EditarEtiquetasContato, EditarCarteiraContato } from 'src/service/contatos'
 import { RealizarLogout } from 'src/service/login'
-
+import { ListarUsuarios } from 'src/service/user'
+import MensagemChat from './MensagemChat.vue'
 export default {
   name: 'IndexAtendimento',
   mixins: [mixinSockets, socketInitial],
@@ -532,7 +646,8 @@ export default {
     ModalNovoTicket,
     StatusWhatsapp,
     ContatoModal,
-    ModalUsuario
+    ModalUsuario,
+    MensagemChat
   },
   data () {
     return {
@@ -540,6 +655,7 @@ export default {
       debounce,
       alertSound,
       usuario,
+      usuarios: [],
       username,
       modalUsuario: false,
       toolbarSearch: true,
@@ -618,6 +734,9 @@ export default {
     cFiltroSelecionado () {
       const { queuesIds, showAll, withUnreadMessages, isNotAssignedUser } = this.pesquisaTickets
       return !!(queuesIds?.length || showAll || withUnreadMessages || isNotAssignedUser)
+    },
+    cIsExtraInfo () {
+      return this.ticketFocado?.contact?.extraInfo?.length > 0
     }
   },
   methods: {
@@ -657,11 +776,6 @@ export default {
       const { data } = await ListarConfiguracoes()
       localStorage.setItem('configuracoes', JSON.stringify(data))
     },
-    isNotViewTicketsQueueUndefined () {
-      const configuracoes = JSON.parse(localStorage.getItem('configuracoes'))
-      const conf = configuracoes.find(c => c.key === 'NotViewTicketsQueueUndefined')
-      return (conf?.value === 'enabled')
-    },
     onScroll (info) {
       if (info.verticalPercentage <= 0.85) return
       this.onLoadMore()
@@ -671,8 +785,8 @@ export default {
       this.modalContato = true
     },
     contatoEditado (contato) {
-      this.$store.commit('UPDATE_TICKET_FOCADO_CONTACT', contato)
-      this.$store.commit('UPDATE_TICKET_CONTACT', contato)
+      // this.$store.commit('UPDATE_TICKET_FOCADO_CONTACT', contato)
+      // this.$store.commit('UPDATE_TICKET_CONTACT', contato)
     },
     async consultarTickets (paramsInit = {}) {
       const params = {
@@ -718,6 +832,7 @@ export default {
     async listarFilas () {
       const { data } = await ListarFilas()
       this.filas = data
+      localStorage.setItem('filasCadastradas', JSON.stringify(data || []))
     },
     async listarWhatsapps () {
       const { data } = await ListarWhatsapps()
@@ -737,19 +852,71 @@ export default {
     },
     async efetuarLogout () {
       console.log('logout - index atendimento', usuario)
-      await RealizarLogout(usuario)
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
-      localStorage.removeItem('profile')
-      localStorage.removeItem('userId')
-      localStorage.removeItem('queues')
-      localStorage.removeItem('usuario')
-      localStorage.removeItem('filtrosAtendimento')
-      this.$router.go({ name: 'login', replace: true })
+      try {
+        await RealizarLogout(usuario)
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        localStorage.removeItem('profile')
+        localStorage.removeItem('userId')
+        localStorage.removeItem('queues')
+        localStorage.removeItem('usuario')
+        localStorage.removeItem('filtrosAtendimento')
+
+        this.$router.go({ name: 'login', replace: true })
+      } catch (error) {
+        this.$notificarErro(
+          'Não foi possível realizar logout',
+          error
+        )
+      }
+    },
+    deletarMenssagem (mensagem) {
+      const data = { ...mensagem }
+      this.$q.dialog({
+        title: 'Atenção!! Deseja realmente deletar a mensagem? ',
+        message: 'Mensagens antigas não serão apagadas no whatsapp.',
+        cancel: {
+          label: 'Não',
+          color: 'primary',
+          push: true
+        },
+        ok: {
+          label: 'Sim',
+          color: 'negative',
+          push: true
+        },
+        persistent: true
+      }).onOk(() => {
+        this.loading = true
+        DeletarMensagem(data)
+          .then(res => {
+            this.loading = false
+          })
+          .catch(error => {
+            this.loading = false
+            console.error(error)
+            this.$notificarErro('Não foi possível apagar a mensagem', error)
+          })
+      }).onCancel(() => {
+      })
     },
     async tagSelecionada (tags) {
+      console.log('tagSelecionada', tags)
       await EditarEtiquetasContato(this.ticketFocado.contact.id, [...tags])
       // this.contatoEditado(data)
+    },
+    async carteiraDefinida (wallets) {
+      console.log('carteiraDefinida', wallets)
+      await EditarCarteiraContato(this.ticketFocado.contact.id, [...wallets])
+    },
+    async listarUsuarios () {
+      try {
+        const { data } = await ListarUsuarios()
+        this.usuarios = data.users
+      } catch (error) {
+        console.error(error)
+        this.$notificarErro('Problema ao carregar usuários', error)
+      }
     },
     setValueMenu () {
       this.drawerTickets = !this.drawerTickets
@@ -762,20 +929,26 @@ export default {
     this.listarFilas()
     this.listarEtiquetas()
     this.listarConfiguracoes()
-  },
-  async mounted () {
-    this.$root.$on('infor-cabecalo-chat:acao-menu', this.setValueMenu)
-    this.$root.$on('update-ticket:info-contato', this.setValueMenuContact)
-    // Caso não existam filtros ainda no localstorage, salvar.
     const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     if (!filtros?.pageNumber) {
       console.log('filtros', filtros)
       localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
     }
+  },
+  async mounted () {
+    this.$root.$on('infor-cabecalo-chat:acao-menu', this.setValueMenu)
+    this.$root.$on('update-ticket:info-contato', this.setValueMenuContact)
+    // Caso não existam filtros ainda no localstorage, salvar.
+    // const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
+    // if (!filtros?.pageNumber) {
+    //   console.log('filtros', filtros)
+    //   localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
+    // }
     this.pesquisaTickets = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     this.$root.$on('handlerNotifications', this.handlerNotifications)
     await this.listarWhatsapps()
     await this.consultarTickets()
+    await this.listarUsuarios()
     const { data } = await ListarMensagensRapidas()
     this.mensagensRapidas = data
     if (!('Notification' in window)) {

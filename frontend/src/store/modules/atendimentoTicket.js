@@ -1,13 +1,147 @@
-import { LocalizarMensagens } from 'src/service/tickets'
+import { ConsultarDadosTicket, LocalizarMensagens } from 'src/service/tickets'
 import { Notify } from 'quasar'
 import $router from 'src/router'
 import { orderBy } from 'lodash'
 import { parseISO } from 'date-fns'
-// import Vue from 'vue'
 
 const orderMessages = (messages) => {
-  const newMessages = orderBy(messages, (obj) => parseISO(obj.createdAt), ['asc'])
+  const newMessages = orderBy(messages, (obj) => parseISO(obj.timestamp || obj.createdAt), ['asc'])
   return [...newMessages]
+}
+
+const checkTicketFilter = (ticket) => {
+  const filtroPadrao = {
+    searchParam: '',
+    pageNumber: 1,
+    status: ['open', 'pending'],
+    showAll: false,
+    count: null,
+    queuesIds: [],
+    withUnreadMessages: false,
+    isNotAssignedUser: false,
+    includeNotQueueDefined: true
+    // date: new Date(),
+  }
+
+  const NotViewTicketsChatBot = () => {
+    const configuracoes = JSON.parse(localStorage.getItem('configuracoes'))
+    const conf = configuracoes?.find(c => c.key === 'NotViewTicketsChatBot')
+    return (conf?.value === 'enabled')
+  }
+
+  const DirectTicketsToWallets = () => {
+    const configuracoes = JSON.parse(localStorage.getItem('configuracoes'))
+    const conf = configuracoes?.find(c => c.key === 'DirectTicketsToWallets')
+    return (conf?.value === 'enabled')
+  }
+
+  const isNotViewAssignedTickets = () => {
+    const configuracoes = JSON.parse(localStorage.getItem('configuracoes'))
+    const conf = configuracoes?.find(c => c.key === 'NotViewAssignedTickets')
+    return (conf?.value === 'enabled')
+  }
+  const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento')) || filtroPadrao
+  const usuario = JSON.parse(localStorage.getItem('usuario'))
+  const UserQueues = JSON.parse(localStorage.getItem('queues'))
+  const filasCadastradas = JSON.parse(localStorage.getItem('filasCadastradas') || '[]')
+  const profile = localStorage.getItem('profile')
+  const isAdminShowAll = profile === 'admin' && filtros.showAll
+  const isQueuesTenantExists = filasCadastradas.length > 0
+
+  const userId = usuario?.userId || +localStorage.getItem('userId')
+
+  // Verificar se é admin e se está solicitando para mostrar todos
+  if (isAdminShowAll) {
+    console.log('isAdminShowAll', isAdminShowAll)
+    return true
+  }
+
+  // se ticket for um grupo, todos podem verificar.
+  if (ticket.isGroup) {
+    console.log('ticket.isGroup', ticket.isGroup)
+    return true
+  }
+
+  // se status do ticket diferente do staatus filtrado, retornar false
+  if (filtros.status.length > 0 && !filtros.status.includes(ticket.status)) {
+    console.log('Status ticket', filtros.status, ticket.status)
+    return false
+  }
+
+  // verificar se já é um ticket do usuário
+  if (ticket?.userId == userId) {
+    console.log('Ticket do usuário', ticket?.userId, userId)
+    return true
+  }
+
+  // Não visualizar tickets ainda com o Chatbot
+  // desde que ainda não exista usuário ou fila definida
+  if (NotViewTicketsChatBot() && ticket.autoReplyId) {
+    if (!ticket?.userId && !ticket.queueId) {
+      console.log('NotViewTicketsChatBot e o ticket está sem usuário e fila definida')
+      return false
+    }
+  }
+
+  // Se o ticket não possuir fila definida, checar o filtro
+  // permite visualizar tickets sem filas definidas é falso.
+  // if (isQueuesTenantExists && !ticket.queueId && !filtros.includeNotQueueDefined) {
+  //   console.log('filtros.includeNotQueueDefined', ticket.queueId, !filtros.includeNotQueueDefined)
+  //   return false
+  // }
+
+  let isValid = true
+
+  // verificar se o usuário possui fila liberada
+  if (isQueuesTenantExists) {
+    const isQueueUser = UserQueues.findIndex(q => ticket.queueId === q.id)
+    if (isQueueUser !== -1) {
+      console.log('Fila do ticket liberada para o Usuario', ticket.queueId)
+      isValid = true
+    } else {
+      console.log('Usuario não tem acesso a fila', ticket.queueId)
+      return false
+    }
+  }
+
+  // verificar se a fila do ticket está filtrada
+  if (isQueuesTenantExists && filtros?.queuesIds.length) {
+    const isQueue = filtros.queuesIds.findIndex(q => ticket.queueId === q)
+    if (isQueue == -1) {
+      console.log('filas filtradas e diferentes da do ticket', ticket.queueId)
+      return false
+    }
+  }
+
+  // se configuração para carteira ativa: verificar se já é um ticket da carteira do usuário
+  if (DirectTicketsToWallets() && (ticket?.contact?.wallets?.length || 0) > 0) {
+    const idx = ticket?.contact?.wallets.findIndex(w => w.id == userId)
+    if (idx !== -1) {
+      console.log('Ticket da carteira do usuário')
+      return true
+    }
+    console.log('DirectTicketsToWallets: Ticket não pertence à carteira do usuário', ticket)
+    return false
+  }
+
+  // verificar se o parametro para não permitir visualizar
+  // tickets atribuidos à outros usuários está ativo
+  if (isNotViewAssignedTickets() && (ticket?.userId || userId) !== userId) {
+    console.log('isNotViewAssignedTickets e ticket não é do usuário', ticket?.userId, userId)
+    // se usuário não estiver atribuido, permitir visualizar
+    if (!ticket?.userId) {
+      return true
+    }
+    return false
+  }
+
+  // verificar se filtro somente tickets não assinados (isNotAssingned) ativo
+  if (filtros.isNotAssignedUser) {
+    console.log('isNotAssignedUser ativo para exibir somente tickets não assinados', filtros.isNotAssignedUser, !ticket.userId)
+    return filtros.isNotAssignedUser && !ticket.userId
+  }
+
+  return isValid
 }
 
 const atendimentoTicket = {
@@ -15,19 +149,25 @@ const atendimentoTicket = {
     chatTicketDisponivel: false,
     tickets: [],
     ticketsLocalizadosBusca: [],
-    ticketFocado: {},
+    ticketFocado: {
+      contacts: {
+        tags: [],
+        wallets: [],
+        extraInfo: []
+      }
+    },
     hasMore: false,
     contatos: [],
     mensagens: []
   },
   mutations: {
+    // OK
     SET_HAS_MORE (state, payload) {
       state.hasMore = payload
-      return state.hasMore
     },
+    // OK
     LOAD_TICKETS (state, payload) {
       console.log('LOAD_TICKETS', payload)
-
       const newTickets = payload
       newTickets.forEach(ticket => {
         const ticketIndex = state.tickets.findIndex(t => t.id === ticket.id)
@@ -37,10 +177,11 @@ const atendimentoTicket = {
             state.tickets.unshift(state.tickets.splice(ticketIndex, 1)[0])
           }
         } else {
-          state.tickets.push(ticket)
+          if (checkTicketFilter(ticket)) {
+            state.tickets.push(ticket)
+          }
         }
       })
-      return state.tickets
     },
     RESET_TICKETS (state) {
       state.hasMore = true
@@ -56,22 +197,46 @@ const atendimentoTicket = {
         tickets[ticketIndex].unreadMessages = 0
       }
       state.ticket = tickets
-      return state.tickets
     },
+    // OK
     UPDATE_TICKET (state, payload) {
       console.log('UPDATE_TICKET', payload)
-
-      const newTickets = [...state.tickets]
-      const ticket = payload
-      const ticketIndex = newTickets.findIndex(t => t.id === ticket.id)
+      const ticketIndex = state.tickets.findIndex(t => t.id === payload.id)
       if (ticketIndex !== -1) {
-        newTickets[ticketIndex] = ticket
+        // atualizar ticket se encontrado
+        const tickets = [...state.tickets]
+        tickets[ticketIndex] = {
+          ...tickets[ticketIndex],
+          ...payload,
+          // ajustar informações por conta das mudanças no front
+          username: payload?.user?.name || payload?.username || tickets[ticketIndex].username,
+          profilePicUrl: payload?.contact?.profilePicUrl || payload?.profilePicUrl || tickets[ticketIndex].profilePicUrl,
+          name: payload?.contact?.name || payload?.name || tickets[ticketIndex].name
+        }
+        state.tickets = tickets.filter(t => checkTicketFilter(t))
+
+        // atualizar se ticket focado
+        if (state.ticketFocado.id == payload.id) {
+          state.ticketFocado = {
+            ...state.ticketFocado,
+            ...payload
+            // conservar as informações do contato
+            // contact: state.ticketFocado.contact
+          }
+        }
       } else {
-        newTickets.unshift(ticket)
+        const tickets = [...state.tickets]
+        tickets.push({
+          ...payload,
+          // ajustar informações por conta das mudanças no front
+          username: payload?.user?.name || payload?.username,
+          profilePicUrl: payload?.contact?.profilePicUrl || payload?.profilePicUrl,
+          name: payload?.contact?.name || payload?.name
+        })
+        state.tickets = tickets.filter(t => checkTicketFilter(t))
       }
-      state.tickets = newTickets
-      // return state.tickets
     },
+
     DELETE_TICKET (state, payload) {
       const ticketId = payload
       const ticketIndex = state.tickets.findIndex(t => t.id === ticketId)
@@ -80,33 +245,40 @@ const atendimentoTicket = {
       }
       // return state.tickets
     },
-    UPDATE_TICKET_MESSAGES_COUNT (state, payload) {
-      console.log('UPDATE_TICKET_MESSAGES_COUNT', payload)
 
-      const { ticket, searchParam } = payload
-      const ticketIndex = state.tickets.findIndex(t => t.id === ticket.id)
-      if (ticketIndex !== -1) {
-        state.tickets[ticketIndex] = ticket
-        state.tickets.unshift(state.tickets.splice(ticketIndex, 1)[0])
-      } else if (!searchParam) {
-        state.tickets.unshift(ticket)
-      }
-      // return state.tickets
-    },
-    UPDATE_TICKET_CONTACT (state, payload) {
-      const contact = payload
-      const newState = [...state.tickets]
-      const ticketIndex = newState.findIndex(t => t.contactId === contact.id)
-      if (ticketIndex !== -1) {
-        newState[ticketIndex].contact = contact
-      }
-      state.tickets = newState
-    },
+    // UPDATE_TICKET_MESSAGES_COUNT (state, payload) {
+    //   console.log('UPDATE_TICKET_MESSAGES_COUNT', payload)
+
+    //   const { ticket, searchParam } = payload
+    //   const ticketIndex = state.tickets.findIndex(t => t.id === ticket.id)
+    //   if (ticketIndex !== -1) {
+    //     state.tickets[ticketIndex] = ticket
+    //     state.tickets.unshift(state.tickets.splice(ticketIndex, 1)[0])
+    //   } else if (!searchParam) {
+    //     state.tickets.unshift(ticket)
+    //   }
+    //   // return state.tickets
+    // },
+
     UPDATE_TICKET_FOCADO_CONTACT (state, payload) {
       state.ticketFocado.contact = payload
     },
+    UPDATE_CONTACT (state, payload) {
+      if (state.ticketFocado.contactId == payload.id) {
+        state.ticketFocado.contact = payload
+      }
+      const ticketIndex = state.tickets.findIndex(t => t.contactId === payload.id)
+      if (ticketIndex !== -1) {
+        const tickets = [...state.tickets]
+        tickets[ticketIndex].contact = payload
+        tickets[ticketIndex].name = payload.name
+        tickets[ticketIndex].profilePicUrl = payload.profilePicUrl
+        state.tickets = tickets
+      }
+    },
+    // OK
     TICKET_FOCADO (state, payload) {
-      console.log('TICKET_FOCADO', payload)
+      console.log('>>> TICKET_FOCADO <<<', payload)
       const params = {
         ...payload,
         status: payload.status == 'pending' ? 'open' : payload.status
@@ -114,12 +286,14 @@ const atendimentoTicket = {
       state.ticketFocado = params
       // return state.ticketFocado
     },
+    // OK
     LOAD_INITIAL_MESSAGES (state, payload) {
       const { messages, messagesOffLine } = payload
       state.mensagens = []
       const newMessages = orderMessages([...messages, ...messagesOffLine])
       state.mensagens = newMessages
     },
+    // OK
     LOAD_MORE_MESSAGES (state, payload) {
       const { messages, messagesOffLine } = payload
       const arrayMessages = [...messages, ...messagesOffLine]
@@ -136,32 +310,58 @@ const atendimentoTicket = {
       const messagesOrdered = orderMessages(newMessages)
       state.mensagens = [...messagesOrdered, ...state.mensagens]
     },
-    ADD_MESSAGE (state, payload) {
-      const newMessage = payload
-      const messageIndex = state.mensagens.findIndex(m => m.id === newMessage.id)
-      if (messageIndex !== -1) {
-        state.mensagens[messageIndex] = newMessage
-      } else {
-        state.mensagens.push(newMessage)
+    // OK
+    UPDATE_MESSAGES (state, payload) {
+      // Se ticket não for o focado, não atualizar.
+      if (state.ticketFocado.id === payload.ticket.id) {
+        const messageIndex = state.mensagens.findIndex(m => m.id === payload.id)
+        const mensagens = [...state.mensagens]
+        if (messageIndex !== -1) {
+          mensagens[messageIndex] = payload
+        } else {
+          mensagens.push(payload)
+        }
+        state.mensagens = mensagens
+        if (payload.scheduleDate && payload.status == 'pending') {
+          state.ticketFocado.scheduledMessages.push(payload)
+        }
       }
-      // return state.mensagens
-    },
-    UPDATE_MESSAGE (state, payload) {
-      const messageToUpdate = payload
-      const messagesState = [...state.mensagens]
-      const messageIndex = messagesState.findIndex(m => m.id === messageToUpdate.id)
-      if (messageIndex !== -1) {
-        messagesState[messageIndex] = messageToUpdate
+
+      const TicketIndexUpdate = state.tickets.findIndex(t => t.id == payload.ticket.id)
+      if (TicketIndexUpdate !== -1) {
+        console.log('TicketIndexUpdate - MESSAGES', state.tickets[TicketIndexUpdate])
+        const tickets = [...state.tickets]
+        const unreadMessages = state.ticketFocado.id == payload.ticket.id ? 0 : payload.ticket.unreadMessages
+        tickets[TicketIndexUpdate] = {
+          ...state.tickets[TicketIndexUpdate],
+          unreadMessages,
+          lastMessage: payload.mediaName || payload.body
+        }
+        state.tickets = tickets
       }
-      state.mensagens = messagesState
-      // return state.mensagens
     },
-    DELETE_MESSAGE (state, payload) {
-      const messagesState = [...state.mensagens]
-      const message = messagesState.filter(msg => msg.id !== payload.id)
-      state.mensagens = message
-      // return state.mensagens
+    // OK
+    UPDATE_MESSAGE_STATUS (state, payload) {
+      // Se ticket não for o focado, não atualizar.
+      if (state.ticketFocado.id != payload.ticket.id) {
+        return
+      }
+      const messageIndex = state.mensagens.findIndex(m => m.id === payload.id)
+      const mensagens = [...state.mensagens]
+      if (messageIndex !== -1) {
+        mensagens[messageIndex] = payload
+        state.mensagens = mensagens
+      }
+
+      // Se existir mensagens agendadas no ticket focado,
+      // tratar a atualização das mensagens deletadas.
+      if (state.ticketFocado?.scheduledMessages) {
+        const scheduledMessages = [...state.ticketFocado.scheduledMessages]
+        const scheduled = scheduledMessages.filter(m => m.id != payload.id)
+        state.ticketFocado.scheduledMessages = scheduled
+      }
     },
+    // OK
     RESET_MESSAGE (state) {
       state.mensagens = []
       // return state.mensagens
@@ -172,7 +372,7 @@ const atendimentoTicket = {
       const mensagens = await LocalizarMensagens(params)
       // commit('TICKET_FOCADO', mensagens.data.ticket)
       commit('SET_HAS_MORE', mensagens.data.hasMore)
-      commit('UPDATE_TICKET_CONTACT', mensagens.data.ticket.contact)
+      // commit('UPDATE_TICKET_CONTACT', mensagens.data.ticket.contact)
       if (params.pageNumber === 1) {
         commit('LOAD_INITIAL_MESSAGES', mensagens.data)
       } else {
@@ -183,7 +383,8 @@ const atendimentoTicket = {
       try {
         await commit('TICKET_FOCADO', {})
         await commit('RESET_MESSAGE')
-        await commit('TICKET_FOCADO', data)
+        const ticket = await ConsultarDadosTicket(data)
+        await commit('TICKET_FOCADO', ticket.data)
         // commit('SET_HAS_MORE', true)
         const params = {
           ticketId: data.id,

@@ -10,7 +10,7 @@ import {
   HasMany,
   AutoIncrement,
   Default,
-  AfterCreate,
+  // AfterCreate,
   DataType
 } from "sequelize-typescript";
 
@@ -21,7 +21,7 @@ import Whatsapp from "./Whatsapp";
 import AutoReply from "./AutoReply";
 import StepsReply from "./StepsReply";
 import Queue from "./Queue";
-import ShowStepAutoReplyMessageService from "../services/AutoReplyServices/ShowStepAutoReplyMessageService";
+// import ShowStepAutoReplyMessageService from "../services/AutoReplyServices/ShowStepAutoReplyMessageService";
 import Tenant from "./Tenant";
 import MessagesOffLine from "./MessageOffLine";
 
@@ -108,43 +108,47 @@ class Ticket extends Model<Ticket> {
   @Column(DataType.VIRTUAL)
   isCreated: boolean | null;
 
+  @Default([])
+  @Column(DataType.VIRTUAL)
+  scheduledMessages: Message[];
+
   @BelongsTo(() => Tenant)
   tenant: Tenant;
 
   @HasMany(() => MessagesOffLine)
   messagesOffLine: MessagesOffLine[];
 
-  @AfterCreate
-  static async AutoReplyWelcome(instance: Ticket): Promise<void> {
-    if (instance.userId) return;
+  // @AfterCreate
+  // static async AutoReplyWelcome(instance: Ticket): Promise<void> {
+  //   if (instance.userId || instance.isGroup) return;
 
-    const stepAutoReply = await ShowStepAutoReplyMessageService(
-      0,
-      0,
-      0,
-      true,
-      instance.tenantId
-    );
+  //   const stepAutoReply = await ShowStepAutoReplyMessageService(
+  //     0,
+  //     0,
+  //     0,
+  //     true,
+  //     instance.tenantId
+  //   );
 
-    if (!stepAutoReply) return;
+  //   if (!stepAutoReply) return;
 
-    const contato = await Contact.findByPk(instance.contactId);
-    const { celularTeste } = stepAutoReply.autoReply;
-    const celularContato = contato?.number;
+  //   const contato = await Contact.findByPk(instance.contactId);
+  //   const { celularTeste } = stepAutoReply.autoReply;
+  //   const celularContato = contato?.number;
 
-    if (
-      (celularTeste &&
-        celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
-      !celularContato
-    ) {
-      return;
-    }
+  //   if (
+  //     (celularTeste &&
+  //       celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
+  //     !celularContato
+  //   ) {
+  //     return;
+  //   }
 
-    await instance.update({
-      autoReplyId: stepAutoReply.autoReply.id,
-      stepAutoReplyId: stepAutoReply.id
-    });
-  }
+  //   await instance.update({
+  //     autoReplyId: stepAutoReply.autoReply.id,
+  //     stepAutoReplyId: stepAutoReply.id
+  //   });
+  // }
 }
 
 export default Ticket;

@@ -97,7 +97,7 @@
             label="Novo QR Code"
             @click="handleRequestNewQrCode(props.row.id)"
             icon-right="watch_later"
-            :disable="!$store.getters['isAdmin']"
+            :disable="!isAdmin"
           />
           <q-btn-group
             v-if="props.value == 'DISCONNECTED'"
@@ -117,7 +117,7 @@
             label="Desconectar"
             outline
             @click="handleDisconectWhatsSession(props.row.id)"
-            :disable="!$store.getters['isAdmin']"
+            :disable="!isAdmin"
           />
           <q-btn
             v-if="props.value == 'OPENING'"
@@ -151,7 +151,7 @@
             dense
             icon="edit"
             @click="handleOpenModalWhatsapp(props.row)"
-            v-if="$store.getters['isAdmin']"
+            v-if="isAdmin"
           />
           <!-- <q-btn
             round
@@ -216,6 +216,7 @@ export default {
     return {
       loading: false,
       userLogado,
+      isAdmin: false,
       abrirModalQR: false,
       modalWhatsapp: false,
       whatsappSelecionado: {},
@@ -394,6 +395,7 @@ export default {
     }
   },
   mounted () {
+    this.isAdmin = localStorage.getItem('profile')
     this.listarWhatsapps()
     this.$root.$on('UPDATE_SESSION', (whatsapp) => {
       if (whatsapp.status === 'qrcode') {

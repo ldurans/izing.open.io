@@ -1,9 +1,10 @@
 import Message from "../../models/Message";
-import { getIO } from "../../libs/socket";
 import Ticket from "../../models/Ticket";
+import socketEmit from "../../helpers/socketEmit";
 
 interface MessageData {
-  id: string;
+  id?: string;
+  messageId: string;
   ticketId: number;
   body: string;
   contactId?: number;
@@ -22,16 +23,21 @@ const CreateMessageService = async ({
   messageData,
   tenantId
 }: Request): Promise<Message> => {
-  await Message.upsert(messageData);
-
-  const message = await Message.findByPk(messageData.id, {
+  const msg = await Message.findOne({
+    where: { messageId: messageData.messageId }
+  });
+  if (!msg) {
+    await Message.create(messageData);
+  } else {
+    await msg.update(messageData);
+  }
+  const message = await Message.findOne({
+    where: { messageId: messageData.messageId },
     include: [
-      "contact",
       {
         model: Ticket,
         as: "ticket",
-        where: { tenantId },
-        include: ["contact"]
+        where: { tenantId }
       },
       {
         model: Message,
@@ -46,17 +52,11 @@ const CreateMessageService = async ({
     throw new Error("ERR_CREATING_MESSAGE");
   }
 
-  const io = getIO();
-  const tenant = message.ticket.tenantId;
-  io.to(`${tenant}-${message.ticketId.toString()}`)
-    .to(`${tenant}-${message.ticket.status}`)
-    .to(`${tenant}-notification`)
-    .emit(`${tenant}-appMessage`, {
-      action: "create",
-      message,
-      ticket: message.ticket,
-      contact: message.ticket.contact
-    });
+  socketEmit({
+    tenantId,
+    type: "chat:create",
+    payload: message
+  });
 
   return message;
 };

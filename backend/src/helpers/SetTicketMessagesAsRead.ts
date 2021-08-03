@@ -1,8 +1,9 @@
-import { getIO } from "../libs/socket";
 import Message from "../models/Message";
 import Ticket from "../models/Ticket";
+import ShowTicketService from "../services/TicketServices/ShowTicketService";
 import { logger } from "../utils/logger";
 import GetTicketWbot from "./GetTicketWbot";
+import socketEmit from "./socketEmit";
 
 const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
   await Message.update(
@@ -27,13 +28,16 @@ const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
     throw new Error("ERR_WAPP_NOT_INITIALIZED");
   }
 
-  const io = getIO();
-  io.to(`${ticket.tenantId}-${ticket.status}`)
-    .to(`${ticket.tenantId}-notification`)
-    .emit(`${ticket.tenantId}-ticket`, {
-      action: "updateUnread",
-      ticketId: ticket.id
-    });
+  const ticketReload = await ShowTicketService({
+    id: ticket.id,
+    tenantId: ticket.tenantId
+  });
+
+  socketEmit({
+    tenantId: ticket.tenantId,
+    type: "ticket:update",
+    payload: ticketReload
+  });
 };
 
 export default SetTicketMessagesAsRead;

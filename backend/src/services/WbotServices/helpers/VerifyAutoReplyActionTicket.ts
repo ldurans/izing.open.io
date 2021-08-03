@@ -1,12 +1,13 @@
 import { Message as WbotMessage } from "whatsapp-web.js";
-import SetTicketMessagesAsRead from "../../../helpers/SetTicketMessagesAsRead";
+// import SetTicketMessagesAsRead from "../../../helpers/SetTicketMessagesAsRead";
 import { getIO } from "../../../libs/socket";
 import Ticket from "../../../models/Ticket";
-import { sleepRandomTime } from "../../../utils/sleepRandomTime";
+// import { sleepRandomTime } from "../../../utils/sleepRandomTime";
 import CreateAutoReplyLogsService from "../../AutoReplyServices/CreateAutoReplyLogsService";
 import ShowStepAutoReplyMessageService from "../../AutoReplyServices/ShowStepAutoReplyMessageService";
 import VerifyActionStepAutoReplyService from "../../AutoReplyServices/VerifyActionStepAutoReplyService";
-import SendWhatsAppMessage from "../SendWhatsAppMessage";
+import CreateMessageSystemService from "../../MessageServices/CreateMessageSystemService";
+// import SendWhatsAppMessage from "../SendWhatsAppMessage";
 
 const verifyAutoReplyActionTicket = async (
   msg: WbotMessage,
@@ -62,16 +63,20 @@ const verifyAutoReplyActionTicket = async (
             return;
           }
 
-          await sleepRandomTime({
-            minMilliseconds: +(process.env.MIN_SLEEP_AUTO_REPLY || 4000),
-            maxMilliseconds: +(process.env.MAX_SLEEP_AUTO_REPLY || 6000)
-          });
-          await SendWhatsAppMessage({
+          const messageData = {
             body: stepAutoReply.reply,
+            fromMe: true,
+            read: true,
+            sendType: "bot"
+          };
+          await CreateMessageSystemService({
+            msg: messageData,
+            tenantId: ticket.tenantId,
             ticket,
-            quotedMsg: undefined
+            sendType: messageData.sendType,
+            status: "pending"
           });
-          await SetTicketMessagesAsRead(ticket);
+          // await SetTicketMessagesAsRead(ticket);
           return;
         }
 
@@ -102,16 +107,20 @@ const verifyAutoReplyActionTicket = async (
         );
 
         if (actionAutoReply.replyDefinition) {
-          await sleepRandomTime({
-            minMilliseconds: +(process.env.MIN_SLEEP_AUTO_REPLY || 4000),
-            maxMilliseconds: +(process.env.MAX_SLEEP_AUTO_REPLY || 6000)
-          });
-          await SendWhatsAppMessage({
+          const messageData = {
             body: actionAutoReply.replyDefinition,
+            fromMe: true,
+            read: true,
+            sendType: "bot"
+          };
+          await CreateMessageSystemService({
+            msg: messageData,
+            tenantId: ticket.tenantId,
             ticket,
-            quotedMsg: undefined
+            sendType: messageData.sendType,
+            status: "pending"
           });
-          await SetTicketMessagesAsRead(ticket);
+          // await SetTicketMessagesAsRead(ticket);
         }
       } else {
         // Verificar se rotina em teste
@@ -126,28 +135,36 @@ const verifyAutoReplyActionTicket = async (
 
         // se ticket tiver sido criado, ingnorar na primeria passagem
         if (!ticket.isCreated) {
-          await sleepRandomTime({
-            minMilliseconds: +(process.env.MIN_SLEEP_AUTO_REPLY || 4000),
-            maxMilliseconds: +(process.env.MAX_SLEEP_AUTO_REPLY || 6000)
-          });
-          await SendWhatsAppMessage({
+          const messageData = {
             body:
               "Desculpe! Não entendi sua resposta. Vamos tentar novamente! Escolha uma opção válida.",
+            fromMe: true,
+            read: true,
+            sendType: "bot"
+          };
+          await CreateMessageSystemService({
+            msg: messageData,
+            tenantId: ticket.tenantId,
             ticket,
-            quotedMsg: undefined
+            sendType: messageData.sendType,
+            status: "pending"
           });
         }
 
-        await sleepRandomTime({
-          minMilliseconds: +(process.env.MIN_SLEEP_AUTO_REPLY || 4000),
-          maxMilliseconds: +(process.env.MAX_SLEEP_AUTO_REPLY || 6000)
-        });
-        await SendWhatsAppMessage({
+        const messageData = {
           body: stepAutoReplyAtual.reply,
+          fromMe: true,
+          read: true,
+          sendType: "bot"
+        };
+        await CreateMessageSystemService({
+          msg: messageData,
+          tenantId: ticket.tenantId,
           ticket,
-          quotedMsg: undefined
+          sendType: messageData.sendType,
+          status: "pending"
         });
-        await SetTicketMessagesAsRead(ticket);
+        // await SetTicketMessagesAsRead(ticket);
       }
     }
   }

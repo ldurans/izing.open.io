@@ -12,7 +12,7 @@ const VerifyMessage = async (
   const quotedMsg = await VerifyQuotedMessage(msg);
 
   const messageData = {
-    id: msg.id.id,
+    messageId: msg.id.id,
     ticketId: ticket.id,
     contactId: msg.fromMe ? undefined : contact.id,
     body: msg.body,
@@ -20,7 +20,8 @@ const VerifyMessage = async (
     mediaType: msg.type,
     read: msg.fromMe,
     quotedMsgId: quotedMsg?.id,
-    timestamp: msg.timestamp
+    timestamp: msg.timestamp,
+    status: "received"
   };
 
   await ticket.update({ lastMessage: msg.body });

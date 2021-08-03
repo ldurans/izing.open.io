@@ -8,6 +8,14 @@ export function ConsultarTickets (params) {
   })
 }
 
+export function ConsultarDadosTicket (params) {
+  return request({
+    url: `/tickets/${params.id}`,
+    method: 'get',
+    params
+  })
+}
+
 export function AtualizarStatusTicket (ticketId, status, userId) {
   return request({
     url: `/tickets/${ticketId}`,
@@ -45,8 +53,9 @@ export function EnviarMensagemTexto (ticketId, data) {
 
 export function DeletarMensagem (mensagem) {
   return request({
-    url: `/messages/${mensagem.id}`,
-    method: 'delete'
+    url: `/messages/${mensagem.messageId}`,
+    method: 'delete',
+    data: mensagem
   })
 }
 

@@ -1,9 +1,10 @@
 import AppError from "../../errors/AppError";
 import CheckContactOpenTickets from "../../helpers/CheckContactOpenTickets";
 import GetDefaultWhatsApp from "../../helpers/GetDefaultWhatsApp";
-import Contact from "../../models/Contact";
+import socketEmit from "../../helpers/socketEmit";
 import Ticket from "../../models/Ticket";
 import ShowContactService from "../ContactServices/ShowContactService";
+import ShowTicketService from "./ShowTicketService";
 
 interface Request {
   contactId: number;
@@ -32,19 +33,17 @@ const CreateTicketService = async ({
     tenantId
   });
 
-  const ticket = await Ticket.findByPk(id, {
-    include: [
-      {
-        model: Contact,
-        as: "contact",
-        include: ["extraInfo", "tags"]
-      }
-    ]
-  });
+  const ticket = await ShowTicketService({ id, tenantId });
 
   if (!ticket) {
     throw new AppError("ERR_CREATING_TICKET");
   }
+
+  socketEmit({
+    tenantId,
+    type: "ticket:update",
+    payload: ticket
+  });
 
   return ticket;
 };

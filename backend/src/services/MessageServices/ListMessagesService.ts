@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize-typescript";
 import AppError from "../../errors/AppError";
 import Message from "../../models/Message";
 import MessagesOffLine from "../../models/MessageOffLine";
@@ -45,7 +46,13 @@ const ListMessagesService = async ({
       }
     ],
     offset,
+    logging: console.log,
     order: [["createdAt", "DESC"]]
+    // order: [
+    //   Sequelize.literal(
+    //     'coalesce(to_timestamp("Message"."timestamp") , "Message"."createdAt") desc'
+    //   )
+    // ]
   });
 
   let messagesOffLine: MessagesOffLine[] = [];

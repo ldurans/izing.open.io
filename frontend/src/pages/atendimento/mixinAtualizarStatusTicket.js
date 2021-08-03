@@ -9,7 +9,7 @@ export default {
         .then(res => {
           this.loading = false
           this.$q.notify({
-            message: `Atendimento Iniciado || ${ticket.contact.name} - Ticket: ${ticket.id}`,
+            message: `Atendimento Iniciado || ${ticket.name} - Ticket: ${ticket.id}`,
             type: 'positive',
             progress: true,
             position: 'top',

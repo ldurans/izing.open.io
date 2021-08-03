@@ -6,7 +6,7 @@
     @show="abrirModal"
   >
     <q-card
-      style="min-width: 700px; max-width: 700px"
+      :style="$q.screen.width < 500 ? 'width: 95vw' : 'min-width: 700px; max-width: 700px'"
       class="q-pa-lg"
     >
       <q-card-section>

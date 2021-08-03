@@ -150,13 +150,11 @@
 </template>
 
 <script>
-import { DadosUsuario } from 'src/service/user'
 import { ListarWhatsapps } from 'src/service/sessoesWhatsapp'
 import EssentialLink from 'components/EssentialLink.vue'
 import socketInitial from './socketInitial'
 import alertSound from 'src/assets/sound.mp3'
 import { format } from 'date-fns'
-const userId = +localStorage.getItem('userId')
 const username = localStorage.getItem('username')
 import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { mapGetters } from 'vuex'
@@ -359,33 +357,28 @@ export default {
         this.$refs.audioNotification.play()
       })
     },
-    async dadosUsuario () {
-      const { data } = await DadosUsuario(userId)
-      this.usuario = data
-      localStorage.setItem('usuario', JSON.stringify(data))
-      localStorage.setItem('queues', JSON.stringify(data.queues))
-      this.$store.commit('SET_IS_SUPORTE', data)
-      this.$store.commit('SET_IS_ADMIN', data)
-    },
     async abrirModalUsuario () {
-      if (!this.usuario.id) {
-        await this.dadosUsuario()
-      }
-      // const { data } = await DadosUsuario(userId)
-      // this.usuario = data
       this.modalUsuario = true
     },
     async efetuarLogout () {
-      console.log('logout - index atendimento', usuario)
+      console.log('logout - main atendimento', usuario)
+      try {
+        await RealizarLogout(usuario)
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        localStorage.removeItem('profile')
+        localStorage.removeItem('userId')
+        localStorage.removeItem('queues')
+        localStorage.removeItem('usuario')
+        localStorage.removeItem('filtrosAtendimento')
 
-      await RealizarLogout(usuario)
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
-      localStorage.removeItem('profile')
-      localStorage.removeItem('userId')
-      localStorage.removeItem('queues')
-      localStorage.removeItem('usuario')
-      this.$router.go({ name: 'login', replace: true })
+        this.$router.go({ name: 'login', replace: true })
+      } catch (error) {
+        this.$notificarErro(
+          'Não foi possível realizar logout',
+          error
+        )
+      }
     },
     async listarConfiguracoes () {
       const { data } = await ListarConfiguracoes()
@@ -405,7 +398,7 @@ export default {
     } else {
       Notification.requestPermission()
     }
-    await this.dadosUsuario()
+    this.usuario = JSON.parse(localStorage.getItem('usuario'))
     this.userProfile = localStorage.getItem('profile')
     await this.conectarSocket(usuario)
   },

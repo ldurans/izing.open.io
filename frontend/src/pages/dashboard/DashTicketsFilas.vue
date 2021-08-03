@@ -181,7 +181,7 @@
 
 <script>
 const token = JSON.parse(localStorage.getItem('token'))
-const userId = +localStorage.getItem('userId')
+// const userId = +localStorage.getItem('userId')
 const usuario = JSON.parse(localStorage.getItem('usuario'))
 import openSocket from 'socket.io-client'
 const socket = openSocket(process.env.API, {
@@ -314,46 +314,46 @@ export default {
       // verificar se o usuario possui ecesso a fila do ticket
     },
     conectSocketQueues (tenantId, queueId) {
-      socket.on(`${tenantId}-${queueId}-ticket-queue`, data => {
-        if (!this.verifyIsActionSocket(data.ticket)) return
+      // socket.on(`${tenantId}-${queueId}-ticket-queue`, data => {
+      //   if (!this.verifyIsActionSocket(data.ticket)) return
 
-        if (data.action === 'update') {
-          this.updateTicket(data.ticket)
-        }
-        if (data.action === 'create') {
-          this.createTicket(data.ticket)
-        }
-        if (data.action === 'delete') {
-          this.deleteTicket(data.ticketId)
-        }
-      })
+      //   if (data.action === 'update') {
+      //     this.updateTicket(data.ticket)
+      //   }
+      //   if (data.action === 'create') {
+      //     this.createTicket(data.ticket)
+      //   }
+      //   if (data.action === 'delete') {
+      //     this.deleteTicket(data.ticketId)
+      //   }
+      // })
     },
     socketTickets (tenantId) {
-      socket.emit(`${tenantId}-joinTickets`, 'open')
-      socket.emit(`${tenantId}-joinTickets`, 'pending')
+      // socket.emit(`${tenantId}-joinTickets`, 'open')
+      // socket.emit(`${tenantId}-joinTickets`, 'pending')
 
-      socket.on(`${tenantId}-ticket`, data => {
-        if (!this.verifyIsActionSocket(data.ticket)) return
+      // socket.on(`${tenantId}-ticket`, data => {
+      //   if (!this.verifyIsActionSocket(data.ticket)) return
 
-        if (data.action === 'updateQueue' || data.action === 'create') {
-          this.updateTicket(data.ticket)
-        }
+      //   if (data.action === 'updateQueue' || data.action === 'create') {
+      //     this.updateTicket(data.ticket)
+      //   }
 
-        if (data.action === 'updateUnread') {
-          // this.$store.commit('RESET_UNREAD', data.ticketId)
-        }
+      //   if (data.action === 'updateUnread') {
+      //     // this.$store.commit('RESET_UNREAD', data.ticketId)
+      //   }
 
-        if (
-          (data.action === 'update' || data.action === 'create') &&
-          (!data.ticket.userId || data.ticket.userId === userId /* || showAll */)
-        ) {
-          this.updateTicket(data.ticket)
-        }
+      //   if (
+      //     (data.action === 'update' || data.action === 'create') &&
+      //     (!data.ticket.userId || data.ticket.userId === userId /* || showAll */)
+      //   ) {
+      //     this.updateTicket(data.ticket)
+      //   }
 
-        if (data.action === 'delete') {
-          this.deleteTicket(data.ticketId)
-        }
-      })
+      //   if (data.action === 'delete') {
+      //     this.deleteTicket(data.ticketId)
+      //   }
+      // })
     },
     connectSocket () {
       this.socketTickets()

@@ -67,6 +67,15 @@ class User extends Model<User> {
   @BelongsTo(() => Tenant)
   tenant: Tenant;
 
+  @Column
+  lastLogin: Date;
+
+  @Column
+  lastLogout: Date;
+
+  @Column
+  isOnline: boolean;
+
   @BeforeUpdate
   @BeforeCreate
   static hashPassword = async (instance: User): Promise<void> => {

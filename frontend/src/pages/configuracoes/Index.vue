@@ -18,6 +18,7 @@
       >
         <q-item-section>
           <q-item-label>Não visualizar Tickets já atribuidos à outros usuários</q-item-label>
+          <q-item-label caption>Somente o usuário responsável pelo ticket e/ou os administradores visualizarão a atendimento.</q-item-label>
         </q-item-section>
         <q-item-section avatar>
           <q-toggle
@@ -39,19 +40,43 @@
         v-ripple
       >
         <q-item-section>
-          <q-item-label>Não visualizar Tickets sem fila definida</q-item-label>
+          <q-item-label>Não visualizar Tickets no ChatBot</q-item-label>
+          <q-item-label caption>Somente administradores poderão visualizar tickets que estivem interagindo com o ChatBot.</q-item-label>
         </q-item-section>
         <q-item-section avatar>
           <q-toggle
-            v-model="NotViewTicketsQueueUndefined"
+            v-model="NotViewTicketsChatBot"
             false-value="disabled"
             true-value="enabled"
             checked-icon="check"
             keep-color
-            :color="NotViewTicketsQueueUndefined === 'enabled' ? 'green' : 'negative'"
+            :color="NotViewTicketsChatBot === 'enabled' ? 'green' : 'negative'"
             size="md"
             unchecked-icon="clear"
-            @input="atualizarConfiguracao('NotViewTicketsQueueUndefined')"
+            @input="atualizarConfiguracao('NotViewTicketsChatBot')"
+          />
+        </q-item-section>
+      </q-item>
+
+      <q-item
+        tag="label"
+        v-ripple
+      >
+        <q-item-section>
+          <q-item-label>Forçar atendimento via Carteira</q-item-label>
+          <q-item-label caption>Caso o contato tenha carteira vínculada, o sistema irá direcionar o atendimento somente para os donos da carteira de clientes.</q-item-label>
+        </q-item-section>
+        <q-item-section avatar>
+          <q-toggle
+            v-model="DirectTicketsToWallets"
+            false-value="disabled"
+            true-value="enabled"
+            checked-icon="check"
+            keep-color
+            :color="DirectTicketsToWallets === 'enabled' ? 'green' : 'negative'"
+            size="md"
+            unchecked-icon="clear"
+            @input="atualizarConfiguracao('DirectTicketsToWallets')"
           />
         </q-item-section>
       </q-item>
@@ -69,7 +94,8 @@ export default {
     return {
       configuracoes: [],
       NotViewAssignedTickets: null,
-      NotViewTicketsQueueUndefined: null
+      NotViewTicketsChatBot: null,
+      DirectTicketsToWallets: null
     }
   },
   methods: {
@@ -77,6 +103,7 @@ export default {
       const { data } = await ListarConfiguracoes()
       this.configuracoes = data
       this.configuracoes.forEach(el => {
+        console.log(el)
         this.$data[el.key] = el.value
       })
     },
