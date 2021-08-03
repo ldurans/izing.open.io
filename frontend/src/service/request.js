@@ -85,7 +85,7 @@ service.interceptors.response.use(
   },
   error => {
     loading.hide(error.config)
-    if (error?.response?.status === 401 && !error.config._retry) {
+    if (error?.response?.status === 402 && !error.config._retry) {
       error.config._retry = true
       RefreshToken().then(res => {
         if (res.data) {
