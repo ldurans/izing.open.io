@@ -4,9 +4,6 @@ const configPino = {
   dev: {
     enabled: true,
     level: "info"
-    // prettyPrint: {
-    //   levelFirst: true
-    // }
   },
   prod: {
     enabled: true,

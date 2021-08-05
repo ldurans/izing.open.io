@@ -28,7 +28,7 @@ const checkMessages = async (wbot: Session, tenantId: number | string) => {
   try {
     await SendMessagesSystemWbot(wbot, tenantId);
   } catch (error) {
-    logger.error(`ERROR: checkMessages Tenant: ${tenantId}:: ${error}`);
+    logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
   }
   checking[tenantId] = false;
 };

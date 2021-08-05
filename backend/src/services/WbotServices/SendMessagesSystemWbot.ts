@@ -99,9 +99,15 @@ const SendMessagesSystemWbot = async (
           maxMilliseconds: +(process.env.MAX_SLEEP_INTERVAL || 5000)
         });
 
+        throw new Error("aassasasa");
+
         console.log("sendMessage", sendedMessage.id.id);
       } catch (error) {
-        logger.error(`Error enviar message system: ${error}`);
+        logger.error(
+          `Error enviar message system(tenant:
+            ${message.ticket.tenantId} / Ticket: ${message.ticket.id}
+          ):: ${JSON.stringify(error)}`
+        );
       }
     })
   );
