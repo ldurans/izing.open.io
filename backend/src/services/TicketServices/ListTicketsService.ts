@@ -72,6 +72,10 @@ const ListTicketsService = async ({
     throw new AppError("ERR_NO_STATUS_SELECTED", 404);
   }
 
+  if (isAdminShowAll) {
+    status = ["open", "pending", "closed"];
+  }
+
   // Verificar se existem filas cadastradas, caso contrário,
   // não aplicar restrição
   const isExistsQueueTenant =
@@ -212,7 +216,7 @@ const ListTicketsService = async ({
   limit :limit offset :offset ;
 `;
 
-  const limit = 50;
+  const limit = 30;
   const offset = limit * (+pageNumber - 1);
 
   const tickets: any = await Ticket.sequelize?.query(query, {
