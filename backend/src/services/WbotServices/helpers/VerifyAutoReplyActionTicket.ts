@@ -1,6 +1,6 @@
 import { Message as WbotMessage } from "whatsapp-web.js";
+import socketEmit from "../../../helpers/socketEmit";
 // import SetTicketMessagesAsRead from "../../../helpers/SetTicketMessagesAsRead";
-import { getIO } from "../../../libs/socket";
 import Ticket from "../../../models/Ticket";
 // import { sleepRandomTime } from "../../../utils/sleepRandomTime";
 import CreateAutoReplyLogsService from "../../AutoReplyServices/CreateAutoReplyLogsService";
@@ -36,8 +36,6 @@ const verifyAutoReplyActionTicket = async (
         ticket.tenantId
       );
       if (actionAutoReply) {
-        const io = getIO();
-
         await CreateAutoReplyLogsService(stepAutoReplyAtual, ticket, msg.body);
 
         // action = 0: enviar para proximo step: nextStepId
@@ -98,13 +96,12 @@ const verifyAutoReplyActionTicket = async (
             stepAutoReplyId: null
           });
         }
-        io.to(`${ticket.tenantId}-${ticket.status}`).emit(
-          `${ticket.tenantId}-ticket`,
-          {
-            action: "updateQueue",
-            ticket
-          }
-        );
+
+        socketEmit({
+          tenantId: ticket.tenantId,
+          type: "ticket:update",
+          payload: ticket
+        });
 
         if (actionAutoReply.replyDefinition) {
           const messageData = {

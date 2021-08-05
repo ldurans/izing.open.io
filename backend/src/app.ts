@@ -11,17 +11,22 @@ import helmet from "helmet";
 import { setQueues, BullAdapter, router as bullRoute } from "bull-board";
 
 import "./database";
+import pino from "pino-http";
 import uploadConfig from "./config/upload";
 import AppError from "./errors/AppError";
 import routes from "./routes";
 import { logger } from "./utils/logger";
 import Queue from "./libs/Queue";
 
+// const pino = require("pino-http")();
+
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
 
 app.use(helmet());
+
+app.use(pino());
 
 // Sets all of the defaults, but overrides script-src
 app.use(
