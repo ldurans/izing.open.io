@@ -95,6 +95,7 @@ const CreateMessageSystemService = async ({
 
           const message = {
             ...messageData,
+            body: media.originalname,
             mediaUrl: media.filename,
             mediaType: media.mimetype.substr(0, media.mimetype.indexOf("/"))
           };
@@ -121,7 +122,7 @@ const CreateMessageSystemService = async ({
           }
 
           await ticket.update({
-            lastMessage: messageCreated.mediaName || messageCreated.body
+            lastMessage: messageCreated.body
           });
 
           socketEmit({
