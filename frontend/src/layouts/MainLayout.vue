@@ -57,7 +57,7 @@
             >
               2
             </q-badge>
-            <q-tooltip>Notifications</q-tooltip>
+            <q-tooltip>Notifications (Em breve)</q-tooltip>
           </q-btn>
           <q-btn
             round
@@ -70,6 +70,19 @@
             <q-menu>
               <q-list style="min-width: 100px">
                 <q-item-label header> Olá! <b> {{ username }} </b> </q-item-label>
+                <q-item
+                  clickable
+                  v-close-popup
+                >
+                  <q-item-section>
+                    <q-toggle
+                      color="blue"
+                      v-model="isDark"
+                      label="Modo escuro"
+                      @input="setStateDarkMode"
+                    />
+                  </q-item-section>
+                </q-item>
                 <q-item
                   clickable
                   v-close-popup
@@ -288,7 +301,8 @@ export default {
       alertSound,
       leftDrawerOpen: false,
       menuData: objMenu,
-      menuDataAdmin: objMenuAdmin
+      menuDataAdmin: objMenuAdmin,
+      isDark: false
     }
   },
   computed: {
@@ -318,6 +332,10 @@ export default {
     }
   },
   methods: {
+    setStateDarkMode () {
+      // this.isDark = !this.isDark
+      this.$q.dark.toggle()
+    },
     exibirMenuBeta (itemMenu) {
       if (!itemMenu?.isBeta) return true
       for (const domain of this.domainExperimentalsMenus) {

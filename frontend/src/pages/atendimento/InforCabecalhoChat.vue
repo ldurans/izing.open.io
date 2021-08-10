@@ -78,7 +78,7 @@
         >
           <template v-if="!$q.screen.xs">
             <q-btn
-              @click="$emit('abrir:modalAgendamentoMensagen')"
+              @click="$emit('abrir:modalAgendamentoMensagem')"
               flat
               icon="mdi-message-text-clock-outline"
               color="grey-9"
@@ -132,6 +132,10 @@
               direction="down"
               padding="5px"
               label="Ações"
+              :class="{
+                  'bg-black': $q.dark.isActive
+
+              }"
             >
               <q-fab-action
                 @click="$emit('updateTicket:resolver')"
@@ -139,6 +143,10 @@
                 flat
                 class="bg-padrao q-pa-xs "
                 icon="mdi-comment-check"
+                :class="{
+                  'bg-black': $q.dark.isActive
+
+                }"
               >
                 <q-tooltip content-class="bg-positive text-bold">
                   Resolver
@@ -150,6 +158,10 @@
                 icon="mdi-replay"
                 color="negative"
                 class="bg-padrao q-pa-xs "
+                :class="{
+                  'bg-black': $q.dark.isActive
+
+                }"
               >
                 <q-tooltip content-class="bg-negative text-bold">
                   Retornar Ticket para a Fila
@@ -161,6 +173,10 @@
                 flat
                 color="primary"
                 class="bg-padrao q-pa-xs "
+                :class="{
+                  'bg-black-dark': $q.dark.isActive
+
+                }"
               >
                 <q-icon name="mdi-transfer" />
                 <q-tooltip content-class="bg-primary text-bold">
@@ -168,10 +184,14 @@
                 </q-tooltip>
               </q-fab-action>
               <q-fab-action
-                @click="$emit('abrir:modalAgendamentoMensagen')"
+                @click="$emit('abrir:modalAgendamentoMensagem')"
                 flat
                 color="grey-9"
                 class="bg-padrao q-pa-xs "
+                :class="{
+                  'bg-black': $q.dark.isActive
+
+                }"
               >
                 <q-icon name="mdi-message-text-clock-outline" />
                 <q-tooltip content-class="bg-grey-9 text-bold">

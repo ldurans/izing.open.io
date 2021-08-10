@@ -30,7 +30,7 @@
           :stamp="dataInWords(mensagem.createdAt)"
           :sent="mensagem.fromMe"
           class="text-weight-medium"
-          :bg-color="mensagem.fromMe ? 'grey-2' : 'blue-1' "
+          :bg-color="$q.dark.isActive ? '' : mensagem.fromMe ? 'grey-2' : 'blue-1' "
           :class="{pulseIdentications: identificarMensagem == `chat-message-${mensagem.id}` }"
         >
           <!-- :bg-color="mensagem.fromMe ? 'grey-2' : 'secondary' " -->
@@ -107,7 +107,7 @@
               />
             </div>
             <q-btn
-              v-if="!mensagem.isDeleted"
+              v-if="!mensagem.isDeleted && isShowOptions"
               class="absolute-top-right mostar-btn-opcoes-chat"
               dense
               flat
@@ -128,6 +128,12 @@
                   >
                     <q-item-section>Responder</q-item-section>
                   </q-item>
+                  <q-item
+                    clickable
+                    @click="encaminharMensagem(mensagem)"
+                  >
+                    <q-item-section>Encaminhar</q-item-section>
+                  </q-item>
                   <q-separator />
                   <q-item
                     @click="deletarMenssagem(mensagem)"
@@ -143,7 +149,7 @@
                         :delay="500"
                         content-class="text-black bg-red-3 text-body1"
                       >
-                        Após 7 min do envio, não é possível apagar mensagem para no cliente.
+                        Após 7 min do envio, não será possível apagar a mensagem para o cliente.
                       </q-tooltip>
                     </q-item-section>
                   </q-item>
@@ -325,6 +331,10 @@ export default {
       type: Boolean,
       default: true
     },
+    isShowOptions: {
+      type: Boolean,
+      default: true
+    },
     replyingMessage: {
       type: Object,
       default: () => { }
@@ -394,6 +404,10 @@ export default {
     citarMensagem (mensagem) {
       this.$emit('update:replyingMessage', mensagem)
       this.$root.$emit('mensagem-chat:focar-input-mensagem', mensagem)
+    },
+    encaminharMensagem (mensagem) {
+      console.log(mensagem)
+      this.$emit('mensagem-chat:encaminhar-mensagem', mensagem)
     },
     deletarMenssagem (mensagem) {
       const data = { ...mensagem }

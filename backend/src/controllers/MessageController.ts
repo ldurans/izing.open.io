@@ -4,6 +4,7 @@ import AppError from "../errors/AppError";
 
 import SetTicketMessagesAsRead from "../helpers/SetTicketMessagesAsRead";
 import Message from "../models/Message";
+import CreateForwardMessageService from "../services/MessageServices/CreateForwardMessageService";
 // import CreateMessageOffilineService from "../services/MessageServices/CreateMessageOfflineService";
 import CreateMessageSystemService from "../services/MessageServices/CreateMessageSystemService";
 
@@ -117,6 +118,24 @@ export const remove = async (
     logger.error(`ERR_DELETE_SYSTEM_MSG: ${error}`);
     throw new AppError("ERR_DELETE_SYSTEM_MSG");
   }
+
+  return res.send();
+};
+
+export const forward = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const data = req.body;
+  const { user } = req;
+  console.log(data);
+  await CreateForwardMessageService({
+    userId: user.id,
+    tenantId: user.tenantId,
+    message: data.message,
+    contact: data.contact,
+    ticketIdOrigin: data.message.ticketId
+  });
 
   return res.send();
 };

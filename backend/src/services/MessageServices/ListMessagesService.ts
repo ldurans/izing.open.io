@@ -46,7 +46,7 @@ const ListMessagesService = async ({
       }
     ],
     offset,
-    logging: console.log,
+    // logging: console.log,
     order: [["createdAt", "DESC"]]
     // order: [
     //   Sequelize.literal(

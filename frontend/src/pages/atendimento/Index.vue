@@ -44,6 +44,19 @@
               <q-item
                 clickable
                 v-close-popup
+              >
+                <q-item-section>
+                  <q-toggle
+                    color="blue"
+                    v-model="isDark"
+                    label="Modo escuro"
+                    @input="setStateDarkMode"
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
                 @click="abrirModalUsuario"
               >
                 <q-item-section>Perfil</q-item-section>
@@ -685,7 +698,8 @@ export default {
       filas: [],
       etiquetas: [],
       mensagensRapidas: [],
-      modalEtiquestas: false
+      modalEtiquestas: false,
+      isDark: false
     }
   },
   watch: {
@@ -740,6 +754,10 @@ export default {
     }
   },
   methods: {
+    setStateDarkMode () {
+      // this.isDark = !this.isDark
+      this.$q.dark.toggle()
+    },
     handlerNotifications (data) {
       const { message, contact, ticket } = data
 

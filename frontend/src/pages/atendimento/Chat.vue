@@ -6,7 +6,7 @@
     <InforCabecalhoChat
       @updateTicket:resolver="atualizarStatusTicket('closed')"
       @updateTicket:retornar="atualizarStatusTicket('pending')"
-      @abrir:modalAgendamentoMensagen="modalAgendamentoMensagen=true"
+      @abrir:modalAgendamentoMensagem="modalAgendamentoMensagem=true"
     />
     <div
       ref="scrollContainer"
@@ -40,6 +40,7 @@
         :replyingMessage.sync="replyingMessage"
         :mensagens="cMessages"
         v-if="cMessages.length && ticketFocado.id"
+        @mensagem-chat:encaminhar-mensagem="abrirModalEncaminharMensagem"
       />
       <div
         class="absolute-center items-center"
@@ -153,7 +154,7 @@
     </q-footer>
 
     <q-dialog
-      v-model="modalAgendamentoMensagen"
+      v-model="modalAgendamentoMensagem"
       persistent
     >
       <q-card :style=" $q.screen.width < 770 ? `min-width: 98vw; max-width: 98vw`: 'min-width: 50vw; max-width: 50vw'">
@@ -180,6 +181,82 @@
       </q-card>
 
     </q-dialog>
+    <q-dialog
+      v-model="modalEncaminhamentoMensagem"
+      persistent
+      @hide="mensagemEncaminhamento = {}"
+    >
+      <q-card :style=" $q.screen.width < 770 ? `min-width: 98vw; max-width: 98vw`: 'min-width: 50vw; max-width: 50vw'">
+        <q-card-section>
+          <div class="text-h6">
+            Encaminhando Mensagem
+            <q-btn
+              flat
+              class="bg-padrao btn-rounded float-right"
+              color="negative"
+              icon="close"
+              v-close-popup
+            />
+          </div>
+        </q-card-section>
+        <q-separator inset />
+        <q-card-section>
+          <MensagemChat
+            :isShowOptions="false"
+            :replyingMessage.sync="replyingMessage"
+            :mensagens="[mensagemEncaminhamento]"
+          />
+        </q-card-section>
+        <q-card-section>
+          <q-select
+            ref="selectAutoCompleteContato"
+            autofocus
+            outlined
+            rounded
+            hide-dropdown-icon
+            :loading="loading"
+            v-model="contatoSelecionado"
+            :options="contatos"
+            input-debounce="700"
+            @filter="localizarContato"
+            use-input
+            hide-selected
+            fill-input
+            clearable
+            option-label="name"
+            option-value="id"
+            label="Localize e selecione o contato"
+            hint="Digite no mínimo duas letras para localizar o contato. É possível selecionar apenas 1 contato!"
+          >
+            <template v-slot:option="scope">
+              <q-item
+                v-bind="scope.itemProps"
+                v-on="scope.itemEvents"
+                v-if="scope.opt.name"
+              >
+                <q-item-section>
+                  <q-item-label> {{ scope.opt.name }}</q-item-label>
+                  <q-item-label caption>{{ scope.opt.number }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </q-card-section>
+        <q-card-actions
+          align="right"
+          class="q-pa-md"
+        >
+          <q-btn
+            class="bg-padrao q-px-sm"
+            flat
+            color="positive"
+            label="Enviar"
+            icon="mdi-send"
+            @click="confirmarEncaminhamentoMensagem"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
   </div>
 </template>
@@ -192,6 +269,8 @@ import InputMensagem from './InputMensagem'
 import mixinAtualizarStatusTicket from './mixinAtualizarStatusTicket'
 import mixinSockets from './mixinSockets'
 import InfiniteLoading from 'vue-infinite-loading'
+import { ListarContatos } from 'src/service/contatos'
+import { EncaminharMensagem } from 'src/service/tickets'
 // import whatsBackground from 'src/assets/wa-background.png'
 
 export default {
@@ -220,7 +299,14 @@ export default {
         scheduleDate: ''
       },
       replyingMessage: null,
-      modalAgendamentoMensagen: false
+      modalAgendamentoMensagem: false,
+      modalEncaminhamentoMensagem: false,
+      mensagemEncaminhamento: {},
+      contatoSelecionado: {
+        id: '',
+        name: ''
+      },
+      contatos: []
     }
   },
   computed: {
@@ -280,6 +366,41 @@ export default {
     scrollToBottom () {
       const element = this.$refs.scrollContainer
       element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' })
+    },
+    abrirModalEncaminharMensagem (msg) {
+      this.mensagemEncaminhamento = msg
+      this.modalEncaminhamentoMensagem = true
+    },
+    async localizarContato (search, update, abort) {
+      if (search.length < 2) {
+        if (this.contatos.length) update(() => { this.contatos = [...this.contatos] })
+        abort()
+        return
+      }
+      this.loading = true
+      const { data } = await ListarContatos({
+        searchParam: search
+      })
+
+      update(() => {
+        if (data.contacts.length) {
+          this.contatos = data.contacts
+        } else {
+          this.contatos = [{}]
+          // this.$refs.selectAutoCompleteContato.toggleOption({}, true)
+        }
+      })
+      this.loading = false
+    },
+    confirmarEncaminhamentoMensagem () {
+      EncaminharMensagem(this.mensagemEncaminhamento, this.contatoSelecionado)
+        .then(r => {
+          this.$notificarSucesso(`Mensagem encaminhada para ${this.contatoSelecionado.name} | Número: ${this.contatoSelecionado.number}`)
+        })
+        .catch(e => {
+          console.log('confirmarEncaminhamentoMensagem', e)
+          this.$notificarErro('Não foi possível encaminhar mensagem. Tente novamente em alguns minutos!', e)
+        })
     }
   },
   created () {
