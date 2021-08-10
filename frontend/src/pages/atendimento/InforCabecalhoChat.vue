@@ -81,7 +81,7 @@
               @click="$emit('abrir:modalAgendamentoMensagem')"
               flat
               icon="mdi-message-text-clock-outline"
-              color="grey-9"
+              :color="$q.dark.isActive ? 'amber-9' : 'grey-9'"
               class="bg-padrao btn-rounded"
             >
               <q-tooltip content-class="bg-grey-9 text-bold">
@@ -186,7 +186,7 @@
               <q-fab-action
                 @click="$emit('abrir:modalAgendamentoMensagem')"
                 flat
-                color="grey-9"
+                :color="$q.dark.isActive ? 'amber-9' : 'grey-9'"
                 class="bg-padrao q-pa-xs "
                 :class="{
                   'bg-black': $q.dark.isActive

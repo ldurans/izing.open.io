@@ -48,9 +48,9 @@
                 <q-item-section>
                   <q-toggle
                     color="blue"
-                    v-model="isDark"
+                    :value="$q.dark.isActive"
                     label="Modo escuro"
-                    @input="setStateDarkMode"
+                    @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
                   />
                 </q-item-section>
               </q-item>
@@ -698,8 +698,7 @@ export default {
       filas: [],
       etiquetas: [],
       mensagensRapidas: [],
-      modalEtiquestas: false,
-      isDark: false
+      modalEtiquestas: false
     }
   },
   watch: {
@@ -754,10 +753,6 @@ export default {
     }
   },
   methods: {
-    setStateDarkMode () {
-      // this.isDark = !this.isDark
-      this.$q.dark.toggle()
-    },
     handlerNotifications (data) {
       const { message, contact, ticket } = data
 
@@ -833,6 +828,7 @@ export default {
       }
       await this.consultarTickets(this.pesquisaTickets)
       this.loading = false
+      this.$setConfigsUsuario({ isDark: this.$q.dark.isActive })
     },
     async onLoadMore () {
       if (this.tickets.length === 0 || !this.hasMore || this.loading) {

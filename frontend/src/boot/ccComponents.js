@@ -1,11 +1,12 @@
 import cInput from 'src/components/cInput'
 import { notificarErro, notificarSucesso } from 'src/utils/helpersNotifications'
-
+import { Dark } from 'quasar'
 import DatePick from 'src/components/cDatePick'
 import cDateTimePick from 'src/components/cDateTimePick'
 
 import { format, parseISO } from 'date-fns'
 import pt from 'date-fns/locale/pt-BR'
+import { UpdateConfiguracoesUsuarios } from 'src/service/user'
 
 const formatarValorMoeda = (num, black = false, intl = {}) => {
   const config = {
@@ -62,6 +63,20 @@ const formatarData = (data, formato = 'dd/MM/yyyy') => {
   return format(parseISO(data), formato, { locale: pt })
 }
 
+const setConfigsUsuario = ({ isDark }) => {
+  // this.isDark = !this.isDark
+  Dark.set(isDark)
+  const usuario = JSON.parse(localStorage.getItem('usuario'))
+  const filtrosAtendimento = JSON.parse(localStorage.getItem('filtrosAtendimento'))
+  const data = {
+    filtrosAtendimento,
+    isDark: Dark.isActive
+  }
+  UpdateConfiguracoesUsuarios(usuario.userId, data)
+    .then(r => console.log('Configurações do usuário atualizadas'))
+    .catch(e => console.error)
+}
+
 export default ({
   Vue
 }) => {
@@ -74,4 +89,5 @@ export default ({
   Vue.prototype.$iniciaisString = iniciaisString
   Vue.prototype.$notificarErro = notificarErro
   Vue.prototype.$notificarSucesso = notificarSucesso
+  Vue.prototype.$setConfigsUsuario = setConfigsUsuario
 }

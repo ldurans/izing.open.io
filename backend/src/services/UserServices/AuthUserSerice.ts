@@ -26,6 +26,16 @@ const AuthUserService = async ({
     where: { email },
     include: [{ model: Queue, as: "queues" }]
   });
+  // attributes: [
+  //   "id",
+  //   "email",
+  //   "name",
+  //   "lastLogin",
+  //   "profile",
+  //   "tenantId",
+  //   "configs",
+  //   "isOnline"
+  // ]
 
   if (!user) {
     throw new AppError("ERR_INVALID_CREDENTIALS", 401);
@@ -41,7 +51,8 @@ const AuthUserService = async ({
 
   // retornar listagem de usuarios online
   const usuariosOnline = await User.findAll({
-    where: { tenantId: user.tenantId, isOnline: true }
+    where: { tenantId: user.tenantId, isOnline: true },
+    attributes: ["id", "email", "name", "lastLogin"]
     // include: [{ model: Queue, as: "queues" }]
   });
 

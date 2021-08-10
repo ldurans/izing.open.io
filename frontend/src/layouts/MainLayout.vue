@@ -57,7 +57,7 @@
             >
               2
             </q-badge>
-            <q-tooltip>Notifications (Em breve)</q-tooltip>
+            <q-tooltip>Notificações (Em breve)</q-tooltip>
           </q-btn>
           <q-btn
             round
@@ -77,9 +77,9 @@
                   <q-item-section>
                     <q-toggle
                       color="blue"
-                      v-model="isDark"
+                      :value="$q.dark.isActive"
                       label="Modo escuro"
-                      @input="setStateDarkMode"
+                      @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
                     />
                   </q-item-section>
                 </q-item>
@@ -301,8 +301,7 @@ export default {
       alertSound,
       leftDrawerOpen: false,
       menuData: objMenu,
-      menuDataAdmin: objMenuAdmin,
-      isDark: false
+      menuDataAdmin: objMenuAdmin
     }
   },
   computed: {
@@ -332,10 +331,6 @@ export default {
     }
   },
   methods: {
-    setStateDarkMode () {
-      // this.isDark = !this.isDark
-      this.$q.dark.toggle()
-    },
     exibirMenuBeta (itemMenu) {
       if (!itemMenu?.isBeta) return true
       for (const domain of this.domainExperimentalsMenus) {

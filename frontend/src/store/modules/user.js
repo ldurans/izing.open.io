@@ -1,5 +1,5 @@
 import { RealizarLogin } from '../../service/login'
-import { Notify } from 'quasar'
+import { Notify, Dark } from 'quasar'
 
 const pesquisaTicketsFiltroPadrao = {
   searchParam: '',
@@ -50,6 +50,12 @@ const user = {
         localStorage.setItem('queues', JSON.stringify(data.queues))
         localStorage.setItem('filtrosAtendimento', JSON.stringify(pesquisaTicketsFiltroPadrao))
 
+        if (data.configs.filtrosAtendimento) {
+          localStorage.setItem('filtrosAtendimento', JSON.stringify(data.configs.filtrosAtendimento))
+        }
+        if (data.configs.isDark) {
+          Dark.set(data.configs.isDark)
+        }
         commit('SET_IS_SUPORTE', data)
         commit('SET_IS_ADMIN', data)
 
