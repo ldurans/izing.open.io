@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Op } from "sequelize";
+// import GetWbotMessage from "../helpers/GetWbotMessage";
 import { getIO } from "../libs/socket";
 import Message from "../models/Message";
 
@@ -90,13 +91,31 @@ export const show = async (req: Request, res: Response): Promise<Response> => {
   const { tenantId } = req.user;
 
   const ticket = await ShowTicketService({ id: ticketId, tenantId });
+  // const messages = await Message.findAll({
+  //   where: {
+  //     fromMe: true,
+  //     ticketId: ticket.id,
+  //     ack: 0,
+  //     messageId: { [Op.not]: null }
+  //   },
+  //   logging: console.log
+  // });
+  // if (messages) {
+  //   await Promise.all(
+  //     messages.map(async message => {
+  //       console.info(message);
+  //       const msg = await GetWbotMessage(ticket, message.messageId);
+  //       console.log(msg);
+  //     })
+  //   );
+  // }
   const scheduledMessages = await Message.findAll({
     where: {
       contactId: ticket.contactId,
       scheduleDate: { [Op.not]: null },
       status: "pending"
-    },
-    logging: console.log
+    }
+    // logging: console.log
   });
 
   ticket.setDataValue("scheduledMessages", scheduledMessages);

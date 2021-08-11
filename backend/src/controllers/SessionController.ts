@@ -27,7 +27,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     userId: user.id,
     tenantId: user.tenantId,
     queues: user.queues,
-    usuariosOnline
+    usuariosOnline,
+    configs: user.configs
   };
 
   io.emit(`${params.tenantId}-users`, {

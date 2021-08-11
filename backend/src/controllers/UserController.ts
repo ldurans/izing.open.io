@@ -9,6 +9,7 @@ import ListUsersService from "../services/UserServices/ListUsersService";
 import UpdateUserService from "../services/UserServices/UpdateUserService";
 import ShowUserService from "../services/UserServices/ShowUserService";
 import DeleteUserService from "../services/UserServices/DeleteUserService";
+import UpdateUserConfigsService from "../services/UserServices/UpdateUserConfigsService";
 
 type IndexQuery = {
   searchParam: string;
@@ -88,6 +89,23 @@ export const update = async (
   });
 
   return res.status(200).json(user);
+};
+
+export const updateConfigs = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  // if (req.user.profile !== "admin") {
+  //   throw new AppError("ERR_NO_PERMISSION", 403);
+  // }
+
+  const { userId } = req.params;
+  const userConfigs = req.body;
+  const { tenantId } = req.user;
+
+  await UpdateUserConfigsService({ userConfigs, userId, tenantId });
+
+  return res.status(200).json();
 };
 
 export const remove = async (

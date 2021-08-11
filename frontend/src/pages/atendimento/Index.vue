@@ -44,6 +44,19 @@
               <q-item
                 clickable
                 v-close-popup
+              >
+                <q-item-section>
+                  <q-toggle
+                    color="blue"
+                    :value="$q.dark.isActive"
+                    label="Modo escuro"
+                    @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
+                  />
+                </q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-close-popup
                 @click="abrirModalUsuario"
               >
                 <q-item-section>Perfil</q-item-section>
@@ -815,6 +828,7 @@ export default {
       }
       await this.consultarTickets(this.pesquisaTickets)
       this.loading = false
+      this.$setConfigsUsuario({ isDark: this.$q.dark.isActive })
     },
     async onLoadMore () {
       if (this.tickets.length === 0 || !this.hasMore || this.loading) {

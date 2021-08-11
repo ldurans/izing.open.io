@@ -57,7 +57,7 @@
             >
               2
             </q-badge>
-            <q-tooltip>Notifications</q-tooltip>
+            <q-tooltip>Notificações (Em breve)</q-tooltip>
           </q-btn>
           <q-btn
             round
@@ -70,6 +70,19 @@
             <q-menu>
               <q-list style="min-width: 100px">
                 <q-item-label header> Olá! <b> {{ username }} </b> </q-item-label>
+                <q-item
+                  clickable
+                  v-close-popup
+                >
+                  <q-item-section>
+                    <q-toggle
+                      color="blue"
+                      :value="$q.dark.isActive"
+                      label="Modo escuro"
+                      @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
+                    />
+                  </q-item-section>
+                </q-item>
                 <q-item
                   clickable
                   v-close-popup

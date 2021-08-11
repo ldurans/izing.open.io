@@ -138,7 +138,7 @@
               <textarea
                 ref="message1"
                 style="min-height: 9vh; max-height: 9vh;"
-                class="q-pa-sm full-width rounded-borders"
+                class="q-pa-sm bg-white full-width rounded-borders"
                 :class="{
                 'bg-red-1': $v.campanha.message1.$error
                 }"
@@ -188,7 +188,7 @@
               <textarea
                 ref="message2"
                 style="min-height: 9vh; max-height: 9vh;"
-                class="q-pa-sm full-width rounded-borders"
+                class="q-pa-sm bg-white full-width rounded-borders"
                 placeholder="Digite a mensagem"
                 autogrow
                 dense

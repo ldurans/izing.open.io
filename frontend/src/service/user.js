@@ -24,6 +24,14 @@ export function UpdateUsuarios (userId, data) {
   })
 }
 
+export function UpdateConfiguracoesUsuarios (userId, data) {
+  return request({
+    url: `/users/${userId}/configs`,
+    method: 'put',
+    data
+  })
+}
+
 export function DadosUsuario (userId) {
   return request({
     url: `/users/${userId}`,

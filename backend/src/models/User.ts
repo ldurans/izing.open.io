@@ -13,7 +13,8 @@ import {
   HasMany,
   BelongsToMany,
   ForeignKey,
-  BelongsTo
+  BelongsTo,
+  AllowNull
 } from "sequelize-typescript";
 import { hash, compare } from "bcryptjs";
 import Ticket from "./Ticket";
@@ -75,6 +76,12 @@ class User extends Model<User> {
 
   @Column
   isOnline: boolean;
+
+  @Default({})
+  @AllowNull
+  @Column(DataType.JSON)
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  configs: object;
 
   @BeforeUpdate
   @BeforeCreate

@@ -5,6 +5,7 @@
       "type": "node",
       "request": "launch",
       "restart": true,
+      "smartStep": true,
       "name": "Debug TypeScript in Node.js",
       "preLaunchTask": "tsc: watch - backend/tsconfig.json",
       "program": "${workspaceFolder}/src/server.ts",

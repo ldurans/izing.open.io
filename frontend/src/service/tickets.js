@@ -51,6 +51,18 @@ export function EnviarMensagemTexto (ticketId, data) {
   })
 }
 
+export function EncaminharMensagem (mensagem, contato) {
+  const data = {
+    message: mensagem,
+    contact: contato
+  }
+  return request({
+    url: '/forward-messages/',
+    method: 'post',
+    data
+  })
+}
+
 export function DeletarMensagem (mensagem) {
   return request({
     url: `/messages/${mensagem.messageId}`,

@@ -19,14 +19,17 @@ const SendMessagesSystemWbot = async (
   const messages = await Message.findAll({
     where: {
       fromMe: true,
+      messageId: { [Op.is]: null },
+      status: "pending",
       [Op.or]: [
         {
-          status: "pending",
           scheduleDate: {
             [Op.lte]: new Date()
           }
         },
-        { status: "pending", scheduleDate: { [Op.is]: null } }
+        {
+          scheduleDate: { [Op.is]: null }
+        }
       ]
     },
     include: [
@@ -98,8 +101,6 @@ const SendMessagesSystemWbot = async (
           minMilliseconds: +(process.env.MIN_SLEEP_INTERVAL || 2000),
           maxMilliseconds: +(process.env.MAX_SLEEP_INTERVAL || 5000)
         });
-
-        throw new Error("aassasasa");
 
         console.log("sendMessage", sendedMessage.id.id);
       } catch (error) {

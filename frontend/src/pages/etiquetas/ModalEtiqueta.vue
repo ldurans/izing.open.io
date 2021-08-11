@@ -27,6 +27,7 @@
           v-model="etiqueta.color"
           :rules="['anyColor']"
           class="q-my-md"
+          :dark="false"
         >
           <template v-slot:preappend>
           </template>
