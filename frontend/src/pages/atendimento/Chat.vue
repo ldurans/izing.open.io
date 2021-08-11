@@ -209,6 +209,7 @@
         </q-card-section>
         <q-card-section>
           <q-select
+            class="q-px-lg"
             ref="selectAutoCompleteContato"
             autofocus
             outlined

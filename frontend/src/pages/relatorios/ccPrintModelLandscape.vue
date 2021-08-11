@@ -237,7 +237,7 @@ const cssText = `
   }
 `
 import { Printd } from 'printd'
-
+import { format } from 'date-fns'
 export default {
   name: 'ccPrintModel',
   props: {
@@ -256,7 +256,7 @@ export default {
   data () {
     return {
       abrirModal: false,
-      dataImpressao: this.$dayjs().format('DD/MM/YYYY HH:mm:ss')
+      dataImpressao: format(new Date(), 'dd/MM/yyyy HH:mm:ss')
     }
   },
   computed: {

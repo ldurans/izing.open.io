@@ -75,6 +75,8 @@ const setConfigsUsuario = ({ isDark }) => {
   UpdateConfiguracoesUsuarios(usuario.userId, data)
     .then(r => console.log('Configurações do usuário atualizadas'))
     .catch(e => console.error)
+
+  localStorage.setItem('usuario', JSON.stringify({ ...usuario, configs: data }))
 }
 
 export default ({

@@ -179,7 +179,7 @@
             <template v-if="mensagem.mediaType === 'vcard'">
               <q-btn
                 type="a"
-                color="black"
+                :color="$q.dark.isActive ? '' : 'black'"
                 outline
                 dense
                 class="q-px-sm text-center btn-rounded "
@@ -244,7 +244,7 @@
                 </iframe>
                 <q-btn
                   type="a"
-                  color="grey-3"
+                  :color="$q.dark.isActive ? '' : 'grey-3'"
                   no-wrap
                   no-caps
                   stack
@@ -256,7 +256,7 @@
                 >
                   <q-tooltip
                     v-if="mensagem.mediaUrl"
-                    content-class="bg-padrao text-grey-9 text-bold"
+                    content-class="text-bold"
                   >
                     Baixar: {{ mensagem.body }}
                   </q-tooltip>

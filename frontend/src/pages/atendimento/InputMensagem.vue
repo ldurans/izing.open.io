@@ -89,8 +89,9 @@
         icon="mdi-paperclip"
         :disable="cDisableActions"
         class="bg-padrao btn-rounded q-mx-xs"
+        :color="$q.dark.isActive ? 'white' : ''"
       >
-        <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+        <q-tooltip content-class="text-bold">
           Enviar arquivo
         </q-tooltip>
       </q-btn>
@@ -100,8 +101,9 @@
         icon="mdi-emoticon-happy-outline"
         :disable="cDisableActions"
         class="bg-padrao btn-rounded q-mx-xs"
+        :color="$q.dark.isActive ? 'white' : ''"
       >
-        <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+        <q-tooltip content-class="text-bold">
           Emoji
         </q-tooltip>
         <q-menu
@@ -154,8 +156,9 @@
             :disable="cDisableActions"
             dense
             round
+            :color="$q.dark.isActive ? 'white' : ''"
           >
-            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+            <q-tooltip content-class="text-bold">
               Emoji
             </q-tooltip>
             <q-menu
@@ -183,8 +186,10 @@
             dense
             round
             v-if="$q.screen.width < 500"
+            class="bg-padrao btn-rounded"
+            :color="$q.dark.isActive ? 'white' : ''"
           >
-            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+            <q-tooltip content-class=" text-bold">
               Enviar arquivo
             </q-tooltip>
           </q-btn>
@@ -195,7 +200,7 @@
             icon="mdi-message-flash-outline"
             @click="visualizarMensagensRapidas = !visualizarMensagensRapidas"
           >
-            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+            <q-tooltip content-class="text-bold">
               Mensagens Rápidas
             </q-tooltip>
           </q-btn>
@@ -233,8 +238,9 @@
         flat
         icon="mdi-send"
         class="bg-padrao btn-rounded q-mx-xs"
+        :color="$q.dark.isActive ? 'white' : ''"
       >
-        <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+        <q-tooltip content-class=" text-bold">
           Enviar Mensagem
         </q-tooltip>
       </q-btn>
@@ -245,8 +251,9 @@
         flat
         icon="mdi-microphone"
         class="bg-padrao btn-rounded q-mx-xs"
+        :color="$q.dark.isActive ? 'white' : ''"
       >
-        <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
+        <q-tooltip content-class="text-bold">
           Enviar Áudio
         </q-tooltip>
       </q-btn>
@@ -270,7 +277,10 @@
             @click="handleCancelRecordingAudio"
             class="bg-padrao btn-rounded q-mx-xs"
           />
-          <RecordingTimer />
+          <RecordingTimer
+            class="text-bold"
+            :class="{'text-white': $q.dark.isActive}"
+          />
           <q-btn
             flat
             icon="mdi-send-circle-outline"

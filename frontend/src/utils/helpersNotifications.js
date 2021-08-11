@@ -32,6 +32,7 @@ export const notificarErro = (msg, error = null) => {
     type: 'negative',
     progress: true,
     position: 'top',
+    timeout: 2500,
     message,
     actions: [{
       icon: 'close',
@@ -50,6 +51,7 @@ export const notificarSucesso = (msg) => {
     progress: true,
     position: 'top',
     message,
+    timeout: 2500,
     actions: [{
       icon: 'close',
       round: true,
