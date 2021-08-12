@@ -50,10 +50,10 @@ const user = {
         localStorage.setItem('queues', JSON.stringify(data.queues))
         localStorage.setItem('filtrosAtendimento', JSON.stringify(pesquisaTicketsFiltroPadrao))
 
-        if (data.configs.filtrosAtendimento) {
+        if (data?.configs?.filtrosAtendimento) {
           localStorage.setItem('filtrosAtendimento', JSON.stringify(data.configs.filtrosAtendimento))
         }
-        if (data.configs.isDark) {
+        if (data?.configs?.isDark) {
           Dark.set(data.configs.isDark)
         }
         commit('SET_IS_SUPORTE', data)
