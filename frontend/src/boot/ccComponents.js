@@ -64,10 +64,22 @@ const formatarData = (data, formato = 'dd/MM/yyyy') => {
 }
 
 const setConfigsUsuario = ({ isDark }) => {
+  const filtroPadrao = {
+    searchParam: '',
+    pageNumber: 1,
+    status: ['open', 'pending'],
+    showAll: false,
+    count: null,
+    queuesIds: [],
+    withUnreadMessages: false,
+    isNotAssignedUser: false,
+    includeNotQueueDefined: true
+    // date: new Date(),
+  }
   // this.isDark = !this.isDark
   Dark.set(isDark)
   const usuario = JSON.parse(localStorage.getItem('usuario'))
-  const filtrosAtendimento = JSON.parse(localStorage.getItem('filtrosAtendimento'))
+  const filtrosAtendimento = JSON.parse(localStorage.getItem('filtrosAtendimento')) || filtroPadrao
   const data = {
     filtrosAtendimento,
     isDark: Dark.isActive
