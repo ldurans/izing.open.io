@@ -25,12 +25,12 @@ describe("User", () => {
       tenantId: 1
     });
 
-    expect(DeleteUserService(id, 1)).resolves.not.toThrow();
+    expect(DeleteUserService(id, 1, 1)).resolves.not.toThrow();
   });
 
   it("to throw an error if tries to delete a non existing user", async () => {
-    expect(DeleteUserService(faker.random.number(), 1)).rejects.toBeInstanceOf(
-      AppError
-    );
+    expect(
+      DeleteUserService(faker.random.number(), 1, 1)
+    ).rejects.toBeInstanceOf(AppError);
   });
 });

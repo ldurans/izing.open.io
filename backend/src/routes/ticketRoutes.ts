@@ -15,4 +15,10 @@ ticketRoutes.put("/tickets/:ticketId", isAuth, TicketController.update);
 
 ticketRoutes.delete("/tickets/:ticketId", isAuth, TicketController.remove);
 
+ticketRoutes.get(
+  "/tickets/:ticketId/logs",
+  isAuth,
+  TicketController.showLogsTicket
+);
+
 export default ticketRoutes;

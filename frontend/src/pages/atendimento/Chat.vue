@@ -1,16 +1,14 @@
 <template>
-  <div
-    class="bg-white vac-col-messages"
-    :style="style"
-  >
+  <div class="bg-white no-scroll hide-scrollbar overflow-hidden">
     <InforCabecalhoChat
       @updateTicket:resolver="atualizarStatusTicket('closed')"
       @updateTicket:retornar="atualizarStatusTicket('pending')"
       @abrir:modalAgendamentoMensagem="modalAgendamentoMensagem=true"
     />
-    <div
+
+    <q-scroll-area
       ref="scrollContainer"
-      class="scroll-y"
+      class="scroll-y "
       :style="cStyleScroll"
       @scroll="scrollArea"
     >
@@ -42,36 +40,37 @@
         v-if="cMessages.length && ticketFocado.id"
         @mensagem-chat:encaminhar-mensagem="abrirModalEncaminharMensagem"
       />
-      <div
-        class="absolute-center items-center"
-        :class="{
+    </q-scroll-area>
+    <div
+      class="absolute-center items-center"
+      :class="{
         'row col text-center q-col-gutter-lg': !$q.screen.xs,
         'full-width text-center': $q.screen.xs
         }"
-        v-if="!ticketFocado.id"
-      >
-        <q-icon
-          style="margin-left: 30vw"
-          size="6em"
-          color="grey-6"
-          name="mdi-emoticon-wink-outline"
-          class="row col text-center"
-          :class="{
+      v-if="!ticketFocado.id"
+    >
+      <q-icon
+        style="margin-left: 30vw"
+        size="6em"
+        color="grey-6"
+        name="mdi-emoticon-wink-outline"
+        class="row col text-center"
+        :class="{
         'row col text-center q-mr-lg': !$q.screen.xs,
         'full-width text-center center-block': $q.screen.xs
         }"
-        >
-        </q-icon>
-        <h1
-          class="text-grey-6 row col justify-center"
-          :class="{
+      >
+      </q-icon>
+      <h1
+        class="text-grey-6 row col justify-center"
+        :class="{
           'full-width': $q.screen.xs
         }"
-        >
-          Selecione um ticket!
-        </h1>
-      </div>
+      >
+        Selecione um ticket!
+      </h1>
     </div>
+
     <div
       v-if="cMessages.length"
       class="relative-position"
@@ -322,6 +321,7 @@ export default {
         // backgroundRepeat: 'no-repeat !important'
         // backgroundPosition: 'center !important',
         // backgroundSize: '50% !important'
+        backgroundColor: 'red'
       }
     },
     cStyleScroll () {
@@ -356,17 +356,13 @@ export default {
     scrollArea (e) {
       this.hideOptions = true
       setTimeout(() => {
-        if (!e.target) return
-
-        const { scrollHeight, clientHeight, scrollTop } = e.target
-        const bottomScroll = scrollHeight - clientHeight - scrollTop
-
-        this.scrollIcon = bottomScroll > 1000
+        if (!e) return
+        this.scrollIcon = (e.verticalSize - (e.verticalPosition + e.verticalContainerSize)) > 2000 // e.verticalPercentage < 0.8
       }, 200)
     },
     scrollToBottom () {
       const element = this.$refs.scrollContainer
-      element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' })
+      element.setScrollPercentage(1, 300)
     },
     abrirModalEncaminharMensagem (msg) {
       this.mensagemEncaminhamento = msg
@@ -409,7 +405,6 @@ export default {
     this.socketTicket()
   },
   mounted () {
-    console.log('========> mounted chat')
     this.socketMessagesList()
   },
   destroyed () {

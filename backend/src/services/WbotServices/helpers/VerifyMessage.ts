@@ -24,7 +24,7 @@ const VerifyMessage = async (
     status: "received"
   };
 
-  await ticket.update({ lastMessage: msg.body });
+  await ticket.update({ lastMessage: msg.body, answered: msg.fromMe || false });
   await CreateMessageService({ messageData, tenantId: ticket.tenantId });
 };
 

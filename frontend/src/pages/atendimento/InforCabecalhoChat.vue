@@ -83,6 +83,7 @@
               icon="mdi-message-text-clock-outline"
               color="amber-9"
               class="bg-padrao btn-rounded"
+              :disable="cticket.status == 'closed'"
             >
               <q-tooltip content-class="bg-grey-9 text-bold">
                 Agendamento de mensagem
@@ -94,6 +95,7 @@
               icon="mdi-replay"
               color="negative"
               class="bg-padrao btn-rounded"
+              :disable="cticket.status == 'closed'"
             >
               <q-tooltip content-class="bg-negative text-bold">
                 Retornar Ticket para a Fila
@@ -105,6 +107,7 @@
               flat
               class="bg-padrao btn-rounded"
               icon="mdi-comment-check"
+              :disable="cticket.status == 'closed'"
             >
               <q-tooltip content-class="bg-positive text-bold">
                 Resolver
@@ -115,6 +118,7 @@
               flat
               color="primary"
               class="bg-padrao btn-rounded"
+              :disable="cticket.status == 'closed'"
             >
               <q-icon name="mdi-transfer" />
               <q-tooltip content-class="bg-primary text-bold">
@@ -124,6 +128,7 @@
           </template>
           <template v-else>
             <q-fab
+              :disable="cticket.status == 'closed'"
               color="primary"
               flat
               dense
