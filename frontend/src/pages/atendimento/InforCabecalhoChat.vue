@@ -1,6 +1,8 @@
 <template>
   <div>
-    <q-header class="bg-white text-grey-10 no-border-radius">
+    <q-header
+      class="bg-white text-grey-10 no-border-radius"
+    >
       <q-toolbar
         style="min-height: 60px; height: 60px;"
         class="no-border-radius q-pa-none "
@@ -12,6 +14,7 @@
           icon="mdi-menu"
           v-if="$q.screen.lt.md"
           class="q-mx-xs-none q-ml-md"
+          :color="$q.dark.isActive ? 'white' : ''"
           @click="$root.$emit('infor-cabecalo-chat:acao-menu')"
         />
         <q-item

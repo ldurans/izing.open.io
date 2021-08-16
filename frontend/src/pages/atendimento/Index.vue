@@ -23,7 +23,7 @@
       >
         <!-- :behavior="$q.screen.lt.sm && (drawerTickets || !ticketFocado.id) ? 'desktop' : 'default'" -->
         <q-toolbar
-          class="q-pr-none q-gutter-xs"
+          class="q-pr-none q-gutter-xs full-width"
           style="height: 64px"
         >
           <q-btn-dropdown
@@ -392,7 +392,7 @@
                 <q-btn
                   flat
                   class="bg-padrao btn-rounded"
-                  color="grey-9"
+                  :color="!$q.dark.isActive ? 'grey-9' : 'white'"
                   label="Logs"
                   icon="mdi-timeline-text-outline"
                   @click="abrirModalLogs"
@@ -634,13 +634,13 @@
 
       <q-dialog
         v-model="exibirModalLogs"
-        persistent
+        no-backdrop-dismiss
         full-height
         position="right"
         @hide="logsTicket = []"
       >
-        <q-card>
-          <q-card-section class="bg-grey-2">
+        <q-card style="width: 400px">
+          <q-card-section :class="{'bg-grey-2': !$q.dark.isActive, 'bg-primary': $q.dark.isActive}">
             <div class="text-h6">Logs Ticket: {{ ticketFocado.id }}
               <q-btn
                 icon="close"
@@ -652,28 +652,37 @@
               />
             </div>
           </q-card-section>
-          <q-card-section>
-            <q-timeline
-              color="grey-8"
-              style="width: 400px"
-              class="q-px-sm"
+          <q-card-section class="">
+            <q-scroll-area
+              style="height: calc(100vh - 200px);"
+              class="full-width"
             >
-              <template v-for="(log, idx) in logsTicket">
-                <q-timeline-entry
-                  :key="log && log.id || idx"
-                  :subtitle="$formatarData(log.createdAt, 'dd/MM/yyyy HH:mm')"
-                  :color="messagesLog[log.type] && messagesLog[log.type].color || ''"
-                  :icon="messagesLog[log.type] && messagesLog[log.type].icon || ''"
-                >
-                  <template v-slot:title>
-                    <div>
-                      <b> {{ log.user && log.user.name || 'Bot' }}:</b>
-                      <span> {{ messagesLog[log.type] && messagesLog[log.type].message }} </span>
-                    </div>
-                  </template>
-                </q-timeline-entry>
-              </template>
-            </q-timeline>
+              <q-timeline
+                color="black"
+                style="width: 360px"
+                class="q-pl-sm "
+                :class="{'text-black': !$q.dark.isActive}"
+              >
+                <template v-for="(log, idx) in logsTicket">
+                  <q-timeline-entry
+                    :key="log && log.id || idx"
+                    :subtitle="$formatarData(log.createdAt, 'dd/MM/yyyy HH:mm')"
+                    :color="messagesLog[log.type] && messagesLog[log.type].color || ''"
+                    :icon="messagesLog[log.type] && messagesLog[log.type].icon || ''"
+                  >
+                    <template v-slot:title>
+                      <div
+                        :class="{'text-white': $q.dark.isActive}"
+                        style="width: calc(100% - 20px)"
+                      >
+                        <div class="row col text-bold text-body2"> {{ log.user && log.user.name || 'Bot' }}:</div>
+                        <div class="row col"> {{ messagesLog[log.type] && messagesLog[log.type].message }}</div>
+                      </div>
+                    </template>
+                  </q-timeline-entry>
+                </template>
+              </q-timeline>
+            </q-scroll-area>
           </q-card-section>
         </q-card>
       </q-dialog>
