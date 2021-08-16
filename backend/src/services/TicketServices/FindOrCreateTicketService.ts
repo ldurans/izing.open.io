@@ -8,6 +8,7 @@ import ShowTicketService from "./ShowTicketService";
 import CampaignContacts from "../../models/CampaignContacts";
 import socketEmit from "../../helpers/socketEmit";
 import CheckChatBotWelcome from "../../helpers/CheckChatBotWelcome";
+import CreateLogTicketService from "./CreateLogTicketService";
 
 const FindOrCreateTicketService = async (
   contact: Contact,
@@ -169,6 +170,11 @@ const FindOrCreateTicketService = async (
     unreadMessages,
     whatsappId,
     tenantId
+  });
+
+  await CreateLogTicketService({
+    ticketId: ticketCreated.id,
+    type: "create"
   });
 
   if (msg && !msg.fromMe) {

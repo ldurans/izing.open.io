@@ -13,6 +13,7 @@
       id="item-ticket-houve"
       :class="{
         'ticket-active-item': ticket.id === $store.getters['ticketFocado'].id,
+        'ticketNotAnswered': ticket.answered == false && ticket.isGroup == false && ticket.status == 'open'
       }"
     >
       <q-item-section
@@ -112,10 +113,22 @@
               v-if="ticket.status === 'closed'"
               name="mdi-check-circle-outline"
               color="positive"
-              size="1.5em"
+              size="1.8em"
+              class="q-mb-sm"
             >
               <q-tooltip>
                 Atendimento Resolvido
+              </q-tooltip>
+            </q-icon>
+            <q-icon
+              v-if="ticket.stepAutoReplyId && ticket.autoReplyId && ticket.status === 'pending'"
+              name="mdi-robot"
+              color="primary"
+              size="1.8em"
+              class="q-mb-sm"
+            >
+              <q-tooltip>
+                ChatBot atendendo
               </q-tooltip>
             </q-icon>
           </span>
@@ -259,4 +272,7 @@ img:after
   border-left: 3px solid $negative
 .positive
   border-left: 3px solid $positive
+
+.ticketNotAnswered
+  border-left: 5px solid $amber
 </style>

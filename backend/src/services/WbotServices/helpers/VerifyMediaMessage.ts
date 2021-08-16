@@ -57,7 +57,10 @@ const VerifyMediaMessage = async (
     status: msg.fromMe ? "sended" : "received"
   };
 
-  await ticket.update({ lastMessage: msg.body || media.filename });
+  await ticket.update({
+    lastMessage: msg.body || media.filename,
+    answered: msg.fromMe || false
+  });
   const newMessage = await CreateMessageService({
     messageData,
     tenantId: ticket.tenantId

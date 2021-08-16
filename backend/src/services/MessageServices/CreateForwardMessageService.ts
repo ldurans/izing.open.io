@@ -47,7 +47,8 @@ const CreateForwardMessageService = async ({
       tenantId,
       unreadMessages: 0,
       whatsappId: ticketOrigin.whatsappId,
-      lastMessage: message.body
+      lastMessage: message.body,
+      answered: true
     });
   }
 
@@ -90,7 +91,7 @@ const CreateForwardMessageService = async ({
     throw new Error("ERR_CREATING_MESSAGE_SYSTEM");
   }
 
-  await ticket.update({ lastMessage: messageCreated.body });
+  await ticket.update({ lastMessage: messageCreated.body, answered: true });
 
   socketEmit({
     tenantId,

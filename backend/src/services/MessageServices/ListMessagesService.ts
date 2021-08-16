@@ -1,4 +1,4 @@
-import { Sequelize } from "sequelize-typescript";
+// import { Sequelize } from "sequelize-typescript";
 import AppError from "../../errors/AppError";
 import Message from "../../models/Message";
 import MessagesOffLine from "../../models/MessageOffLine";
@@ -31,7 +31,7 @@ const ListMessagesService = async ({
   }
 
   // await setMessagesAsRead(ticket);
-  const limit = 50;
+  const limit = 30;
   const offset = limit * (+pageNumber - 1);
 
   const { count, rows: messages } = await Message.findAndCountAll({

@@ -7,6 +7,7 @@ import CreateAutoReplyLogsService from "../../AutoReplyServices/CreateAutoReplyL
 import ShowStepAutoReplyMessageService from "../../AutoReplyServices/ShowStepAutoReplyMessageService";
 import VerifyActionStepAutoReplyService from "../../AutoReplyServices/VerifyActionStepAutoReplyService";
 import CreateMessageSystemService from "../../MessageServices/CreateMessageSystemService";
+import CreateLogTicketService from "../../TicketServices/CreateLogTicketService";
 // import SendWhatsAppMessage from "../SendWhatsAppMessage";
 
 const verifyAutoReplyActionTicket = async (
@@ -85,15 +86,26 @@ const verifyAutoReplyActionTicket = async (
             autoReplyId: null,
             stepAutoReplyId: null
           });
+
+          await CreateLogTicketService({
+            ticketId: ticket.id,
+            type: "queue",
+            queueId: actionAutoReply.queueId
+          });
         }
 
         // action = 2: enviar para determinado usuário
         if (actionAutoReply.action === 2) {
           ticket.update({
             userId: actionAutoReply.userIdDestination,
-            status: "open",
+            // status: "pending",
             autoReplyId: null,
             stepAutoReplyId: null
+          });
+          await CreateLogTicketService({
+            userId: actionAutoReply.userIdDestination,
+            ticketId: ticket.id,
+            type: "userDefine"
           });
         }
 

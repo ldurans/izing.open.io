@@ -334,6 +334,7 @@ const atendimentoTicket = {
         const unreadMessages = state.ticketFocado.id == payload.ticket.id ? 0 : payload.ticket.unreadMessages
         tickets[TicketIndexUpdate] = {
           ...state.tickets[TicketIndexUpdate],
+          answered: payload.ticket.answered,
           unreadMessages,
           lastMessage: payload.mediaName || payload.body
         }

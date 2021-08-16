@@ -3,10 +3,12 @@ import { Op } from "sequelize";
 // import GetWbotMessage from "../helpers/GetWbotMessage";
 import { getIO } from "../libs/socket";
 import Message from "../models/Message";
+import CreateLogTicketService from "../services/TicketServices/CreateLogTicketService";
 
 import CreateTicketService from "../services/TicketServices/CreateTicketService";
 import DeleteTicketService from "../services/TicketServices/DeleteTicketService";
 import ListTicketsService from "../services/TicketServices/ListTicketsService";
+import ShowLogTicketService from "../services/TicketServices/ShowLogTicketService";
 import ShowTicketService from "../services/TicketServices/ShowTicketService";
 import UpdateTicketService from "../services/TicketServices/UpdateTicketService";
 
@@ -89,6 +91,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 export const show = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
   const { tenantId } = req.user;
+  const userId = req.user.id;
 
   const ticket = await ShowTicketService({ id: ticketId, tenantId });
   // const messages = await Message.findAll({
@@ -120,6 +123,12 @@ export const show = async (req: Request, res: Response): Promise<Response> => {
 
   ticket.setDataValue("scheduledMessages", scheduledMessages);
 
+  await CreateLogTicketService({
+    userId,
+    ticketId,
+    type: "access"
+  });
+
   return res.status(200).json(ticket);
 };
 
@@ -129,6 +138,7 @@ export const update = async (
 ): Promise<Response> => {
   const { ticketId } = req.params;
   const { tenantId } = req.user;
+  const userIdRequest = req.user.id;
   const { isTransference } = req.body;
 
   const ticketData: TicketData = { ...req.body, tenantId };
@@ -136,7 +146,8 @@ export const update = async (
   const { ticket } = await UpdateTicketService({
     ticketData,
     ticketId,
-    isTransference
+    isTransference,
+    userIdRequest
   });
 
   // const io = getIO();
@@ -165,8 +176,9 @@ export const remove = async (
 ): Promise<Response> => {
   const { ticketId } = req.params;
   const { tenantId } = req.user;
+  const userId = req.user.id;
 
-  const ticket = await DeleteTicketService({ id: ticketId, tenantId });
+  const ticket = await DeleteTicketService({ id: ticketId, tenantId, userId });
 
   const io = getIO();
   io.to(`${tenantId}-${ticket.status}`)
@@ -178,4 +190,15 @@ export const remove = async (
     });
 
   return res.status(200).json({ message: "ticket deleted" });
+};
+
+export const showLogsTicket = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { ticketId } = req.params;
+
+  const logsTicket = await ShowLogTicketService({ ticketId });
+
+  return res.status(200).json(logsTicket);
 };

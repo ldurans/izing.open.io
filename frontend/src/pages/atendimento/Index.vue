@@ -23,7 +23,7 @@
       >
         <!-- :behavior="$q.screen.lt.sm && (drawerTickets || !ticketFocado.id) ? 'desktop' : 'default'" -->
         <q-toolbar
-          class="q-pr-none q-gutter-xs"
+          class="q-pr-none q-gutter-xs full-width"
           style="height: 64px"
         >
           <q-btn-dropdown
@@ -382,7 +382,23 @@
                 />
               </q-card-section>
             </q-card>
-
+            <q-card
+              class="bg-white btn-rounded q-mt-sm"
+              style="width: 100%"
+              bordered
+              flat
+            >
+              <q-card-section class="text-bold q-pa-sm ">
+                <q-btn
+                  flat
+                  class="bg-padrao btn-rounded"
+                  :color="!$q.dark.isActive ? 'grey-9' : 'white'"
+                  label="Logs"
+                  icon="mdi-timeline-text-outline"
+                  @click="abrirModalLogs"
+                />
+              </q-card-section>
+            </q-card>
             <q-card
               class="bg-white q-mt-sm btn-rounded"
               style="width: 100%"
@@ -615,6 +631,62 @@
         :modalUsuario.sync="modalUsuario"
         :usuarioEdicao.sync="usuario"
       />
+
+      <q-dialog
+        v-model="exibirModalLogs"
+        no-backdrop-dismiss
+        full-height
+        position="right"
+        @hide="logsTicket = []"
+      >
+        <q-card style="width: 400px">
+          <q-card-section :class="{'bg-grey-2': !$q.dark.isActive, 'bg-primary': $q.dark.isActive}">
+            <div class="text-h6">Logs Ticket: {{ ticketFocado.id }}
+              <q-btn
+                icon="close"
+                color="negative"
+                flat
+                class="bg-padrao float-right"
+                round
+                v-close-popup
+              />
+            </div>
+          </q-card-section>
+          <q-card-section class="">
+            <q-scroll-area
+              style="height: calc(100vh - 200px);"
+              class="full-width"
+            >
+              <q-timeline
+                color="black"
+                style="width: 360px"
+                class="q-pl-sm "
+                :class="{'text-black': !$q.dark.isActive}"
+              >
+                <template v-for="(log, idx) in logsTicket">
+                  <q-timeline-entry
+                    :key="log && log.id || idx"
+                    :subtitle="$formatarData(log.createdAt, 'dd/MM/yyyy HH:mm')"
+                    :color="messagesLog[log.type] && messagesLog[log.type].color || ''"
+                    :icon="messagesLog[log.type] && messagesLog[log.type].icon || ''"
+                  >
+                    <template v-slot:title>
+                      <div
+                        :class="{'text-white': $q.dark.isActive}"
+                        style="width: calc(100% - 20px)"
+                      >
+                        <div class="row col text-bold text-body2"> {{ log.user && log.user.name || 'Bot' }}:</div>
+                        <div class="row col"> {{ messagesLog[log.type] && messagesLog[log.type].message }}</div>
+                      </div>
+                    </template>
+                  </q-timeline-entry>
+                </template>
+              </q-timeline>
+            </q-scroll-area>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
     </q-layout>
     <audio ref="audioNotificationPlay">
       <source
@@ -628,7 +700,7 @@
 <script>
 import ContatoModal from 'src/pages/contatos/ContatoModal'
 import ItemTicket from './ItemTicket'
-import { ConsultarTickets, DeletarMensagem } from 'src/service/tickets'
+import { ConsultarLogsTicket, ConsultarTickets, DeletarMensagem } from 'src/service/tickets'
 import { mapGetters } from 'vuex'
 import mixinSockets from './mixinSockets'
 import socketInitial from 'src/layouts/socketInitial'
@@ -651,6 +723,7 @@ import { EditarEtiquetasContato, EditarCarteiraContato } from 'src/service/conta
 import { RealizarLogout } from 'src/service/login'
 import { ListarUsuarios } from 'src/service/user'
 import MensagemChat from './MensagemChat.vue'
+import { messagesLog } from '../../utils/constants'
 export default {
   name: 'IndexAtendimento',
   mixins: [mixinSockets, socketInitial],
@@ -664,6 +737,7 @@ export default {
   },
   data () {
     return {
+      messagesLog,
       configuracoes: [],
       debounce,
       alertSound,
@@ -698,7 +772,9 @@ export default {
       filas: [],
       etiquetas: [],
       mensagensRapidas: [],
-      modalEtiquestas: false
+      modalEtiquestas: false,
+      exibirModalLogs: false,
+      logsTicket: []
     }
   },
   watch: {
@@ -937,6 +1013,11 @@ export default {
     },
     setValueMenuContact () {
       this.drawerContact = !this.drawerContact
+    },
+    async abrirModalLogs () {
+      const { data } = await ConsultarLogsTicket({ ticketId: this.ticketFocado.id })
+      this.logsTicket = data
+      this.exibirModalLogs = true
     }
   },
   beforeMount () {

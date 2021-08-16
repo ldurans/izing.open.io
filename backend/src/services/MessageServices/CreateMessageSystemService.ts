@@ -158,7 +158,7 @@ const CreateMessageSystemService = async ({
         throw new Error("ERR_CREATING_MESSAGE_SYSTEM");
       }
 
-      await ticket.update({ lastMessage: messageCreated.body });
+      await ticket.update({ lastMessage: messageCreated.body, answered: true });
 
       socketEmit({
         tenantId,

@@ -16,6 +16,14 @@ export function ConsultarDadosTicket (params) {
   })
 }
 
+export function ConsultarLogsTicket (params) {
+  return request({
+    url: `/tickets/${params.ticketId}/logs`,
+    method: 'get',
+    params
+  })
+}
+
 export function AtualizarStatusTicket (ticketId, status, userId) {
   return request({
     url: `/tickets/${ticketId}`,

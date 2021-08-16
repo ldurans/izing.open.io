@@ -4,6 +4,7 @@ import GetDefaultWhatsApp from "../../helpers/GetDefaultWhatsApp";
 import socketEmit from "../../helpers/socketEmit";
 import Ticket from "../../models/Ticket";
 import ShowContactService from "../ContactServices/ShowContactService";
+import CreateLogTicketService from "./CreateLogTicketService";
 import ShowTicketService from "./ShowTicketService";
 
 interface Request {
@@ -38,6 +39,12 @@ const CreateTicketService = async ({
   if (!ticket) {
     throw new AppError("ERR_CREATING_TICKET");
   }
+
+  await CreateLogTicketService({
+    userId,
+    ticketId: ticket.id,
+    type: "create"
+  });
 
   socketEmit({
     tenantId,

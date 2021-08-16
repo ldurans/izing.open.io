@@ -129,3 +129,56 @@ export const estadosBR = [
   { nome: 'Tocantins', sigla: 'TO' }
 
 ]
+
+export const messagesLog = {
+  access: {
+    message: 'Acessou o ticket',
+    color: 'grey-8',
+    icon: 'mdi-eye'
+  },
+  closed: {
+    message: 'Resolveu o ticket',
+    color: 'positive',
+    icon: 'mdi-check-circle-outline'
+  },
+  create: {
+    message: 'Ticket criado',
+    color: 'green-6',
+    icon: 'mdi-plus-circle'
+  },
+  delete: {
+    message: 'Deletou o Ticket',
+    color: 'negative',
+    icon: 'mdi-delete'
+  },
+  open: {
+    message: 'Iniciou o atendimento',
+    color: 'primary',
+    icon: 'mdi-play-circle-outline'
+  },
+  pending: {
+    message: 'Retornou atendimento para fila de pendentes',
+    color: 'amber',
+    icon: 'mdi-account-convert'
+  },
+  transfered: {
+    message: 'Transferiu o atendimento',
+    color: 'teal-3',
+    icon: 'mdi-account-arrow-right'
+  },
+  receivedTransfer: {
+    message: 'Recebeu o atendimento por transferência',
+    color: 'teal-5',
+    icon: 'mdi-account-arrow-left'
+  },
+  queue: {
+    message: 'Fila definida',
+    color: 'green-2',
+    icon: 'mdi-arrow-decision'
+  },
+  userDefine: {
+    message: 'Usuário definido',
+    color: 'cyan-2',
+    icon: 'mdi-account-check'
+  }
+}

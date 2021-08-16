@@ -114,12 +114,13 @@ export const remove = async (
 ): Promise<Response> => {
   const { userId } = req.params;
   const { tenantId } = req.user;
+  const userIdRequest = req.user.id;
 
   if (req.user.profile !== "admin") {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
 
-  await DeleteUserService(userId, tenantId);
+  await DeleteUserService(userId, tenantId, userIdRequest);
 
   const io = getIO();
   io.emit(`${tenantId}-user`, {

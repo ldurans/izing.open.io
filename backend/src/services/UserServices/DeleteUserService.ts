@@ -5,7 +5,8 @@ import UpdateDeletedUserOpenTicketsStatus from "../../helpers/UpdateDeletedUserO
 
 const DeleteUserService = async (
   id: string | number,
-  tenantId: string | number
+  tenantId: string | number,
+  userIdRequest: string | number
 ): Promise<void> => {
   const user = await User.findOne({
     where: { id, tenantId }
@@ -20,7 +21,11 @@ const DeleteUserService = async (
   });
 
   if (userOpenTickets.length > 0) {
-    UpdateDeletedUserOpenTicketsStatus(userOpenTickets, tenantId);
+    UpdateDeletedUserOpenTicketsStatus(
+      userOpenTickets,
+      tenantId,
+      userIdRequest
+    );
   }
 
   await user.destroy();
