@@ -10,15 +10,25 @@ import socketEmit from "../../helpers/socketEmit";
 import CheckChatBotWelcome from "../../helpers/CheckChatBotWelcome";
 import CreateLogTicketService from "./CreateLogTicketService";
 
-const FindOrCreateTicketService = async (
-  contact: Contact,
-  whatsappId: number,
-  unreadMessages: number,
-  tenantId: number | string,
-  groupContact?: Contact,
-  msg?: Message
-  // eslint-disable-next-line @typescript-eslint/ban-types
-): Promise<Ticket | any> => {
+interface Data {
+  contact: Contact;
+  whatsappId: number;
+  unreadMessages: number;
+  tenantId: number | string;
+  groupContact?: Contact;
+  msg?: Message;
+  isSync?: boolean;
+}
+
+const FindOrCreateTicketService = async ({
+  contact,
+  whatsappId,
+  unreadMessages,
+  tenantId,
+  groupContact,
+  msg,
+  isSync
+}: Data): Promise<Ticket | any> => {
   // se for uma mensagem de campanha, não abrir tícket
   if (msg && msg.fromMe) {
     const msgCampaign = await CampaignContacts.findOne({
@@ -177,7 +187,7 @@ const FindOrCreateTicketService = async (
     type: "create"
   });
 
-  if (msg && !msg.fromMe) {
+  if ((msg && !msg.fromMe) || isSync) {
     await CheckChatBotWelcome(ticketCreated);
   }
 

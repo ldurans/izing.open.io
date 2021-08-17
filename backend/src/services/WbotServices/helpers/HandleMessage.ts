@@ -70,14 +70,14 @@ const HandleMessage = async (
 
         // const profilePicUrl = await msgContact.getProfilePicUrl();
         const contact = await VerifyContact(msgContact, tenantId);
-        const ticket = await FindOrCreateTicketService(
+        const ticket = await FindOrCreateTicketService({
           contact,
-          wbot.id!,
+          whatsappId: wbot.id!,
           unreadMessages,
           tenantId,
           groupContact,
           msg
-        );
+        });
 
         if (ticket?.isCampaignMessage) {
           resolve();

@@ -14,10 +14,16 @@ const HandleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
     const messageToUpdate = await Message.findOne({
       where: { messageId: msg.id.id },
       include: [
+        "contact",
         {
           model: Ticket,
           as: "ticket",
           attributes: ["id", "tenantId"]
+        },
+        {
+          model: Message,
+          as: "quotedMsg",
+          include: ["contact"]
         }
       ]
     });

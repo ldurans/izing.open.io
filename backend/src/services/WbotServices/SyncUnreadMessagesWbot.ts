@@ -28,12 +28,13 @@ const SyncUnreadMessagesWbot = async (
         }
         const chatContact = await chat.getContact();
         const contact = await VerifyContact(chatContact, tenantId);
-        const ticket = await FindOrCreateTicketService(
+        const ticket = await FindOrCreateTicketService({
           contact,
-          wbot.id!,
-          chat.unreadCount,
-          tenantId
-        );
+          whatsappId: wbot.id!,
+          unreadMessages: chat.unreadCount,
+          tenantId,
+          isSync: true
+        });
 
         if (ticket?.isCampaignMessage) {
           return;
