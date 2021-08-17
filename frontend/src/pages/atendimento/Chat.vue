@@ -96,55 +96,57 @@
       </transition>
     </div>
 
-    <q-footer>
+    <q-footer class="bg-white">
       <q-separator class="bg-grey-4" />
-      <q-card-section
+      <q-list
         v-if="replyingMessage"
-        class="q-pa-none q-py-md bg-grey-1 text-black"
         :style="`border-top: 1px solid #; max-height: 140px; width: 100%;`"
+        style=" max-height: 100px;"
+        class="q-pa-none q-py-md text-black row items-center col justify-center full-width"
+        :class="{
+            'bg-grey-1': !$q.dark.isActive,
+            'bg-grey-10': $q.dark.isActive
+          }"
       >
-        <q-list
-          style=" max-height: 100px;"
-          class="row items-center col justify-center full-width"
+        <q-item
+          class="q-card--bordered q-pb-sm btn-rounded"
+          :style="`
+                width: 460px;
+                min-width: 460px;
+                max-width: 460px;
+                max-height: 110px;
+              `"
+          :class="{
+                'bg-blue-1': !replyingMessage.fromMe && !$q.dark.isActive,
+                'bg-green-5 text-black': !replyingMessage.fromMe && $q.dark.isActive,
+                'bg-grey-2 text-black': replyingMessage.fromMe
+              }"
         >
-          <q-item
-            class="q-card--bordered q-pb-sm btn-rounded"
-            :style="`
-              width: 460px;
-              min-width: 460px;
-              max-width: 460px;
-              max-height: 110px;
-            `"
-            :class="{
-              'bg-blue-1': !replyingMessage.fromMe,
-              'bg-grey-2': replyingMessage.fromMe
-            }"
-          >
-            <q-item-section>
-              <q-item-label
-                v-if="!replyingMessage.fromMe"
-                overline
-              >
-                {{ replyingMessage.contact.name }}
-              </q-item-label>
-              <q-item-label
-                lines="4"
-                v-html="farmatarMensagemWhatsapp(replyingMessage.body)"
-              >
-              </q-item-label>
-            </q-item-section>
-            <q-btn
-              @click="replyingMessage=null"
-              dense
-              flat
-              round
-              icon="close"
-              class="float-right absolute-top-right"
-              :disabled="loading || ticketFocado.status !== 'open'"
-            />
-          </q-item>
-        </q-list>
-      </q-card-section>
+          <q-item-section>
+            <q-item-label
+              v-if="!replyingMessage.fromMe"
+              :class="{'text-black': $q.dark.isActive}"
+              caption
+            >
+              {{ replyingMessage.contact && replyingMessage.contact.name }}
+            </q-item-label>
+            <q-item-label
+              lines="4"
+              v-html="farmatarMensagemWhatsapp(replyingMessage.body)"
+            >
+            </q-item-label>
+          </q-item-section>
+          <q-btn
+            @click="replyingMessage=null"
+            dense
+            flat
+            round
+            icon="close"
+            class="float-right absolute-top-right"
+            :disabled="loading || ticketFocado.status !== 'open'"
+          />
+        </q-item>
+      </q-list>
       <InputMensagem
         :mensagensRapidas="mensagensRapidas"
         :replyingMessage.sync="replyingMessage"
@@ -523,4 +525,12 @@ audio {
 //     display: none;
 //   } /*when textbox with texy show submit button*/
 // }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
 </style>

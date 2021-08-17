@@ -31,6 +31,13 @@
         >
           {{ isGroupLabel(mensagem) }}
         </div>
+        <div
+          v-if="!isGroupLabel(mensagem) && !mensagem.fromMe"
+          class="q-mb-sm"
+          style="display: flex; color: rgb(59 23 251); fontWeight: 500;"
+        >
+          {{ mensagem.contact && mensagem.contact.name }}
+        </div>
         <template v-if="mensagem.mediaType === 'audio'">
           <div style="width: 200px; heigth: 300px">
             <audio
