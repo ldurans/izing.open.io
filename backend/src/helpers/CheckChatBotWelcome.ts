@@ -1,6 +1,7 @@
 import Contact from "../models/Contact";
 import Ticket from "../models/Ticket";
 import ShowStepAutoReplyMessageService from "../services/AutoReplyServices/ShowStepAutoReplyMessageService";
+import CreateLogTicketService from "../services/TicketServices/CreateLogTicketService";
 
 const AutoReplyWelcome = async (instance: Ticket): Promise<void> => {
   if (instance.userId || instance.isGroup) return;
@@ -29,6 +30,11 @@ const AutoReplyWelcome = async (instance: Ticket): Promise<void> => {
   await instance.update({
     autoReplyId: stepAutoReply.autoReply.id,
     stepAutoReplyId: stepAutoReply.id
+  });
+
+  await CreateLogTicketService({
+    ticketId: instance.id,
+    type: "chatBot"
   });
 };
 
