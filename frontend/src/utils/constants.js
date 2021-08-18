@@ -172,13 +172,18 @@ export const messagesLog = {
     icon: 'mdi-account-arrow-left'
   },
   queue: {
-    message: 'Fila definida',
+    message: 'Bot: Fila definida',
     color: 'green-2',
     icon: 'mdi-arrow-decision'
   },
   userDefine: {
-    message: 'Usuário definido',
+    message: 'Bot: Usuário definido',
     color: 'cyan-2',
     icon: 'mdi-account-check'
+  },
+  chatBot: {
+    message: 'ChatBot iniciado',
+    color: 'blue-4',
+    icon: 'mdi-robot'
   }
 }

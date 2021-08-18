@@ -12,7 +12,8 @@ type logType =
   | "pending"
   | "queue"
   | "userDefine"
-  | "delete";
+  | "delete"
+  | "chatBot";
 
 interface Request {
   type: logType;
