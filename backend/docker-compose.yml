@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:12
+    container_name: wchats-postgres
+    hostname: wchats-postgres
+    restart: always
+    volumes:
+      - /var/data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=wchats
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=marina@0509
+    networks: 
+      - wchats-network
+  
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: wchats-pgadmin4
+    hostname: wchats-pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "durans@wchats.com.br"
+      PGADMIN_DEFAULT_PASSWORD: "marina@0509"
+    depends_on:
+      - postgres
+    networks:
+      - wchats-network
+
+  redis:
+    image: redis:alpine
+    container_name: wchats-redis
+    hostname: wchats-redis
+    restart: always
+    command: ["sh", "-c", "redis-server --requirepass \"$DB_PASS\""]
+    env_file: .env
+    volumes:
+      - /var/data/redis:/data
+    networks: 
+      - wchats-network
+
+  wchats-server:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file: .env
+    image: wchats-server
+    container_name: wchats-server
+    hostname: wchats-server
+    # command: bash -c "npm run build "
+    entrypoint: docker-entrypoint.sh npm run build
+    # && pm2 start dist/server.js --name wchats-backend"
+    # entrypoint: docker-entrypoint-server.sh
+    networks: 
+      - wchats-network
+    tty: true
+
+  # nginx:
+  #   build: 
+  #     context: ./wppconnect-nginx
+  #     dockerfile: Dockerfile
+  #   container_name: nginx
+  #   entrypoint: nginx -g "daemon off;"
+  #   ports:
+  #     - "8080:8080" #chatwoot
+  #     - "8081:8081" #wppconnect
+  #     - "8082:8082" #pgadmin
+  #     - "8083:8083" #redis
+  #   networks: 
+  #     - wpp-network
+  #   depends_on:
+  #     - wppconnect-server
+
+networks: 
+  wchats-network:
+    # name: wchats-network
+    driver: bridge

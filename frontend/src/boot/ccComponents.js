@@ -1,6 +1,6 @@
 import cInput from 'src/components/cInput'
 import { notificarErro, notificarSucesso } from 'src/utils/helpersNotifications'
-import { Dark } from 'quasar'
+import { Dark, uid } from 'quasar'
 import DatePick from 'src/components/cDatePick'
 import cDateTimePick from 'src/components/cDateTimePick'
 
@@ -104,4 +104,5 @@ export default ({
   Vue.prototype.$notificarErro = notificarErro
   Vue.prototype.$notificarSucesso = notificarSucesso
   Vue.prototype.$setConfigsUsuario = setConfigsUsuario
+  Vue.prototype.$uuid = uid
 }

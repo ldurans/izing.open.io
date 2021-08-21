@@ -328,10 +328,7 @@
         </div>
         <q-separator />
         <q-scroll-area style="height: calc(100vh - 70px)">
-          <div
-            class="q-pa-sm"
-            v-if="ticketFocado.id"
-          >
+          <div class="q-pa-sm">
             <q-card
               class="bg-white btn-rounded"
               style="width: 100%"
@@ -404,6 +401,7 @@
               style="width: 100%"
               bordered
               flat
+              :key="ticketFocado.id + $uuid()"
             >
               <q-card-section class="text-bold q-pb-none">
                 Etiquetas
@@ -481,6 +479,7 @@
               style="width: 100%"
               bordered
               flat
+              :key="ticketFocado.id + $uuid()"
             >
               <q-card-section class="text-bold q-pb-none">
                 Carteira
@@ -549,6 +548,7 @@
               style="width: 100%"
               bordered
               flat
+              :key="ticketFocado.id + $uuid()"
             >
               <q-card-section class="text-bold q-pb-none">
                 Mensagens Agendadas
@@ -594,6 +594,7 @@
               style="width: 100%"
               bordered
               flat
+              :key="ticketFocado.id + $uuid()"
             >
               <q-card-section class="text-bold q-pb-none">
                 Outras Informações
