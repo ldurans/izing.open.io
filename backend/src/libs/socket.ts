@@ -25,8 +25,9 @@ export const initIO = (httpServer: Server): SocketIO => {
         const query = socket?.handshake?.query;
         socket.handshake.query = {
           ...query,
-          ...verify.data
-          // id: String(verify.data.id)
+          ...verify.data,
+          id: String(verify.data.id),
+          tenantId: String(verify.data.tenantId)
         };
         socket.auth = verify.data;
         next();
