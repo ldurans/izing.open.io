@@ -23,7 +23,11 @@ export const initIO = (httpServer: Server): SocketIO => {
       const verify = decodeTokenSocket(token);
       if (verify.isValid) {
         const query = socket?.handshake?.query;
-        socket.handshake.query = { ...query, ...verify.data };
+        socket.handshake.query = {
+          ...query,
+          ...verify.data
+          // id: String(verify.data.id)
+        };
         socket.auth = verify.data;
         next();
       }
