@@ -52,7 +52,6 @@ const SendMessagesSystemWbot = async (
 
   await Promise.all(
     messages.map(async message => {
-      logger.info(`Send Message SYSTEM: ${message}`);
       let quotedMsgSerializedId: string | undefined;
       const { ticket } = message;
       const contactNumber = ticket.contact.number;
@@ -104,10 +103,13 @@ const SendMessagesSystemWbot = async (
 
         console.log("sendMessage", sendedMessage.id.id);
       } catch (error) {
+        const idMessage = message.id;
+        const ticketId = message.ticket.id;
         logger.error(
-          `Error enviar message system(tenant:
-            ${message.ticket.tenantId} / Ticket: ${message.ticket.id}
-          ):: ${JSON.stringify(error)}`
+          `Error message is (tenant: ${tenantId} | Ticket: ${ticketId})`
+        );
+        logger.error(
+          `Error send message (id: ${idMessage})::${JSON.stringify(error)}`
         );
       }
     })
