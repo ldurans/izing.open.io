@@ -323,7 +323,10 @@ const atendimentoTicket = {
         }
         state.mensagens = mensagens
         if (payload.scheduleDate && payload.status == 'pending') {
-          state.ticketFocado.scheduledMessages.push(payload)
+          const idxScheduledMessages = state.ticketFocado.scheduledMessages.findIndex(m => m.id === payload.id)
+          if (idxScheduledMessages === -1) {
+            state.ticketFocado.scheduledMessages.push(payload)
+          }
         }
       }
 
