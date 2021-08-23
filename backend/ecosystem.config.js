@@ -3,6 +3,6 @@ module.exports = [{
   name: 'wchats-app',
   exec_mode: 'cluster',
   cron_restart: '00 00 * * *',
-  instances: 2,
+  instances: 1,
   watch: false
 }]
