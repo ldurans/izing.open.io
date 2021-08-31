@@ -1,6 +1,7 @@
 import { Client } from "whatsapp-web.js";
 import { logger } from "../../utils/logger";
 import FindOrCreateTicketService from "../TicketServices/FindOrCreateTicketService";
+import verifyAutoReplyActionTicket from "./helpers/VerifyAutoReplyActionTicket";
 // import verifyBusinessHours from "./helpers/VerifyBusinessHours";
 import VerifyContact from "./helpers/VerifyContact";
 import VerifyMediaMessage from "./helpers/VerifyMediaMessage";
@@ -40,12 +41,16 @@ const SyncUnreadMessagesWbot = async (
           return;
         }
 
-        unreadMessages.map(async msg => {
+        unreadMessages.map(async (msg, idx) => {
           logger.info(`MSG: ${msg}`);
           if (msg.hasMedia) {
             await VerifyMediaMessage(msg, ticket, contact);
           } else {
             await VerifyMessage(msg, ticket, contact);
+          }
+          // enviar mensagem do bot na ultima mensagem
+          if (idx === unreadMessages.length - 1) {
+            await verifyAutoReplyActionTicket(msg, ticket);
           }
           // await verifyBusinessHours(msg, ticket);
         });

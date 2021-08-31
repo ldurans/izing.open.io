@@ -19,7 +19,10 @@
 
         </div>
       </q-card-section>
-      <q-card-section class="text-center">
+      <q-card-section
+        class="text-center"
+        :style="$q.dark.isActive ? 'background: white !important' : ''"
+      >
         <QrcodeVue
           v-if="qrCode"
           :value="qrCode"
