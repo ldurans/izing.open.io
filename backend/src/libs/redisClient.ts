@@ -1,16 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { RedisClient } from "redis";
+import Redis from "ioredis";
+// import { logger } from "../utils/logger";
 
-const redisClient = new RedisClient({
-  host: process.env.IO_REDIS_SERVER,
-  port: Number(process.env.IO_REDIS_PORT),
-  db: process.env.IO_REDIS_DB_SESSION
+const redisClient = new Redis({
+  port: Number(process.env.IO_REDIS_PORT) || 6379, // Redis port
+  host: process.env.IO_REDIS_SERVER || "localhost",
+  db: Number(process.env.IO_REDIS_DB_SESSION) || 9
+  // host: "127.0.0.1", // Redis host
+  // family: 4 // 4 (IPv4) or 6 (IPv6)
 });
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const getValue = (key: string) => {
   return new Promise((resolve, reject) => {
-    redisClient.get(key, (err, value) => {
+    redisClient.get(key, (err, value): any => {
       if (err) return reject(err);
       let data: any;
       if (value) {

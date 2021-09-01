@@ -10,7 +10,7 @@ import Whatsapp from "../models/Whatsapp";
 import { getValue, setValue } from "./redisClient";
 import { logger } from "../utils/logger";
 import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesWbot";
-import SendOffLineMessagesWbot from "../services/WbotServices/SendOffLineMessagesWbot";
+// import SendOffLineMessagesWbot from "../services/WbotServices/SendOffLineMessagesWbot";
 import SendMessagesSystemWbot from "../services/WbotServices/SendMessagesSystemWbot";
 
 interface Session extends Client {
@@ -24,9 +24,12 @@ const checking: any = {};
 const checkMessages = async (wbot: Session, tenantId: number | string) => {
   if (checking[tenantId]) return;
   checking[tenantId] = true;
-  logger.info(`checking new message tenant ${tenantId}`);
   try {
-    await SendMessagesSystemWbot(wbot, tenantId);
+    const isConnectStatus = await getValue(`wbotStatus-${tenantId}`);
+    if (isConnectStatus === "CONNECTED") {
+      logger.info(`checking new message tenant ${tenantId}`);
+      await SendMessagesSystemWbot(wbot, tenantId);
+    }
   } catch (error) {
     logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
   }
@@ -137,6 +140,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         );
         await setValue(`${whatsapp.id}-retryQrCode`, retryQrCode + 1);
         await whatsapp.update({ qrcode: qr, status: "qrcode", retries: 0 });
+        await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
         const sessionIndex = sessions.findIndex(s => s.id === whatsapp.id);
         if (sessionIndex === -1) {
           wbot.id = whatsapp.id;
@@ -151,6 +155,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           await wbot.destroy();
           await setValue(`${whatsapp.id}-retryQrCode`, 0);
           await whatsapp.update({ status: "DESTROYED", retries: 0 });
+          await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
         }
 
         io.emit(`${tenantId}-whatsappSession`, {
@@ -164,6 +169,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         await whatsapp.update({
           session: JSON.stringify(session)
         });
+        await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
       });
 
       wbot.on("auth_failure", async msg => {
@@ -190,18 +196,20 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
             retries: 0,
             session: ""
           });
+          await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
         } else {
           await whatsapp.update({
             status: "DISCONNECTED",
             retries: retry + 1
           });
+          await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
         }
 
         io.emit(`${tenantId}-whatsappSession`, {
           action: "update",
           session: whatsapp
         });
-
+        await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
         // try {
         //   await wbot.initialize();
         //   // resolve(wbot);
@@ -227,6 +235,8 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           phone: wbot?.info?.phone
         });
 
+        await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
+
         io.emit(`${tenantId}-whatsappSession`, {
           action: "update",
           session: whatsapp
@@ -248,7 +258,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         setValue(`${wbot.id}`, whatsapp);
         wbot.sendPresenceAvailable();
         SyncUnreadMessagesWbot(wbot, tenantId);
-        SendOffLineMessagesWbot(wbot, tenantId);
+        // SendOffLineMessagesWbot(wbot, tenantId);
         resolve(wbot);
       });
 
@@ -280,12 +290,15 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
               retries: 0,
               session: ""
             });
+            await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
             await wbot.logout();
             await wbot.destroy();
           } else if (reason === "CONFLICT") {
             await whatsapp.update({ status: "DISCONNECTED", retries: 0 });
+            await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
           } else {
             await whatsapp.update({ status: "qrcode", retries: 0 });
+            await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
           }
         } catch (err) {
           logger.error(`wbot:update:disconnected. Error: ${err}`);
