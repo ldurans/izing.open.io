@@ -6,7 +6,7 @@ import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
 import { sleepRandomTime } from "../../utils/sleepRandomTime";
-import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
+// import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 interface Session extends Client {
   id?: number;
@@ -72,11 +72,13 @@ const SendMessagesSystemWbot = async (
             linkPreview: false, // fix: send a message takes 2 seconds when there's a link on message body
             sendAudioAsVoice: true
           });
+          logger.info("sendMessage media");
         } else {
           sendedMessage = await wbot.sendMessage(chatId, message.body, {
             quotedMessageId: quotedMsgSerializedId,
             linkPreview: false // fix: send a message takes 2 seconds when there's a link on message body
           });
+          logger.info("sendMessage text");
         }
 
         // enviar old_id para substituir no front a mensagem corretamente
@@ -93,15 +95,16 @@ const SendMessagesSystemWbot = async (
           { where: { id: message.id } }
         );
 
-        await SetTicketMessagesAsRead(ticket);
+        logger.info("Message Update ok");
+        // await SetTicketMessagesAsRead(ticket);
 
         // delay para processamento da mensagem
         await sleepRandomTime({
-          minMilliseconds: +(process.env.MIN_SLEEP_INTERVAL || 2000),
-          maxMilliseconds: +(process.env.MAX_SLEEP_INTERVAL || 5000)
+          minMilliseconds: Number(process.env.MIN_SLEEP_INTERVAL || 2000),
+          maxMilliseconds: Number(process.env.MAX_SLEEP_INTERVAL || 5000)
         });
 
-        console.log("sendMessage", sendedMessage.id.id);
+        logger.info("sendMessage", sendedMessage.id.id);
       } catch (error) {
         const idMessage = message.id;
         const ticketId = message.ticket.id;
