@@ -137,6 +137,14 @@ export default {
       if (this.usuarioEdicao.id) {
         this.usuario = { ...this.usuarioEdicao }
       }
+      if (this.usuarioEdicao.userId) {
+        this.usuario = {
+          ...this.usuarioEdicao,
+          id: this.usuarioEdicao.userId,
+          name: this.usuarioEdicao.username,
+          profile: this.usuarioEdicao.profile
+        }
+      }
     },
     fecharModal () {
       if (!this.isProfile) {
@@ -171,10 +179,10 @@ export default {
       try {
         if (this.usuario.id) {
           const {
-            email, id, name, tenantId
+            email, id, name, tenantId, password
           } = this.usuario
 
-          const params = { email, id, name, tenantId }
+          const params = { email, id, name, tenantId, password }
 
           if (this.$store.state.user.isAdmin) {
             params.profile = this.usuario.profile

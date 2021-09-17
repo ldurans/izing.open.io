@@ -56,8 +56,8 @@ const UpdateUserService = async ({
 
   try {
     await schema.validate({ email, password, profile, name });
-  } catch (err) {
-    throw new AppError(err.message);
+  } catch (err: any) {
+    throw new AppError(err?.message);
   }
 
   if (queues) {
