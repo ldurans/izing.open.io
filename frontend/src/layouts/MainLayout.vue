@@ -297,7 +297,7 @@ export default {
       ],
       userProfile: 'user',
       modalUsuario: false,
-      usuario: {},
+      usuario,
       alertSound,
       leftDrawerOpen: false,
       menuData: objMenu,
