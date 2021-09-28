@@ -2,16 +2,39 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach by Process ID",
+      "processId": "${command:PickProcess}",
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "port": 9229,
+      "type": "node"
+    },
+    {
       "type": "node",
       "request": "launch",
       "restart": true,
       "smartStep": true,
       "name": "Debug TypeScript in Node.js",
-      "preLaunchTask": "tsc: watch - backend/tsconfig.json",
+      // "preLaunchTask": "npm: build",
+      "preLaunchTask": "tsc: build - tsconfig.json",
       "program": "${workspaceFolder}/src/server.ts",
       "cwd": "${workspaceFolder}",
       "outputCapture": "std",
       "protocol": "inspector",
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/src/server.ts",
+      "sourceMaps": true,
+      "trace": true,
+      "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"
       ]

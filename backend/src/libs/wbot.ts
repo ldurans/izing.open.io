@@ -11,7 +11,8 @@ import { getValue, setValue } from "./redisClient";
 import { logger } from "../utils/logger";
 import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesWbot";
 // import SendOffLineMessagesWbot from "../services/WbotServices/SendOffLineMessagesWbot";
-import SendMessagesSystemWbot from "../services/WbotServices/SendMessagesSystemWbot";
+// import SendMessagesSystemWbot from "../services/WbotServices/SendMessagesSystemWbot";
+import Queue from "./Queue";
 
 interface Session extends Client {
   id?: number;
@@ -19,21 +20,22 @@ interface Session extends Client {
 
 const sessions: Session[] = [];
 
-const checking: any = {};
+// const checking: any = {};
 
 const checkMessages = async (wbot: Session, tenantId: number | string) => {
-  if (checking[tenantId]) return;
-  checking[tenantId] = true;
+  // if (checking[tenantId]) return;
+  // checking[tenantId] = true;
   try {
     const isConnectStatus = await getValue(`wbotStatus-${tenantId}`);
     if (isConnectStatus === "CONNECTED") {
-      logger.info(`checking new message tenant ${tenantId}`);
-      await SendMessagesSystemWbot(wbot, tenantId);
+      // logger.info(`checking new message tenant ${tenantId}`);
+      // await SendMessagesSystemWbot(wbot, tenantId);
+      Queue.add("SendMessages", { sessionId: wbot.id, tenantId });
     }
   } catch (error) {
     logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
   }
-  checking[tenantId] = false;
+  // checking[tenantId] = false;
 };
 
 // const syncContacts = async (wbot: Session, tenantId: string | number) => {
@@ -324,7 +326,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
 };
 
 export const getWbot = (whatsappId: number, checkState = true): Session => {
-  logger.info(`whatsappId: ${whatsappId} | checkState: ${checkState}`);
+  // logger.info(`whatsappId: ${whatsappId} | checkState: ${checkState}`);
   const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
 
   // if (sessionIndex === -1) {
