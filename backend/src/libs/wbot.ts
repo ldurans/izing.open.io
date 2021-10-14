@@ -311,7 +311,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           session: whatsapp
         });
       });
-
+      setValue(`sendingMessages_tenant_${whatsapp.tenantId}`, false);
       setInterval(
         checkMessages,
         +(process.env.CHECK_INTERVAL || 5000),
