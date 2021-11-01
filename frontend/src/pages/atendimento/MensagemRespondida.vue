@@ -161,6 +161,7 @@
 </template>
 
 <script>
+import { Base64 } from 'js-base64'
 
 import mixinCommon from './mixinCommon'
 import VueEasyLightbox from 'vue-easy-lightbox'
@@ -218,7 +219,8 @@ export default {
       }
     },
     returnCardContato (str) {
-      return btoa(str)
+      // return btoa(str)
+      return Base64.encode(str)
     },
     focarElemento (mensagem) {
       this.$emit('mensagem-respondida:focar-mensagem', mensagem)

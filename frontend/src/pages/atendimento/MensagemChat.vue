@@ -315,6 +315,8 @@ const downloadImageCors = axios.create({
 })
 
 import { DeletarMensagem } from 'src/service/tickets'
+import { Base64 } from 'js-base64'
+
 export default {
   name: 'MensagemChat',
   mixins: [mixinCommon],
@@ -376,7 +378,8 @@ export default {
     //   return this.urlMedia
     // },
     returnCardContato (str) {
-      return btoa(str)
+      // return btoa(str)
+      return Base64.encode(str)
     },
     isDesactivatDelete (msg) {
       if (msg) {
