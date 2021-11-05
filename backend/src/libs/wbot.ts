@@ -172,11 +172,11 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         });
       });
 
-      wbot.on("authenticated", async session => {
+      wbot.on("authenticated", async () => {
         logger.info(`Session: ${sessionName} AUTHENTICATED`);
-        await whatsapp.update({
-          session: JSON.stringify(session)
-        });
+        // await whatsapp.update({
+        //   session: JSON.stringify(session)
+        // });
         await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
       });
 
