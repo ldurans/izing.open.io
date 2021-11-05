@@ -1,17 +1,12 @@
 // import qrCode from "qrcode-terminal";
 import { Client } from "whatsapp-web.js";
+import { rmdir } from "fs";
+import path from "path";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
-// import AppError from "../errors/AppError";
-// import Contact from "../models/Contact";
-// import Tenant from "../models/Tenant";
-// import { StartWhatsAppSessionVerify } from "../services/WbotServices/StartWhatsAppSessionVerify";
-// import { handleMessage } from "../services/WbotServices/wbotMessageListener";
 import { getValue, setValue } from "./redisClient";
 import { logger } from "../utils/logger";
 import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesWbot";
-// import SendOffLineMessagesWbot from "../services/WbotServices/SendOffLineMessagesWbot";
-// import SendMessagesSystemWbot from "../services/WbotServices/SendMessagesSystemWbot";
 import Queue from "./Queue";
 
 interface Session extends Client {
@@ -36,6 +31,15 @@ const checkMessages = async (wbot: Session, tenantId: number | string) => {
     logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
   }
   // checking[tenantId] = false;
+};
+
+const apagarPastaSessao = (whatsapp: Whatsapp): void => {
+  const pathRoot = path.resolve(__dirname, "..", "..", "WWebJS");
+  const pathSession = `${pathRoot}/session-${whatsapp.name}`;
+  console.log("pathSession", pathSession);
+  rmdir(pathSession, { recursive: true }, () => {
+    console.log("apagarPastaSessao", pathSession);
+  });
 };
 
 // const syncContacts = async (wbot: Session, tenantId: string | number) => {
@@ -107,13 +111,14 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       const io = getIO();
       const sessionName = whatsapp.name;
       const { tenantId } = whatsapp;
-      let sessionCfg;
-      if (whatsapp && whatsapp.session) {
-        sessionCfg = JSON.parse(whatsapp.session);
-      }
+      // let sessionCfg;
+      // if (whatsapp && whatsapp.session) {
+      //   sessionCfg = JSON.parse(whatsapp.session);
+      // }
       const wbot: Session = new Client({
-        session: sessionCfg,
+        clientId: whatsapp.name,
         puppeteer: {
+          // headless: false,
           executablePath: process.env.CHROME_BIN || undefined // "/usr/bin/google-chrome",
           // args: [
           //   "--no-sandbox",
@@ -157,6 +162,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           await wbot.destroy();
           await setValue(`${whatsapp.id}-retryQrCode`, 0);
           await whatsapp.update({ status: "DESTROYED", retries: 0 });
+          apagarPastaSessao(whatsapp);
           await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
         }
 
@@ -198,6 +204,9 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
             retries: 0,
             session: ""
           });
+
+          apagarPastaSessao(whatsapp);
+
           await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
         } else {
           await whatsapp.update({
@@ -233,8 +242,8 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           status: "CONNECTED",
           qrcode: "",
           retries: 0,
-          number: wbot?.info?.wid?.user || wbot?.info?.me?.user,
-          phone: wbot?.info?.phone
+          number: wbot?.info?.wid?.user // || wbot?.info?.me?.user,
+          // phone: wbot?.info?.phone
         });
 
         await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
@@ -292,6 +301,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
               retries: 0,
               session: ""
             });
+            apagarPastaSessao(whatsapp);
             await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
             await wbot.logout();
             await wbot.destroy();

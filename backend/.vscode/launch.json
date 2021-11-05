@@ -12,6 +12,15 @@
       "type": "node"
     },
     {
+      "name": "Attach Node.js",
+      "processId": "${command:PickProcess}",
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
+    },
+    {
       "type": "node",
       "request": "launch",
       "restart": true,

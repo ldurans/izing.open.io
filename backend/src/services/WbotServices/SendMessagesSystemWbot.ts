@@ -50,9 +50,9 @@ const SendMessagesSystemWbot = async (
   });
   let sendedMessage;
 
-  logger.info(
-    `SystemWbot SendMessages | Count: ${messages.length} | Tenant: ${tenantId} `
-  );
+  // logger.info(
+  //   `SystemWbot SendMessages | Count: ${messages.length} | Tenant: ${tenantId} `
+  // );
 
   await Promise.all(
     messages.map(async message => {
