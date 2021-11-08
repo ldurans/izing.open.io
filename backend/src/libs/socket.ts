@@ -5,11 +5,15 @@ import { WAState } from "whatsapp-web.js";
 import AppError from "../errors/AppError";
 import decodeTokenSocket from "./decodeTokenSocket";
 import { logger } from "../utils/logger";
+import User from "../models/User";
 
 let io: SocketIO;
 
 export const initIO = (httpServer: Server): SocketIO => {
-  io = socketIo(httpServer);
+  io = socketIo(httpServer, {
+    pingInterval: 30000,
+    pingTimeout: 15000
+  });
   io.adapter(
     socketRedis({
       host: process.env.IO_REDIS_SERVER,
@@ -17,7 +21,7 @@ export const initIO = (httpServer: Server): SocketIO => {
     })
   );
 
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     try {
       const token = socket?.handshake?.query?.token;
       const verify = decodeTokenSocket(token);
@@ -29,7 +33,19 @@ export const initIO = (httpServer: Server): SocketIO => {
           id: String(verify.data.id),
           tenantId: String(verify.data.tenantId)
         };
+
+        const user = await User.findByPk(verify.data.id, {
+          attributes: [
+            "id",
+            "tenantId",
+            "name",
+            "email",
+            "profile",
+            "lastLogin"
+          ]
+        });
         socket.auth = verify.data;
+        socket.user = user;
         next();
       }
       next(new Error("authentication error"));

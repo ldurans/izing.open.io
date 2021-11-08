@@ -2,6 +2,7 @@
 import { Client } from "whatsapp-web.js";
 import { rmdir } from "fs";
 import path from "path";
+import slugify from "slugify";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
 import { getValue, setValue } from "./redisClient";
@@ -116,7 +117,8 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       //   sessionCfg = JSON.parse(whatsapp.session);
       // }
       const wbot: Session = new Client({
-        clientId: whatsapp.name,
+        clientId: slugify(whatsapp.name),
+        qrRefreshIntervalMs: 15000,
         puppeteer: {
           // headless: false,
           executablePath: process.env.CHROME_BIN || undefined // "/usr/bin/google-chrome",
@@ -335,7 +337,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
   });
 };
 
-export const getWbot = (whatsappId: number, checkState = true): Session => {
+export const getWbot = (whatsappId: number): Session => {
   // logger.info(`whatsappId: ${whatsappId} | checkState: ${checkState}`);
   const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
 
