@@ -1,6 +1,6 @@
 // import qrCode from "qrcode-terminal";
 import { Client } from "whatsapp-web.js";
-import { rmdir } from "fs";
+import { rmdir } from "fs/promises";
 import path from "path";
 import slugify from "slugify";
 import { getIO } from "./socket";
@@ -34,13 +34,11 @@ const checkMessages = async (wbot: Session, tenantId: number | string) => {
   // checking[tenantId] = false;
 };
 
-const apagarPastaSessao = (whatsapp: Whatsapp): void => {
+const apagarPastaSessao = async (whatsapp: Whatsapp): Promise<void> => {
   const pathRoot = path.resolve(__dirname, "..", "..", "WWebJS");
   const pathSession = `${pathRoot}/session-${whatsapp.name}`;
   console.log("pathSession", pathSession);
-  rmdir(pathSession, { recursive: true }, () => {
-    console.log("apagarPastaSessao", pathSession);
-  });
+  await rmdir(pathSession, { recursive: true });
 };
 
 // const syncContacts = async (wbot: Session, tenantId: string | number) => {
@@ -164,7 +162,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           await wbot.destroy();
           await setValue(`${whatsapp.id}-retryQrCode`, 0);
           await whatsapp.update({ status: "DESTROYED", retries: 0 });
-          apagarPastaSessao(whatsapp);
+          await apagarPastaSessao(whatsapp);
           await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
         }
 
@@ -207,7 +205,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
             session: ""
           });
 
-          apagarPastaSessao(whatsapp);
+          await apagarPastaSessao(whatsapp);
 
           await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
         } else {
@@ -303,10 +301,10 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
               retries: 0,
               session: ""
             });
-            apagarPastaSessao(whatsapp);
             await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
             await wbot.logout();
             await wbot.destroy();
+            await apagarPastaSessao(whatsapp);
           } else if (reason === "CONFLICT") {
             await whatsapp.update({ status: "DISCONNECTED", retries: 0 });
             await setValue(`wbotStatus-${tenantId}`, whatsapp.status);

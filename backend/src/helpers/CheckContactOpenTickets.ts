@@ -8,7 +8,8 @@ const CheckContactOpenTickets = async (contactId: number): Promise<void> => {
   });
 
   if (ticket) {
-    throw new AppError("ERR_OTHER_OPEN_TICKET");
+    // throw new AppError("ERR_OTHER_OPEN_TICKET", );
+    throw new AppError(JSON.stringify(ticket), 409);
   }
 };
 

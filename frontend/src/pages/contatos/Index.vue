@@ -91,7 +91,7 @@
             flat
             round
             icon="mdi-whatsapp"
-            @click="handleSaveTicket(props.row.id)"
+            @click="handleSaveTicket(props.row)"
           />
           <q-btn
             flat
@@ -215,12 +215,12 @@ export default {
         this.listarContatos()
       }
     },
-    async handleSaveTicket (contactId) {
-      if (!contactId) return
+    async handleSaveTicket (contact) {
+      if (!contact.id) return
       this.loading = true
       try {
         const { data: ticket } = await CriarTicket({
-          contactId: contactId,
+          contactId: contact.id,
           userId: userId,
           status: 'open'
         })
@@ -239,7 +239,11 @@ export default {
         })
         this.$router.push({ name: 'atendimento' })
       } catch (error) {
-        console.error(error)
+        if (error.status === 409) {
+          const ticketAtual = JSON.parse(error.data.error)
+          this.abrirAtendimentoExistente(contact, ticketAtual)
+          return
+        }
         this.$notificarErro('Ocorreu um erro!', error)
       }
       this.loading = false
@@ -285,6 +289,41 @@ export default {
             this.$notificarErro('Não é possível deletar o contato', error)
           })
         this.loading = false
+      })
+    },
+    abrirChatContato (ticket) {
+      // caso esteja em um tamanho mobile, fechar a drawer dos contatos
+      if (this.$q.screen.lt.md && ticket.status !== 'pending') {
+        this.$root.$emit('infor-cabecalo-chat:acao-menu')
+      }
+      if (!(ticket.status !== 'pending' && (ticket.id !== this.$store.getters.ticketFocado.id || this.$route.name !== 'chat'))) return
+      this.$store.commit('SET_HAS_MORE', true)
+      this.$store.dispatch('AbrirChatMensagens', ticket)
+    },
+    abrirAtendimentoExistente (contato, ticket) {
+      this.$q.dialog({
+        title: 'Atenção!!',
+        message: `${contato.name} possui um atendimento em curso (Atendimento: ${ticket.id}). Deseja abrir o atendimento?`,
+        cancel: {
+          label: 'Não',
+          color: 'primary',
+          push: true
+        },
+        ok: {
+          label: 'Sim',
+          color: 'negative',
+          push: true
+        },
+        persistent: true
+      }).onOk(async () => {
+        try {
+          this.abrirChatContato(ticket)
+        } catch (error) {
+          this.$notificarErro(
+            'Não foi possível atualizar o token',
+            error
+          )
+        }
       })
     }
 

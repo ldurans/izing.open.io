@@ -112,7 +112,7 @@
 
           </q-btn-group>
           <q-btn
-            v-if="['CONNECTED', 'PAIRING', 'TIMEOUT'].includes(props.value)"
+            v-if="['CONNECTED', 'PAIRING', 'TIMEOUT', 'OPENING'].includes(props.value)"
             color="negative"
             label="Desconectar"
             outline

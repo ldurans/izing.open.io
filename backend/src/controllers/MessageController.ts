@@ -33,17 +33,12 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   const { pageNumber } = req.query as IndexQuery;
   const { tenantId } = req.user;
 
-  const {
-    count,
-    messages,
-    messagesOffLine,
-    ticket,
-    hasMore
-  } = await ListMessagesService({
-    pageNumber,
-    ticketId,
-    tenantId
-  });
+  const { count, messages, messagesOffLine, ticket, hasMore } =
+    await ListMessagesService({
+      pageNumber,
+      ticketId,
+      tenantId
+    });
 
   // verificar rotina para sync das mensagens.
   // const wbot = await GetTicketWbot(ticket);
