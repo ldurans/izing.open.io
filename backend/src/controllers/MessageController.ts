@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 import { Request, Response } from "express";
 import AppError from "../errors/AppError";
 // import GetTicketWbot from "../helpers/GetTicketWbot";
@@ -124,13 +126,18 @@ export const forward = async (
   const data = req.body;
   const { user } = req;
   console.log(data);
-  await CreateForwardMessageService({
-    userId: user.id,
-    tenantId: user.tenantId,
-    message: data.message,
-    contact: data.contact,
-    ticketIdOrigin: data.message.ticketId
-  });
+  // await Promise.all(
+  // )
+
+  for (const message of data.messages) {
+    await CreateForwardMessageService({
+      userId: user.id,
+      tenantId: user.tenantId,
+      message,
+      contact: data.contact,
+      ticketIdOrigin: message.ticketId
+    });
+  }
 
   return res.send();
 };

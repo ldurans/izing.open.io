@@ -9,6 +9,10 @@ interface Session extends Client {
 
 const wbotMessageListener = (wbot: Session): void => {
   wbot.on("message_create", async msg => {
+    // desconsiderar atualização de status
+    if (msg.isStatus) {
+      return;
+    }
     HandleMessage(msg, wbot);
   });
 

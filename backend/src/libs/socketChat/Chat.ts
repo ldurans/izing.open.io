@@ -45,7 +45,7 @@ function eventLoop() {
 }
 
 function joinChatServer(socket: any) {
-  const { user } = socket;
+  const user = JSON.parse(socket.user);
   const propTenant = `tenantId-${user.tenantId}`
   const propUser = `userId-${user.id}`
   let exists = false;

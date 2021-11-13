@@ -85,14 +85,14 @@
       </template>
       <template v-slot:body-cell-session="props">
         <q-td :props="props">
-          <q-btn
+          <!-- <q-btn
             v-if="props.value == 'qrcode'"
             color="primary"
             label="QR CODE"
             @click="props.row.status === 'qrcode' ? handleOpenQrModal(props.row.id) : handleRequestNewQrCode(props.row.id) "
-          />
+          /> -->
           <q-btn
-            v-if="props.value == 'DESTROYED'"
+            v-if="props.value == 'DESTROYED' || props.value == 'qrcode'"
             color="blue-5"
             label="Novo QR Code"
             @click="handleRequestNewQrCode(props.row.id)"

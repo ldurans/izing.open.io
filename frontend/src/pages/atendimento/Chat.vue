@@ -39,6 +39,8 @@
         :mensagens="cMessages"
         v-if="cMessages.length && ticketFocado.id"
         @mensagem-chat:encaminhar-mensagem="abrirModalEncaminharMensagem"
+        :ativarMultiEncaminhamento.sync="ativarMultiEncaminhamento"
+        :mensagensParaEncaminhar.sync="mensagensParaEncaminhar"
       />
     </q-scroll-area>
     <div
@@ -70,7 +72,6 @@
         Selecione um ticket!
       </h1>
     </div>
-
     <div
       v-if="cMessages.length"
       class="relative-position"
@@ -147,7 +148,69 @@
           />
         </q-item>
       </q-list>
+
+      <q-banner
+        class="text-grey-8"
+        v-if="mensagensParaEncaminhar.length > 0"
+      >
+        <span class="text-bold text-h5"> {{ mensagensParaEncaminhar.length}} de 10 mensagens</span> selecionadas para serem encaminhadas.
+        <q-separator class="bg-grey-4" />
+        <q-select
+          dense
+          class="q-my-md"
+          ref="selectAutoCompleteContato"
+          autofocus
+          outlined
+          rounded
+          hide-dropdown-icon
+          :loading="loading"
+          v-model="contatoSelecionado"
+          :options="contatos"
+          input-debounce="700"
+          @filter="localizarContato"
+          use-input
+          hide-selected
+          fill-input
+          clearable
+          option-label="name"
+          option-value="id"
+          label="Localize e selecione o contato"
+          hint="Digite no mínimo duas letras para localizar o contato. É possível selecionar apenas 1 contato!"
+        >
+          <template v-slot:option="scope">
+            <q-item
+              v-bind="scope.itemProps"
+              v-on="scope.itemEvents"
+              v-if="scope.opt.name"
+            >
+              <q-item-section>
+                <q-item-label> {{ scope.opt.name }}</q-item-label>
+                <q-item-label caption>{{ scope.opt.number }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
+        <template v-slot:action>
+          <q-btn
+            class="bg-padrao q-px-sm"
+            flat
+            color="negative"
+            label="Cancelar"
+            @click="cancelarMultiEncaminhamento"
+          />
+          <q-btn
+            class="bg-padrao q-px-sm"
+            flat
+            color="positive"
+            label="Enviar"
+            icon="mdi-send"
+            @click="confirmarEncaminhamentoMensagem(mensagensParaEncaminhar)"
+          />
+        </template>
+      </q-banner>
+
       <InputMensagem
+        v-if="!mensagensParaEncaminhar.length"
         :mensagensRapidas="mensagensRapidas"
         :replyingMessage.sync="replyingMessage"
       />
@@ -254,7 +317,7 @@
             color="positive"
             label="Enviar"
             icon="mdi-send"
-            @click="confirmarEncaminhamentoMensagem"
+            @click="confirmarEncaminhamentoMensagem([mensagemEncaminhamento])"
           />
         </q-card-actions>
       </q-card>
@@ -304,6 +367,8 @@ export default {
       modalAgendamentoMensagem: false,
       modalEncaminhamentoMensagem: false,
       mensagemEncaminhamento: {},
+      mensagensParaEncaminhar: [],
+      ativarMultiEncaminhamento: false,
       contatoSelecionado: {
         id: '',
         name: ''
@@ -391,10 +456,20 @@ export default {
       })
       this.loading = false
     },
-    confirmarEncaminhamentoMensagem () {
-      EncaminharMensagem(this.mensagemEncaminhamento, this.contatoSelecionado)
+    cancelarMultiEncaminhamento () {
+      this.mensagensParaEncaminhar = []
+      this.ativarMultiEncaminhamento = false
+    },
+    confirmarEncaminhamentoMensagem (data) {
+      if (!this.contatoSelecionado.id) {
+        this.$notificarErro('Selecione o contato de destino das mensagens.')
+        return
+      }
+      EncaminharMensagem(data, this.contatoSelecionado)
         .then(r => {
           this.$notificarSucesso(`Mensagem encaminhada para ${this.contatoSelecionado.name} | Número: ${this.contatoSelecionado.number}`)
+          this.mensagensParaEncaminhar = []
+          this.ativarMultiEncaminhamento = false
         })
         .catch(e => {
           console.log('confirmarEncaminhamentoMensagem', e)

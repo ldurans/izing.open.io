@@ -19,7 +19,7 @@ const CheckIsValidContact = async (
       throw new AppError("invalidNumber", 400);
     }
     return idNumber;
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`CheckIsValidContact | Error: ${err}`);
     // StartWhatsAppSessionVerify(defaultWhatsapp.id, err);
     if (err.message === "invalidNumber") {

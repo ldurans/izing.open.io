@@ -38,6 +38,17 @@
             style="min-width: 100px; max-width: 350px;"
             :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''"
           >
+            <q-checkbox
+              v-if="ativarMultiEncaminhamento"
+              :key="`cheked-chat-message-${mensagem.id}`"
+              :class="{
+                'absolute-top-right checkbox-encaminhar-right': !mensagem.fromMe,
+                'absolute-top-left checkbox-encaminhar-left': mensagem.fromMe
+                }"
+              :ref="`box-chat-message-${mensagem.id}`"
+              @click.native="verificarEncaminharMensagem(mensagem)"
+              :value="false"
+            />
 
             <q-icon
               class="q-ma-xs"
@@ -133,6 +144,12 @@
                     @click="encaminharMensagem(mensagem)"
                   >
                     <q-item-section>Encaminhar</q-item-section>
+                  </q-item>
+                  <q-item
+                    clickable
+                    @click="marcarMensagensParaEncaminhar(mensagem)"
+                  >
+                    <q-item-section>Marcar (encaminhar várias)</q-item-section>
                   </q-item>
                   <q-separator />
                   <q-item
@@ -294,7 +311,6 @@
             </div>
           </div>
         </q-chat-message>
-
       </template>
     </transition-group>
   </div>
@@ -316,12 +332,15 @@ const downloadImageCors = axios.create({
 
 import { DeletarMensagem } from 'src/service/tickets'
 import { Base64 } from 'js-base64'
-
 export default {
   name: 'MensagemChat',
   mixins: [mixinCommon],
   props: {
     mensagens: {
+      type: Array,
+      default: () => []
+    },
+    mensagensParaEncaminhar: {
       type: Array,
       default: () => []
     },
@@ -336,6 +355,10 @@ export default {
     isShowOptions: {
       type: Boolean,
       default: true
+    },
+    ativarMultiEncaminhamento: {
+      type: Boolean,
+      default: false
     },
     replyingMessage: {
       type: Object,
@@ -361,6 +384,26 @@ export default {
     MensagemRespondida
   },
   methods: {
+    verificarEncaminharMensagem (mensagem) {
+      const mensagens = [...this.mensagensParaEncaminhar]
+      const msgIdx = mensagens.findIndex(m => m.id === mensagem.id)
+      if (msgIdx !== -1) {
+        mensagens.splice(msgIdx, 1)
+      } else {
+        if (this.mensagensParaEncaminhar.length > 9) {
+          this.$notificarErro('Permitido no máximo 10 mensagens.')
+          return
+        }
+        mensagens.push(mensagem)
+      }
+      this.$refs[`box-chat-message-${mensagem.id}`][0].value = !this.$refs[`box-chat-message-${mensagem.id}`][0].value
+      this.$emit('update:mensagensParaEncaminhar', mensagens)
+    },
+    marcarMensagensParaEncaminhar (mensagem) {
+      this.$emit('update:mensagensParaEncaminhar', [])
+      this.$emit('update:ativarMultiEncaminhamento', !this.ativarMultiEncaminhamento)
+      // this.verificarEncaminharMensagem(mensagem)
+    },
     isPDF (url) {
       if (!url) return false
       const split = url.split('.')
@@ -465,5 +508,14 @@ export default {
 <style lang="scss">
 .frame-pdf {
   overflow: hidden;
+}
+
+.checkbox-encaminhar-right {
+  right: -35px;
+  z-index: 99999;
+}
+.checkbox-encaminhar-left {
+  left: -35px;
+  z-index: 99999;
 }
 </style>

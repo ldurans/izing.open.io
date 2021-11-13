@@ -236,8 +236,7 @@ const ListTicketsService = async ({
       offset
     },
     type: QueryTypes.SELECT,
-    nest: true,
-    logging: console.log
+    nest: true
   });
 
   let count = 0;

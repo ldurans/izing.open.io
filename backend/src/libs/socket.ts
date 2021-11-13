@@ -10,10 +10,7 @@ import User from "../models/User";
 let io: SocketIO;
 
 export const initIO = (httpServer: Server): SocketIO => {
-  io = socketIo(httpServer, {
-    pingInterval: 30000,
-    pingTimeout: 15000
-  });
+  io = socketIo(httpServer);
   io.adapter(
     socketRedis({
       host: process.env.IO_REDIS_SERVER,
@@ -45,7 +42,7 @@ export const initIO = (httpServer: Server): SocketIO => {
           ]
         });
         socket.auth = verify.data;
-        socket.user = user;
+        socket.user = JSON.stringify(user);
         next();
       }
       next(new Error("authentication error"));
