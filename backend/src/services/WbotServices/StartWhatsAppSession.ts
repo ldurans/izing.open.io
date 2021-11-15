@@ -4,6 +4,10 @@ import { wbotMessageListener } from "./wbotMessageListener";
 import { getIO } from "../../libs/socket";
 import wbotMonitor from "./wbotMonitor";
 import { logger } from "../../utils/logger";
+import { StartTbotSession } from "../TbotServices/StartTbotSession";
+import AppError from "../../errors/AppError";
+import { initTbot } from "../../libs/tbot";
+import { tbotMessageListener } from "../TbotServices/tbotMessageListener";
 
 export const StartWhatsAppSession = async (
   whatsapp: Whatsapp
@@ -17,10 +21,17 @@ export const StartWhatsAppSession = async (
   });
 
   try {
-    const wbot = await initWbot(whatsapp);
-    wbotMessageListener(wbot);
-    wbotMonitor(wbot, whatsapp);
+    if (whatsapp.type === "w") {
+      const wbot = await initWbot(whatsapp);
+      wbotMessageListener(wbot);
+      wbotMonitor(wbot, whatsapp);
+    }
+    if (whatsapp.type === "t") {
+      const tbot = await initTbot(whatsapp);
+      tbotMessageListener(tbot);
+    }
   } catch (err) {
     logger.error(`StartWhatsAppSession | Error: ${err}`);
+    throw new AppError("ERR_START_SESSION", 404);
   }
 };

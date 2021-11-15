@@ -1,4 +1,5 @@
 import { Telegraf } from "telegraf";
+import HandleMessageTelegram from "./HandleMessageTelegram";
 
 interface Session extends Telegraf {
   id?: number;
@@ -6,9 +7,9 @@ interface Session extends Telegraf {
 
 const tbotMessageListener = (tbot: Session): void => {
   tbot.on("message", async ctx => {
-    console.log("message telegram", ctx);
+    HandleMessageTelegram(ctx, tbot);
   });
-  tbot.launch();
+  // tbot.launch();
 };
 
 export { tbotMessageListener };

@@ -7,6 +7,7 @@ import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSess
 import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppService";
 import { setValue } from "../libs/redisClient";
 import { logger } from "../utils/logger";
+import AppError from "../errors/AppError";
 
 const store = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
@@ -32,7 +33,6 @@ const update = async (req: Request, res: Response): Promise<Response> => {
   console.log("pathSession StartWhatsAppSession", pathSession);
   await rmdir(pathSession, { recursive: true });
   StartWhatsAppSession(whatsapp);
-
   return res.status(200).json({ message: "Starting session." });
 };
 

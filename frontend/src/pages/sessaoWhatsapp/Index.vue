@@ -1,6 +1,195 @@
 <template>
   <div>
-    <q-table
+    <div class="row col full-width q-pa-lg">
+      <q-card
+        flat
+        bordered
+        class="full-width"
+      >
+        <q-card-section class="text-h6 text-bold">
+          Canais de Comunicação
+          <q-separator />
+        </q-card-section>
+      </q-card>
+    </div>
+    <div class="row full-width q-py-lg q-px-sm q-gutter-x-md">
+      <template v-for="item in whatsapps">
+        <q-card
+          flat
+          bordered
+          class="col-xs-12 col-md-4"
+          :key="item.id"
+        >
+          <q-item>
+            <q-item-section avatar>
+              <q-avatar>
+                <q-icon
+                  size="40px"
+                  name="img:whatsapp-logo.png"
+                />
+              </q-avatar>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-h6 text-bold">Nome: {{ item.name }}</q-item-label>
+              <q-item-label class="text-h6 text-caption">
+                {{ item.type }}
+              </q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                round
+                flat
+                dense
+                icon="edit"
+                @click="handleOpenModalWhatsapp(item)"
+                v-if="isAdmin"
+              />
+              <!-- <q-btn
+            round
+            flat
+            dense
+            icon="delete"
+            @click="deleteWhatsapp(props.row)"
+            v-if="$store.getters['isSuporte']"
+          /> -->
+              <!-- <q-btn
+            class="q-ml-sm"
+            color="black"
+            icon="person_search"
+            round
+            flat
+            dense
+            @click="sincronizarContatos(props.row)"
+          >
+            <q-tooltip>
+              Sincronizar contatos
+            </q-tooltip>
+
+          </q-btn> -->
+            </q-item-section>
+          </q-item>
+          <q-separator />
+          <q-card-section>
+            <q-item>
+              <q-item-section avatar>
+                <q-icon
+                  v-if="item.status == 'qrcode'"
+                  color="primary"
+                  name="mdi-crop-free"
+                  size="2.5em"
+                />
+                <q-icon
+                  v-if="item.status == 'DESTROYED'"
+                  color="primary"
+                  name="mdi-qrcode-scan"
+                  size="2.5em"
+                />
+                <q-icon
+                  v-if="item.status == 'DISCONNECTED'"
+                  color="negative"
+                  size="2.5em"
+                  name="mdi-wifi-alert"
+                />
+                <q-icon
+                  name="mdi-wifi-arrow-up-down"
+                  color="green-8"
+                  size="2.5em"
+                  v-if="item.status == 'CONNECTED'"
+                />
+                <q-icon
+                  v-if="['PAIRING', 'TIMEOUT'].includes(item.status)"
+                  color="negative"
+                  size="2.5em"
+                  name="mdi-wifi-strength-1-alert"
+                />
+                <q-spinner
+                  v-if="item.status == 'OPENING'"
+                  color="green-7"
+                  size="3em"
+                  :thickness="2"
+                />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ item.status }}</q-item-label>
+                <q-item-label v-if="item.status == 'qrcode'">
+                  <span class="text-weight-medium"> Esperando leitura do QR Code </span>
+                  <span class="row col"> Clique no botão 'QR CODE' e leia o QR Code com o seu celular para iniciar a sessão </span>
+                </q-item-label>
+                <q-item-label v-if="item.status == 'DESTROYED'">
+                  <span class="text-weight-medium"> Esperando leitura do QR Code </span>
+                  <span class="row col"> Clique no botão 'QR CODE' e leia o QR Code com o seu celular para iniciar a sessão </span>
+                </q-item-label>
+                <q-item-label v-if="item.status == 'DISCONNECTED'">
+                  <span class="text-weight-medium"> Falha ao iniciar sessão do WhatsApp </span>
+                  <span class="row col"> Certifique-se de que seu celular esteja conectado à internet e tente novamente, ou solicite um novo QR Code </span>
+                </q-item-label>
+                <q-item-label v-if="item.status == 'CONNECTED'">
+                  <span class="text-weight-medium"> Conexão estabelecida! </span>
+                </q-item-label>
+                <q-item-label v-if="['PAIRING', 'TIMEOUT'].includes(item.status)">
+                  <span class="text-weight-medium"> A conexão com o celular foi perdida </span>
+                  <span class="row col"> Certifique-se de que seu celular esteja conectado à internet e o WhatsApp esteja aberto, ou clique no botão 'Desconectar' para obter um novo QR Code </span>
+                </q-item-label>
+                <q-item-label v-if="item.status == 'OPENING'">
+                  <span class="text-weight-medium"> Estabelecendo conexão. </span>
+                  <span class="row col"> Isso poderá demorar um pouco... </span>
+                </q-item-label>
+                <q-item-label caption>
+                  Última Atualização: {{ formatarData(item.updatedAt, 'dd/MM/yyyy HH:mm') }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-card-section>
+          <q-separator />
+          <q-card-actions
+            class="q-pa-md q-pt-none"
+            align="center"
+          >
+            <!-- <q-btn
+              v-if="props.value == 'qrcode'"
+              color="primary"
+              label="QR CODE"
+              @click="props.row.status === 'qrcode' ? handleOpenQrModal(props.row.id) : handleRequestNewQrCode(props.row.id) "
+            /> -->
+            <q-btn
+              v-if="item.status == 'DESTROYED' || item.status == 'qrcode'"
+              color="blue-5"
+              label="Novo QR Code"
+              @click="handleRequestNewQrCode(item)"
+              icon-right="watch_later"
+              :disable="!isAdmin"
+            />
+            <q-btn-group
+              v-if="item.status == 'DISCONNECTED'"
+              outline
+            >
+              <q-btn
+                outline
+                color="black"
+                label="Tentar novamente"
+                @click="handleStartWhatsAppSession(item.id)"
+              />
+            </q-btn-group>
+            <q-btn
+              v-if="['CONNECTED', 'PAIRING', 'TIMEOUT', 'OPENING'].includes(item.status)"
+              color="negative"
+              label="Desconectar"
+              outline
+              @click="handleDisconectWhatsSession(item.id)"
+              :disable="!isAdmin"
+            />
+            <q-btn
+              v-if="item.status == 'OPENING'"
+              disable
+              :loading="true"
+              color="grey"
+              label="Conectando"
+            />
+          </q-card-actions>
+        </q-card>
+      </template>
+    </div>
+    <!-- <q-table
       title="Conexões"
       bordered
       :data="whatsapps"
@@ -85,12 +274,6 @@
       </template>
       <template v-slot:body-cell-session="props">
         <q-td :props="props">
-          <!-- <q-btn
-            v-if="props.value == 'qrcode'"
-            color="primary"
-            label="QR CODE"
-            @click="props.row.status === 'qrcode' ? handleOpenQrModal(props.row.id) : handleRequestNewQrCode(props.row.id) "
-          /> -->
           <q-btn
             v-if="props.value == 'DESTROYED' || props.value == 'qrcode'"
             color="blue-5"
@@ -153,32 +336,9 @@
             @click="handleOpenModalWhatsapp(props.row)"
             v-if="isAdmin"
           />
-          <!-- <q-btn
-            round
-            flat
-            dense
-            icon="delete"
-            @click="deleteWhatsapp(props.row)"
-            v-if="$store.getters['isSuporte']"
-          /> -->
-          <!-- <q-btn
-            class="q-ml-sm"
-            color="black"
-            icon="person_search"
-            round
-            flat
-            dense
-            @click="sincronizarContatos(props.row)"
-          >
-            <q-tooltip>
-              Sincronizar contatos
-            </q-tooltip>
-
-          </q-btn> -->
-
         </q-td>
       </template>
-    </q-table>
+    </q-table> -->
     <ModalQrCode
       :abrirModalQR.sync="abrirModalQR"
       :whatsAppId="whatsAppId"
@@ -221,6 +381,9 @@ export default {
       modalWhatsapp: false,
       whatsappSelecionado: {},
       whatsAppId: null,
+      objStatus: {
+        qrcode: ''
+      },
       columns: [
         {
           name: 'name',
@@ -318,12 +481,15 @@ export default {
         console.error(error)
       }
     },
-    async handleRequestNewQrCode (whatsAppId) {
+    async handleRequestNewQrCode (whatsapp) {
+      if (whatsapp.type === 't' && !whatsapp.tokenTelegram) {
+        this.$notificarErro('Necessário informar o token para Telegram')
+      }
       this.loading = true
       try {
-        await RequestNewQrCode(whatsAppId)
+        await RequestNewQrCode(whatsapp.id)
         setTimeout(() => {
-          this.handleOpenQrModal(whatsAppId)
+          this.handleOpenQrModal(whatsapp.id)
         }, 3000)
       } catch (error) {
         console.error(error)

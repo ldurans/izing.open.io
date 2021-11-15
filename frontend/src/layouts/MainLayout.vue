@@ -197,8 +197,8 @@ const objMenu = [
     routeName: 'painel-atendimentos'
   },
   {
-    title: 'Sessões',
-    caption: 'Sessões Whatsapp',
+    title: 'Canais',
+    caption: 'Canais de Comunicação',
     icon: 'mdi-cellphone-wireless',
     routeName: 'sessoes'
   },

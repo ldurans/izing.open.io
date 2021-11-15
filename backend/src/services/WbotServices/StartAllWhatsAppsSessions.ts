@@ -1,5 +1,6 @@
 import { Op } from "sequelize";
 import Whatsapp from "../../models/Whatsapp";
+import { StartTbotSession } from "../TbotServices/StartTbotSession";
 import { StartWhatsAppSession } from "./StartWhatsAppSession";
 // import { StartTbotSession } from "../TbotServices/StartTbotSession";
 
@@ -13,7 +14,9 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
     }
   });
   const whatsappSessions = whatsapps.filter(w => w.type === "w");
-  // const telegramSessions = whatsapps.filter(w => w.type === "t");
+  const telegramSessions = whatsapps.filter(
+    w => w.type === "t" && !!w.tokenTelegram
+  );
 
   if (whatsappSessions.length > 0) {
     whatsappSessions.forEach(whatsapp => {
@@ -21,9 +24,9 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
     });
   }
 
-  // if (telegramSessions.length > 0) {
-  //   telegramSessions.forEach(whatsapp => {
-  //     StartTbotSession(whatsapp);
-  //   });
-  // }
+  if (telegramSessions.length > 0) {
+    telegramSessions.forEach(whatsapp => {
+      StartTbotSession(whatsapp);
+    });
+  }
 };

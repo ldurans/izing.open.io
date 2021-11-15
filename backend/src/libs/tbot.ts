@@ -16,8 +16,7 @@ export const initTbot = async (connection: Whatsapp): Promise<Session> => {
       const io = getIO();
       const sessionName = connection.name;
       const { tenantId } = connection;
-      const tbot: Session = new Telegraf(connection.tokenTelegram);
-
+      const tbot: Session = new Telegraf(connection.tokenTelegram, {});
       const sessionIndex = sessions.findIndex(s => s.id === connection.id);
       if (sessionIndex === -1) {
         tbot.id = connection.id;
@@ -26,11 +25,11 @@ export const initTbot = async (connection: Whatsapp): Promise<Session> => {
         tbot.id = connection.id;
         sessions[sessionIndex] = tbot;
       }
+      tbot.launch();
       connection.update({
         status: "CONNECTED",
         qrcode: "",
-        retries: 0,
-        session: tbot
+        retries: 0
       });
 
       io.emit(`${tenantId}-whatsappSession`, {
@@ -39,6 +38,9 @@ export const initTbot = async (connection: Whatsapp): Promise<Session> => {
       });
 
       logger.info(`Session TELEGRAM: ${sessionName} - READY `);
+      // Enable graceful stop
+      process.once("SIGINT", () => tbot.stop("SIGINT"));
+      process.once("SIGTERM", () => tbot.stop("SIGTERM"));
       resolve(tbot);
     } catch (error) {
       logger.error(`initWbot error | Error: ${error}`);
