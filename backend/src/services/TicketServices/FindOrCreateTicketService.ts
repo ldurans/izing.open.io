@@ -16,7 +16,7 @@ interface Data {
   unreadMessages: number;
   tenantId: number | string;
   groupContact?: Contact;
-  msg?: Message;
+  msg?: Message | any;
   isSync?: boolean;
 }
 
@@ -32,7 +32,7 @@ const FindOrCreateTicketService = async ({
   // se for uma mensagem de campanha, não abrir tícket
   if (msg && msg.fromMe) {
     const msgCampaign = await CampaignContacts.findOne({
-      where: { contactId: contact.id, messageId: msg.id.id }
+      where: { contactId: contact.id, messageId: msg.id.id || msg.message_id }
     });
     if (msgCampaign?.id) {
       return { isCampaignMessage: true };

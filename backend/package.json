@@ -100,6 +100,7 @@
     "supertest": "^5.0.0",
     "ts-jest": "^26.4.1",
     "ts-node-dev": "^1.0.0-pre.63",
+    "typegram": "^3.5.1",
     "typescript": "4.0.3"
   }
 }
