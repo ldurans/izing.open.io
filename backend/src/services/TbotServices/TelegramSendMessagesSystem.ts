@@ -3,6 +3,7 @@ import { join } from "path";
 import { Op } from "sequelize";
 import { Telegraf } from "telegraf";
 import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
+import socketEmit from "../../helpers/socketEmit";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
@@ -56,34 +57,44 @@ const SendMessagesSystemWbot = async (
   // );
 
   await Promise.all(
-    messages.map(async message => {
+    messages.map(async (message: Message | any) => {
       // let quotedMsgSerializedId: string | undefined;
       const { ticket } = message;
       const chatId = ticket.contact.telegramId;
-      console.log(tbot);
       // if (message.quotedMsg) {
       //   quotedMsgSerializedId = `${message.quotedMsg.fromMe}_${contactNumber}@${typeGroup}.us_${message.quotedMsg.messageId}`;
       // }
 
       try {
-        if (message.mediaType !== "chat" && message.mediaName) {
+        if (
+          !["chat", "text"].includes(message.mediaType) &&
+          message.mediaName
+        ) {
           const customPath = join(__dirname, "..", "..", "..", "public");
           const mediaPath = join(customPath, message.mediaName);
-          // const newMedia = tbot.telegram.send MessageMedia.fromFilePath(mediaPath);
-          // sendedMessage = await wbot.sendMessage(chatId, newMedia, {
-          //   quotedMessageId: quotedMsgSerializedId,
-          //   linkPreview: false, // fix: send a message takes 2 seconds when there's a link on message body
-          //   sendAudioAsVoice: true
-          // });
-          console.log("Media", newMedia);
-          console.log("chatId", chatId);
+          if (message.mediaType === "audio" || message.mediaType === "ptt") {
+            sendedMessage = await tbot.telegram.sendVoice(chatId, {
+              source: mediaPath
+            });
+          } else if (message.mediaType === "image") {
+            sendedMessage = await tbot.telegram.sendPhoto(chatId, {
+              source: mediaPath
+            });
+          } else if (message.mediaType === "video") {
+            sendedMessage = await tbot.telegram.sendVideo(chatId, {
+              source: mediaPath
+            });
+          } else {
+            sendedMessage = await tbot.telegram.sendDocument(chatId, {
+              source: mediaPath
+            });
+          }
+
           logger.info("sendMessage media");
         } else {
           sendedMessage = await tbot.telegram.sendMessage(chatId, message.body);
           logger.info("sendMessage text");
         }
-
-        console.log("sendedMessage", sendedMessage);
 
         // enviar old_id para substituir no front a mensagem corretamente
         const messageToUpdate = {
@@ -92,13 +103,27 @@ const SendMessagesSystemWbot = async (
           id: message.id,
           timestamp: sendedMessage.date,
           messageId: sendedMessage.message_id,
-          status: "sended"
+          status: "sended",
+          ack: 2
         };
 
         await Message.update(
           { ...messageToUpdate },
           { where: { id: message.id } }
         );
+
+        socketEmit({
+          tenantId: ticket.tenantId,
+          type: "chat:ack",
+          payload: {
+            ...message.dataValues, // necessário para enviar error no envio do socket - call size
+            id: message.id,
+            timestamp: sendedMessage.date,
+            messageId: sendedMessage.message_id,
+            status: "sended",
+            ack: 2
+          }
+        });
 
         logger.info("Message Update ok");
         await SetTicketMessagesAsRead(ticket);
@@ -116,9 +141,7 @@ const SendMessagesSystemWbot = async (
         logger.error(
           `Error message is (tenant: ${tenantId} | Ticket: ${ticketId})`
         );
-        logger.error(
-          `Error send message (id: ${idMessage})::${JSON.stringify(error)}`
-        );
+        logger.error(`Error send message (id: ${idMessage}):: ${error}`);
       }
     })
   );
