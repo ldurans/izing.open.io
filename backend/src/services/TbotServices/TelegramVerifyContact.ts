@@ -44,7 +44,9 @@ const VerifyContact = async (
     pushname: chatInfo.username || "",
     isUser: true,
     isWAContact: false,
-    isGroup: false
+    isGroup: false,
+    origem: "telegram",
+    telegramId: chatInfo.id
   };
 
   const contact = await CreateOrUpdateContactService(contactData);

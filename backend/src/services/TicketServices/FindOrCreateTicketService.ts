@@ -18,6 +18,7 @@ interface Data {
   groupContact?: Contact;
   msg?: Message | any;
   isSync?: boolean;
+  channel: string;
 }
 
 const FindOrCreateTicketService = async ({
@@ -27,7 +28,8 @@ const FindOrCreateTicketService = async ({
   tenantId,
   groupContact,
   msg,
-  isSync
+  isSync,
+  channel
 }: Data): Promise<Ticket | any> => {
   // se for uma mensagem de campanha, não abrir tícket
   if (msg && msg.fromMe) {
@@ -69,6 +71,10 @@ const FindOrCreateTicketService = async ({
   });
 
   if (ticket) {
+    unreadMessages =
+      channel === "telegram" && unreadMessages > 0
+        ? (unreadMessages += ticket.unreadMessages)
+        : unreadMessages;
     await ticket.update({ unreadMessages });
     socketEmit({
       tenantId,
@@ -179,7 +185,8 @@ const FindOrCreateTicketService = async ({
     isGroup: !!groupContact,
     unreadMessages,
     whatsappId,
-    tenantId
+    tenantId,
+    channel
   });
 
   await CreateLogTicketService({

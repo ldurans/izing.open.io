@@ -76,7 +76,8 @@ const HandleMessage = async (
           unreadMessages,
           tenantId,
           groupContact,
-          msg
+          msg,
+          channel: "whatsapp"
         });
 
         if (ticket?.isCampaignMessage) {

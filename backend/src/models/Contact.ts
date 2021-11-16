@@ -53,6 +53,11 @@ class Contact extends Model<Contact> {
   @Column
   pushname: string;
 
+  @AllowNull(true)
+  @Default(null)
+  @Column
+  telegramId: string;
+
   @Default(false)
   @Column
   isUser: boolean;

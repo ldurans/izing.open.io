@@ -19,7 +19,7 @@ const getMediaInfo = (msg: any) => {
   const mediaType = msg.photo ? "photo" : msg.video ? "video" : msg.audio ? "audio" : msg.voice ? "voice" : msg.sticker && !msg.sticker.is_animated ? "sticker" : "document";
   const mediaObj = msg[mediaType];
   // eslint-disable-next-line prettier/prettier
-  const [type, mimeType, SAD, fileName, fileId, caption, SAV] = [mediaType, mediaObj.mime_type ? mediaObj.mime_type : "", false, null, mediaObj.file_id ? mediaObj.file_id : mediaObj[0].file_id, msg.caption ? msg.caption : "", mediaType == "voice"];
+  const [type, mimeType, SAD, fileName, fileId, caption, SAV] = [mediaType, mediaObj.mime_type ? mediaObj.mime_type : "", false, null, mediaObj.file_id ? mediaObj.file_id : mediaObj[mediaObj.length - 1].file_id, msg.caption ? msg.caption : "", mediaType == "voice"];
   switch (mediaType) {
     case "photo":
       return {
@@ -67,13 +67,22 @@ const getMediaInfo = (msg: any) => {
   }
 };
 
-const downloadFile = async (url: any, pathFile: string) => {
-  const response = await axios({ url: url.toString(), responseType: "stream" });
-  const writer = createWriteStream(pathFile);
-  response.data.pipe(writer);
-  return new Promise((resolve, reject) => {
-    writer.on("finish", resolve);
-    writer.on("error", reject);
+const downloadFile = async (url: any, pathFile: string): Promise<void> => {
+  const request = await axios({
+    url: url.toString(),
+    method: "GET",
+    responseType: "stream"
+  });
+  // const writer = createWriteStream(pathFile);
+  await new Promise((resolve, reject) => {
+    request.data
+      .pipe(createWriteStream(pathFile))
+      .on("finish", async () => resolve(true))
+      .on("error", (error: any) => {
+        console.error("ERROR DONWLOAD", error);
+        // fs.rmdirSync(mediaDir, { recursive: true });
+        reject(new Error(error));
+      });
   });
 };
 
@@ -93,7 +102,7 @@ const VerifyMediaMessage = async (
 
   const ext = mediaInfo.mimeType.split("/")[1].split(";")[0];
   const filename = `${media.file_id}_${new Date().getTime()}.${ext}`;
-  const pathFile = join(__dirname, "..", "..", "..", "..", "public", filename);
+  const pathFile = join(__dirname, "..", "..", "..", "public", filename);
 
   const linkDownload = await ctx.telegram.getFileLink(mediaInfo.fileId);
   await downloadFile(linkDownload, pathFile);

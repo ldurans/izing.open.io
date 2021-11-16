@@ -4,7 +4,6 @@ import { wbotMessageListener } from "./wbotMessageListener";
 import { getIO } from "../../libs/socket";
 import wbotMonitor from "./wbotMonitor";
 import { logger } from "../../utils/logger";
-import { StartTbotSession } from "../TbotServices/StartTbotSession";
 import AppError from "../../errors/AppError";
 import { initTbot } from "../../libs/tbot";
 import { tbotMessageListener } from "../TbotServices/tbotMessageListener";
@@ -21,12 +20,12 @@ export const StartWhatsAppSession = async (
   });
 
   try {
-    if (whatsapp.type === "w") {
+    if (whatsapp.type === "whatsapp") {
       const wbot = await initWbot(whatsapp);
       wbotMessageListener(wbot);
       wbotMonitor(wbot, whatsapp);
     }
-    if (whatsapp.type === "t") {
+    if (whatsapp.type === "telegram") {
       const tbot = await initTbot(whatsapp);
       tbotMessageListener(tbot);
     }
