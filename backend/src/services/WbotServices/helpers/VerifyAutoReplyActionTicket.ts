@@ -11,7 +11,7 @@ import CreateLogTicketService from "../../TicketServices/CreateLogTicketService"
 // import SendWhatsAppMessage from "../SendWhatsAppMessage";
 
 const verifyAutoReplyActionTicket = async (
-  msg: WbotMessage,
+  msg: WbotMessage | any,
   ticket: Ticket
 ): Promise<void> => {
   const celularContato = ticket.contact.number;
@@ -59,7 +59,10 @@ const verifyAutoReplyActionTicket = async (
               celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
             !celularContato
           ) {
-            return;
+            if (ticket.channel !== "telegram") {
+              return;
+            }
+            // return;
           }
 
           const messageData = {
@@ -139,14 +142,16 @@ const verifyAutoReplyActionTicket = async (
             celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
           !celularContato
         ) {
-          return;
+          if (ticket.channel !== "telegram") {
+            return;
+          }
+          // return;
         }
 
         // se ticket tiver sido criado, ingnorar na primeria passagem
         if (!ticket.isCreated) {
           const messageData = {
-            body:
-              "Desculpe! Não entendi sua resposta. Vamos tentar novamente! Escolha uma opção válida.",
+            body: "Desculpe! Não entendi sua resposta. Vamos tentar novamente! Escolha uma opção válida.",
             fromMe: true,
             read: true,
             sendType: "bot"

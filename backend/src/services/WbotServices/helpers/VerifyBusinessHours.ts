@@ -10,7 +10,7 @@ import CreateMessageSystemService from "../../MessageServices/CreateMessageSyste
 // import { sleepRandomTime } from "../../../utils/sleepRandomTime";
 
 const verifyBusinessHours = async (
-  msg: WbotMessage,
+  msg: WbotMessage | any,
   ticket: Ticket
 ): Promise<void> => {
   // Considerar o envio da mensagem de ausência se:

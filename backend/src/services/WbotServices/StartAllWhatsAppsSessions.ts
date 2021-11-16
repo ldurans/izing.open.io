@@ -13,9 +13,9 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
       }
     }
   });
-  const whatsappSessions = whatsapps.filter(w => w.type === "w");
+  const whatsappSessions = whatsapps.filter(w => w.type === "whatsapp");
   const telegramSessions = whatsapps.filter(
-    w => w.type === "t" && !!w.tokenTelegram
+    w => w.type === "telegram" && !!w.tokenTelegram
   );
 
   if (whatsappSessions.length > 0) {

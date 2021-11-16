@@ -34,7 +34,8 @@ const SyncUnreadMessagesWbot = async (
           whatsappId: wbot.id!,
           unreadMessages: chat.unreadCount,
           tenantId,
-          isSync: true
+          isSync: true,
+          channel: "whatsapp"
         });
 
         if (ticket?.isCampaignMessage) {

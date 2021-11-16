@@ -41,6 +41,9 @@ class Ticket extends Model<Ticket> {
   @Column
   lastMessage: string;
 
+  @Column
+  channel: string;
+
   @Default(true)
   @Column
   answered: boolean;

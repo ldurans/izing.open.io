@@ -68,8 +68,8 @@ class Whatsapp extends Model<Whatsapp> {
   @Column
   tokenTelegram: string;
 
-  @Default("w")
-  @Column(DataType.ENUM("w", "t"))
+  @Default("whatsapp")
+  @Column(DataType.ENUM("whatsapp", "telegram"))
   type: string;
 
   @CreatedAt

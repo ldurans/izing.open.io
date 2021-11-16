@@ -115,9 +115,7 @@ const SendMessagesSystemWbot = async (
         logger.error(
           `Error message is (tenant: ${tenantId} | Ticket: ${ticketId})`
         );
-        logger.error(
-          `Error send message (id: ${idMessage})::${JSON.stringify(error)}`
-        );
+        logger.error(`Error send message (id: ${idMessage})::${error}`);
       }
     })
   );
