@@ -4,3 +4,5 @@
 /src-cordova
 /.quasar
 /node_modules
+
+# /src/components/ccFlowBuilder/jsplumb.js
