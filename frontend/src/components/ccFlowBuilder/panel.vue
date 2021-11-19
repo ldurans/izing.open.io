@@ -84,13 +84,13 @@
       color="text-grey-3"
       spaced
     />
-    <div style="display: flex;height: calc(100% - 47px);">
-      <div style="width: 230px;border-right: 1px solid #dce3e8;">
+    <div style="display: flex; height: calc(100% - 80px);">
+      <!-- <div style="width: 230px;border-right: 1px solid #dce3e8;">
         <node-menu
           @addNode="addNode"
           ref="nodeMenu"
         ></node-menu>
-      </div>
+      </div> -->
       <div
         id="efContainer"
         ref="efContainer"
@@ -113,11 +113,14 @@
         <div style="position:absolute;top: 2000px;left: 2000px;">&nbsp;</div>
       </div>
       <!-- Configuração node -->
-      <div style="width: 300px;border-left: 1px solid #dce3e8;">
+      <div style="width: 500px; border-left: 1px solid #dce3e8;">
         <flow-node-form
           ref="nodeForm"
           @setLineLabel="setLineLabel"
           @repaintEverything="repaintEverything"
+          :filas="filas"
+          :usuarios="usuarios"
+          :nodesList="data"
         >
         </flow-node-form>
       </div>
@@ -182,6 +185,16 @@ export default {
       zoom: 0.5
     }
   },
+  props: {
+    filas: {
+      type: Array,
+      default: () => []
+    },
+    usuarios: {
+      type: Array,
+      default: () => []
+    }
+  },
   // 一些基础配置移动该文件中
   mixins: [easyFlowMixin],
   components: {
@@ -230,7 +243,7 @@ export default {
     this.jsPlumb = jsPlumb.getInstance()
     this.$nextTick(() => {
       // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
-      this.dataReload(getDataB())
+      this.dataReload(getDataA())
     })
   },
   methods: {
@@ -263,7 +276,8 @@ export default {
           const to = evt.target.id
           if (this.loadEasyFlowFinish) {
             this.data.lineList.push({ from: from, to: to, label: 'Valor' })
-            const label = 'Chave'
+            // const label = 'Chave'
+            const label = null
             this.$refs.nodeForm.lineInit({
               from,
               to,
@@ -402,6 +416,10 @@ export default {
       conn.setLabel({
         label: label
       })
+
+      conn.setPaintStyle({ strokeWidth: 3, stroke: '#8db1dd' })
+
+      console.log(conn)
       this.data.lineList.forEach(function (line) {
         if (line.from == from && line.to == to) {
           line.label = label
@@ -460,11 +478,11 @@ export default {
       }
     },
     /**
-     * 拖拽结束后添加新的节点
-     * @param evt
-     * @param nodeMenu 被添加的节点对象
-     * @param mousePosition 鼠标拖拽结束的坐标
-     */
+   * 拖拽结束后添加新的节点
+   * @param evt
+   * @param nodeMenu 被添加的节点对象
+   * @param mousePosition 鼠标拖拽结束的坐标
+   */
     addNode (evt, nodeMenu, mousePosition) {
       var screenX = evt.originalEvent.clientX, screenY = evt.originalEvent.clientY
       const efContainer = this.$refs.efContainer
@@ -510,8 +528,8 @@ export default {
         state: 'success'
       }
       /**
-                 * 这里可以进行业务判断、是否能够添加该节点
-                 */
+               * 这里可以进行业务判断、是否能够添加该节点
+               */
       this.data.nodeList.push(node)
       this.$nextTick(function () {
         this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions)
@@ -526,9 +544,9 @@ export default {
       })
     },
     /**
-             * 删除节点
-             * @param nodeId 被删除节点的ID
-             */
+           * 删除节点
+           * @param nodeId 被删除节点的ID
+           */
     deleteNode (nodeId) {
       this.$q.dialog({
         title: 'Atenção!!',

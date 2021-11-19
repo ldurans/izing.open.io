@@ -1,5 +1,15 @@
 <template>
-  <div class="q-pa-md">
+  <div class="q-px-md q-py-sm">
+    <div class="row col q-mb-sm">
+      <q-btn
+        class="bg-padrao"
+        flat
+        color="primary"
+        icon="mdi-plus"
+        label="Nova Etapa"
+        @click="addNode"
+      />
+    </div>
     <q-card class="fit">
       <div class="ef-node-form-header">
         Configuração Fluxo
@@ -48,10 +58,10 @@
               name="interacoes"
             >
               <div
-                class="text-center q-pa-sm "
+                class="text-center "
                 v-show="type === 'node'"
               >
-                <div class="row col justify-center">
+                <div class="row q-mt-md col justify-center">
                   <q-btn
                     flat
                     icon="mdi-message-text-outline"
@@ -106,19 +116,15 @@
                       v-bind="element"
                     >
                       <div class="q-my-sm">
-                        <div class="full-width text-left">
+                        <div class="bg-white full-width row col justify-between ">
                           <q-btn
                             round
                             dense
                             disable
                             color="black"
                             :label="idx + 1"
-                            style="margin-bottom: -25px; z-index: 999"
-                            @click="removeItem(element)"
+                            style="z-index: 999; margin-bottom: -10px"
                           />
-                          <q-separator style="margin-bottom: -10px;" />
-                        </div>
-                        <div class="full-width text-right">
                           <q-btn
                             round
                             dense
@@ -126,7 +132,7 @@
                             flat
                             color="negative"
                             class="bg-padrao"
-                            style="margin-bottom: -10\px; z-index: 999"
+                            style="z-index: 999; margin-bottom: -10px"
                             @click="removeItem(element)"
                           />
                         </div>
@@ -162,9 +168,144 @@
                 />
               </div>
             </q-tab-panel>
-            <q-tab-panel name="condicoes">
-              <div class="text-h6">Alarms</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <q-tab-panel
+              class="q-pa-none"
+              name="condicoes"
+            >
+              <div v-show="type === 'node'">
+                <div class="row q-mt-md col justify-end">
+                  <q-btn
+                    flat
+                    icon="mdi-vector-polyline-plus"
+                    class="bg-padrao btn-rounded q-mx-xs"
+                    :color="$q.dark.isActive ? 'white' : ''"
+                    @click="addCondiction"
+                  >
+                    <q-tooltip content-class="text-bold">
+                      Nova condição
+                    </q-tooltip>
+                  </q-btn>
+                </div>
+
+                <div
+                  style="height: calc(100vh - 500px)"
+                  class="row bg-grey-2 q-pa-sm scroll q-mt-md col justify-start"
+                >
+                  <template v-for="(item, idx) in node.conditions">
+                    <q-card
+                      :key="item.id"
+                      class="full-width q-my-sm"
+                      style="height: 300px;"
+                    >
+                      <div class="full-width row col justify-between text-left q-pa-xs">
+                        <q-btn
+                          round
+                          dense
+                          disable
+                          color="black"
+                          :label="idx + 1"
+                        />
+                        <q-btn
+                          round
+                          dense
+                          icon="mdi-close"
+                          flat
+                          color="negative"
+                          class="bg-padrao"
+                          style="z-index: 999"
+                          @click="removeItem(element)"
+                        />
+                      </div>
+                      <q-card-section class="q-pa-sm q-gutter-sm">
+                        <q-select
+                          outlined
+                          dense
+                          v-model="item.type"
+                          :options="optionsSe"
+                          label="Se"
+                        />
+
+                        <q-select
+                          dense
+                          label="Respostas"
+                          outlined
+                          v-model="item.condition"
+                          use-input
+                          use-chips
+                          multiple
+                          hide-dropdown-icon
+                          input-debounce="0"
+                          new-value-mode="add-unique"
+                        />
+                      </q-card-section>
+                      <q-separator
+                        inset
+                        spaced
+                      />
+                      <q-card-section class="q-pa-sm">
+                        <div class="text-bold q-px-sm"> Rotear para: </div>
+                        <q-option-group
+                          class="text-center"
+                          inline
+                          v-model="item.action"
+                          :options="optionsAcao"
+                          color="primary"
+                        />
+                        <div class="row q-mt-sm">
+                          <div class="col">
+                            <q-select
+                              v-if="item.action === 0"
+                              dense
+                              outlined
+                              class="full-width"
+                              v-model="item.nextStepId"
+                              :options="nodesList.nodeList"
+                              option-label="name"
+                              option-value="id"
+                              label="Etapa"
+                              map-options
+                              emit-value
+                              clearable
+                              @input="item.queueId = null; item.userIdDestination = null"
+                            />
+                            <q-select
+                              v-if="item.action === 1"
+                              dense
+                              outlined
+                              class="full-width"
+                              v-model="item.queueId"
+                              :options="filas"
+                              option-label="queue"
+                              option-value="id"
+                              label="Fila"
+                              map-options
+                              emit-value
+                              clearable
+                              @input="item.nextStepId = null; item.userIdDestination = null"
+                            />
+                            <q-select
+                              v-if="item.action === 2"
+                              dense
+                              outlined
+                              class="full-width"
+                              v-model="item.userIdDestination"
+                              :options="usuarios"
+                              option-label="name"
+                              option-value="id"
+                              label="Usuário"
+                              map-options
+                              emit-value
+                              clearable
+                              @input="item.nextStepId = null; item.queueId = null"
+                            />
+                          </div>
+                        </div>
+                      </q-card-section>
+                    </q-card>
+                  </template>
+
+                </div>
+              </div>
             </q-tab-panel>
             <q-tab-panel name="acoes">
               <div class="text-h6">Movies</div>
@@ -201,13 +342,27 @@
 
 <script>
 import { uid } from 'quasar'
-import { cloneDeep } from 'lodash'
-import Message from './message'
+// import { cloneDeep } from 'lodash'
+import MessageField from './messageField'
 import ImageField from './imageField'
 export default {
   components: {
-    Message,
+    MessageField,
     ImageField
+  },
+  props: {
+    nodesList: {
+      type: Object,
+      default: () => { }
+    },
+    filas: {
+      type: Array,
+      default: () => []
+    },
+    usuarios: {
+      type: Array,
+      default: () => []
+    }
   },
   data () {
     return {
@@ -216,13 +371,22 @@ export default {
       elements: [],
       fields: [
         {
-          name: 'Message',
+          name: 'MessageField',
           data: ''
         },
         {
           name: 'ImageField',
           data: ''
         }
+      ],
+      optionsAcao: [
+        { value: 0, label: 'Etapa' },
+        { value: 1, label: 'Fila' },
+        { value: 2, label: 'Usuário' }
+      ],
+      optionsSe: [
+        { label: 'Qualquer resposta', value: 'us' },
+        { label: 'Respostas', value: 'r' }
       ],
       // node 或 line
       type: 'node',
@@ -249,10 +413,31 @@ export default {
       return uid()
     },
     addMessage () {
-      this.node.interactions.push({ name: 'Message', data: '', id: this.gerarUID() })
+      this.node.interactions.push({ name: 'MessageField', data: '', id: this.gerarUID() })
     },
     addImageField () {
       this.node.interactions.push({ name: 'ImageField', data: '', id: this.gerarUID() })
+    },
+    addCondiction () {
+      this.node.conditions.push({
+        type: '',
+        condiction: [],
+        id: this.gerarUID()
+      })
+    },
+    addNode(evt) {
+      const nodeMenu = {
+        id: 'nodeC',
+        name: 'Boas vindas!',
+        type: 'node',
+        left: '26px',
+        top: '201px',
+        interactions: [],
+        conditions: [],
+        actions: []
+        // ico: 'el-icon-present'
+      }
+      this.$emit('addNode', evt, {}, mousePosition)
     },
     removeItem (el) {
       const idx = this.node.interactions.findIndex(e => e.id === el.id)
@@ -268,7 +453,8 @@ export default {
       this.data = data
       data.nodeList.filter((node) => {
         if (node.id === id) {
-          this.node = cloneDeep(node)
+          // this.node = cloneDeep(node)
+          this.node = node
         }
       })
     },
@@ -290,6 +476,9 @@ export default {
           node.top = this.node.top
           node.ico = this.node.ico
           node.state = this.node.state
+          node.state = this.node.actions
+          node.state = this.node.conditions
+          node.state = this.node.interactions
           // node
           this.$emit('repaintEverything')
         }

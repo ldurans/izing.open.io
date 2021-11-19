@@ -1,34 +1,49 @@
 const dataA = {
-  name: '流程A',
+  name: 'Fluxo Inicial',
   nodeList: [
     {
-      id: 'nodeA',
-      name: '流程A-节点A',
-      type: 'task',
+      id: 'start',
+      name: 'Início',
+      type: 'start',
       left: '26px',
-      top: '161px',
-      ico: 'el-icon-user-solid'
+      top: '26px',
+      ico: 'mdi-play',
+      viewOnly: true,
+      status: 'success',
+      style: {
+        // background: 'black',
+        // height: '100px',
+        // width: '120px'
+      }
     },
     {
-      id: 'nodeB',
-      name: '流程A-节点B',
-      type: 'task',
+      id: 'exception',
+      name: 'Exceções',
+      type: 'exception',
       left: '340px',
-      top: '161px',
-      ico: 'el-icon-goods'
+      top: '26px',
+      ico: 'mdi-alert-circle-outline'
     },
     {
       id: 'nodeC',
-      name: '流程A-节点C',
-      type: 'task',
-      left: '739px',
-      top: '161px',
-      ico: 'el-icon-present'
+      name: 'Boas vindas!',
+      type: 'node',
+      left: '26px',
+      top: '201px',
+      interactions: [],
+      conditions: [],
+      actions: []
+      // ico: 'el-icon-present'
     }
   ],
   lineList: [{
-    from: 'nodeA',
-    to: 'nodeB'
+    from: 'start',
+    to: 'nodeC',
+    // connector: 'Bezier',
+    // connector: 'Straight',
+    // connector: 'Flowchart',
+    // anchors: ['Top', 'Bottom'],
+    paintStyle: { strokeWidth: 3, stroke: '#8db1dd' }
   }, {
     from: 'nodeB',
     to: 'nodeC'

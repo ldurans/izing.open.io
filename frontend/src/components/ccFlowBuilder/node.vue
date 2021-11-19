@@ -5,12 +5,14 @@
     @click="clickNode"
     @mouseup="changeNodeSite"
     :class="nodeContainerClass"
+    class="nodeStyle text-body1"
   >
     <!-- 最左侧的那条竖线 -->
     <div class="ef-node-left"></div>
     <!-- 节点类型的图标 -->
-    <div class="ef-node-left-ico flow-node-drag">
+    <div class="ef-node-left-ico flow-node-drag ">
       <q-icon
+        class="ef-node-left-ico"
         :name="node.ico"
         :class="nodeIcoClass"
       />
@@ -58,14 +60,15 @@ export default {
     nodeContainerClass () {
       return {
         'ef-node-container': true,
-        'ef-node-active': this.activeElement.type == 'node' ? this.activeElement.nodeId === this.node.id : false
+        'ef-node-active shadow-5 bg-blue-1': this.activeElement.type == 'node' ? this.activeElement.nodeId === this.node.id : false
       }
     },
     // 节点容器样式
     nodeContainerStyle () {
       return {
         top: this.node.top,
-        left: this.node.left
+        left: this.node.left,
+        ...this.node.style
       }
     },
     nodeIcoClass () {
@@ -96,3 +99,13 @@ export default {
   }
 }
 </script>
+
+<style>
+.nodeStyle {
+  height: 80px !important;
+  border-left: 5px solid #0288d1 !important;
+}
+.ef-node-active {
+  transform: scale(1.2);
+}
+</style>

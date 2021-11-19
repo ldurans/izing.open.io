@@ -118,10 +118,6 @@ export default {
     draggable
   },
   created () {
-    /**
-             * 以下是为了解决在火狐浏览器上推拽时弹出tab页到搜索问题
-             * @param event
-             */
     if (this.isFirefox()) {
       document.body.ondrop = function (event) {
         // 解决火狐浏览器无法获取鼠标拖拽结束的坐标问题

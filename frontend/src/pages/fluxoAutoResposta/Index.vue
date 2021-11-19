@@ -1,6 +1,9 @@
 <template>
   <div>
-    <ccFlow />
+    <ccFlow
+      :filas="filas"
+      :usuarios="usuarios"
+    />
     <template v-if="false">
 
       <div class="row">

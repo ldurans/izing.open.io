@@ -5,4 +5,4 @@
 /.quasar
 /node_modules
 
-# /src/components/ccFlowBuilder/jsplumb.js
+/src/components/ccFlowBuilder/jsplumb.js
