@@ -1,9 +1,14 @@
 <template>
   <div>
-    <ccFlow
-      :filas="filas"
-      :usuarios="usuarios"
-    />
+    <q-card class="q-ma-md">
+      <q-card-section class="q-pa-sm">
+        <ccFlow
+          :filas="filas"
+          :usuarios="usuarios"
+        />
+      </q-card-section>
+    </q-card>
+
     <template v-if="false">
 
       <div class="row">

@@ -6,7 +6,7 @@
       'flowHeightDefault': !isFullScreen
     }"
   >
-    <q-toolbar class="text-grey-8">
+    <q-toolbar class="text-grey-8 ">
       <q-toolbar-title>
         <div class="text-h6">{{data.name}}</div>
       </q-toolbar-title>
@@ -51,40 +51,13 @@
           size="mini"
           icon="mdi-refresh"
         >Processo A</q-btn>
-        <q-btn
-          type="primary"
-          @click="dataReloadB"
-          size="mini"
-          icon="mdi-refresh"
-        >Processo B</q-btn>
-        <q-btn
-          type="primary"
-          @click="dataReloadC"
-          size="mini"
-          icon="mdi-refresh"
-        >Processo C</q-btn>
-        <q-btn
-          type="primary"
-          @click="dataReloadD"
-          size="mini"
-        >Redefinir</q-btn>
-        <!-- <q-btn
-              type="primary"
-              @click="dataReloadE"
-              size="mini"
-            >力导图</q-btn> -->
-        <!-- <q-btn
-              type="info"
-              @click="openHelp"
-              size="mini"
-            >帮助</q-btn> -->
       </div>
     </q-toolbar>
-    <q-separator
-      color="text-grey-3"
-      spaced
-    />
-    <div style="display: flex; height: calc(100% - 80px);">
+    <q-separator color="text-grey-3" />
+    <div
+      class="q-mt-sm"
+      style="display: flex; height: calc(100% - 60px);"
+    >
       <!-- <div style="width: 230px;border-right: 1px solid #dce3e8;">
         <node-menu
           @addNode="addNode"
@@ -121,6 +94,9 @@
           :filas="filas"
           :usuarios="usuarios"
           :nodesList="data"
+          @addNode="addNode"
+          @deleteLine="deleteLine"
+          @addNewLineCondition="addNewLineCondition"
         >
         </flow-node-form>
       </div>
@@ -247,9 +223,80 @@ export default {
     })
   },
   methods: {
-    // 返回唯一标识
     getUUID () {
       return Math.random().toString(36).substr(3, 10)
+    },
+
+    addNewLineCondition (from, to, oldTo) {
+      if (!this.jsPlumpConsist({ sourceId: from, targetId: to })) {
+        return
+      }
+      const connParam = {
+        source: from,
+        target: to,
+        paintStyle: { strokeWidth: 3, stroke: '#8db1dd' }
+      }
+      this.jsPlumb.connect(connParam, this.jsplumbConnectOptions)
+      if (oldTo) {
+        const conn = this.jsPlumb.getConnections({
+          source: from,
+          target: oldTo
+        })[0]
+        this.jsPlumb.deleteConnection(conn)
+      }
+      this.clickNode(from)
+    },
+
+    jsPlumpConsist (evt) {
+      const from = evt.sourceId
+      const to = evt.targetId
+      if (from === to) {
+        this.$q.notify({
+          type: 'negative',
+          progress: true,
+          position: 'top',
+          timeout: 2500,
+          message: 'Não é possível conectar o elemento a si mesmo.',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
+        })
+        return false
+      }
+      if (this.hasLine(from, to)) {
+        this.$q.notify({
+          type: 'negative',
+          progress: true,
+          position: 'top',
+          timeout: 2500,
+          message: 'Não é possível realizar loop entre os elementos.',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
+        })
+        return false
+      }
+      if (this.hashOppositeLine(from, to)) {
+        this.$q.notify({
+          type: 'negative',
+          progress: true,
+          position: 'top',
+          timeout: 2500,
+          message: 'Não é possível realizar loop entre os elementos.',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
+        })
+        return false
+      }
+      this.$notificarSucesso('Conexão realizada.')
+      return true
     },
     jsPlumbInit () {
       this.jsPlumb.ready(() => {
@@ -272,6 +319,9 @@ export default {
         })
         // 连线
         this.jsPlumb.bind('connection', (evt) => {
+          if (!this.jsPlumpConsist(evt)) {
+            return
+          }
           const from = evt.source.id
           const to = evt.target.id
           if (this.loadEasyFlowFinish) {
@@ -304,58 +354,8 @@ export default {
         })
 
         // 连线
-        console.log('jsPlumb', this.jsPlumb)
         this.jsPlumb.bind('beforeDrop', (evt) => {
-          console.log('beforeDrop', evt)
-          const from = evt.sourceId
-          const to = evt.targetId
-          if (from === to) {
-            this.$q.notify({
-              type: 'negative',
-              progress: true,
-              position: 'top',
-              timeout: 2500,
-              message: 'Não é possível conectar o elemento a si mesmo.',
-              actions: [{
-                icon: 'close',
-                round: true,
-                color: 'white'
-              }]
-            })
-            return false
-          }
-          if (this.hasLine(from, to)) {
-            this.$q.notify({
-              type: 'negative',
-              progress: true,
-              position: 'top',
-              timeout: 2500,
-              message: 'Não é possível realizar loop entre os elementos.',
-              actions: [{
-                icon: 'close',
-                round: true,
-                color: 'white'
-              }]
-            })
-            return false
-          }
-          if (this.hashOppositeLine(from, to)) {
-            this.$q.notify({
-              type: 'negative',
-              progress: true,
-              position: 'top',
-              timeout: 2500,
-              message: 'Não é possível realizar loop entre os elementos.',
-              actions: [{
-                icon: 'close',
-                round: true,
-                color: 'white'
-              }]
-            })
-            return false
-          }
-          this.$notificarSucesso('Conexão realizada.')
-          return true
+          return this.jsPlumpConsist(evt)
         })
 
         // beforeDetach
@@ -365,7 +365,7 @@ export default {
         this.jsPlumb.setContainer(this.$refs.efContainer)
       })
     },
-    // 加载流程图
+
     loadEasyFlow () {
       // 初始化节点
       for (var i = 0; i < this.data.nodeList.length; i++) {
@@ -379,7 +379,7 @@ export default {
             containment: 'parent',
             stop: function (el) {
               // 拖拽节点结束后的对调
-              console.log('拖拽结束: ', el)
+              console.log('arraste para o final: ', el)
             }
           })
         }
@@ -401,7 +401,7 @@ export default {
         this.loadEasyFlowFinish = true
       })
     },
-    // 设置连线条件
+
     setLineLabel (from, to, label) {
       var conn = this.jsPlumb.getConnections({
         source: from,
@@ -419,14 +419,13 @@ export default {
 
       conn.setPaintStyle({ strokeWidth: 3, stroke: '#8db1dd' })
 
-      console.log(conn)
       this.data.lineList.forEach(function (line) {
         if (line.from == from && line.to == to) {
           line.label = label
         }
       })
     },
-    // 删除激活的元素
+
     deleteElement () {
       if (this.activeElement.type === 'node') {
         this.deleteNode(this.activeElement.nodeId)
@@ -454,7 +453,7 @@ export default {
         })
       }
     },
-    // 删除线
+
     deleteLine (from, to) {
       this.data.lineList = this.data.lineList.filter(function (line) {
         if (line.from == from && line.to == to) {
@@ -463,11 +462,11 @@ export default {
         return true
       })
     },
-    // 改变连线
+
     changeLine (oldFrom, oldTo) {
       this.deleteLine(oldFrom, oldTo)
     },
-    // 改变节点的位置
+
     changeNodeSite (data) {
       for (var i = 0; i < this.data.nodeList.length; i++) {
         const node = this.data.nodeList[i]
@@ -477,12 +476,7 @@ export default {
         }
       }
     },
-    /**
-   * 拖拽结束后添加新的节点
-   * @param evt
-   * @param nodeMenu 被添加的节点对象
-   * @param mousePosition 鼠标拖拽结束的坐标
-   */
+
     addNode (evt, nodeMenu, mousePosition) {
       var screenX = evt.originalEvent.clientX, screenY = evt.originalEvent.clientY
       const efContainer = this.$refs.efContainer
@@ -525,7 +519,10 @@ export default {
         left: left + 'px',
         top: top + 'px',
         ico: nodeMenu.ico,
-        state: 'success'
+        state: 'success',
+        actions: nodeMenu?.actions,
+        conditions: nodeMenu?.conditions,
+        interactions: nodeMenu?.interactions
       }
       /**
                * 这里可以进行业务判断、是否能够添加该节点
@@ -538,15 +535,12 @@ export default {
           containment: 'parent',
           stop: function (el) {
             // 拖拽节点结束后的对调
-            console.log('拖拽结束: ', el)
+            console.log('arastado para o final: ', el)
           }
         })
       })
     },
-    /**
-           * 删除节点
-           * @param nodeId 被删除节点的ID
-           */
+
     deleteNode (nodeId) {
       this.$q.dialog({
         title: 'Atenção!!',
@@ -578,13 +572,13 @@ export default {
 
       return true
     },
+
     clickNode (nodeId) {
-      console.log('nodeId', nodeId)
       this.activeElement.type = 'node'
       this.activeElement.nodeId = nodeId
       this.$refs.nodeForm.nodeInit(this.data, nodeId)
     },
-    // 是否具有该线
+
     hasLine (from, to) {
       for (var i = 0; i < this.data.lineList.length; i++) {
         var line = this.data.lineList[i]

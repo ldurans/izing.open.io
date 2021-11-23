@@ -10,19 +10,28 @@
     <!-- 最左侧的那条竖线 -->
     <div class="ef-node-left"></div>
     <!-- 节点类型的图标 -->
-    <div class="ef-node-left-ico flow-node-drag ">
+    <!-- <div
+      v-if="['start','exception'].includes(node.type)"
+      :class="{
+        'flow-node-drag': !['start','exception'].includes(node.type)
+      }"
+    >
       <q-icon
-        class="ef-node-left-ico"
         :name="node.ico"
         :class="nodeIcoClass"
       />
-      <!-- <i :class="nodeIcoClass"></i> -->
-    </div>
+    </div> -->
     <!-- 节点名称 -->
     <div
       class="ef-node-text"
       :show-overflow-tooltip="true"
     >
+      <q-icon
+        size="20px"
+        :name="node.ico"
+        :class="nodeIcoClass"
+        class="absolute-top-left"
+      />
       {{node.name}}
     </div>
     <!-- 节点状态图标 -->
@@ -60,7 +69,8 @@ export default {
     nodeContainerClass () {
       return {
         'ef-node-container': true,
-        'ef-node-active shadow-5 bg-blue-1': this.activeElement.type == 'node' ? this.activeElement.nodeId === this.node.id : false
+        'border-left-exception': this.node.type === 'exception',
+        'ef-node-active shadow-8 bg-blue-1': this.activeElement.type == 'node' ? this.activeElement.nodeId === this.node.id : false
       }
     },
     // 节点容器样式
@@ -105,7 +115,10 @@ export default {
   height: 80px !important;
   border-left: 5px solid #0288d1 !important;
 }
+.border-left-exception {
+  border-left: 5px solid red !important;
+}
 .ef-node-active {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 </style>

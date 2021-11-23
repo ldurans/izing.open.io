@@ -115,8 +115,9 @@
     color: #565758;
     font-size: 14px;
     line-height: 20px;
-    margin-left: 3px;
+    margin-left: 0px;
     width: 99%;
+    float: left;
     /* height: 99vh; */
     /* 设置超出宽度文本显示方式*/
     white-space: normal ;
@@ -232,5 +233,5 @@
 }
 
 .flowHeightDefault {
-  height: calc(100vh - 80px);
+  height: calc(100vh - 135px);
 }
