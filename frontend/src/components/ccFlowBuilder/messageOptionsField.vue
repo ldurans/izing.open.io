@@ -40,7 +40,7 @@
           </div>
           <textarea
             ref="inputEnvioMensagem"
-            style="min-height: 10vh; max-height: 30vh; flex: auto"
+            style="min-height: 10vh; max-height: 15vh; flex: auto"
             class="q-pa-sm bg-white"
             placeholder="Digite a mensagem"
             autogrow
@@ -49,6 +49,25 @@
             @input="(v) => $attrs.element.data.message = v.target.value"
             :value="$attrs.element.data.message"
           />
+        </div>
+        <div class="row col q-py-sm q-mb-md">
+          <q-select
+            v-model="$attrs.element.data.values"
+            use-input
+            outlined
+            use-chips
+            multiple
+            color="primary"
+            hide-dropdown-icon
+            input-debounce="0"
+            new-value-mode="add-unique"
+            class="full-width"
+            label="Opções"
+            filled
+            dense
+            hint="Opções serão tratados como Lista/Botões ou texto simples dependendo do suporte do canal de destino."
+          />
+
         </div>
       </q-card-section>
     </q-card>

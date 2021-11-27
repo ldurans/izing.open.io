@@ -97,6 +97,7 @@
           @addNode="addNode"
           @deleteLine="deleteLine"
           @addNewLineCondition="addNewLineCondition"
+          @saveFlow="saveFlow"
         >
         </flow-node-form>
       </div>
@@ -128,12 +129,10 @@ import FlowHelp from './help'
 import FlowNodeForm from './node_form'
 import { merge, cloneDeep } from 'lodash'
 import { getDataA } from './data_A'
-import { getDataB } from './data_B'
-import { getDataC } from './data_C'
-import { getDataD } from './data_D'
-import { getDataE } from './data_E'
-import { ForceDirected } from './force-directed'
 import './index.css'
+import jsonToFormData from '@ajoelp/json-to-formdata'
+
+import { CriarChatFlow, ListarChatFlow } from '../../service/chatFlow'
 
 export default {
   data () {
@@ -221,12 +220,15 @@ export default {
       // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
       this.dataReload(getDataA())
     })
+    this.listarChatFlow()
   },
   methods: {
     getUUID () {
       return Math.random().toString(36).substr(3, 10)
     },
-
+    // updateLineNodes (node) {
+    //   this.jsPlumb.repaintEverything()
+    // },
     addNewLineCondition (from, to, oldTo) {
       if (!this.jsPlumpConsist({ sourceId: from, targetId: to })) {
         return
@@ -246,7 +248,23 @@ export default {
       }
       this.clickNode(from)
     },
-
+    saveFlow () {
+      console.log('saveFlow', this.data)
+      const formData = jsonToFormData(this.data)
+      console.log(formData.keys())
+      CriarChatFlow(this.data)
+        .then(res => {
+          console.log('CriarChatFlow', res.data)
+        })
+        .catch(error => console.error(error))
+    },
+    listarChatFlow () {
+      ListarChatFlow()
+        .then(res => {
+          console.log('listarChatFlow', res.data)
+        })
+        .catch(error => console.error(error))
+    },
     jsPlumpConsist (evt) {
       const from = evt.sourceId
       const to = evt.targetId
@@ -601,14 +619,12 @@ export default {
     repaintEverything () {
       this.jsPlumb.repaint()
     },
-    // 流程数据信息
     dataInfo () {
       this.flowInfoVisible = true
       this.$nextTick(function () {
         this.$refs.flowInfo.init()
       })
     },
-    // 加载流程图
     dataReload (data) {
       this.easyFlowVisible = false
       this.data.nodeList = []
@@ -626,32 +642,8 @@ export default {
         })
       })
     },
-    // 模拟载入数据dataA
     dataReloadA () {
       this.dataReload(getDataA())
-    },
-    // 模拟载入数据dataB
-    dataReloadB () {
-      this.dataReload(getDataB())
-    },
-    // 模拟载入数据dataC
-    dataReloadC () {
-      this.dataReload(getDataC())
-    },
-    // 模拟载入数据dataD
-    dataReloadD () {
-      this.dataReload(getDataD())
-    },
-    // 模拟加载数据dataE，自适应创建坐标
-    dataReloadE () {
-      const dataE = getDataE()
-      const tempData = cloneDeep(dataE)
-      const data = ForceDirected(tempData)
-      this.dataReload(data)
-      // this.$message({
-      //   message: '力导图每次产生的布局是不一样的',
-      //   type: 'warning'
-      // })
     },
     zoomAdd () {
       if (this.zoom >= 1) {

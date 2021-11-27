@@ -9,6 +9,14 @@
         label="Nova Etapa"
         @click="addNode"
       />
+      <q-btn
+        class="bg-padrao"
+        flat
+        color="positive"
+        icon="mdi-plus"
+        label="Salvar"
+        @click="$emit('saveFlow')"
+      />
     </div>
     <q-card
       bordered
@@ -30,14 +38,14 @@
         <q-separator inset="" />
       </div>
       <q-card-section
-        class="q-pt-none"
+        class="q-pa-none"
         v-if="node.type === 'node'"
       >
         <div>
           <q-tabs
             v-model="tabNodeForm"
             narrow-indicator
-            class="text-grey-8"
+            class="text-grey-8 bg-"
           >
             <q-tab
               name="interacoes"
@@ -64,7 +72,7 @@
               name="interacoes"
             >
               <div class="text-center ">
-                <div class="row q-mt-md col justify-center">
+                <div class="row q-mt-sm col justify-center">
                   <q-btn
                     flat
                     icon="mdi-message-text-outline"
@@ -81,47 +89,27 @@
                     icon="mdi-message-settings-outline"
                     class="bg-padrao btn-rounded q-mx-xs"
                     :color="$q.dark.isActive ? 'white' : ''"
-                    @click="addMessage"
+                    @click="addMessageOptions"
                   >
                     <q-tooltip content-class="text-bold">
-                      Enviar Mensagem (Botões)
+                      Enviar Mensagem (Botões | Listas)
                     </q-tooltip>
                   </q-btn>
                   <q-btn
-                    flat
-                    @click="addImageField"
-                    icon="mdi-image"
-                    class="bg-padrao btn-rounded q-mx-xs"
-                    :color="$q.dark.isActive ? 'white' : ''"
-                  >
-                    <q-tooltip content-class="text-bold">
-                      Enviar Imagem
-                    </q-tooltip>
-                  </q-btn>
-                  <q-btn
+                    @click="addMediaField"
                     flat
                     icon="mdi-file-document-outline"
                     class="bg-padrao btn-rounded q-mx-xs"
                     :color="$q.dark.isActive ? 'white' : ''"
                   >
                     <q-tooltip content-class="text-bold">
-                      Enviar um arquivo
-                    </q-tooltip>
-                  </q-btn>
-                  <q-btn
-                    flat
-                    icon="mdi-microphone"
-                    class="bg-padrao btn-rounded q-mx-xs"
-                    :color="$q.dark.isActive ? 'white' : ''"
-                  >
-                    <q-tooltip content-class="text-bold">
-                      Enviar Áudio
+                      Enviar documentos, vídeo, aúdio e outros arquivos.
                     </q-tooltip>
                   </q-btn>
                 </div>
                 <div
-                  class="row bg-grey-2 q-pa-sm q-my-md justify-center scroll"
-                  style="height: calc(100vh - 520px)"
+                  class="row bg-grey-3 q-pa-sm q-my-md justify-center scroll"
+                  style="height: calc(100vh - 495px)"
                 >
                   <div class="col-xs-12">
                     <div
@@ -129,13 +117,13 @@
                       :key="element.id"
                       v-bind="element"
                     >
-                      <div class="q-my-sm">
+                      <div class="q-my-md">
                         <div class="bg-white full-width row col justify-between ">
                           <q-btn
                             round
                             dense
                             disable
-                            color="black"
+                            :color="$q.dark.isActive ? 'grey-3' : 'black'"
                             :label="idx + 1"
                             style="z-index: 999; "
                           />
@@ -160,7 +148,7 @@
                             dense
                             icon="mdi-arrow-down-bold"
                             flat
-                            color="black"
+                            :color="$q.dark.isActive ? 'grey-3' : 'black'"
                             class="bg-padrao q-mr-md"
                             style="z-index: 999"
                             @click="changePosition(node.interactions, idx, idx + 1 )"
@@ -181,7 +169,7 @@
                           />
                         </div>
                         <component
-                          :is="element.name"
+                          :is="element.type"
                           :element="element"
                         >
                         </component>
@@ -210,8 +198,8 @@
                   </q-btn>
                 </div>
                 <div
-                  style="height: calc(100vh - 505px)"
-                  class="row bg-grey-2 q-pa-sm scroll q-mt-md col justify-start"
+                  style="height: calc(100vh - 490px)"
+                  class="row bg-grey-3 q-pa-sm scroll q-mt-md col justify-start"
                 >
                   <template v-for="(condition, idx) in node.conditions">
                     <q-card
@@ -226,7 +214,7 @@
                           round
                           dense
                           disable
-                          color="black"
+                          :color="$q.dark.isActive ? 'grey-3' : 'black'"
                           :label="idx + 1"
                         />
                         <q-space />
@@ -250,7 +238,7 @@
                           dense
                           icon="mdi-arrow-down-bold"
                           flat
-                          color="black"
+                          :color="$q.dark.isActive ? 'grey-3' : 'black'"
                           class="bg-padrao q-mr-md"
                           style="z-index: 999"
                           @click="changePosition(node.conditions, idx, idx + 1 )"
@@ -281,7 +269,7 @@
 
                         <q-select
                           dense
-                          label="Respostas"
+                          label="Respostas (separadas por ',')"
                           outlined
                           v-model="condition.condition"
                           use-input
@@ -290,6 +278,7 @@
                           hide-dropdown-icon
                           input-debounce="0"
                           new-value-mode="add-unique"
+                          hint="Exemplo: 1 | Exemplo: 1, 2, 3"
                         />
                       </q-card-section>
                       <q-separator
@@ -389,7 +378,7 @@
 
       <q-card-section
         style="height: calc(100vh - 380px)"
-        class="row bg-grey-1 q-pa-sm scroll col justify-start"
+        class="row bg-grey-3 q-pa-sm scroll col justify-start"
         v-if="node.type === 'exception'"
       >
         <q-card
@@ -629,7 +618,7 @@
 
       <q-card-section
         style="height: calc(100vh - 380px)"
-        class="row bg-grey-1 q-pa-sm scroll col justify-start"
+        class="row bg-grey-3 q-pa-sm scroll col justify-start"
         v-if="node.type === 'start'"
       >
         <q-card class="full-width q-my-sm">
@@ -657,13 +646,15 @@
 import { uid } from 'quasar'
 // import { cloneDeep } from 'lodash'
 import MessageField from './messageField'
-import ImageField from './imageField'
+import MessageOptionsField from './messageOptionsField.vue'
+import MediaField from './mediaField.vue'
 import { VEmojiPicker } from 'v-emoji-picker'
 export default {
   components: {
     MessageField,
-    ImageField,
-    VEmojiPicker
+    VEmojiPicker,
+    MessageOptionsField,
+    MediaField
   },
   props: {
     nodesList: {
@@ -684,16 +675,6 @@ export default {
       visible: true,
       tabNodeForm: 'interacoes',
       elements: [],
-      fields: [
-        {
-          name: 'MessageField',
-          data: ''
-        },
-        {
-          name: 'ImageField',
-          data: ''
-        }
-      ],
       optionsAcao: [
         { value: 0, label: 'Etapa' },
         { value: 1, label: 'Fila' },
@@ -728,10 +709,34 @@ export default {
       return uid()
     },
     addMessage () {
-      this.node.interactions.push({ name: 'MessageField', data: '', id: this.gerarUID() })
+      this.node.interactions.push({
+        type: 'MessageField',
+        data: { message: '' },
+        id: this.gerarUID()
+      })
     },
-    addImageField () {
-      this.node.interactions.push({ name: 'ImageField', data: '', id: this.gerarUID() })
+    addMessageOptions () {
+      this.node.interactions.push({
+        type: 'MessageOptionsField',
+        data: {
+          message: '',
+          values: []
+        },
+        id: this.gerarUID()
+      })
+    },
+    addMediaField () {
+      this.node.interactions.push({
+        type: 'MediaField',
+        data: {
+          ext: '',
+          mediaUrl: '',
+          media: '',
+          type: '',
+          name: ''
+        },
+        id: this.gerarUID()
+      })
     },
     addCondiction () {
       this.node.conditions.push({

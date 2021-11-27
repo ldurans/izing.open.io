@@ -17,6 +17,7 @@
   "dependencies": {
     "@sentry/node": "5.27.0",
     "@types/pino": "^6.3.5",
+    "asterisk-manager": "^0.2.0",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",

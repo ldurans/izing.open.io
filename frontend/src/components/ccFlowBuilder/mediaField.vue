@@ -1,0 +1,241 @@
+<template>
+  <div>
+    <q-card
+      flat
+      class="q-pa-sm q-pb-md"
+    >
+      <q-card-section
+        style="min-height: 100px"
+        class="q-pa-none"
+      >
+        <q-file
+          style="display: none"
+          :loading="loading"
+          label="Mídia composição mensagem"
+          ref="PickerFileMessage"
+          v-model="file"
+          class="col-grow"
+          bg-color="blue-grey-1"
+          input-style="max-height: 30vh"
+          outlined
+          clearable
+          autogrow
+          append
+          :max-files="1"
+          counter
+          :max-file-size="5242880"
+          :max-total-size="5242880"
+          accept=".jpg, .png, image/jpeg, .jpeg, image/*, .pdf, .doc, .docx, .xls, .xlsx, .zip, .ppt, .pptx, .mp4, .mp3"
+          @rejected="onRejectedFiles"
+          @input="getMediaUrl"
+        />
+        <q-btn
+          v-if="!file.length && !file.type "
+          icon="mdi-file-plus-outline"
+          @click="$refs.PickerFileMessage.pickFiles()"
+          round
+          flat
+          size="lg"
+          class="bg-grey-3 z-max q-pa-lg absolute-center"
+        />
+
+        <div class="text-center full-width hide-scrollbar no-scroll">
+          <iframe
+            v-if="mediaUrl && file.type === 'application/pdf'"
+            frameBorder="0"
+            scrolling="no"
+            style="
+              max-height: 150px;
+              overflow-y: hidden;
+              -ms-overflow-y: hidden;
+            "
+            class="no-scroll hide-scrollbar"
+            :src="mediaUrl"
+          >
+            Faça download do PDF
+            <!-- alt : <a href="mensagem.mediaUrl"></a> -->
+          </iframe>
+          <video
+            v-if="mediaUrl && file.type.indexOf('video') != -1"
+            :src="mediaUrl"
+            controls
+            class="q-mt-md"
+            style="objectFit: cover;
+                  width: 330px;
+                  height: 150px;
+                  borderTopLeftRadius: 8px;
+                  borderTopRightRadius: 8px;
+                  borderBottomLeftRadius: 8px;
+                  borderBottomRightRadius: 8px;
+                "
+          />
+          <audio
+            v-if="mediaUrl && file.type.indexOf('audio') != -1"
+            class="q-mt-md full-width"
+            controls
+          >
+            <source
+              :src="mediaUrl"
+              type="audio/ogg"
+            />
+          </audio>
+
+          <q-img
+            v-if="mediaUrl && file.type.indexOf('image') != -1"
+            @click="abrirModalImagem=true"
+            :src="mediaUrl"
+            spinner-color="primary"
+            height="150px"
+            width="100%"
+            id="imagemfield"
+            style="cursor: pointer; "
+          />
+
+        </div>
+        <VueEasyLightbox
+          v-if="mediaUrl && file.type.indexOf('image') != -1"
+          :visible="abrirModalImagem"
+          :imgs="mediaUrl"
+          :index="1"
+          @hide="abrirModalImagem = false;"
+        />
+        <div v-if="getFileIcon(file.name)">
+          <q-icon
+            size="80px"
+            :name="getFileIcon(file.name)"
+          />
+        </div>
+        <div
+          v-if="mediaUrl"
+          class="text-bold"
+        > Nome: {{ file.name }} </div>
+        <q-input
+          v-if="mediaUrl && file.type.indexOf('audio') == -1"
+          dense
+          outlined
+          label="Subtítulo"
+          v-model="name"
+          color="black"
+          class="z-max q-pa-none q-mt-sm"
+        >
+
+          <template
+            slot="after"
+            v-if="mediaUrl"
+          >
+            <q-btn
+              flat
+              class="bg-padrao btn-rounded q-ma-sm"
+              color="primary"
+              no-caps
+              icon="mdi-image-edit-outline"
+              @click="$refs.PickerFileMessage.pickFiles()"
+            >
+              <q-tooltip>
+                Substituir Arquivo
+              </q-tooltip>
+            </q-btn>
+          </template>
+        </q-input>
+      </q-card-section>
+    </q-card>
+  </div>
+</template>
+
+<script>
+import VueEasyLightbox from 'vue-easy-lightbox'
+
+export default {
+  name: 'MediaField',
+  components: { VueEasyLightbox },
+  data () {
+    return {
+      mediaUrl: '',
+      file: [],
+      abrirModalImagem: false,
+      loading: false,
+      name: '',
+      icons: {
+        xls: 'mdi-microsoft-excel',
+        xlsx: 'mdi-microsoft-excel',
+        doc: 'mdi-file-word',
+        docx: 'mdi-file-word',
+        zip: 'mdi-folder-zip-outline',
+        ppt: 'mdi-microsoft-powerpoint',
+        pptx: 'mdi-microsoft-powerpoint'
+      }
+    }
+  },
+  // computed: {
+  //   cMediaUrl () {
+  //     let url = ''
+  //     if (this.file.type) {
+  //       const blob = new Blob([this.file], { type: this.file.type })
+  //       console.log(blob, blob.text())
+  //       url = window.URL.createObjectURL(blob)
+  //     }
+  //     return url
+  //   }
+
+  // },
+  methods: {
+    async getMediaUrl () {
+      let url = ''
+      if (this.file.type) {
+        const blob = new Blob([this.file], { type: this.file.type })
+        // console.log(blob, blob.text())
+        url = window.URL.createObjectURL(blob)
+        const base64 = await this.getBase64(this.file)
+        this.$attrs.element.data.ext = this.getFileExtension(this.file.name)
+        this.$attrs.element.data.media = base64
+        this.$attrs.element.data.type = this.file.type
+        this.$attrs.element.data.name = this.file.name
+      }
+      this.mediaUrl = url
+    },
+    getFileExtension (name) {
+      if (!name) return ''
+      const split = name.split('.')
+      const ext = split[split.length - 1]
+      return ext
+    },
+    getFileIcon (name) {
+      return this.icons[this.getFileExtension(name)]
+    },
+    getBase64 (file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = error => reject(error)
+      })
+    },
+    onRejectedFiles (rejectedEntries) {
+      this.$q.notify({
+        html: true,
+        message: `Ops... Ocorreu um erro! <br>
+        <ul>
+          <li>Arquivo deve ter no máximo 5MB.</li>
+          <li>Priorize o envio de imagem ou vídeo.</li>
+        </ul>`,
+        type: 'negative',
+        progress: true,
+        position: 'top',
+        actions: [{
+          icon: 'close',
+          round: true,
+          color: 'white'
+        }]
+      })
+    }
+
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+#imagemfield > .q-img__content > div {
+  padding: 0 !important;
+  background: none; // rgba(0, 0, 0, 0.47);
+}
+</style>

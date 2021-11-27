@@ -8,7 +8,7 @@
     class="nodeStyle text-body1"
   >
     <!-- 最左侧的那条竖线 -->
-    <div class="ef-node-left"></div>
+    <!-- <div class="ef-node-left"></div> -->
     <!-- 节点类型的图标 -->
     <!-- <div
       v-if="['start','exception'].includes(node.type)"
@@ -53,6 +53,7 @@
         v-show="node.state === 'running'"
       ></i>
     </div>
+
   </div>
 </template>
 
@@ -62,8 +63,16 @@ export default {
     node: Object,
     activeElement: Object
   },
+  // watch: {
+  //   expanded () {
+  //     console.log('expanded')
+  //     this.jsPlumb.repaint()
+  //   }
+  // },
   data () {
-    return {}
+    return {
+      expanded: true
+    }
   },
   computed: {
     nodeContainerClass () {
@@ -112,7 +121,7 @@ export default {
 
 <style>
 .nodeStyle {
-  height: 80px !important;
+  min-height: 80px !important;
   border-left: 5px solid #0288d1 !important;
 }
 .border-left-exception {
