@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import CreateChatFlowService from "../services/ChatFlowServices/CreateChatFlowService";
 import ListChatFlowService from "../services/ChatFlowServices/ListChatFlowService";
 import AppError from "../errors/AppError";
+import UpdateChatFlowService from "../services/ChatFlowServices/UpdateChatFlowService";
 // import UpdateAutoReplyService from "../services/AutoReplyServices/UpdateAutoReplyService";
 // import DeleteAutoReplyService from "../services/AutoReplyServices/DeleteAutoReplyService";
 
@@ -94,41 +95,48 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { tenantId } = req.user;
-  const autoReply = await ListChatFlowService({ tenantId });
-  return res.status(200).json(autoReply);
+  const chatFlow = await ListChatFlowService({ tenantId });
+  return res.status(200).json(chatFlow);
 };
 
-// export const update = async (
-//   req: Request,
-//   res: Response
-// ): Promise<Response> => {
-//   if (req.user.profile !== "admin") {
-//     throw new AppError("ERR_NO_PERMISSION", 403);
-//   }
-//   const { tenantId } = req.user;
-//   const autoReplyData: AutoReplyData = req.body;
+export const update = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  if (req.user.profile !== "admin") {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+  const { tenantId } = req.user;
 
-//   const schema = Yup.object().shape({
-//     name: Yup.string().required(),
-//     action: Yup.number().required(),
-//     userId: Yup.number().required()
-//   });
+  const newFlow: ChatFlowData = {
+    flow: { ...req.body },
+    name: req.body.name,
+    isActive: true,
+    userId: +req.user.id,
+    tenantId
+  };
 
-//   try {
-//     await schema.validate(autoReplyData);
-//   } catch (error) {
-//     throw new AppError(error.message);
-//   }
+  // const schema = Yup.object().shape({
+  //   name: Yup.string().required(),
+  //   action: Yup.number().required(),
+  //   userId: Yup.number().required()
+  // });
 
-//   const { autoReplyId } = req.params;
-//   const autoReply = await UpdateAutoReplyService({
-//     autoReplyData,
-//     autoReplyId,
-//     tenantId
-//   });
+  // try {
+  //   await schema.validate(autoReplyData);
+  // } catch (error) {
+  //   throw new AppError(error.message);
+  // }
 
-//   return res.status(200).json(autoReply);
-// };
+  const { chatFlowId } = req.params;
+  const chatFlow = await UpdateChatFlowService({
+    chatFlowData: newFlow,
+    chatFlowId,
+    tenantId
+  });
+
+  return res.status(200).json(chatFlow);
+};
 
 // export const remove = async (
 //   req: Request,

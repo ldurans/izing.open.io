@@ -205,7 +205,7 @@ const objMenu = [
   {
     title: 'Atendimentos',
     caption: 'Lista de atendimentos',
-    icon: 'mdi-whatsapp',
+    icon: 'mdi-forum-outline',
     routeName: 'atendimento'
   },
   {
@@ -245,8 +245,8 @@ const objMenuAdmin = [
   {
     title: 'Chatbot',
     caption: 'Robô de atendimento',
-    icon: 'mdi-message-reply-text',
-    routeName: 'auto-resposta'
+    icon: 'mdi-robot',
+    routeName: 'chat-flow'
   },
   {
     title: 'Etiquetas',

@@ -1,6 +1,6 @@
 <template>
   <div class="q-px-md q-py-sm">
-    <div class="row col q-mb-sm">
+    <div class="row justify-between col q-mb-sm">
       <q-btn
         class="bg-padrao"
         flat
@@ -13,7 +13,7 @@
         class="bg-padrao"
         flat
         color="positive"
-        icon="mdi-plus"
+        icon="mdi-content-save-outline"
         label="Salvar"
         @click="$emit('saveFlow')"
       />
@@ -207,7 +207,7 @@
                       flat
                       :key="condition.id"
                       class="full-width q-my-sm"
-                      style="height: 300px;"
+                      style="min-height: 250px;"
                     >
                       <div class="full-width row col justify-between text-left q-pa-xs">
                         <q-btn
@@ -255,7 +255,7 @@
                           color="negative"
                           class="bg-padrao"
                           style="z-index: 999"
-                          @click="removeItem(element)"
+                          @click="removeConditionItem(condition, idx)"
                         />
                       </div>
                       <q-card-section class="q-pa-sm q-gutter-sm">
@@ -265,9 +265,12 @@
                           v-model="condition.type"
                           :options="optionsSe"
                           label="Se"
+                          map-options
+                          emit-value
                         />
 
                         <q-select
+                          v-if="condition.type === 'R'"
                           dense
                           label="Respostas (separadas por ',')"
                           outlined
@@ -383,6 +386,75 @@
       >
         <q-card
           class="full-width q-my-sm"
+          style="height: 280px;"
+        >
+          <div class="full-width bg-grey-3 text-bold row col justify-between text-left q-pa-md">
+            Mensagem de saudação (Fila/Usuário)
+            <div class="row text-subtitle2">
+              Quando o bot direcionar o atendimento para uma fila ou usuário,
+              essa mensagem será enviada.
+            </div>
+          </div>
+          <q-card-section class="q-pa-sm">
+            <div class="row ">
+              <div class="col">
+                <label
+                  class="text-subtitle1 text-bold q-mb-sm"
+                  for="inputEnvioMensagem"
+                > Mensagem: </label>
+                <div class="flex flex-inline full-width items-center">
+                  <div
+                    class="flex flex-inline text-left"
+                    style="width: 40px"
+                  >
+                    <q-btn
+                      round
+                      flat
+                      dense
+                    >
+                      <q-icon
+                        size="2em"
+                        name="mdi-emoticon-happy-outline"
+                      />
+                      <q-tooltip>
+                        Emoji
+                      </q-tooltip>
+                      <q-menu
+                        anchor="top right"
+                        self="bottom middle"
+                        :offset="[5, 40]"
+                      >
+                        <VEmojiPicker
+                          style="width: 40vw"
+                          :showSearch="false"
+                          :emojisByRow="20"
+                          labelSearch="Localizar..."
+                          lang="pt-BR"
+                          @select="onInsertSelectEmojiSaudacao"
+                        />
+                      </q-menu>
+                    </q-btn>
+                  </div>
+                  <textarea
+                    ref="inputEnvioMensagemSaudacao"
+                    id="inputEnvioMensagem"
+                    style="min-height: 10vh; max-height: 15vh; flex: auto"
+                    class="q-pa-sm bg-white"
+                    placeholder="Digite a mensagem"
+                    autogrow
+                    dense
+                    outlined
+                    @input="(v) => node.configurations.welcomeMessage.message = v.target.value"
+                    :value="node.configurations.welcomeMessage.message"
+                  />
+                </div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+
+        <q-card
+          class="full-width q-my-sm"
           style="height: 350px;"
         >
           <div class="full-width bg-grey-3 text-bold row col justify-between text-left q-pa-md">
@@ -427,13 +499,13 @@
                           :emojisByRow="20"
                           labelSearch="Localizar..."
                           lang="pt-BR"
-                          @select="onInsertSelectEmoji"
+                          @select="onInsertSelectEmojiNotOptionsSelectMessage"
                         />
                       </q-menu>
                     </q-btn>
                   </div>
                   <textarea
-                    ref="inputEnvioMensagem"
+                    ref="inputEnvioMensagemnotOptionsSelectMessage"
                     id="inputEnvioMensagem"
                     style="min-height: 10vh; max-height: 15vh; flex: auto"
                     class="q-pa-sm bg-white"
@@ -681,8 +753,8 @@ export default {
         { value: 2, label: 'Usuário' }
       ],
       optionsSe: [
-        { label: 'Qualquer resposta', value: 'us' },
-        { label: 'Respostas', value: 'r' }
+        { label: 'Qualquer resposta', value: 'US' },
+        { label: 'Respostas', value: 'R' }
       ],
       // node 或 line
       type: 'node',
@@ -770,9 +842,50 @@ export default {
 
       this.$emit('addNode', evt, nodeMenu, null)
     },
-    onInsertSelectEmoji (emoji) {
+    removeConditionItem (condition, idx) {
+      this.$q.dialog({
+        title: 'Atenção!!',
+        message: `Deseja realmente deletar a condição (${idx + 1})?`,
+        cancel: {
+          label: 'Não',
+          color: 'primary',
+          push: true
+        },
+        ok: {
+          label: 'Sim',
+          color: 'negative',
+          push: true
+        },
+        persistent: true
+      }).onOk(async () => {
+        const nConditions = this.node.conditions.filter(c => c.id !== condition.id)
+        this.node.conditions = nConditions
+      })
+    },
+    onInsertSelectEmojiSaudacao (emoji) {
       const self = this
-      var tArea = this.$refs.inputEnvioMensagem
+      var tArea = this.$refs.inputEnvioMensagemSaudacao
+      // get cursor's position:
+      var startPos = tArea.selectionStart,
+        endPos = tArea.selectionEnd,
+        cursorPos = startPos,
+        tmpStr = tArea.value
+      // filter:
+      if (!emoji.data) {
+        return
+      }
+      // insert:
+      self.txtContent = this.node.configurations.welcomeMessage.message
+      self.txtContent = tmpStr.substring(0, startPos) + emoji.data + tmpStr.substring(endPos, tmpStr.length)
+      this.this.node.configurations.welcomeMessage.message = self.txtContent
+      // move cursor:
+      setTimeout(() => {
+        tArea.selectionStart = tArea.selectionEnd = cursorPos + emoji.data.length
+      }, 10)
+    },
+    onInsertSelectEmojiNotOptionsSelectMessage (emoji) {
+      const self = this
+      var tArea = this.$refs.notOptionsSelectMessage
       // get cursor's position:
       var startPos = tArea.selectionStart,
         endPos = tArea.selectionEnd,

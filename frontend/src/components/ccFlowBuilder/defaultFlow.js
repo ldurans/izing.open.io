@@ -1,4 +1,4 @@
-const dataA = {
+const data = {
   name: 'Fluxo Inicial',
   nodeList: [
     {
@@ -34,6 +34,9 @@ const dataA = {
           type: 1, // '1' - Fila | '2' - Usuario
           destiny: ''
         },
+        welcomeMessage: {
+          message: ''
+        },
         maxRetryBotMessage: {
           number: 3,
           type: 1,
@@ -61,10 +64,9 @@ const dataA = {
     connector: 'Flowchart',
     // anchors: ['Top', 'Bottom'],
     paintStyle: { strokeWidth: 3, stroke: '#8db1dd' }
-  }
-  ]
+  }]
 }
 
-export function getDataA () {
-  return dataA
+export function getDefaultFlow () {
+  return data
 }

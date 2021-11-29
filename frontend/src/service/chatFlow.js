@@ -15,3 +15,11 @@ export function ListarChatFlow (params) {
     params
   })
 }
+
+export function UpdateChatFlow (data) {
+  return request({
+    url: `/chat-flow/${data.id}`,
+    method: 'put',
+    data
+  })
+}

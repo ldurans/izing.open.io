@@ -15,31 +15,26 @@
         flat
         icon="mdi-delete"
         @click="deleteElement"
-        :disabled="!this.activeElement.type"
+        :disabled="!this.activeElement.type || ['start', 'line', 'exception'].includes(this.activeElement.type)"
       ></q-btn>
       <q-separator
         inset
         spaced
         vertical
       />
-      <q-btn
+      <!-- <q-btn
         round
         flat
         icon="mdi-download"
         @click="downloadData"
-      ></q-btn>
-      <q-separator
-        inset
-        spaced
-        vertical
-      />
+      ></q-btn> -->
       <q-btn
         round
         flat
         :icon="isFullScreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen'"
         @click="isFullScreen = !isFullScreen"
       />
-      <div class="q-gutter-md q-mx-md">
+      <!-- <div class="q-gutter-md q-mx-md">
         <q-btn
           type="info"
           @click="dataInfo"
@@ -51,7 +46,7 @@
           size="mini"
           icon="mdi-refresh"
         >Processo A</q-btn>
-      </div>
+      </div> -->
     </q-toolbar>
     <q-separator color="text-grey-3" />
     <div
@@ -128,11 +123,9 @@ import FlowInfo from './info'
 import FlowHelp from './help'
 import FlowNodeForm from './node_form'
 import { merge, cloneDeep } from 'lodash'
-import { getDataA } from './data_A'
 import './index.css'
-import jsonToFormData from '@ajoelp/json-to-formdata'
 
-import { CriarChatFlow, ListarChatFlow } from '../../service/chatFlow'
+import { UpdateChatFlow } from '../../service/chatFlow'
 
 export default {
   data () {
@@ -213,14 +206,10 @@ export default {
       }
     }
   },
-  mounted () {
-    // eslint-disable-next-line no-undef
-    this.jsPlumb = jsPlumb.getInstance()
-    this.$nextTick(() => {
-      // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
-      this.dataReload(getDataA())
-    })
-    this.listarChatFlow()
+  computed: {
+    cDataFlow () {
+      return this.$store.state.chatFlow
+    }
   },
   methods: {
     getUUID () {
@@ -249,19 +238,14 @@ export default {
       this.clickNode(from)
     },
     saveFlow () {
-      console.log('saveFlow', this.data)
-      const formData = jsonToFormData(this.data)
-      console.log(formData.keys())
-      CriarChatFlow(this.data)
+      const data = {
+        ...this.cDataFlow.flow,
+        flow: this.data
+      }
+      console.log('saveFlow', data)
+      UpdateChatFlow(data)
         .then(res => {
           console.log('CriarChatFlow', res.data)
-        })
-        .catch(error => console.error(error))
-    },
-    listarChatFlow () {
-      ListarChatFlow()
-        .then(res => {
-          console.log('listarChatFlow', res.data)
         })
         .catch(error => console.error(error))
     },
@@ -446,7 +430,7 @@ export default {
 
     deleteElement () {
       if (this.activeElement.type === 'node') {
-        this.deleteNode(this.activeElement.nodeId)
+        this.deleteNode(this.activeElement)
       } else if (this.activeElement.type === 'line') {
         this.$q.dialog({
           title: 'Atenção!!',
@@ -488,7 +472,7 @@ export default {
     changeNodeSite (data) {
       for (var i = 0; i < this.data.nodeList.length; i++) {
         const node = this.data.nodeList[i]
-        if (node.id === data.nodeId) {
+        if (node.id === data.id) {
           node.left = data.left
           node.top = data.top
         }
@@ -559,10 +543,10 @@ export default {
       })
     },
 
-    deleteNode (nodeId) {
+    deleteNode (node) {
       this.$q.dialog({
         title: 'Atenção!!',
-        message: 'Deseja realmente deletar o elemento?',
+        message: `Deseja realmente deletar o elemento (${node.name})?`,
         cancel: {
           label: 'Não',
           color: 'primary',
@@ -575,16 +559,9 @@ export default {
         },
         persistent: true
       }).onOk(async () => {
-        this.data.nodeList = this.data.nodeList.filter(function (node) {
-          if (node.id === nodeId) {
-            // 伪删除，将节点隐藏，否则会导致位置错位
-            // node.show = false
-            return false
-          }
-          return true
-        })
+        this.data.nodeList = this.data.nodeList.filter(n => n.id !== node.id)
         this.$nextTick(function () {
-          this.jsPlumb.removeAllEndpoints(nodeId)
+          this.jsPlumb.removeAllEndpoints(node.id)
         })
       })
 
@@ -592,8 +569,10 @@ export default {
     },
 
     clickNode (nodeId) {
-      this.activeElement.type = 'node'
-      this.activeElement.nodeId = nodeId
+      const node = this.data.nodeList.find(n => n.id === nodeId)
+      // this.activeElement.type = 'node'
+      // this.activeElement.id = nodeId
+      this.activeElement = node
       this.$refs.nodeForm.nodeInit(this.data, nodeId)
     },
 
@@ -641,9 +620,6 @@ export default {
           })
         })
       })
-    },
-    dataReloadA () {
-      this.dataReload(getDataA())
     },
     zoomAdd () {
       if (this.zoom >= 1) {
@@ -693,6 +669,14 @@ export default {
         this.$refs.flowHelp.init()
       })
     }
+  },
+  mounted () {
+    // eslint-disable-next-line no-undef
+    this.jsPlumb = jsPlumb.getInstance()
+    this.$nextTick(() => {
+      // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
+      this.dataReload(this.cDataFlow.flow.flow)
+    })
   }
 }
 </script>
