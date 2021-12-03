@@ -30,7 +30,7 @@
           @input="getMediaUrl"
         />
         <q-btn
-          v-if="!file.length && !file.type "
+          v-if="!$attrs.element.data.type "
           icon="mdi-file-plus-outline"
           @click="$refs.PickerFileMessage.pickFiles()"
           round
@@ -41,7 +41,7 @@
 
         <div class="text-center full-width hide-scrollbar no-scroll">
           <iframe
-            v-if="mediaUrl && file.type === 'application/pdf'"
+            v-if="cMediaUrl && $attrs.element.data.type === 'application/pdf'"
             frameBorder="0"
             scrolling="no"
             style="
@@ -50,14 +50,14 @@
               -ms-overflow-y: hidden;
             "
             class="no-scroll hide-scrollbar"
-            :src="mediaUrl"
+            :src="cMediaUrl"
           >
             Faça download do PDF
             <!-- alt : <a href="mensagem.mediaUrl"></a> -->
           </iframe>
           <video
-            v-if="mediaUrl && file.type.indexOf('video') != -1"
-            :src="mediaUrl"
+            v-if="cMediaUrl && $attrs.element.data.type.indexOf('video') != -1"
+            :src="cMediaUrl"
             controls
             class="q-mt-md"
             style="objectFit: cover;
@@ -70,20 +70,20 @@
                 "
           />
           <audio
-            v-if="mediaUrl && file.type.indexOf('audio') != -1"
+            v-if="cMediaUrl && $attrs.element.data.type.indexOf('audio') != -1"
             class="q-mt-md full-width"
             controls
           >
             <source
-              :src="mediaUrl"
+              :src="cMediaUrl"
               type="audio/ogg"
             />
           </audio>
 
           <q-img
-            v-if="mediaUrl && file.type.indexOf('image') != -1"
+            v-if="cMediaUrl && $attrs.element.data.type.indexOf('image') != -1"
             @click="abrirModalImagem=true"
-            :src="mediaUrl"
+            :src="cMediaUrl"
             spinner-color="primary"
             height="150px"
             width="100%"
@@ -93,35 +93,35 @@
 
         </div>
         <VueEasyLightbox
-          v-if="mediaUrl && file.type.indexOf('image') != -1"
+          v-if="cMediaUrl && $attrs.element.data.type.indexOf('image') != -1"
           :visible="abrirModalImagem"
-          :imgs="mediaUrl"
+          :imgs="cMediaUrl"
           :index="1"
           @hide="abrirModalImagem = false;"
         />
-        <div v-if="getFileIcon(file.name)">
+        <div v-if="getFileIcon($attrs.element.data.name)">
           <q-icon
             size="80px"
-            :name="getFileIcon(file.name)"
+            :name="getFileIcon($attrs.element.data.name)"
           />
         </div>
         <div
-          v-if="mediaUrl"
+          v-if="cMediaUrl"
           class="text-bold"
-        > Nome: {{ file.name }} </div>
+        > Nome: {{ $attrs.element.data.name }} </div>
         <q-input
-          v-if="mediaUrl && file.type.indexOf('audio') == -1"
+          v-if="cMediaUrl && $attrs.element.data.type.indexOf('audio') == -1"
           dense
           outlined
           label="Subtítulo"
-          v-model="name"
+          v-model="$attrs.element.data.caption"
           color="black"
           class="z-max q-pa-none q-mt-sm"
         >
 
           <template
             slot="after"
-            v-if="mediaUrl"
+            v-if="cMediaUrl"
           >
             <q-btn
               flat
@@ -166,18 +166,22 @@ export default {
       }
     }
   },
-  // computed: {
-  //   cMediaUrl () {
-  //     let url = ''
-  //     if (this.file.type) {
-  //       const blob = new Blob([this.file], { type: this.file.type })
-  //       console.log(blob, blob.text())
-  //       url = window.URL.createObjectURL(blob)
-  //     }
-  //     return url
-  //   }
+  computed: {
+    cMediaUrl () {
+      if (this.$attrs.element.data?.mediaUrl) {
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.mediaUrl = this.$attrs.element.data.mediaUrl
+        return this.mediaUrl
+      }
+      if (!this.$attrs.element.data?.mediaUrl) {
+        return this.getMediaUrl()
+      }
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.mediaUrl = ''
+      return this.mediaUrl
+    }
 
-  // },
+  },
   methods: {
     async getMediaUrl () {
       let url = ''

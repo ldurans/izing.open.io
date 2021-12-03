@@ -51,6 +51,11 @@ const UpdateChatFlowService = async ({
           delete item.data.media;
           item.data.mediaUrl = newName;
         }
+        // ajustar para retirar a informação da URL
+        if (item.type === "MediaField" && item.data.mediaUrl) {
+          const urlSplit = item.data.mediaUrl.split("/");
+          item.data.mediaUrl = urlSplit[urlSplit.length - 1];
+        }
       }
     }
   }
@@ -59,8 +64,8 @@ const UpdateChatFlowService = async ({
     name,
     flow: flow.flow,
     userId,
-    isActive,
-    celularTeste
+    isActive: flow.isActive,
+    celularTeste: flow.celularTeste
   });
 
   await cahtFlow.reload({

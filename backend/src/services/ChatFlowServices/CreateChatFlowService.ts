@@ -36,6 +36,7 @@ const CreateChatFlowService = async ({
           );
 
           delete item.data.media;
+          item.data.fileName = item.data.name;
           item.data.mediaUrl = newName;
         }
       }

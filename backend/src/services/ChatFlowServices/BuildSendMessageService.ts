@@ -1,0 +1,158 @@
+// import { writeFile } from "fs";
+// import { promisify } from "util";
+// import { join } from "path";
+// import * as Sentry from "@sentry/node";
+import { getUnixTime } from "date-fns";
+import { logger } from "../../utils/logger";
+// import MessageOffLine from "../../models/MessageOffLine";
+import Ticket from "../../models/Ticket";
+import Message from "../../models/Message";
+import socketEmit from "../../helpers/socketEmit";
+
+interface MessageData {
+  ticketId: number;
+  body: string;
+  contactId?: number;
+  fromMe?: boolean;
+  read?: boolean;
+  mediaType?: string;
+  mediaUrl?: string;
+  timestamp?: number;
+  internalId?: string;
+  userId?: string | number;
+  quotedMsgId?: string;
+  // status?: string;
+  scheduleDate?: string | Date;
+  sendType?: string;
+  status?: string;
+}
+
+interface MessageRequest {
+  data: {
+    message?: string;
+    values?: string[];
+    caption?: string;
+    ext?: string;
+    mediaUrl?: string;
+    name?: string;
+    type?: string;
+  };
+  id: string;
+  type: "MessageField" | "MessageOptionsField" | "MediaField";
+}
+
+interface Request {
+  msg: MessageRequest;
+  tenantId: string | number;
+  ticket: Ticket;
+  userId?: number | string;
+}
+
+// const writeFileAsync = promisify(writeFile);
+
+const BuildSendMessageService = async ({
+  msg,
+  tenantId,
+  ticket,
+  userId
+}: Request): Promise<void> => {
+  const messageData: MessageData = {
+    ticketId: ticket.id,
+    body: "",
+    contactId: ticket.contactId,
+    fromMe: true,
+    read: true,
+    mediaType: "chat",
+    mediaUrl: undefined,
+    timestamp: getUnixTime(new Date()),
+    quotedMsgId: undefined,
+    userId,
+    scheduleDate: undefined,
+    sendType: "bot",
+    status: "pending"
+  };
+
+  try {
+    if (msg.type === "MediaField" && msg.data.mediaUrl) {
+      const urlSplit = msg.data.mediaUrl.split("/");
+
+      const message = {
+        ...messageData,
+        body: msg.data.name,
+        mediaUrl: urlSplit[urlSplit.length - 1],
+        mediaType: msg.data.type
+          ? msg.data?.type.substr(0, msg.data.type.indexOf("/"))
+          : "chat"
+      };
+
+      const msgCreated = await Message.create(message);
+
+      const messageCreated = await Message.findByPk(msgCreated.id, {
+        include: [
+          {
+            model: Ticket,
+            as: "ticket",
+            where: { tenantId }
+          },
+          {
+            model: Message,
+            as: "quotedMsg",
+            include: ["contact"]
+          }
+        ]
+      });
+
+      if (!messageCreated) {
+        throw new Error("ERR_CREATING_MESSAGE_SYSTEM");
+      }
+
+      await ticket.update({
+        lastMessage: messageCreated.body
+      });
+
+      socketEmit({
+        tenantId,
+        type: "chat:create",
+        payload: messageCreated
+      });
+    } else {
+      const msgCreated = await Message.create({
+        ...messageData,
+        body: msg.data.message,
+        mediaType: "chat"
+      });
+
+      const messageCreated = await Message.findByPk(msgCreated.id, {
+        include: [
+          {
+            model: Ticket,
+            as: "ticket",
+            where: { tenantId }
+          },
+          {
+            model: Message,
+            as: "quotedMsg",
+            include: ["contact"]
+          }
+        ]
+      });
+
+      if (!messageCreated) {
+        // throw new AppError("ERR_CREATING_MESSAGE", 501);
+        throw new Error("ERR_CREATING_MESSAGE_SYSTEM");
+      }
+
+      await ticket.update({ lastMessage: messageCreated.body, answered: true });
+
+      socketEmit({
+        tenantId,
+        type: "chat:create",
+        payload: messageCreated
+      });
+    }
+  } catch (error) {
+    logger.error("BuildSendMessageService", error);
+  }
+};
+
+export default BuildSendMessageService;

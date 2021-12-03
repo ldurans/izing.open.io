@@ -7,7 +7,8 @@ import User from "../../models/User";
 import ShowTicketService from "./ShowTicketService";
 import CampaignContacts from "../../models/CampaignContacts";
 import socketEmit from "../../helpers/socketEmit";
-import CheckChatBotWelcome from "../../helpers/CheckChatBotWelcome";
+// import CheckChatBotWelcome from "../../helpers/CheckChatBotWelcome";
+import CheckChatBotFlowWelcome from "../../helpers/CheckChatBotFlowWelcome";
 import CreateLogTicketService from "./CreateLogTicketService";
 
 interface Data {
@@ -195,7 +196,7 @@ const FindOrCreateTicketService = async ({
   });
 
   if ((msg && !msg.fromMe) || isSync) {
-    await CheckChatBotWelcome(ticketCreated);
+    await CheckChatBotFlowWelcome(ticketCreated);
   }
 
   ticket = await ShowTicketService({ id: ticketCreated.id, tenantId });

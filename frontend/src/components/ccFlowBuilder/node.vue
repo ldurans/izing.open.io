@@ -79,7 +79,7 @@ export default {
       return {
         'ef-node-container': true,
         'border-left-exception': this.node.type === 'exception',
-        'ef-node-active shadow-8 bg-blue-1': this.activeElement.type !== 'line' ? this.activeElement.id === this.node.id : false
+        'ef-node-active shadow-8 bg-blue-3 text-white': this.activeElement.type !== 'line' ? this.activeElement.id === this.node.id : false
       }
     },
     // 节点容器样式

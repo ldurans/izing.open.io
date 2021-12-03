@@ -11,7 +11,8 @@ import {
   AutoIncrement,
   Default,
   // AfterCreate,
-  DataType
+  DataType,
+  AllowNull
 } from "sequelize-typescript";
 
 import Contact from "./Contact";
@@ -24,6 +25,7 @@ import Queue from "./Queue";
 // import ShowStepAutoReplyMessageService from "../services/AutoReplyServices/ShowStepAutoReplyMessageService";
 import Tenant from "./Tenant";
 import MessagesOffLine from "./MessageOffLine";
+import ChatFlow from "./ChatFlow";
 
 @Table
 class Ticket extends Model<Ticket> {
@@ -57,6 +59,9 @@ class Ticket extends Model<Ticket> {
 
   @UpdatedAt
   updatedAt: Date;
+
+  @Column(DataType.DATE)
+  closedAt: Date;
 
   @ForeignKey(() => User)
   @Column
@@ -95,6 +100,18 @@ class Ticket extends Model<Ticket> {
 
   @BelongsTo(() => StepsReply)
   stepsReply: StepsReply;
+
+  @ForeignKey(() => ChatFlow)
+  @Column
+  chatFlowId: number;
+
+  @BelongsTo(() => ChatFlow)
+  chatFlow: ChatFlow;
+
+  @Default(null)
+  @AllowNull
+  @Column(DataType.INTEGER)
+  stepChatFlow: number;
 
   @ForeignKey(() => Queue)
   @Column

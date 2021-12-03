@@ -4,8 +4,8 @@ import VerifyContact from "./TelegramVerifyContact";
 import FindOrCreateTicketService from "../TicketServices/FindOrCreateTicketService";
 import VerifyMediaMessage from "./TelegramVerifyMediaMessage";
 import VerifyMessage from "./TelegramVerifyMessage";
-import VerifyAutoReplyActionTicket from "../WbotServices/helpers/VerifyAutoReplyActionTicket";
 import verifyBusinessHours from "../WbotServices/helpers/VerifyBusinessHours";
+import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
 
 interface Session extends Telegraf {
   id?: number;
@@ -34,7 +34,7 @@ const HandleMessage = async (ctx: Context, tbot: Session): Promise<void> => {
     await VerifyMessage(ctx, fromMe, ticket, contact);
   }
 
-  await VerifyAutoReplyActionTicket(
+  await VerifyStepsChatFlowTicket(
     {
       fromMe,
       body: message.text || ""

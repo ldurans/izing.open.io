@@ -58,6 +58,11 @@ class Contact extends Model<Contact> {
   @Column
   telegramId: string;
 
+  @AllowNull(true)
+  @Default(null)
+  @Column
+  instagramPK: number;
+
   @Default(false)
   @Column
   isUser: boolean;

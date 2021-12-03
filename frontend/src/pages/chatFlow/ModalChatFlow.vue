@@ -10,7 +10,11 @@
       class="q-pa-lg"
     >
       <q-card-section>
-        <div class="text-h6">{{ chatFlowEdicao.id ? 'Editar': 'Criar' }} Fluxo</div>
+        <div class="text-h6">{{ chatFlow.isDuplicate ? 'Duplicar' : chatFlowEdicao.id ? 'Editar': 'Criar' }} Fluxo <span v-if="chatFlow.isDuplicate"> (Nome: {{ chatFlowEdicao.name }}) </span></div>
+        <div
+          v-if="chatFlow.isDuplicate"
+          class="text-subtitle1"
+        > Nome: {{ chatFlowEdicao.name }} </div>
       </q-card-section>
       <q-card-section>
         <q-input
@@ -70,7 +74,7 @@
 
 <script>
 const userId = +localStorage.getItem('userId')
-import { CriarChatFlow } from 'src/service/chatFlow'
+import { CriarChatFlow, UpdateChatFlow } from 'src/service/chatFlow'
 import { getDefaultFlow } from 'src/components/ccFlowBuilder/defaultFlow'
 
 export default {
@@ -130,11 +134,13 @@ export default {
       this.$emit('update:modalChatFlow', false)
     },
     async handleAutoresposta () {
-      if (this.chatFlow.id) {
-        // const { data } = await EditarAutoResposta(this.chatFlow)
-        // this.$emit('chatFlow:editado', data)
+      if (this.chatFlow.id && !this.chatFlow?.isDuplicate) {
+        const { data } = await UpdateChatFlow(this.chatFlow)
+        this.$notificarSucesso('Fluxo editado.')
+        this.$emit('chatFlow:editado', data)
       } else {
-        const flow = { ...getDefaultFlow(), ...this.chatFlow }
+        // setar id = null para rotina de duplicação de fluxo
+        const flow = { ...getDefaultFlow(), ...this.chatFlow, id: null }
         const { data } = await CriarChatFlow(flow)
         this.$notificarSucesso('Novo fluxo criado.')
         this.$emit('chatFlow:criada', data)

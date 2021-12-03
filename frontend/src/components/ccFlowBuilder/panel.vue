@@ -15,7 +15,7 @@
         flat
         icon="mdi-delete"
         @click="deleteElement"
-        :disabled="!this.activeElement.type || ['start', 'line', 'exception'].includes(this.activeElement.type)"
+        :disabled="!this.activeElement.type || ['start', 'exception'].includes(this.activeElement.type)"
       ></q-btn>
       <q-separator
         inset
@@ -395,7 +395,8 @@ export default {
           label: line.label ? line.label : '',
           connector: line.connector ? line.connector : '',
           anchors: line.anchors ? line.anchors : undefined,
-          paintStyle: line.paintStyle ? line.paintStyle : undefined
+          // paintStyle: line.paintStyle ? line.paintStyle : undefined
+          paintStyle: { strokeWidth: 3, stroke: '#8db1dd' }
         }
         this.jsPlumb.connect(connParam, this.jsplumbConnectOptions)
       }

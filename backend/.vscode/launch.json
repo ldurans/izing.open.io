@@ -6,6 +6,8 @@
       "processId": "${command:PickProcess}",
       "request": "attach",
       "restart": true,
+      "trace": true,
+      "sourceMaps": true,
       "skipFiles": [
         "<node_internals>/**"
       ],

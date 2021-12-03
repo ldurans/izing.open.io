@@ -111,7 +111,7 @@ export const update = async (
   const newFlow: ChatFlowData = {
     flow: { ...req.body },
     name: req.body.name,
-    isActive: true,
+    isActive: req.body.isReactive,
     userId: +req.user.id,
     tenantId
   };

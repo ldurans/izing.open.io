@@ -35,10 +35,11 @@ class ChatFlow extends Model<ChatFlow> {
       for (const node of flow.nodeList) {
         if (node.type === "node") {
           for (const item of node.interactions) {
-            if (item.type === "MediaField" && item.data.media) {
-              const { BACKEND_URL } = process.env;
+            if (item.type === "MediaField" && item.data.mediaUrl) {
+              const { BACKEND_URL, PROXY_PORT } = process.env;
               const file = item.data.mediaUrl;
-              item.data.mediaUrl = `${BACKEND_URL}:${process.env.PROXY_PORT}/public/${file}`;
+              item.data.fileName = file;
+              item.data.mediaUrl = `${BACKEND_URL}:${PROXY_PORT}/public/${file}`;
             }
           }
         }

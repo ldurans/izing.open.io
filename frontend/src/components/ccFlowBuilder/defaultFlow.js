@@ -61,7 +61,7 @@ const data = {
     to: 'nodeC',
     // connector: 'Bezier',
     // connector: 'Straight',
-    connector: 'Flowchart',
+    // connector: 'Flowchart',
     // anchors: ['Top', 'Bottom'],
     paintStyle: { strokeWidth: 3, stroke: '#8db1dd' }
   }]
