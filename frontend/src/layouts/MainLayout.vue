@@ -119,7 +119,10 @@
       content-class="bg-white text-grey-9"
     >
       <q-scroll-area class="fit">
-        <q-list :key="userProfile">
+        <q-list
+          padding
+          :key="userProfile"
+        >
           <!-- <q-item-label
             header
             class="text-grey-8"
