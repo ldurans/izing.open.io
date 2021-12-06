@@ -90,8 +90,23 @@
           <q-btn
             flat
             round
-            icon="mdi-whatsapp"
-            @click="handleSaveTicket(props.row)"
+            icon="img:whatsapp-logo.png"
+            @click="handleSaveTicket(props.row, 'whatsapp')"
+            v-if="props.row.number"
+          />
+          <q-btn
+            flat
+            round
+            icon="img:instagram-logo.png"
+            @click="handleSaveTicket(props.row, 'instagram')"
+            v-if="props.row.instagramPK"
+          />
+          <q-btn
+            flat
+            round
+            icon="img:telegram-logo.png"
+            @click="handleSaveTicket(props.row, 'telegram')"
+            v-if="props.row.telegramId"
           />
           <q-btn
             flat
@@ -153,8 +168,40 @@ export default {
       loading: false,
       columns: [
         { name: 'profilePicUrl', label: '', field: 'profilePicUrl', style: 'width: 50px', align: 'center' },
-        { name: 'name', label: 'Nome', field: 'name', align: 'left', style: 'width: 300px' },
+        {
+          name: 'name',
+          label: 'Nome',
+          field: 'name',
+          align: 'left',
+          style: 'width: 300px',
+          format: (v, r) => {
+            if (r.number && r.name == r.number && r.pushname) {
+              return r.pushname
+            }
+            return r.name
+          }
+        },
         { name: 'number', label: 'WhatsApp', field: 'number', align: 'center', style: 'width: 300px' },
+        {
+          name: 'instagramPK',
+          label: 'Instagram',
+          field: 'instagramPK',
+          align: 'center',
+          style: 'width: 300px',
+          format: (v, r) => {
+            return r.instagramPK ? r.pushname : ''
+          }
+        },
+        {
+          name: 'telegramId',
+          label: 'Id Telegram',
+          field: 'telegramId',
+          align: 'center',
+          style: 'width: 300px',
+          format: (v, r) => {
+            return r.telegramId ? r.pushname : ''
+          }
+        },
         { name: 'email', label: 'Email', field: 'email', style: 'width: 500px', align: 'left' },
         { name: 'acoes', label: 'Ações', field: 'acoes', align: 'center' }
       ]
@@ -215,13 +262,15 @@ export default {
         this.listarContatos()
       }
     },
-    async handleSaveTicket (contact) {
+    async handleSaveTicket (contact, channel) {
       if (!contact.id) return
       this.loading = true
       try {
         const { data: ticket } = await CriarTicket({
           contactId: contact.id,
+          isActiveDemand: true,
           userId: userId,
+          channel,
           status: 'open'
         })
         await this.$store.commit('SET_HAS_MORE', true)

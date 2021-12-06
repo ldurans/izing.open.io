@@ -10,22 +10,23 @@ interface Session extends Telegraf {
   id?: number;
 }
 
+const checkingTelegram: any = {};
+
 const checkMessages = async (tbot: Session, tenantId: number | string) => {
-  // if (checking[tenantId]) return;
-  // checking[tenantId] = true;
+  if (checkingTelegram[tenantId]) return;
+  checkingTelegram[tenantId] = true;
   try {
     await TelegramSendMessagesSystem(tbot, tenantId);
-    // await SendMessagesSystemWbot(wbot, tenantId);
     // Queue.add("SendMessages", { sessionId: wbot.id, tenantId });
   } catch (error) {
     logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
   }
-  // checking[tenantId] = false;
+  checkingTelegram[tenantId] = false;
 };
 
 export const StartTbotSession = async (connection: Whatsapp): Promise<void> => {
-  await connection.update({ status: "OPENING" });
   const io = getIO();
+  await connection.update({ status: "OPENING" });
   io.emit(`${connection.tenantId}-whatsappSession`, {
     action: "update",
     session: connection

@@ -1,30 +1,41 @@
+/* eslint-disable camelcase */
+import {
+  AccountRepositoryCurrentUserResponseUser,
+  AccountRepositoryLoginResponseLogged_in_user
+} from "instagram-private-api";
 import { IgApiClientMQTT } from "instagram_mqtt";
-import HandleMessage from "./HandleMessageInstagram";
 import handleRealtimeReceive from "./handleRealtimeReceive";
 // import HandleMessageTelegram from "./HandleMessageTelegram";
 
 interface Session extends IgApiClientMQTT {
   id?: number;
+  accountLogin?:
+  | AccountRepositoryLoginResponseLogged_in_user
+  | AccountRepositoryCurrentUserResponseUser;
 }
-
 const InstaBotMessageListener = (instaBot: Session): void => {
-  // instaBot.on("message", async ctx => {
-  //   HandleMessageTelegram(ctx, instaBot);
-  // });
-  // instaBot.realtime.on("receive", (topic: any, messages: any) => {
-  //   // this.handleRealtimeReceive(topic, messages)
-  //   console.log("receive", topic, messages);
-  //   handleRealtimeReceive(topic, messages);
-  //   // HandleMessage(messages, instaBot);
-  // });
-
   instaBot.realtime.on("message", async ctx => {
-    // this.handleRealtimeReceive(topic, messages)
-    console.log("message", ctx);
+    // não processar as mudanças de status
+    if (ctx.message.op === "replace" && ctx.message_type === 1) return;
+
+    // evitar envio duplicato não processar os envios feito pelo sistema
+    if (instaBot?.accountLogin?.pk === ctx.message.user_id) return;
     // op = replace,
     // message_type = 1
     // HandleMessage(messages, instaBot);
     handleRealtimeReceive(ctx, instaBot);
+  });
+
+  instaBot.realtime.on("direct", ev => {
+    console.log("direct ev", ev);
+  });
+
+  instaBot.realtime.on("realtimeSub", ev => {
+    console.log("realtimeSub ev", ev);
+  });
+
+  instaBot.realtime.on("iris", ev => {
+    console.log("iris ev", ev);
   });
 
   instaBot.realtime.on("error", console.error);

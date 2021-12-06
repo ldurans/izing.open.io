@@ -1,29 +1,41 @@
+/* eslint-disable camelcase */
+import {
+  AccountRepositoryCurrentUserResponseUser,
+  AccountRepositoryLoginResponseLogged_in_user
+} from "instagram-private-api";
 import { IgApiClientMQTT } from "instagram_mqtt";
 import { initInstaBot } from "../../libs/InstaBot";
 import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
 import { logger } from "../../utils/logger";
 import { InstaBotMessageListener } from "./InstaBotMessageListener";
+import InstagramSendMessagesSystem from "./InstagramSendMessagesSystem";
 
 interface Session extends IgApiClientMQTT {
   id?: number;
+  accountLogin?:
+  | AccountRepositoryLoginResponseLogged_in_user
+  | AccountRepositoryCurrentUserResponseUser;
 }
-const checkMessages = async (tbot: Session, tenantId: number | string) => {
-  // if (checking[tenantId]) return;
-  // checking[tenantId] = true;
+
+const checkingInstagram: any = {};
+
+const checkMessages = async (instaBot: Session, tenantId: number | string) => {
+  if (checkingInstagram[tenantId]) return;
+  checkingInstagram[tenantId] = true;
   try {
-    // await TelegramSendMessagesSystem(tbot, tenantId);
+    await InstagramSendMessagesSystem(instaBot, tenantId);
   } catch (error) {
     logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
   }
-  // checking[tenantId] = false;
+  checkingInstagram[tenantId] = false;
 };
 
 export const StartInstaBotSession = async (
   connection: Whatsapp
 ): Promise<void> => {
-  await connection.update({ status: "OPENING" });
   const io = getIO();
+  await connection.update({ status: "OPENING" });
   io.emit(`${connection.tenantId}-whatsappSession`, {
     action: "update",
     session: connection
@@ -38,6 +50,12 @@ export const StartInstaBotSession = async (
       instaBot,
       connection.tenantId
     );
+    logger.info(`Conexão Instagram iniciada | Empresa: ${connection.tenantId}`);
+    await connection.update({ status: "CONNECTED" });
+    io.emit(`${connection.tenantId}-whatsappSession`, {
+      action: "update",
+      session: connection
+    });
   } catch (err) {
     logger.error(`StartInstaBotSession | Error: ${err}`);
   }

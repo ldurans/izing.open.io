@@ -40,7 +40,10 @@ const SendWhatsAppMessage = async ({
       }
     );
 
-    await ticket.update({ lastMessage: body });
+    await ticket.update({
+      lastMessage: body,
+      lastMessageAt: new Date().getTime()
+    });
     try {
       if (userId) {
         await UserMessagesLog.create({

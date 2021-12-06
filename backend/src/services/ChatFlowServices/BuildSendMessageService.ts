@@ -107,7 +107,8 @@ const BuildSendMessageService = async ({
       }
 
       await ticket.update({
-        lastMessage: messageCreated.body
+        lastMessage: messageCreated.body,
+        lastMessageAt: new Date().getTime()
       });
 
       socketEmit({
@@ -142,7 +143,11 @@ const BuildSendMessageService = async ({
         throw new Error("ERR_CREATING_MESSAGE_SYSTEM");
       }
 
-      await ticket.update({ lastMessage: messageCreated.body, answered: true });
+      await ticket.update({
+        lastMessage: messageCreated.body,
+        lastMessageAt: new Date().getTime(),
+        answered: true
+      });
 
       socketEmit({
         tenantId,

@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import {
+  AccountRepositoryCurrentUserResponseUser,
   AccountRepositoryLoginResponseLogged_in_user,
   IgApiClient
   // IgLoginTwoFactorRequiredError
@@ -11,7 +12,9 @@ import { logger } from "../utils/logger";
 
 interface Session extends IgApiClientMQTT {
   id?: number;
-  accountLogin?: AccountRepositoryLoginResponseLogged_in_user;
+  accountLogin?:
+  | AccountRepositoryLoginResponseLogged_in_user
+  | AccountRepositoryCurrentUserResponseUser;
 }
 
 const sessions: Session[] = [];
@@ -22,8 +25,8 @@ export const initInstaBot = async (connection: Whatsapp): Promise<Session> => {
     let sessionCfg;
     let loggedUser;
     // const { tenantId } = connection;
-    const username = "@l_durans";
-    const password = "durans@3105";
+    const username = "@Codar.Channel";
+    const password = "marina@0509";
     // const password = "";
     if (!username || !password) {
       throw new Error("Not credentials");
@@ -37,15 +40,15 @@ export const initInstaBot = async (connection: Whatsapp): Promise<Session> => {
     ig.state.generateDevice(username);
 
     if (connection.session) {
-      console.log("Aproveitando a session");
+      const { accountLogin } = ig;
       await ig.importState(JSON.parse(connection.session));
+      ig.accountLogin = accountLogin;
       // await ig.state.deserialize(sessionCfg);
       // await ig.user.info(ig.state.cookieUserId);
       // await ig.user.info(ig.state.cookieUserId);
     } else {
       await ig.simulate.preLoginFlow();
       loggedUser = await ig.account.login(username, password);
-      console.log(loggedUser);
       ig.accountLogin = loggedUser;
       process.nextTick(async () => {
         await ig.simulate.postLoginFlow();
@@ -69,10 +72,15 @@ export const initInstaBot = async (connection: Whatsapp): Promise<Session> => {
     const sessionIndex = sessions.findIndex(s => s.id === connection.id);
     if (sessionIndex === -1) {
       ig.id = connection.id;
+      if (!ig.accountLogin) {
+        ig.accountLogin = await ig.account.currentUser();
+      }
       sessions.push(ig);
     } else {
       ig.id = connection.id;
-      ig.accountLogin = sessions[sessionIndex].accountLogin;
+      if (!ig.accountLogin) {
+        ig.accountLogin = await ig.account.currentUser();
+      }
       sessions[sessionIndex] = ig;
     }
 

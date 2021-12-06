@@ -12,15 +12,21 @@ interface Request {
   status: string;
   userId: number;
   tenantId: string | number;
+  channel: string;
 }
 
 const CreateTicketService = async ({
   contactId,
   status,
   userId,
-  tenantId
+  tenantId,
+  channel
 }: Request): Promise<Ticket> => {
   const defaultWhatsapp = await GetDefaultWhatsApp(tenantId);
+
+  if (!channel || !["instagram", "telegram", "whatsapp"].includes(channel)) {
+    throw new AppError("ERR_CREATING_TICKET");
+  }
 
   await CheckContactOpenTickets(contactId);
 
@@ -31,6 +37,8 @@ const CreateTicketService = async ({
     status,
     isGroup,
     userId,
+    isActiveDemand: true,
+    channel,
     tenantId
   });
 

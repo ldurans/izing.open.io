@@ -112,16 +112,20 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+      :mini="miniState"
+      @mouseover="miniState = false"
+      @mouseout="miniState = true"
+      mini-to-overlay
       content-class="bg-white text-grey-9"
     >
       <q-scroll-area class="fit">
         <q-list :key="userProfile">
-          <q-item-label
+          <!-- <q-item-label
             header
             class="text-grey-8"
           >
             Menu
-          </q-item-label>
+          </q-item-label> -->
           <EssentialLink
             v-for="item in menuData"
             :key="item.title"
@@ -129,7 +133,7 @@
           />
           <div v-if="userProfile === 'admin'">
             <q-separator spaced />
-            <q-item-label header>Administração</q-item-label>
+            <!-- <q-item-label header>Administração</q-item-label> -->
             <template v-for="item in menuDataAdmin">
               <EssentialLink
                 v-if="exibirMenuBeta(item)"
@@ -184,15 +188,15 @@ const socket = openSocket(process.env.API, {
 })
 
 const objMenu = [
-  // {
-  //   title: 'Dashboard',
-  //   caption: '',
-  //   icon: 'mdi-view-dashboard',
-  //   routeName: 'dashboard'
-  // },
+  {
+    title: 'Dashboard',
+    caption: '',
+    icon: 'mdi-home',
+    routeName: 'home-dashboard'
+  },
   {
     title: 'Painel Atendimentos',
-    caption: 'Visão dos atendimentos por usuário e filas',
+    caption: 'Visão geral dos atendimentos',
     icon: 'mdi-view-dashboard-variant',
     routeName: 'painel-atendimentos'
   },
@@ -238,7 +242,7 @@ const objMenuAdmin = [
   },
   {
     title: 'Mensagens Rápidas',
-    caption: 'Mensagens pré-definidas para envio rápido',
+    caption: 'Mensagens pré-definidas',
     icon: 'mdi-reply-all-outline',
     routeName: 'mensagens-rapidas'
   },
@@ -256,7 +260,7 @@ const objMenuAdmin = [
   },
   {
     title: 'Horário de Atendimento',
-    caption: 'Horário de funcionamento da empresa',
+    caption: 'Horário de funcionamento',
     icon: 'mdi-calendar-clock',
     routeName: 'horarioAtendimento'
   },
@@ -295,6 +299,7 @@ export default {
         '@wchats.com.br',
         '@sispolos.com.br'
       ],
+      miniState: true,
       userProfile: 'user',
       modalUsuario: false,
       usuario,

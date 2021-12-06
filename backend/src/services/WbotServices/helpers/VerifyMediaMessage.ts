@@ -59,6 +59,7 @@ const VerifyMediaMessage = async (
 
   await ticket.update({
     lastMessage: msg.body || media.filename,
+    lastMessageAt: new Date().getTime(),
     answered: msg.fromMe || false
   });
   const newMessage = await CreateMessageService({

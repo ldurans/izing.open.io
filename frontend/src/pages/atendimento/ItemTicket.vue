@@ -1,8 +1,7 @@
 <template>
   <q-list
-    padding
-    class="q-px-md "
     separator
+    class="q-px-sm q-py-none q-pt-sm"
   >
     <!-- :clickable="ticket.status !== 'pending' && (ticket.id !== $store.getters['ticketFocado'].id || $route.name !== 'chat')" -->
     <q-item
@@ -11,7 +10,9 @@
       @click="abrirChatContato(ticket)"
       :style="`border-left: 5px solid ${borderColor[ticket.status]}; border-radius: 10px`"
       id="item-ticket-houve"
+      class="ticketBorder q-px-sm"
       :class="{
+        'ticketBorderGrey': !$q.dark.isActive,
         'ticket-active-item': ticket.id === $store.getters['ticketFocado'].id,
         'ticketNotAnswered': ticket.answered == false && ticket.isGroup == false && ticket.status == 'open'
       }"
@@ -32,11 +33,11 @@
           <q-badge
             v-if="ticket.unreadMessages"
             style="border-radius: 10px;"
-            class="text-center"
+            class="text-center text-bold"
             floating
             dense
-            text-color="white"
-            color="green"
+            text-color="black"
+            color="blue-2"
             :label="ticket.unreadMessages"
           />
           <q-avatar>
@@ -57,11 +58,11 @@
           <q-badge
             v-if="ticket.unreadMessages"
             style="border-radius: 10px; z-index: 99"
-            class="text-center"
+            class="text-center text-bold"
             floating
             dense
-            text-color="white"
-            color="green"
+            color="blue-2"
+            text-color="black"
             :label="ticket.unreadMessages"
           />
           <img
@@ -69,11 +70,12 @@
             onerror="this.style.display='none'"
           />
           <q-icon
-            size="50px"
+            size="45px"
             name="mdi-account-circle"
-            color="grey-4"
+            color="grey-8"
           />
         </q-avatar>
+
       </q-item-section>
       <q-item-section id="ListItemsTicket">
         <q-item-label
@@ -81,6 +83,10 @@
           lines="1"
         >
           {{ticket.name}}
+          <q-icon
+            size="20px"
+            :name="`img:${ticket.channel}-logo.png`"
+          />
           <span class="absolute-top-right q-pr-xs">
             <q-badge
               dense
@@ -89,7 +95,7 @@
               square
               text-color="grey-10"
               color="secondary"
-              :label="dataInWords(ticket.updatedAt)"
+              :label="dataInWords(ticket.lastMessageAt, ticket.updatedAt)"
               :key="recalcularHora"
             />
           </span>
@@ -154,10 +160,11 @@
 </template>
 
 <script>
-import { formatDistance, parseJSON } from 'date-fns'
+import { formatDistance } from 'date-fns'
 import pt from 'date-fns/locale/pt-BR'
 import mixinAtualizarStatusTicket from './mixinAtualizarStatusTicket'
 import { outlinedAccountCircle } from '@quasar/extras/material-icons-outlined'
+import { parseJSON } from 'date-fns/esm'
 
 export default {
   name: 'ItemTicket',
@@ -212,8 +219,12 @@ export default {
         return ''
       }
     },
-    dataInWords (date) {
-      return formatDistance(parseJSON(date), new Date(), { locale: pt })
+    dataInWords (timestamp, updated) {
+      let data = parseJSON(updated)
+      if (timestamp) {
+        data = new Date(Number(timestamp))
+      }
+      return formatDistance(data, new Date(), { locale: pt })
     },
     abrirChatContato (ticket) {
       // caso esteja em um tamanho mobile, fechar a drawer dos contatos
@@ -274,5 +285,11 @@ img:after
   border-left: 3px solid $positive
 
 .ticketNotAnswered
-  border-left: 5px solid $amber
+  border-left: 5px solid $amber !important
+
+.ticketBorder
+  border-left: 5px solid $grey-9
+
+.ticketBorderGrey
+  border-left: 5px solid $grey-4
 </style>

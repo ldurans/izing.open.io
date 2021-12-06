@@ -1,8 +1,16 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
+import { readFile } from "fs/promises";
+import ffmpeg from "fluent-ffmpeg";
+import {
+  AccountRepositoryCurrentUserResponseUser,
+  AccountRepositoryLoginResponseLogged_in_user
+} from "instagram-private-api";
+import { IgApiClientMQTT } from "instagram_mqtt";
 import { join } from "path";
 import { Op } from "sequelize";
-import { Telegraf } from "telegraf";
+import sharp from "sharp";
 import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 import socketEmit from "../../helpers/socketEmit";
 import Message from "../../models/Message";
@@ -11,12 +19,15 @@ import { logger } from "../../utils/logger";
 // import { sleepRandomTime } from "../../utils/sleepRandomTime";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
-interface Session extends Telegraf {
+interface Session extends IgApiClientMQTT {
   id?: number;
+  accountLogin?:
+  | AccountRepositoryLoginResponseLogged_in_user
+  | AccountRepositoryCurrentUserResponseUser;
 }
 
 const SendMessagesSystemWbot = async (
-  tbot: Session,
+  instaBot: Session,
   tenantId: number | string
 ): Promise<void> => {
   const messages = await Message.findAll({
@@ -40,7 +51,7 @@ const SendMessagesSystemWbot = async (
       {
         model: Ticket,
         as: "ticket",
-        where: { tenantId, channel: "telegram" },
+        where: { tenantId, channel: "instagram" },
         include: ["contact"]
       },
       {
@@ -60,7 +71,10 @@ const SendMessagesSystemWbot = async (
     const message: Message | any = messageItem;
     // let quotedMsgSerializedId: string | undefined;
     const { ticket } = message;
-    const chatId = ticket.contact.telegramId;
+    const chatId = ticket.contact.instagramPK;
+
+    const threadEntity = await instaBot.entity.directThread([chatId]);
+    console.log(threadEntity);
     // if (message.quotedMsg) {
     //   quotedMsgSerializedId = `${message.quotedMsg.fromMe}_${contactNumber}@${typeGroup}.us_${message.quotedMsg.messageId}`;
     // }
@@ -69,27 +83,38 @@ const SendMessagesSystemWbot = async (
       if (!["chat", "text"].includes(message.mediaType) && message.mediaName) {
         const customPath = join(__dirname, "..", "..", "..", "public");
         const mediaPath = join(customPath, message.mediaName);
+        const file: Buffer = await readFile(mediaPath);
+        console.log(mediaPath);
         if (message.mediaType === "audio" || message.mediaType === "ptt") {
-          sendedMessage = await tbot.telegram.sendVoice(chatId, {
-            source: mediaPath
+          const splitName = message.mediaName.split(".");
+          const newAudioPath = join(customPath, `${splitName[0]}.mp4`);
+          await new Promise((resolve, reject) => {
+            ffmpeg(mediaPath)
+              .toFormat("mp4")
+              .on("error", error => reject(error))
+              .on("end", () => resolve(true))
+              .saveToFile(newAudioPath);
           });
-        } else if (message.mediaType === "image") {
-          sendedMessage = await tbot.telegram.sendPhoto(chatId, {
-            source: mediaPath
-          });
-        } else if (message.mediaType === "video") {
-          sendedMessage = await tbot.telegram.sendVideo(chatId, {
-            source: mediaPath
-          });
-        } else {
-          sendedMessage = await tbot.telegram.sendDocument(chatId, {
-            source: mediaPath
+          const voice: Buffer = await readFile(newAudioPath);
+          sendedMessage = await threadEntity.broadcastVoice({
+            file: voice
           });
         }
-
+        if (message.mediaType === "image") {
+          const photo = await sharp(file).jpeg().toBuffer();
+          sendedMessage = await threadEntity.broadcastPhoto({
+            file: photo
+          });
+        }
+        if (message.mediaType === "video") {
+          sendedMessage = await threadEntity.broadcastVideo({
+            video: file
+          });
+        }
         logger.info("sendMessage media");
-      } else {
-        sendedMessage = await tbot.telegram.sendMessage(chatId, message.body);
+      }
+      if (["chat", "text"].includes(message.mediaType) && !message.mediaName) {
+        sendedMessage = await threadEntity.broadcastText(message.body);
         logger.info("sendMessage text");
       }
 
@@ -98,8 +123,8 @@ const SendMessagesSystemWbot = async (
         ...message,
         ...sendedMessage,
         id: message.id,
-        timestamp: sendedMessage.date,
-        messageId: sendedMessage.message_id,
+        timestamp: message.timestamp,
+        messageId: sendedMessage.item_id,
         status: "sended",
         ack: 2
       };
@@ -113,11 +138,11 @@ const SendMessagesSystemWbot = async (
         tenantId: ticket.tenantId,
         type: "chat:ack",
         payload: {
-          ...message.dataValues, // necessário para enviar error no envio do socket - call size
+          ...message.dataValues,
+          mediaUrl: message.mediaUrl, // necessário para enviar error no envio do socket - call size
           id: message.id,
-          mediaUrl: message.mediaUrl,
-          timestamp: sendedMessage.date,
-          messageId: sendedMessage.message_id,
+          timestamp: message.timestamp,
+          messageId: sendedMessage.item_id,
           status: "sended",
           ack: 2
         }

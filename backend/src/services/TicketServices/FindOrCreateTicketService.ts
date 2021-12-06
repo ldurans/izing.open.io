@@ -35,7 +35,10 @@ const FindOrCreateTicketService = async ({
   // se for uma mensagem de campanha, não abrir tícket
   if (msg && msg.fromMe) {
     const msgCampaign = await CampaignContacts.findOne({
-      where: { contactId: contact.id, messageId: msg.id.id || msg.message_id }
+      where: {
+        contactId: contact.id,
+        messageId: msg.id?.id || msg.message_id || msg.item_id
+      }
     });
     if (msgCampaign?.id) {
       return { isCampaignMessage: true };
@@ -73,7 +76,7 @@ const FindOrCreateTicketService = async ({
 
   if (ticket) {
     unreadMessages =
-      channel === "telegram" && unreadMessages > 0
+      ["telegram", "instagram"].includes(channel) && unreadMessages > 0
         ? (unreadMessages += ticket.unreadMessages)
         : unreadMessages;
     await ticket.update({ unreadMessages });

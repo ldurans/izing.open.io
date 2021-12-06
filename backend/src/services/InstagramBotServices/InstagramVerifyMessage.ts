@@ -1,13 +1,13 @@
 // import * as Sentry from "@sentry/node";
+import { MessageSyncMessageWrapper } from "instagram_mqtt";
 
-import { Context } from "telegraf";
 import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
 import CreateMessageService from "../MessageServices/CreateMessageService";
 // import { logger } from "../../utils/logger";
 
 const VerifyMessage = async (
-  ctx: Context | any,
+  ctx: MessageSyncMessageWrapper | any,
   fromMe: boolean,
   ticket: Ticket,
   contact: Contact
@@ -17,7 +17,7 @@ const VerifyMessage = async (
   // logger.error(err);
 
   const messageData = {
-    messageId: String(ctx.message?.message_id),
+    messageId: String(ctx.message.item_id),
     ticketId: ticket.id,
     contactId: fromMe ? undefined : contact.id,
     body: ctx.message.text,
@@ -25,7 +25,7 @@ const VerifyMessage = async (
     read: fromMe,
     mediaType: "chat",
     quotedMsgId: "",
-    timestamp: ctx.message.date,
+    timestamp: new Date().getTime(), // Math.trunc(ctx.message.timestamp / 1000),
     status: "received"
   };
   await ticket.update({

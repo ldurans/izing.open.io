@@ -54,14 +54,24 @@ class Ticket extends Model<Ticket> {
   @Column
   isGroup: boolean;
 
+  @Default(false)
+  @Column
+  isActiveDemand: boolean;
+
   @CreatedAt
   createdAt: Date;
 
   @UpdatedAt
   updatedAt: Date;
 
-  @Column(DataType.DATE)
-  closedAt: Date;
+  @Column(DataType.BIGINT)
+  closedAt: number;
+
+  @Column(DataType.BIGINT)
+  lastMessageAt: number;
+
+  @Column(DataType.BIGINT)
+  startedAttendanceAt: number;
 
   @ForeignKey(() => User)
   @Column
@@ -141,38 +151,6 @@ class Ticket extends Model<Ticket> {
 
   @HasMany(() => MessagesOffLine)
   messagesOffLine: MessagesOffLine[];
-
-  // @AfterCreate
-  // static async AutoReplyWelcome(instance: Ticket): Promise<void> {
-  //   if (instance.userId || instance.isGroup) return;
-
-  //   const stepAutoReply = await ShowStepAutoReplyMessageService(
-  //     0,
-  //     0,
-  //     0,
-  //     true,
-  //     instance.tenantId
-  //   );
-
-  //   if (!stepAutoReply) return;
-
-  //   const contato = await Contact.findByPk(instance.contactId);
-  //   const { celularTeste } = stepAutoReply.autoReply;
-  //   const celularContato = contato?.number;
-
-  //   if (
-  //     (celularTeste &&
-  //       celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
-  //     !celularContato
-  //   ) {
-  //     return;
-  //   }
-
-  //   await instance.update({
-  //     autoReplyId: stepAutoReply.autoReply.id,
-  //     stepAutoReplyId: stepAutoReply.id
-  //   });
-  // }
 }
 
 export default Ticket;

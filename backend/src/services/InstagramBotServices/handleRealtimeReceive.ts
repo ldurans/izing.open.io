@@ -1,13 +1,21 @@
 /* eslint-disable camelcase */
-import { AccountRepositoryLoginResponseLogged_in_user } from "instagram-private-api";
+import {
+  AccountRepositoryCurrentUserResponseUser,
+  AccountRepositoryLoginResponseLogged_in_user
+} from "instagram-private-api";
 import { IgApiClientMQTT, MessageSyncMessageWrapper } from "instagram_mqtt";
+import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
 import FindOrCreateTicketService from "../TicketServices/FindOrCreateTicketService";
 import ShowWhatsAppService from "../WhatsappService/ShowWhatsAppService";
 import InstagramVerifyContact from "./InstagramVerifyContact";
+import VerifyMediaMessage from "./InstagramVerifyMediaMessage";
+import VerifyMessage from "./InstagramVerifyMessage";
 
 interface Session extends IgApiClientMQTT {
   id?: number;
-  accountLogin?: AccountRepositoryLoginResponseLogged_in_user;
+  accountLogin?:
+  | AccountRepositoryLoginResponseLogged_in_user
+  | AccountRepositoryCurrentUserResponseUser;
 }
 
 const handleRealtimeReceive = async (
@@ -38,7 +46,31 @@ const handleRealtimeReceive = async (
     channel: "instagram"
   });
 
-  console.log(ticket);
+  if (ctx.message.item_type !== "text") {
+    await VerifyMediaMessage(ctx, fromMe, ticket, contact);
+  } else {
+    await VerifyMessage(ctx, fromMe, ticket, contact);
+  }
+
+  // marcar como lida
+  const entity = await instaBot.entity.directThread(ctx.message.thread_id);
+  entity.markItemSeen(ctx.message.item_id);
+
+  await VerifyStepsChatFlowTicket(
+    {
+      fromMe,
+      body: ctx.message?.text || ""
+    },
+    ticket
+  );
+
+  // await verifyBusinessHours(
+  //   {
+  //     fromMe,
+  //     timestamp: message.date
+  //   },
+  //   ticket
+  // );
 };
 
 export default handleRealtimeReceive;

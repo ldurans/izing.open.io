@@ -6,6 +6,7 @@ const routes = [
     redirect: { name: 'contatos' },
     children: [
       { path: '', component: () => import('pages/contatos/Index.vue') },
+      { path: '/home', name: 'home-dashboard', component: () => import('pages/dashboard/Index.vue') },
       { path: '/painel-atendimentos', name: 'painel-atendimentos', component: () => import('pages/dashboard/DashTicketsFilas.vue') },
       // { path: '/ConsultarTicketsQueuesService', name: 'dashboard', component: () => import('pages/dashboard/Index.vue') },
       { path: '/sessoes', name: 'sessoes', component: () => import('pages/sessaoWhatsapp/Index.vue') },

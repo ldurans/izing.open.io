@@ -82,10 +82,16 @@ const UpdateTicketService = async ({
     userId
   };
 
-  // se iniciar atendimento, retirar o bot
+  // se atendimento for encerrado, informar data da finalização
+  if (statusData === "closed") {
+    data.closedAt = new Date().getTime();
+  }
+
+  // se iniciar atendimento, retirar o bot e informar a data
   if (oldStatus === "pending" && statusData === "open") {
     data.autoReplyId = null;
     data.stepAutoReplyId = null;
+    data.startedAttendanceAt = new Date().getTime();
   }
 
   await ticket.update(data);

@@ -120,7 +120,10 @@ const CreateMessageOffilineService = async ({
               contact: messageCreated.ticket.contact
             });
 
-          await ticket.update({ lastMessage: messageCreated.body });
+          await ticket.update({
+            lastMessage: messageCreated.body,
+            lastMessageAt: new Date().getTime()
+          });
         })
       );
     } else {
@@ -151,7 +154,10 @@ const CreateMessageOffilineService = async ({
         throw new Error("ERR_CREATING_MESSAGE");
       }
 
-      await ticket.update({ lastMessage: messageCreated.body });
+      await ticket.update({
+        lastMessage: messageCreated.body,
+        lastMessageAt: new Date().getTime()
+      });
 
       io.to(`${tenantId}-${messageCreated.ticketId.toString()}`)
         .to(`${tenantId}-${messageCreated.ticket.status}`)
