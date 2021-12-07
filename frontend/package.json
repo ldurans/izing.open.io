@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "apexcharts": "^3.32.0",
     "axios": "^0.18.1",
     "core-js": "^3.6.5",
     "date-fns": "^2.16.1",
@@ -24,6 +25,7 @@
     "socket.io-client": "^2.3.1",
     "v-emoji-picker": "^2.3.1",
     "vdata-parser": "^0.1.5",
+    "vue-apexcharts": "^1.6.2",
     "vue-codemirror": "^4.0.6",
     "vue-easy-lightbox": "^0.14.0",
     "vue-infinite-loading": "^2.4.5",
