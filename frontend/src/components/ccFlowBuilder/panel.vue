@@ -86,8 +86,8 @@
           ref="nodeForm"
           @setLineLabel="setLineLabel"
           @repaintEverything="repaintEverything"
-          :filas="filas"
-          :usuarios="usuarios"
+          :filas="cDataFlow.filas"
+          :usuarios="cDataFlow.usuarios"
           :nodesList="data"
           @addNode="addNode"
           @deleteLine="deleteLine"
@@ -246,8 +246,12 @@ export default {
       UpdateChatFlow(data)
         .then(res => {
           console.log('CriarChatFlow', res.data)
+          this.$notificarSucesso('Fluxo salvo!')
         })
-        .catch(error => console.error(error))
+        .catch(error => {
+          console.error(error)
+          this.$notificarErro(error)
+        })
     },
     jsPlumpConsist (evt) {
       const from = evt.sourceId

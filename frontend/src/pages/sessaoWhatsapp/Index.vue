@@ -12,7 +12,7 @@
         </q-card-section>
       </q-card>
     </div>
-    <div class="row full-width q-py-lg q-px-sm q-gutter-x-md">
+    <div class="row full-width q-py-lg q-px-sm q-gutter-md">
       <template v-for="item in whatsapps">
         <q-card
           flat
@@ -25,7 +25,7 @@
               <q-avatar>
                 <q-icon
                   size="40px"
-                  name="img:whatsapp-logo.png"
+                  :name="`img:${item.type}-logo.png`"
                 />
               </q-avatar>
             </q-item-section>

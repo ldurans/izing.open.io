@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <q-card class="q-ma-sm">
-      <div class="text-h6 text-bold q-pa-sm">
-        DashBoard
-      </div>
-      <q-card-section class="q-pt-none">
-        <div class="row col q-gutter-sm justify-end">
+  <div class="q-pa-sm">
+    <q-card class="q-my-md">
+      <q-card-section class="row justify-between items-center">
+        <div class="col-xs-12 col-md-3 text-h4 text-bold">
+          DashBoard
+        </div>
+        <div class="col-xs-12 col-md-9 justify-end flex q-gutter-sm">
           <q-datetime-picker
             style="width: 200px"
             dense
@@ -32,7 +32,7 @@
             format24h
             v-model="params.endDate"
           />
-          <q-select
+          <!-- <q-select
             style="width: 300px"
             dense
             outlined
@@ -50,48 +50,95 @@
             option-value="id"
             option-label="queue"
             input-style="width: 280px; max-width: 280px;"
+          /> -->
+          <q-btn
+            class="bg-padrao"
+            flat
+            color="primary"
+            icon="refresh"
+            label="Atualizar"
+            @click="getDashData"
           />
+
         </div>
       </q-card-section>
+    </q-card>
 
-      <q-card-section>
-        <div class="row q-gutter-md">
-          <div class="col">
-            <q-card class="my-card full-height">
-              <q-card-section class="text-center">
+    <q-card class="q-my-md q-pa-sm">
+      <q-card-section class="q-pa-md">
+        <div class="row q-gutter-md justify-center">
+          <div class="col-xs-12 col-sm-shrink">
+            <q-card
+              flat
+              bordered
+              class="my-card full-height"
+              style="min-width: 200px"
+            >
+              <q-card-section class="text-center ">
                 <p class="text-h4 text-bold text-center"> {{ ticketsAndTimes.qtd_total_atendimentos }} </p>
                 Total Atendimentos
               </q-card-section>
             </q-card>
           </div>
-          <div class="col">
-            <q-card class="my-card full-height">
+          <div class="col-xs-12 col-sm-shrink">
+            <q-card
+              flat
+              bordered
+              class="my-card full-height"
+              style="min-width: 200px"
+            >
               <q-card-section class="text-center">
                 <p class="text-h4 text-bold text-center"> {{ ticketsAndTimes.qtd_demanda_ativa }} </p>
                 Receptivo
               </q-card-section>
             </q-card>
           </div>
-          <div class="col">
-            <q-card class="my-card full-height">
+          <div class="col-xs-12 col-sm-shrink">
+            <q-card
+              flat
+              bordered
+              class="my-card full-height"
+              style="min-width: 200px"
+            >
               <q-card-section class="text-center">
                 <p class="text-h4 text-bold text-center"> {{ ticketsAndTimes.qtd_demanda_receptiva }} </p>
                 Ativo
               </q-card-section>
             </q-card>
           </div>
-          <div class="col">
-            <q-card class="my-card full-height">
+          <div class="col-xs-12 col-sm-shrink">
+            <q-card
+              flat
+              bordered
+              class="my-card full-height"
+              style="min-width: 200px"
+            >
               <q-card-section class="text-center">
-                <p class="text-h4 text-bold text-center"> {{ cTmaFormat }} </p>
+                <p class="text-h4 text-bold text-center"> {{ ticketsAndTimes.new_contacts }} </p>
+                Novos Contatos
+              </q-card-section>
+            </q-card>
+          </div>
+          <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2">
+            <q-card
+              flat
+              bordered
+              class="my-card full-height"
+            >
+              <q-card-section class="text-center">
+                <p class="text-h5 text-bold text-center"> {{ cTmaFormat }} </p>
                 Tempo Médio Atendimento (TMA)
               </q-card-section>
             </q-card>
           </div>
-          <div class="col">
-            <q-card class="my-card full-height">
+          <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2">
+            <q-card
+              flat
+              bordered
+              class="my-card full-height"
+            >
               <q-card-section class="text-center">
-                <p class="text-h4 text-bold text-center"> {{ cTmeFormat }} </p>
+                <p class="text-h5 text-bold text-center"> {{ cTmeFormat }} </p>
                 Tempo Médio 1º Resposta
               </q-card-section>
             </q-card>
@@ -99,64 +146,53 @@
         </div>
 
       </q-card-section>
+    </q-card>
 
-      <q-card-section>
-        <div class="row">
-          <div class="col">
-            <q-card
-              square
-              flat
-              class="cardGraficoMeio"
-            >
-              <q-card-section>
-                <ApexChart
-                  ref="ChartTicketsChannels"
-                  type="donut"
-                  height="300"
-                  width="100%"
-                  :options="ticketsChannelsOptions"
-                  :series="ticketsChannelsOptions.series"
-                />
-              </q-card-section>
-            </q-card>
-          </div>
-          <div class="col">
-            <q-card
-              square
-              flat
-              class="cardGraficoMeio"
-            >
-              <q-card-section>
-                <ApexChart
-                  ref="ChartTicketsQueue"
-                  type="donut"
-                  height="300"
-                  width="100%"
-                  :options="ticketsQueueOptions"
-                  :series="ticketsQueueOptions.series"
-                />
-              </q-card-section>
-            </q-card>
-          </div>
-        </div>
-
-      </q-card-section>
-
-      <q-card-section>
-        <div class="row">
-          <div class="col">
+    <div class="row q-col-gutter-md">
+      <div class="col">
+        <q-card>
+          <q-card-section class="q-pa-md">
             <ApexChart
-              ref="ChartTicketsEvolutionChannels"
-              type="bar"
+              ref="ChartTicketsChannels"
+              type="donut"
               height="300"
-              :options="ticketsEvolutionChannelsOptions"
-              :series="ticketsEvolutionChannelsOptions.series"
+              width="100%"
+              :options="ticketsChannelsOptions"
+              :series="ticketsChannelsOptions.series"
             />
-          </div>
-        </div>
-      </q-card-section>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col">
+        <q-card>
+          <q-card-section class="q-pa-md">
+            <ApexChart
+              ref="ChartTicketsQueue"
+              type="donut"
+              height="300"
+              width="100%"
+              :options="ticketsQueueOptions"
+              :series="ticketsQueueOptions.series"
+            />
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
 
-      <q-card-section>
+    <q-card class="q-my-md">
+      <q-card-section class="q-pa-md">
+        <ApexChart
+          ref="ChartTicketsEvolutionChannels"
+          type="bar"
+          height="300"
+          :options="ticketsEvolutionChannelsOptions"
+          :series="ticketsEvolutionChannelsOptions.series"
+        />
+      </q-card-section>
+    </q-card>
+
+    <q-card class="q-my-md">
+      <q-card-section class="q-pa-md">
         <div class="row">
           <div class="col">
             <ApexChart
@@ -169,7 +205,10 @@
           </div>
         </div>
       </q-card-section>
-      <q-card-section>
+    </q-card>
+
+    <q-card class="q-my-md q-pa-sm">
+      <q-card-section class="q-pa-md">
         <q-table
           title="Performance Usuários"
           :data="ticketsPerUsersDetail"
@@ -381,11 +420,6 @@ export default {
           offsetX: 0
         }
       },
-      TicketsQueuesSeries: [
-        { name: 'Fila 1', data: [44, 55, 57, 56, 61, 58, 63, 60, 66] },
-        { name: 'Fila 2', data: [44, 55, 57, 56, 61, 58, 63, 60, 66] },
-        { name: 'Fila 4', data: [44, 55, 57, 56, 61, 58, 63, 60, 66] }
-      ],
       ticketsEvolutionChannels: [],
       ticketsEvolutionChannelsOptions: {
         // colors: ['#008FFB', '#00E396', '#FEB019'],
@@ -400,12 +434,7 @@ export default {
         },
         grid: {
           show: true,
-          strokeDashArray: 0,
-          xaxis: {
-            lines: {
-              show: true
-            }
-          }
+          strokeDashArray: 0
         },
         fill: {
           type: 'gradient',
@@ -471,6 +500,20 @@ export default {
         theme: {
           mode: 'light',
           palette: 'palette1'
+        },
+        chart: {
+          toolbar: {
+            tools: {
+              download: true,
+              selection: false,
+              zoom: false,
+              zoomin: false,
+              zoomout: false,
+              pan: false,
+              reset: false | '<img src="/static/icons/reset.png" width="20">'
+            }
+
+          }
         },
         grid: {
           show: true,
@@ -581,6 +624,7 @@ export default {
           name: 'tme',
           label: 'T.M.E',
           field: 'tme',
+          align: 'center',
           headerStyle: 'text-align: center !important',
           format: v => {
             return formatDuration(v) || ''
@@ -590,6 +634,7 @@ export default {
           name: 'tma',
           label: 'T.M.A',
           field: 'tma',
+          align: 'center',
           headerStyle: 'text-align: center !important',
           format: v => {
             return formatDuration(v) || ''
@@ -726,6 +771,14 @@ export default {
         .catch(error => {
           console.error(error)
         })
+    },
+    getDashData () {
+      this.getDashTicketsAndTimes()
+      this.getDashTicketsChannels()
+      this.getDashTicketsEvolutionChannels()
+      this.getDashTicketsQueue()
+      this.getDashTicketsEvolutionByPeriod()
+      this.getDashTicketsPerUsersDetail()
     }
 
   },
@@ -733,7 +786,14 @@ export default {
     const mode = this.$q.dark.isActive ? 'dark' : 'light'
     const theme = {
       mode,
-      palette: 'palette1'
+      palette: 'palette1',
+      monochrome: {
+        enabled: true,
+        color: '#0288d1',
+        shadeTo: mode,
+        shadeIntensity: 0.95
+      }
+
     }
     this.ticketsQueueOptions = { ...this.ticketsQueueOptions, theme }
     this.ticketsChannelsOptions = { ...this.ticketsChannelsOptions, theme }
@@ -742,15 +802,13 @@ export default {
   },
   mounted () {
     this.listarFilas()
-    this.getDashTicketsAndTimes()
-    this.getDashTicketsChannels()
-    this.getDashTicketsEvolutionChannels()
-    this.getDashTicketsQueue()
-    this.getDashTicketsEvolutionByPeriod()
-    this.getDashTicketsPerUsersDetail()
+    this.getDashData()
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
+.apexcharts-theme-dark svg {
+  background: none !important;
+}
 </style>

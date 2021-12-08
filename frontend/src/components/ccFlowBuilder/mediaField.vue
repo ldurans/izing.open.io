@@ -53,7 +53,7 @@
             :src="cMediaUrl"
           >
             Faça download do PDF
-            <!-- alt : <a href="mensagem.mediaUrl"></a> -->
+            <!-- alt : <a href="mensagem.cMediaUrl"></a> -->
           </iframe>
           <video
             v-if="cMediaUrl && $attrs.element.data.type.indexOf('video') != -1"
@@ -107,9 +107,33 @@
         </div>
         <div
           v-if="cMediaUrl"
-          class="text-bold"
-        > Nome: {{ $attrs.element.data.name }} </div>
-        <q-input
+          class="text-bold flex flex-inline flex-center items-center"
+        >
+          <div
+            style="max-width: 340px"
+            class="ellipsis"
+          >
+            {{ $attrs.element.data.name }}
+            <q-tooltip>
+              {{ $attrs.element.data.name }}
+            </q-tooltip>
+
+          </div>
+          <q-btn
+            v-if="cMediaUrl"
+            flat
+            class="bg-padrao btn-rounded q-ma-sm"
+            color="primary"
+            no-caps
+            icon="mdi-image-edit-outline"
+            @click="$refs.PickerFileMessage.pickFiles()"
+          >
+            <q-tooltip>
+              Substituir Arquivo
+            </q-tooltip>
+          </q-btn>
+        </div>
+        <!-- <q-input
           v-if="cMediaUrl && $attrs.element.data.type.indexOf('audio') == -1"
           dense
           outlined
@@ -121,22 +145,10 @@
 
           <template
             slot="after"
-            v-if="cMediaUrl"
           >
-            <q-btn
-              flat
-              class="bg-padrao btn-rounded q-ma-sm"
-              color="primary"
-              no-caps
-              icon="mdi-image-edit-outline"
-              @click="$refs.PickerFileMessage.pickFiles()"
-            >
-              <q-tooltip>
-                Substituir Arquivo
-              </q-tooltip>
-            </q-btn>
           </template>
-        </q-input>
+        </q-input> -->
+
       </q-card-section>
     </q-card>
   </div>
@@ -173,29 +185,42 @@ export default {
         this.mediaUrl = this.$attrs.element.data.mediaUrl
         return this.mediaUrl
       }
-      if (!this.$attrs.element.data?.mediaUrl) {
-        return this.getMediaUrl()
+      if (!this.$attrs.element.data?.mediaUrl && this.file.type) {
+        this.getMediaUrl()
+        return this.mediaUrl
       }
-      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-      this.mediaUrl = ''
-      return this.mediaUrl
+      return ''
     }
-
   },
   methods: {
     async getMediaUrl () {
       let url = ''
-      if (this.file.type) {
+      if (this.file?.type) {
         const blob = new Blob([this.file], { type: this.file.type })
-        // console.log(blob, blob.text())
         url = window.URL.createObjectURL(blob)
+        this.$attrs.element.data.mediaUrl = url
         const base64 = await this.getBase64(this.file)
         this.$attrs.element.data.ext = this.getFileExtension(this.file.name)
         this.$attrs.element.data.media = base64
         this.$attrs.element.data.type = this.file.type
         this.$attrs.element.data.name = this.file.name
+      } else {
+        this.mediaUrl = this.$attrs.element.data.mediaUrl
       }
-      this.mediaUrl = url
+    },
+    getNewMediaUrl () {
+      if (this.$attrs.element.data?.mediaUrl) {
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.mediaUrl = this.$attrs.element.data.mediaUrl
+        return this.mediaUrl
+      }
+      if (!this.$attrs.element.data?.mediaUrl && this.file.type) {
+        return this.getMediaUrl()
+      } else {
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        // this.mediaUrl = ''
+        return this.mediaUrl
+      }
     },
     getFileExtension (name) {
       if (!name) return ''
@@ -232,7 +257,6 @@ export default {
         }]
       })
     }
-
   }
 }
 </script>

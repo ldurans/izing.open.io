@@ -13,8 +13,12 @@ const query = `
   sum(qtd_total_atendimentos) qtd_total_atendimentos,
   sum(qtd_demanda_ativa) qtd_demanda_ativa,
   sum(qtd_demanda_receptiva) qtd_demanda_receptiva,
-  concat(ROUND(AVG(tma)::decimal,0), 'minutes')::interval TMA,
-  concat(ROUND(AVG(tme)::decimal,0), 'minutes')::interval TME
+  coalesce(concat(ROUND(AVG(tma)::decimal,0), 0), 'minutes')::interval TMA,
+  coalesce(concat(ROUND(AVG(tme)::decimal,0), 0), 'minutes')::interval TME,
+  (select count(1)
+  from "Contacts" c where c."tenantId" = :tenantId
+  and date_trunc('day', c."createdAt") between :startDate and :endDate
+  ) new_contacts
   --ROUND(AVG(tma)::decimal,0) TMA,
   --ROUND(AVG(tme)::decimal,0) TME
   from (
@@ -48,8 +52,8 @@ const DashTicketsAndTimes = async ({
       startDate,
       endDate
     },
-    type: QueryTypes.SELECT
-    // logging: console.log
+    type: QueryTypes.SELECT,
+    logging: console.log
   });
   console.log("DashTicketsAndTimes", data);
   return data;
