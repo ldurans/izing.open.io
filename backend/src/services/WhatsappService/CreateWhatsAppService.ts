@@ -8,6 +8,9 @@ interface Request {
   status?: string;
   isDefault?: boolean;
   tenantId: string | number;
+  tokenTelegram?: string;
+  instagramUser?: string;
+  instagramKey?: string;
 }
 
 interface Response {
@@ -19,7 +22,10 @@ const CreateWhatsAppService = async ({
   name,
   status = "OPENING",
   isDefault = false,
-  tenantId
+  tenantId,
+  tokenTelegram,
+  instagramUser,
+  instagramKey
 }: Request): Promise<Response> => {
   const schema = Yup.object().shape({
     name: Yup.string()
@@ -68,7 +74,10 @@ const CreateWhatsAppService = async ({
     name,
     status,
     isDefault,
-    tenantId
+    tenantId,
+    tokenTelegram,
+    instagramUser,
+    instagramKey
   });
 
   return { whatsapp, oldDefaultWhatsapp };

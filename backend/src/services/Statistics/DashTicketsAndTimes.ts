@@ -52,10 +52,8 @@ const DashTicketsAndTimes = async ({
       startDate,
       endDate
     },
-    type: QueryTypes.SELECT,
-    logging: console.log
+    type: QueryTypes.SELECT
   });
-  console.log("DashTicketsAndTimes", data);
   return data;
 };
 

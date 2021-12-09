@@ -7,12 +7,11 @@ import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSess
 import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppService";
 import { setValue } from "../libs/redisClient";
 import { logger } from "../utils/logger";
-import AppError from "../errors/AppError";
 
 const store = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
   const { tenantId } = req.user;
-  const whatsapp = await ShowWhatsAppService(whatsappId, tenantId);
+  const whatsapp = await ShowWhatsAppService({ id: whatsappId, tenantId });
 
   StartWhatsAppSession(whatsapp);
 
@@ -39,7 +38,7 @@ const update = async (req: Request, res: Response): Promise<Response> => {
 const remove = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
   const { tenantId } = req.user;
-  const whatsapp = await ShowWhatsAppService(whatsappId, tenantId);
+  const whatsapp = await ShowWhatsAppService({ id: whatsappId, tenantId });
 
   try {
     const wbot = getWbot(whatsapp.id);

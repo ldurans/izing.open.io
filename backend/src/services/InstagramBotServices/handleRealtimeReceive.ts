@@ -12,7 +12,7 @@ import VerifyMediaMessage from "./InstagramVerifyMediaMessage";
 import VerifyMessage from "./InstagramVerifyMessage";
 
 interface Session extends IgApiClientMQTT {
-  id?: number;
+  id: number;
   accountLogin?:
   | AccountRepositoryLoginResponseLogged_in_user
   | AccountRepositoryCurrentUserResponseUser;
@@ -23,7 +23,7 @@ const handleRealtimeReceive = async (
   instaBot: Session
 ) => {
   console.log(ctx);
-  const channel = await ShowWhatsAppService(instaBot.id || "");
+  const channel = await ShowWhatsAppService({ id: instaBot.id });
   const threadData = await instaBot.feed
     .directThread({ thread_id: ctx.message.thread_id, oldest_cursor: "" })
     .request();

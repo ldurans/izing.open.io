@@ -7,7 +7,7 @@ import { tbotMessageListener } from "./tbotMessageListener";
 import TelegramSendMessagesSystem from "./TelegramSendMessagesSystem";
 
 interface Session extends Telegraf {
-  id?: number;
+  id: number;
 }
 
 const checkingTelegram: any = {};

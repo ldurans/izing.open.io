@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import { id } from "date-fns/locale";
 import {
   AccountRepositoryCurrentUserResponseUser,
   AccountRepositoryLoginResponseLogged_in_user,
@@ -11,7 +12,7 @@ import Whatsapp from "../models/Whatsapp";
 import { logger } from "../utils/logger";
 
 interface Session extends IgApiClientMQTT {
-  id?: number;
+  id: number;
   accountLogin?:
   | AccountRepositoryLoginResponseLogged_in_user
   | AccountRepositoryCurrentUserResponseUser;
@@ -36,7 +37,10 @@ export const initInstaBot = async (connection: Whatsapp): Promise<Session> => {
       sessionCfg = JSON.parse(connection.session);
     }
 
-    const ig: Session = withFbnsAndRealtime(new IgApiClient());
+    // se não funcionar, necessário adequar o "as"
+    const ig = withFbnsAndRealtime(new IgApiClient()) as Session;
+    ig.id = connection.id;
+
     ig.state.generateDevice(username);
 
     if (connection.session) {

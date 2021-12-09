@@ -42,7 +42,6 @@ const DashTicketsPerUsersDetail = async ({
     },
     type: QueryTypes.SELECT
   });
-  console.log("DashTicketsPerUsersDetail", data);
   return data;
 };
 

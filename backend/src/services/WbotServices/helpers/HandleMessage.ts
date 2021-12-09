@@ -17,7 +17,7 @@ import verifyBusinessHours from "./VerifyBusinessHours";
 // import isMessageExistsService from "../../MessageServices/isMessageExistsService";
 
 interface Session extends Client {
-  id?: number;
+  id: number;
 }
 
 const HandleMessage = async (
@@ -35,7 +35,7 @@ const HandleMessage = async (
         let msgContact: WbotContact;
         let groupContact: Contact | undefined;
 
-        whatsapp = await ShowWhatsAppService(wbot.id || "");
+        whatsapp = await ShowWhatsAppService({ id: wbot.id });
 
         const { tenantId } = whatsapp;
 

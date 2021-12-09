@@ -35,7 +35,6 @@ const DashTicketsQueue = async ({
     type: QueryTypes.SELECT
     // logging: console.log
   });
-  console.log("DashTicketsQueue", data);
   return data;
 };
 

@@ -8,11 +8,11 @@ import verifyBusinessHours from "../WbotServices/helpers/VerifyBusinessHours";
 import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
 
 interface Session extends Telegraf {
-  id?: number;
+  id: number;
 }
 
 const HandleMessage = async (ctx: Context, tbot: Session): Promise<void> => {
-  const channel = await ShowWhatsAppService(tbot.id || "");
+  const channel = await ShowWhatsAppService({ id: tbot.id });
   const { message }: any = ctx;
   const chat = message?.chat;
   const me = await ctx.telegram.getMe();

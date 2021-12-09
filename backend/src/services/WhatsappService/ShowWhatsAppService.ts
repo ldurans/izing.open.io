@@ -1,11 +1,38 @@
 import Whatsapp from "../../models/Whatsapp";
 import AppError from "../../errors/AppError";
 
-const ShowWhatsAppService = async (
-  id: string | number,
-  tenantId: string | number = ""
-): Promise<Whatsapp> => {
-  const whatsapp = await Whatsapp.findByPk(id);
+interface Data {
+  id: string | number;
+  tenantId?: string | number;
+  isInternal?: boolean;
+}
+
+const ShowWhatsAppService = async ({
+  id,
+  tenantId,
+  isInternal = false
+}: Data): Promise<Whatsapp> => {
+  const attr = [
+    "id",
+    "name",
+    "status",
+    "plugged",
+    "isDefault",
+    "tokenTelegram",
+    "instagramUser",
+    "type",
+    "createdAt",
+    "updatedAt",
+    "number",
+    "phone"
+  ];
+  if (isInternal) {
+    attr.push("instagramKey");
+  }
+
+  const whatsapp = await Whatsapp.findByPk(id, {
+    attributes: attr
+  });
 
   if (!whatsapp || (tenantId && whatsapp.tenantId !== tenantId)) {
     throw new AppError("ERR_NO_WAPP_FOUND", 404);

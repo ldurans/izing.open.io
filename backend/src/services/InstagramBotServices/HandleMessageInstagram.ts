@@ -10,14 +10,17 @@ import ShowWhatsAppService from "../WhatsappService/ShowWhatsAppService";
 // import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
 
 interface Session extends IgApiClientMQTT {
-  id?: number;
+  id: number;
 }
 
 const HandleMessage = async (
   ctx: MessageSyncMessageWrapper,
   instaBot: Session
 ): Promise<void> => {
-  const channel = await ShowWhatsAppService(instaBot.id || "");
+  const channel = await ShowWhatsAppService({
+    id: instaBot.id,
+    isInternal: true
+  });
   // const { message } = ctx;
   // const chat = message.user_id;
   // const me = await ctx.message.item_id;

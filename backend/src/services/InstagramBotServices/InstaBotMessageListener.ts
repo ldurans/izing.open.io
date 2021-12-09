@@ -8,7 +8,7 @@ import handleRealtimeReceive from "./handleRealtimeReceive";
 // import HandleMessageTelegram from "./HandleMessageTelegram";
 
 interface Session extends IgApiClientMQTT {
-  id?: number;
+  id: number;
   accountLogin?:
   | AccountRepositoryLoginResponseLogged_in_user
   | AccountRepositoryCurrentUserResponseUser;

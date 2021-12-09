@@ -4,7 +4,7 @@ import HandleMessage from "./helpers/HandleMessage";
 import HandleMsgAck from "./helpers/HandleMsgAck";
 
 interface Session extends Client {
-  id?: number;
+  id: number;
 }
 
 const wbotMessageListener = (wbot: Session): void => {

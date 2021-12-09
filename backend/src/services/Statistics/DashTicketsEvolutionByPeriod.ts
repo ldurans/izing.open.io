@@ -38,7 +38,6 @@ const DashTicketsEvolutionByPeriod = async ({
     type: QueryTypes.SELECT
     // logging: console.log
   });
-  console.log("DashTicketsEvolutionByPeriod", data);
   return data;
 };
 

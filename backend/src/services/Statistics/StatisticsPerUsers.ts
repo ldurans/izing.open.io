@@ -47,7 +47,6 @@ const StatisticsPerUser = async ({
     type: QueryTypes.SELECT
     // logging: console.log
   });
-  console.log("StatisticsPerUser", data);
   return data;
 };
 

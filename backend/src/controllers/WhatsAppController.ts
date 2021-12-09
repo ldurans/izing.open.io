@@ -57,7 +57,7 @@ export const show = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
   const { tenantId } = req.user;
 
-  const whatsapp = await ShowWhatsAppService(whatsappId, tenantId);
+  const whatsapp = await ShowWhatsAppService({ id: whatsappId, tenantId });
 
   return res.status(200).json(whatsapp);
 };

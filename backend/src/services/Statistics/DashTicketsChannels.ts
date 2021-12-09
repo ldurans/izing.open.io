@@ -34,7 +34,6 @@ const DashTicketsChannels = async ({
     type: QueryTypes.SELECT
     // logging: console.log
   });
-  console.log("DashTicketsChannels", data);
   return data;
 };
 

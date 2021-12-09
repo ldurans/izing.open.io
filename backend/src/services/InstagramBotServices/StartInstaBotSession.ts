@@ -12,7 +12,7 @@ import { InstaBotMessageListener } from "./InstaBotMessageListener";
 import InstagramSendMessagesSystem from "./InstagramSendMessagesSystem";
 
 interface Session extends IgApiClientMQTT {
-  id?: number;
+  id: number;
   accountLogin?:
   | AccountRepositoryLoginResponseLogged_in_user
   | AccountRepositoryCurrentUserResponseUser;

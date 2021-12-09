@@ -10,7 +10,7 @@ import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesW
 import Queue from "./Queue";
 
 interface Session extends Client {
-  id?: number;
+  id: number;
 }
 
 const sessions: Session[] = [];
@@ -113,7 +113,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       // if (whatsapp && whatsapp.session) {
       //   sessionCfg = JSON.parse(whatsapp.session);
       // }
-      const wbot: Session = new Client({
+      const wbot = new Client({
         clientId: slugify(whatsapp.name),
         qrRefreshIntervalMs: 10000,
         puppeteer: {
@@ -131,7 +131,9 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           //   "--disable-gpu"
           // ]
         }
-      });
+      }) as Session;
+
+      wbot.id = whatsapp.id;
 
       wbot.initialize();
 

@@ -2,7 +2,7 @@ import { Telegraf } from "telegraf";
 import HandleMessageTelegram from "./HandleMessageTelegram";
 
 interface Session extends Telegraf {
-  id?: number;
+  id: number;
 }
 
 const tbotMessageListener = (tbot: Session): void => {

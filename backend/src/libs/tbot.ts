@@ -5,7 +5,7 @@ import Whatsapp from "../models/Whatsapp";
 import { logger } from "../utils/logger";
 
 interface Session extends Telegraf {
-  id?: number;
+  id: number;
 }
 
 const TelegramSessions: Session[] = [];
@@ -16,7 +16,8 @@ export const initTbot = async (connection: Whatsapp): Promise<Session> => {
       const io = getIO();
       const sessionName = connection.name;
       const { tenantId } = connection;
-      const tbot: Session = new Telegraf(connection.tokenTelegram, {});
+      const tbot = new Telegraf(connection.tokenTelegram, {}) as Session;
+      tbot.id = connection.id;
       const sessionIndex = TelegramSessions.findIndex(
         s => s.id === connection.id
       );
