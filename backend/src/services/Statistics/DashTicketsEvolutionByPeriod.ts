@@ -9,12 +9,13 @@ interface Request {
 
 const query = `
   select
-  to_char(label, 'DD/MM/YYYY') as label,
+  dt_ref,
+  to_char(dt_ref, 'DD/MM/YYYY') as label,
   qtd
   --ROUND(100.0*(qtd/sum(qtd) over ()), 2) pertentual
   from (
   select
-  date_trunc('day', t."createdAt") as label,
+  date_trunc('day', t."createdAt") dt_ref,
   count(1) as qtd
   from "Tickets" t
   where t."tenantId" = :tenantId

@@ -600,7 +600,7 @@ export default {
         this.$refs.inputEnvioMensagem.focus()
       }, 300)
     },
-    handlerInputMenssagem (v) {
+    handlerInputMensagem (v) {
       this.textChat = v.target.value
     },
     showModalPreviewImagem () {

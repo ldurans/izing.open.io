@@ -153,7 +153,7 @@
                   </q-item>
                   <q-separator />
                   <q-item
-                    @click="deletarMenssagem(mensagem)"
+                    @click="deletarMensagem(mensagem)"
                     clickable
                     v-if="mensagem.fromMe"
                   >
@@ -456,7 +456,7 @@ export default {
       console.log(mensagem)
       this.$emit('mensagem-chat:encaminhar-mensagem', mensagem)
     },
-    deletarMenssagem (mensagem) {
+    deletarMensagem (mensagem) {
       const data = { ...mensagem }
       this.$q.dialog({
         title: 'Atenção!! Deseja realmente deletar a mensagem? ',

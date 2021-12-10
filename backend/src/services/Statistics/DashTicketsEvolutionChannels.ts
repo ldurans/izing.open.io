@@ -8,9 +8,10 @@ interface Request {
 }
 
 const query = `
-  select dt_referencia, label, qtd, ROUND(100.0*(qtd/sum(qtd) over ()), 2) pertentual  from (
+  select dt_ref, to_char(dt_ref, 'DD/MM/YYYY') dt_referencia , label, qtd, ROUND(100.0*(qtd/sum(qtd) over ()), 2) pertentual  from (
   select
-  to_char(date_trunc('day', t."createdAt"), 'DD/MM/YYYY') dt_referencia,
+  date_trunc('day', t."createdAt") dt_ref,
+  --to_char(date_trunc('day', t."createdAt"), 'DD/MM/YYYY') ,
   t.channel as label,
   count(1) as qtd
   from "Tickets" t

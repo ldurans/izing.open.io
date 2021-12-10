@@ -606,7 +606,7 @@
                             icon="mdi-trash-can-outline"
                             class="absolute-top-right q-mr-sm"
                             size="sm"
-                            @click="deletarMenssagem(message)"
+                            @click="deletarMensagem(message)"
                           />
                         </q-item-label>
                         <q-item-label
@@ -998,7 +998,7 @@ export default {
         )
       }
     },
-    deletarMenssagem (mensagem) {
+    deletarMensagem (mensagem) {
       const data = { ...mensagem }
       this.$q.dialog({
         title: 'Atenção!! Deseja realmente deletar a mensagem? ',

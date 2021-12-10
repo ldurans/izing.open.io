@@ -9,7 +9,7 @@ interface Request {
 
 const query = `
   select
-  dt_referencia,
+  --dt_referencia,
   sum(qtd_total_atendimentos) qtd_total_atendimentos,
   sum(qtd_demanda_ativa) qtd_demanda_ativa,
   sum(qtd_demanda_receptiva) qtd_demanda_receptiva,
@@ -37,7 +37,7 @@ const query = `
   where t."tenantId" = :tenantId
   and date_trunc('day', t."createdAt") between :startDate and :endDate
   ) a
-  group by dt_referencia
+  --group by dt_referencia
   order by 1 Desc
 `;
 
@@ -52,7 +52,8 @@ const DashTicketsAndTimes = async ({
       startDate,
       endDate
     },
-    type: QueryTypes.SELECT
+    type: QueryTypes.SELECT,
+    logging: console.log
   });
   return data;
 };

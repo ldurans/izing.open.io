@@ -149,7 +149,7 @@
     </q-card>
 
     <div class="row q-col-gutter-md">
-      <div class="col">
+      <div class="col-xs-12 col-sm-6">
         <q-card>
           <q-card-section class="q-pa-md">
             <ApexChart
@@ -163,7 +163,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="col">
+      <div class="col-xs-12 col-sm-6">
         <q-card>
           <q-card-section class="q-pa-md">
             <ApexChart
@@ -178,32 +178,27 @@
         </q-card>
       </div>
     </div>
-
     <q-card class="q-my-md">
-      <q-card-section class="q-pa-md">
+      <q-card-section>
         <ApexChart
           ref="ChartTicketsEvolutionChannels"
           type="bar"
           height="300"
+          width="100%"
           :options="ticketsEvolutionChannelsOptions"
           :series="ticketsEvolutionChannelsOptions.series"
         />
       </q-card-section>
     </q-card>
-
     <q-card class="q-my-md">
       <q-card-section class="q-pa-md">
-        <div class="row">
-          <div class="col">
-            <ApexChart
-              ref="ChartTicketsEvolutionByPeriod"
-              type="line"
-              height="300"
-              :options="ticketsEvolutionByPeriodOptions"
-              :series="ticketsEvolutionByPeriodOptions.series"
-            />
-          </div>
-        </div>
+        <ApexChart
+          ref="ChartTicketsEvolutionByPeriod"
+          type="line"
+          height="300"
+          :options="ticketsEvolutionByPeriodOptions"
+          :series="ticketsEvolutionByPeriodOptions.series"
+        />
       </q-card-section>
     </q-card>
 
@@ -246,15 +241,20 @@ import {
   GetDashTicketsEvolutionByPeriod,
   GetDashTicketsPerUsersDetail
 } from 'src/service/estatisticas'
-import { startOfMonth, format, formatDuration } from 'date-fns'
+import { subDays, format, formatDuration, differenceInDays } from 'date-fns'
 import ApexChart from 'vue-apexcharts'
+
 export default {
   name: 'IndexDashboard',
   components: { ApexChart },
   data () {
     return {
+      confiWidth: {
+        horizontal: false,
+        width: this.$q.screen.width
+      },
       params: {
-        startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+        startDate: format(subDays(new Date(), 6), 'yyyy-MM-dd'),
         endDate: format(new Date(), 'yyyy-MM-dd'),
         queuesIds: []
       },
@@ -289,17 +289,6 @@ export default {
             show: true
           }
         },
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 250
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }],
         legend: {
           position: 'bottom'
         },
@@ -367,17 +356,17 @@ export default {
             show: true
           }
         },
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 250
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }],
+        // responsive: [{
+        //   breakpoint: 480,
+        //   options: {
+        //     chart: {
+        //       width: 250
+        //     },
+        //     legend: {
+        //       position: 'bottom'
+        //     }
+        //   }
+        // }],
         legend: {
           position: 'bottom'
         },
@@ -428,6 +417,24 @@ export default {
           easing: 'easeinout',
           speed: 1000
         },
+        chart: {
+          type: 'bar',
+          // height: 300,
+          stacked: true,
+          stackType: '100%',
+          toolbar: {
+            tools: {
+              download: true,
+              selection: false,
+              zoom: false,
+              zoomin: false,
+              zoomout: false,
+              pan: false,
+              reset: false | '<img src="/static/icons/reset.png" width="20">'
+            }
+
+          }
+        },
         theme: {
           mode: 'light',
           palette: 'palette1'
@@ -458,20 +465,36 @@ export default {
         stroke: {
           width: 0
         },
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 250
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }],
+        // responsive: [{
+        //   breakpoint: 480,
+        //   options: {
+        //     chart: {
+        //       width: 250
+        //     },
+        //     legend: {
+        //       position: 'bottom'
+        //     }
+        //   }
+        // }],
         xaxis: {
-          categories: []
-
+          type: 'category',
+          categories: [],
+          tickPlacement: 'on'
+          // labels: {
+          //   formatter: function (value, timestamp, opts) {
+          //     console.log('v:', value, 't:', timestamp, 'o:', opts)
+          //     return format(new Date(timestamp), 'dd/MM')
+          //     // return opts.dateFormatter().format('dd MMM')
+          //   }
+          // }
+          // type: 'datetime'
+          // format: 'dd/MM'
+          // datetimeFormatter: {
+          //   // year: 'yyyy',
+          //   month: 'MM',
+          //   day: 'DD'
+          //   // hour: 'HH:mm',
+          // }
         },
         yaxis: {
           title: {
@@ -547,17 +570,6 @@ export default {
           enabled: true,
           enabledOnSeries: [1]
         },
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 250
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }],
         xaxis: {
           categories: []
         },
@@ -647,6 +659,10 @@ export default {
     '$q.dark.isActive' () {
       // necessário para carregar os gráficos com a alterçaão do mode (dark/light)
       this.$router.go()
+    },
+    '$q.screen.width' () {
+      // necessário para carregar os gráficos com a alterçaão do mode (dark/light)
+      this.setConfigWidth()
     }
   },
   computed: {
@@ -663,6 +679,16 @@ export default {
     async listarFilas () {
       const { data } = await ListarFilas()
       this.filas = data
+    },
+    setConfigWidth () {
+      const diffDays = differenceInDays(new Date(this.params.endDate), new Date(this.params.startDate))
+      if (diffDays > 30) {
+        this.configWidth = { horizontal: true, width: 2200 }
+      } else {
+        const actualWidth = this.$q.screen.width
+        console.log(actualWidth - (actualWidth < 768 ? 0 : 100))
+        this.configWidth = { horizontal: true, width: actualWidth - (actualWidth < 768 ? 40 : 100) }
+      }
     },
     getDashTicketsAndTimes () {
       GetDashTicketsAndTimes(this.params).then(res => {
@@ -684,6 +710,7 @@ export default {
         this.ticketsQueueOptions.series = series
         this.ticketsQueueOptions.labels = labels
         this.$refs.ChartTicketsQueue.updateOptions(this.ticketsQueueOptions)
+        this.$refs.ChartTicketsQueue.updateSeries(series, true)
       })
         .catch(err => {
           console.error(err)
@@ -701,6 +728,7 @@ export default {
         this.ticketsChannelsOptions.series = series
         this.ticketsChannelsOptions.labels = labels
         this.$refs.ChartTicketsChannels.updateOptions(this.ticketsChannelsOptions)
+        this.$refs.ChartTicketsChannels.updateSeries(series, true)
       })
         .catch(err => {
           console.error(err)
@@ -712,23 +740,27 @@ export default {
           this.ticketsEvolutionChannels = res.data
           const dataLabel = groupBy({ ...this.ticketsEvolutionChannels }, 'dt_referencia')
           const labels = Object.keys(dataLabel)
+          // .map(l => {
+          //   console.log(format(new Date(l), 'dd/MM'))
+          //   return format(new Date(l), 'dd/MM')
+          // })
           this.ticketsEvolutionChannelsOptions.labels = labels
+          this.ticketsEvolutionChannelsOptions.xaxis.categories = labels
           const series = []
           const dados = groupBy({ ...this.ticketsEvolutionChannels }, 'label')
           for (const item in dados) {
             series.push({
               name: item,
-              type: 'column',
+              // type: 'line',
               data: dados[item].map(d => {
-                if (labels.includes(d.dt_referencia)) {
-                  return d.qtd
-                }
-                return 0
+                // if (labels.includes(format(new Date(d.dt_ref), 'dd/MM'))) {
+                return d.qtd
               })
             })
           }
           this.ticketsEvolutionChannelsOptions.series = series
           this.$refs.ChartTicketsEvolutionChannels.updateOptions(this.ticketsEvolutionChannelsOptions)
+          this.$refs.ChartTicketsEvolutionChannels.updateSeries(series, true)
         })
         .catch(error => {
           console.error(error)
@@ -757,6 +789,7 @@ export default {
           this.ticketsEvolutionByPeriodOptions.labels = labels
           this.ticketsEvolutionByPeriodOptions.series = series
           this.$refs.ChartTicketsEvolutionByPeriod.updateOptions(this.ticketsEvolutionByPeriodOptions)
+          this.$refs.ChartTicketsEvolutionByPeriod.updateSeries(series, true)
         })
         .catch(error => {
           console.error(error)
@@ -773,6 +806,7 @@ export default {
         })
     },
     getDashData () {
+      this.setConfigWidth()
       this.getDashTicketsAndTimes()
       this.getDashTicketsChannels()
       this.getDashTicketsEvolutionChannels()
