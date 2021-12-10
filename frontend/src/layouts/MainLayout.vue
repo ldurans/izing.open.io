@@ -70,7 +70,7 @@
             <q-menu>
               <q-list style="min-width: 100px">
                 <q-item-label header> Olá! <b> {{ username }} </b> </q-item-label>
-                <q-item
+                <!-- <q-item
                   clickable
                   v-close-popup
                 >
@@ -82,7 +82,7 @@
                       @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
                     />
                   </q-item-section>
-                </q-item>
+                </q-item> -->
                 <q-item
                   clickable
                   v-close-popup
@@ -148,6 +148,28 @@
 
         </q-list>
       </q-scroll-area>
+      <div
+        class="absolute-bottom text-center row justify-start"
+        :class="{'bg-grey-3': $q.dark.isActive}"
+        style="height: 40px"
+      >
+        <q-toggle
+          size="xl"
+          keep-color
+          dense
+          class="text-bold q-ml-xs"
+          :icon-color="$q.dark.isActive ? 'white' : 'white'"
+          color="dark"
+          :value="$q.dark.isActive"
+          checked-icon="mdi-white-balance-sunny"
+          unchecked-icon="mdi-weather-sunny"
+          @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
+        >
+          <q-tooltip content-class="text-body1 hide-scrollbar">
+            {{ $q.dark.isActive ? 'Desativar' : 'Ativar' }} Modo Escuro (Dark Mode)
+          </q-tooltip>
+        </q-toggle>
+      </div>
     </q-drawer>
 
     <q-page-container>
