@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import { id } from "date-fns/locale";
 import {
   AccountRepositoryCurrentUserResponseUser,
   AccountRepositoryLoginResponseLogged_in_user,
@@ -7,6 +6,7 @@ import {
   // IgLoginTwoFactorRequiredError
 } from "instagram-private-api";
 import { IgApiClientMQTT, withFbnsAndRealtime } from "instagram_mqtt";
+import AppError from "../errors/AppError";
 import Whatsapp from "../models/Whatsapp";
 // import { getIO } from "./socket";
 import { logger } from "../utils/logger";
@@ -26,8 +26,8 @@ export const initInstaBot = async (connection: Whatsapp): Promise<Session> => {
     let sessionCfg;
     let loggedUser;
     // const { tenantId } = connection;
-    const username = "@Codar.Channel";
-    const password = "marina@0509";
+    const username = `@${connection.instagramUser}`;
+    const password = connection.instagramKey;
     // const password = "";
     if (!username || !password) {
       throw new Error("Not credentials");
@@ -91,7 +91,7 @@ export const initInstaBot = async (connection: Whatsapp): Promise<Session> => {
     return ig;
   } catch (err) {
     logger.error(`initWbot error | Error: ${err}`);
-    throw new Error("Error starting whatsapp session.");
+    throw new AppError(`${err}`, 404);
     // 'Error: Protocol error (Runtime.callFunctionOn): Session closed.'
   }
 };

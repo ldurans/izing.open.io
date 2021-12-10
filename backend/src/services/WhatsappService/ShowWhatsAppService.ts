@@ -24,7 +24,8 @@ const ShowWhatsAppService = async ({
     "createdAt",
     "updatedAt",
     "number",
-    "phone"
+    "phone",
+    "tenantId"
   ];
   if (isInternal) {
     attr.push("instagramKey");

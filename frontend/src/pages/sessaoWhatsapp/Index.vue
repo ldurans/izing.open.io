@@ -115,13 +115,24 @@
                   <span class="text-weight-medium"> Esperando leitura do QR Code </span>
                   <span class="row col"> Clique no botão 'QR CODE' e leia o QR Code com o seu celular para iniciar a sessão </span>
                 </q-item-label>
-                <q-item-label v-if="item.status == 'DESTROYED'">
+                <q-item-label v-if="item.status == 'DESTROYED' ">
                   <span class="text-weight-medium"> Esperando leitura do QR Code </span>
                   <span class="row col"> Clique no botão 'QR CODE' e leia o QR Code com o seu celular para iniciar a sessão </span>
                 </q-item-label>
                 <q-item-label v-if="item.status == 'DISCONNECTED'">
-                  <span class="text-weight-medium"> Falha ao iniciar sessão do WhatsApp </span>
-                  <span class="row col"> Certifique-se de que seu celular esteja conectado à internet e tente novamente, ou solicite um novo QR Code </span>
+                  <span class="text-weight-medium"> Falha ao iniciar comunicação para este canal. </span>
+                  <span
+                    class="row col"
+                    v-if="item.type === 'whatsapp'"
+                  > Certifique-se de que seu celular esteja conectado à internet e tente novamente, ou solicite um novo QR Code </span>
+                  <span
+                    class="row col"
+                    v-if="item.type === 'telegram'"
+                  > Tente conectar novamente. Caso o erro permaneça, confirme se o token está correto.</span>
+                  <span
+                    class="row col"
+                    v-if="item.type === 'instagram'"
+                  > Tente conectar novamente. Caso o erro permaneça, confirme se as credenciais estão corretas.</span>
                 </q-item-label>
                 <q-item-label v-if="item.status == 'CONNECTED'">
                   <span class="text-weight-medium"> Conexão estabelecida! </span>
@@ -166,7 +177,7 @@
               <q-btn
                 outline
                 color="black"
-                label="Tentar novamente"
+                label="Conectar"
                 @click="handleStartWhatsAppSession(item.id)"
               />
             </q-btn-group>

@@ -58,17 +58,59 @@
                   />
                 </div>
                 <div
+                  v-if="whatsapp.type === 'instagram' && !isEdit"
+                  class="text-center"
+                >
+                  <q-btn
+                    flat
+                    color="info"
+                    class="bg-padrao"
+                    icon="edit"
+                    label="Nova senha"
+                    @click="isEdit = !isEdit"
+                  >
+                    <q-tooltip>
+                      Alterar senha
+                    </q-tooltip>
+                  </q-btn>
+                </div>
+                <div
                   class="col-12"
-                  v-if="whatsapp.type === 'instagram'"
+                  v-if="whatsapp.type === 'instagram' && isEdit"
                 >
                   <c-input
-                    outlined
+                    filled
                     label="Senha"
+                    :type="isPwd ? 'password' : 'text'"
                     v-model="whatsapp.instagramKey"
                     hint="Senha utilizada para logar no Instagram"
-                  />
-                </div>
+                    placeholder="*************"
+                    :disable="!isEdit"
+                  >
+                    <template v-slot:after>
+                      <q-btn
+                        class="bg-padrao"
+                        round
+                        flat
+                        color="negative"
+                        icon="mdi-close"
+                        @click="isEdit = !isEdit"
+                      >
+                        <q-tooltip>
+                          Cancelar alteração de senha
+                        </q-tooltip>
 
+                      </q-btn>
+                    </template>
+                    <template v-slot:append>
+                      <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                      />
+                    </template>
+                  </c-input>
+                </div>
               </fieldset>
 
             </div>
@@ -129,6 +171,8 @@ export default {
   },
   data () {
     return {
+      isPwd: true,
+      isEdit: false,
       whatsapp: {
         name: '',
         isDefault: false,

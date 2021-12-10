@@ -5,8 +5,8 @@ import { getIO } from "../../libs/socket";
 import wbotMonitor from "./wbotMonitor";
 import { logger } from "../../utils/logger";
 import AppError from "../../errors/AppError";
-import { initTbot } from "../../libs/tbot";
-import { tbotMessageListener } from "../TbotServices/tbotMessageListener";
+import { StartInstaBotSession } from "../InstagramBotServices/StartInstaBotSession";
+import { StartTbotSession } from "../TbotServices/StartTbotSession";
 
 export const StartWhatsAppSession = async (
   whatsapp: Whatsapp
@@ -26,8 +26,10 @@ export const StartWhatsAppSession = async (
       wbotMonitor(wbot, whatsapp);
     }
     if (whatsapp.type === "telegram") {
-      const tbot = await initTbot(whatsapp);
-      tbotMessageListener(tbot);
+      StartTbotSession(whatsapp);
+    }
+    if (whatsapp.type === "instagram") {
+      StartInstaBotSession(whatsapp);
     }
   } catch (err) {
     logger.error(`StartWhatsAppSession | Error: ${err}`);

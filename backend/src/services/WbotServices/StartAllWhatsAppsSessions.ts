@@ -9,10 +9,27 @@ import { StartWhatsAppSession } from "./StartWhatsAppSession";
 export const StartAllWhatsAppsSessions = async (): Promise<void> => {
   const whatsapps = await Whatsapp.findAll({
     where: {
-      status: {
-        [Op.notIn]: ["DESTROYED", "qrcode"]
-        // "DISCONNECTED"
-      }
+      [Op.or]: [
+        {
+          [Op.and]: {
+            type: {
+              [Op.in]: ["instagram", "telegram"]
+            },
+            status: {
+              [Op.notIn]: ["DISCONNECTED"]
+            }
+          }
+        },
+        {
+          [Op.and]: {
+            type: "whatsapp"
+          },
+          status: {
+            [Op.notIn]: ["DESTROYED", "qrcode"]
+            // "DISCONNECTED"
+          }
+        }
+      ]
     }
   });
   const whatsappSessions = whatsapps.filter(w => w.type === "whatsapp");

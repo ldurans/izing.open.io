@@ -7,11 +7,18 @@ import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSess
 import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppService";
 import { setValue } from "../libs/redisClient";
 import { logger } from "../utils/logger";
+import { getTbot } from "../libs/tbot";
+import { getInstaBot } from "../libs/InstaBot";
+import AppError from "../errors/AppError";
 
 const store = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
   const { tenantId } = req.user;
-  const whatsapp = await ShowWhatsAppService({ id: whatsappId, tenantId });
+  const whatsapp = await ShowWhatsAppService({
+    id: whatsappId,
+    tenantId,
+    isInternal: true
+  });
 
   StartWhatsAppSession(whatsapp);
 
@@ -38,16 +45,31 @@ const update = async (req: Request, res: Response): Promise<Response> => {
 const remove = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
   const { tenantId } = req.user;
-  const whatsapp = await ShowWhatsAppService({ id: whatsappId, tenantId });
+  const channel = await ShowWhatsAppService({ id: whatsappId, tenantId });
 
   try {
-    const wbot = getWbot(whatsapp.id);
-    await whatsapp.update({ status: "DESTROYED", session: "", retries: 0 });
-    await setValue(`${whatsapp.id}-retryQrCode`, 0);
-    await wbot.logout();
-    await wbot.destroy();
+    if (channel.type === "whatsapp") {
+      const wbot = getWbot(channel.id);
+      await setValue(`${channel.id}-retryQrCode`, 0);
+      await wbot.logout();
+      await wbot.destroy();
+    }
+    if (channel.type === "telegram") {
+      const tbot = getTbot(channel.id);
+      await tbot.telegram.logOut();
+    }
+    if (channel.type === "instagram") {
+      const instaBot = getInstaBot(channel.id);
+      await instaBot.destroy();
+    }
+    await channel.update({
+      status: channel.type === "whatsapp" ? "DESTROYED" : "DISCONNECTED",
+      session: "",
+      retries: 0
+    });
   } catch (error) {
     logger.error(error);
+    throw new AppError("ERR_NO_WAPP_FOUND", 404);
   }
   return res.status(200).json({ message: "Session disconnected." });
 };

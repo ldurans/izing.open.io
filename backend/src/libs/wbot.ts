@@ -36,7 +36,6 @@ const checkMessages = async (wbot: Session, tenantId: number | string) => {
 const apagarPastaSessao = async (whatsapp: Whatsapp): Promise<void> => {
   const pathRoot = path.resolve(__dirname, "..", "..", "WWebJS");
   const pathSession = `${pathRoot}/session-${whatsapp.name}`;
-  console.log("pathSession", pathSession);
   await rmdir(pathSession, { recursive: true });
 };
 

@@ -46,6 +46,11 @@ export const initTbot = async (connection: Whatsapp): Promise<Session> => {
       process.once("SIGTERM", () => tbot.stop("SIGTERM"));
       resolve(tbot);
     } catch (error) {
+      connection.update({
+        status: "DISCONNECTED",
+        qrcode: "",
+        retries: 0
+      });
       logger.error(`initWbot error | Error: ${error}`);
       reject(new Error("Error starting telegram session."));
     }

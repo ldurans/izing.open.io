@@ -4,6 +4,7 @@ import {
   AccountRepositoryLoginResponseLogged_in_user
 } from "instagram-private-api";
 import { IgApiClientMQTT } from "instagram_mqtt";
+import AppError from "../../errors/AppError";
 import { initInstaBot } from "../../libs/InstaBot";
 import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
@@ -58,5 +59,11 @@ export const StartInstaBotSession = async (
     });
   } catch (err) {
     logger.error(`StartInstaBotSession | Error: ${err}`);
+    await connection.update({ status: "DISCONNECTED" });
+    io.emit(`${connection.tenantId}-whatsappSession`, {
+      action: "update",
+      session: connection
+    });
+    throw new AppError(`ERROR_CONNECT_INSTAGRAM: ${err}`, 404);
   }
 };
