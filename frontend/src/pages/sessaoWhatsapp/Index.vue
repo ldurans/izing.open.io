@@ -252,7 +252,7 @@ export default {
           const whatsapp = this.whatsapps.find(w => w.id === whatsAppId)
           this.$store.commit('UPDATE_WHATSAPPS', {
             ...whatsapp,
-            status: 'DESTROYED'
+            status: whatsapp.type === 'whatsapp' ? 'DESTROYED' : 'DISCONNECTED'
           })
         }).finally(f => {
           this.loading = false

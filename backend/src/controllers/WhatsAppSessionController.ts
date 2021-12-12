@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
 import path from "path";
 import { rmdir } from "fs/promises";
-import { getWbot } from "../libs/wbot";
+import { getWbot, removeWbot } from "../libs/wbot";
 import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService";
 import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
 import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppService";
 import { setValue } from "../libs/redisClient";
 import { logger } from "../utils/logger";
-import { getTbot } from "../libs/tbot";
-import { getInstaBot } from "../libs/InstaBot";
+import { getTbot, removeTbot } from "../libs/tbot";
+import { getInstaBot, removeInstaBot } from "../libs/InstaBot";
 import AppError from "../errors/AppError";
 
 const store = async (req: Request, res: Response): Promise<Response> => {
@@ -53,15 +53,19 @@ const remove = async (req: Request, res: Response): Promise<Response> => {
       await setValue(`${channel.id}-retryQrCode`, 0);
       await wbot.logout();
       await wbot.destroy();
+      await removeWbot(channel.id);
     }
     if (channel.type === "telegram") {
       const tbot = getTbot(channel.id);
       await tbot.telegram.logOut();
+      await removeTbot(channel.id);
     }
     if (channel.type === "instagram") {
       const instaBot = getInstaBot(channel.id);
       await instaBot.destroy();
+      await removeInstaBot(channel);
     }
+
     await channel.update({
       status: channel.type === "whatsapp" ? "DESTROYED" : "DISCONNECTED",
       session: "",
@@ -69,6 +73,11 @@ const remove = async (req: Request, res: Response): Promise<Response> => {
     });
   } catch (error) {
     logger.error(error);
+    await channel.update({
+      status: channel.type === "whatsapp" ? "DESTROYED" : "DISCONNECTED",
+      session: "",
+      retries: 0
+    });
     throw new AppError("ERR_NO_WAPP_FOUND", 404);
   }
   return res.status(200).json({ message: "Session disconnected." });

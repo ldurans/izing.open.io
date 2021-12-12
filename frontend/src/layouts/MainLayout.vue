@@ -136,6 +136,7 @@
           />
           <div v-if="userProfile === 'admin'">
             <q-separator spaced />
+            <div class="q-mb-lg"></div>
             <!-- <q-item-label header>Administração</q-item-label> -->
             <template v-for="item in menuDataAdmin">
               <EssentialLink
@@ -219,18 +220,7 @@ const objMenu = [
     icon: 'mdi-home',
     routeName: 'home-dashboard'
   },
-  {
-    title: 'Painel Atendimentos',
-    caption: 'Visão geral dos atendimentos',
-    icon: 'mdi-view-dashboard-variant',
-    routeName: 'painel-atendimentos'
-  },
-  {
-    title: 'Canais',
-    caption: 'Canais de Comunicação',
-    icon: 'mdi-cellphone-wireless',
-    routeName: 'sessoes'
-  },
+
   {
     title: 'Atendimentos',
     caption: 'Lista de atendimentos',
@@ -247,6 +237,18 @@ const objMenu = [
 ]
 
 const objMenuAdmin = [
+  {
+    title: 'Canais',
+    caption: 'Canais de Comunicação',
+    icon: 'mdi-cellphone-wireless',
+    routeName: 'sessoes'
+  },
+  {
+    title: 'Painel Atendimentos',
+    caption: 'Visão geral dos atendimentos',
+    icon: 'mdi-view-dashboard-variant',
+    routeName: 'painel-atendimentos'
+  },
   {
     title: 'Relatórios',
     caption: 'Relatórios gerais',

@@ -68,7 +68,8 @@
           <img
             :src="ticket.profilePicUrl"
             onerror="this.style.display='none'"
-          />
+            v-show="ticket.profilePicUrl"
+          >
           <q-icon
             size="45px"
             name="mdi-account-circle"
@@ -82,7 +83,7 @@
           class="text-bold"
           lines="1"
         >
-          {{ticket.name}}
+          {{ !ticket.name ? ticket.contact.name : ticket.name}}
           <q-icon
             size="20px"
             :name="`img:${ticket.channel}-logo.png`"
