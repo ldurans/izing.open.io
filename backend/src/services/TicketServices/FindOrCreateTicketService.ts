@@ -7,7 +7,8 @@ import User from "../../models/User";
 import ShowTicketService from "./ShowTicketService";
 import CampaignContacts from "../../models/CampaignContacts";
 import socketEmit from "../../helpers/socketEmit";
-import CheckChatBotWelcome from "../../helpers/CheckChatBotWelcome";
+// import CheckChatBotWelcome from "../../helpers/CheckChatBotWelcome";
+import CheckChatBotFlowWelcome from "../../helpers/CheckChatBotFlowWelcome";
 import CreateLogTicketService from "./CreateLogTicketService";
 
 interface Data {
@@ -34,7 +35,10 @@ const FindOrCreateTicketService = async ({
   // se for uma mensagem de campanha, não abrir tícket
   if (msg && msg.fromMe) {
     const msgCampaign = await CampaignContacts.findOne({
-      where: { contactId: contact.id, messageId: msg.id.id || msg.message_id }
+      where: {
+        contactId: contact.id,
+        messageId: msg.id?.id || msg.message_id || msg.item_id
+      }
     });
     if (msgCampaign?.id) {
       return { isCampaignMessage: true };
@@ -72,7 +76,7 @@ const FindOrCreateTicketService = async ({
 
   if (ticket) {
     unreadMessages =
-      channel === "telegram" && unreadMessages > 0
+      ["telegram", "instagram"].includes(channel) && unreadMessages > 0
         ? (unreadMessages += ticket.unreadMessages)
         : unreadMessages;
     await ticket.update({ unreadMessages });
@@ -195,7 +199,7 @@ const FindOrCreateTicketService = async ({
   });
 
   if ((msg && !msg.fromMe) || isSync) {
-    await CheckChatBotWelcome(ticketCreated);
+    await CheckChatBotFlowWelcome(ticketCreated);
   }
 
   ticket = await ShowTicketService({ id: ticketCreated.id, tenantId });

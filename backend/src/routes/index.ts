@@ -17,6 +17,7 @@ import campaignRoutes from "./campaignRoutes";
 import campaignContactsRoutes from "./campaignContactsRoutes";
 import apiConfigRoutes from "./apiConfigRoutes";
 import apiExternalRoutes from "./apiExternalRoutes";
+import chatFlowRoutes from "./chatFlowRoutes";
 import tenantRoutes from "./tenantRoutes";
 
 const routes = Router();
@@ -39,6 +40,7 @@ routes.use(campaignRoutes);
 routes.use(campaignContactsRoutes);
 routes.use(apiConfigRoutes);
 routes.use(apiExternalRoutes);
+routes.use(chatFlowRoutes);
 routes.use(tenantRoutes);
 
 export default routes;

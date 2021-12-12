@@ -153,7 +153,7 @@
                   </q-item>
                   <q-separator />
                   <q-item
-                    @click="deletarMenssagem(mensagem)"
+                    @click="deletarMensagem(mensagem)"
                     clickable
                     v-if="mensagem.fromMe"
                   >
@@ -185,6 +185,8 @@
                 <audio
                   class="q-mt-md full-width"
                   controls
+                  ref="audioMessage"
+                  controlsList="nodownload noplaybackrate volume novolume"
                 >
                   <source
                     :src="mensagem.mediaUrl"
@@ -302,7 +304,7 @@
             </template>
             <div
               v-linkified
-              v-if="!['vcard', 'application' ].includes(mensagem.mediaType)"
+              v-if="!['vcard', 'application', 'audio' ].includes(mensagem.mediaType)"
               :class="{'q-mt-sm': mensagem.mediaType !== 'chat'}"
               class="q-message-container row items-end no-wrap"
             >
@@ -329,7 +331,6 @@ const downloadImageCors = axios.create({
     responseType: 'blob'
   }
 })
-
 import { DeletarMensagem } from 'src/service/tickets'
 import { Base64 } from 'js-base64'
 export default {
@@ -455,7 +456,7 @@ export default {
       console.log(mensagem)
       this.$emit('mensagem-chat:encaminhar-mensagem', mensagem)
     },
-    deletarMenssagem (mensagem) {
+    deletarMensagem (mensagem) {
       const data = { ...mensagem }
       this.$q.dialog({
         title: 'Atenção!! Deseja realmente deletar a mensagem? ',
@@ -499,6 +500,11 @@ export default {
   },
   mounted () {
     this.scrollToBottom()
+    // console.log('audioMessage', this.$refs.audioMessage)
+    // this.$refs.audioMessage.forEach(element => {
+    //   console.log(element.playbackRate)
+    //   element.playbackRate = 2
+    // })
   },
   destroyed () {
   }

@@ -12,12 +12,12 @@
         </q-card-section>
       </q-card>
     </div>
-    <div class="row full-width q-py-lg q-px-sm q-gutter-x-md">
+    <div class="row full-width q-py-lg q-px-md ">
       <template v-for="item in whatsapps">
         <q-card
           flat
           bordered
-          class="col-xs-12 col-md-4"
+          class="col-xs-12 col-sm-5 col-md-4 col-lg-3 q-ma-md"
           :key="item.id"
         >
           <q-item>
@@ -25,7 +25,7 @@
               <q-avatar>
                 <q-icon
                   size="40px"
-                  name="img:whatsapp-logo.png"
+                  :name="`img:${item.type}-logo.png`"
                 />
               </q-avatar>
             </q-item-section>
@@ -70,75 +70,7 @@
           </q-item>
           <q-separator />
           <q-card-section>
-            <q-item>
-              <q-item-section avatar>
-                <q-icon
-                  v-if="item.status == 'qrcode'"
-                  color="primary"
-                  name="mdi-crop-free"
-                  size="2.5em"
-                />
-                <q-icon
-                  v-if="item.status == 'DESTROYED'"
-                  color="primary"
-                  name="mdi-qrcode-scan"
-                  size="2.5em"
-                />
-                <q-icon
-                  v-if="item.status == 'DISCONNECTED'"
-                  color="negative"
-                  size="2.5em"
-                  name="mdi-wifi-alert"
-                />
-                <q-icon
-                  name="mdi-wifi-arrow-up-down"
-                  color="green-8"
-                  size="2.5em"
-                  v-if="item.status == 'CONNECTED'"
-                />
-                <q-icon
-                  v-if="['PAIRING', 'TIMEOUT'].includes(item.status)"
-                  color="negative"
-                  size="2.5em"
-                  name="mdi-wifi-strength-1-alert"
-                />
-                <q-spinner
-                  v-if="item.status == 'OPENING'"
-                  color="green-7"
-                  size="3em"
-                  :thickness="2"
-                />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>{{ item.status }}</q-item-label>
-                <q-item-label v-if="item.status == 'qrcode'">
-                  <span class="text-weight-medium"> Esperando leitura do QR Code </span>
-                  <span class="row col"> Clique no botão 'QR CODE' e leia o QR Code com o seu celular para iniciar a sessão </span>
-                </q-item-label>
-                <q-item-label v-if="item.status == 'DESTROYED'">
-                  <span class="text-weight-medium"> Esperando leitura do QR Code </span>
-                  <span class="row col"> Clique no botão 'QR CODE' e leia o QR Code com o seu celular para iniciar a sessão </span>
-                </q-item-label>
-                <q-item-label v-if="item.status == 'DISCONNECTED'">
-                  <span class="text-weight-medium"> Falha ao iniciar sessão do WhatsApp </span>
-                  <span class="row col"> Certifique-se de que seu celular esteja conectado à internet e tente novamente, ou solicite um novo QR Code </span>
-                </q-item-label>
-                <q-item-label v-if="item.status == 'CONNECTED'">
-                  <span class="text-weight-medium"> Conexão estabelecida! </span>
-                </q-item-label>
-                <q-item-label v-if="['PAIRING', 'TIMEOUT'].includes(item.status)">
-                  <span class="text-weight-medium"> A conexão com o celular foi perdida </span>
-                  <span class="row col"> Certifique-se de que seu celular esteja conectado à internet e o WhatsApp esteja aberto, ou clique no botão 'Desconectar' para obter um novo QR Code </span>
-                </q-item-label>
-                <q-item-label v-if="item.status == 'OPENING'">
-                  <span class="text-weight-medium"> Estabelecendo conexão. </span>
-                  <span class="row col"> Isso poderá demorar um pouco... </span>
-                </q-item-label>
-                <q-item-label caption>
-                  Última Atualização: {{ formatarData(item.updatedAt, 'dd/MM/yyyy HH:mm') }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
+            <ItemStatusChannel :item="item" />
           </q-card-section>
           <q-separator />
           <q-card-actions
@@ -166,7 +98,7 @@
               <q-btn
                 outline
                 color="black"
-                label="Tentar novamente"
+                label="Conectar"
                 @click="handleStartWhatsAppSession(item.id)"
               />
             </q-btn-group>
@@ -189,156 +121,6 @@
         </q-card>
       </template>
     </div>
-    <!-- <q-table
-      title="Conexões"
-      bordered
-      :data="whatsapps"
-      :columns="columns"
-      row-key="name"
-      table-style="height: 50vh"
-      class="my-sticky-dynamic q-ma-lg"
-    >
-      <template v-slot:top-right>
-        <q-btn
-          class="q-ml-md"
-          color="primary"
-          label="Adicionar"
-          @click="whatsappSelecionado = {}; modalWhatsapp = true"
-          v-if="$store.getters['isSuporte']"
-        />
-      </template>
-      <template v-slot:body-cell-status="props">
-        <q-td :props="props">
-          <q-icon
-            v-if="props.value == 'qrcode'"
-            color="primary"
-            name="mdi-crop-free"
-            size="2.5em"
-          >
-            <q-tooltip content-class="bg-light-blue-1 text-black q-pa-sm shadow-4">
-              <span class="text-weight-medium"> Esperando leitura do QR Code </span>
-              <span class="row col"> Clique no botão 'QR CODE' e leia o QR Code com o seu celular para iniciar a sessão </span>
-            </q-tooltip>
-          </q-icon>
-          <q-icon
-            v-if="props.value == 'DESTROYED'"
-            color="primary"
-            name="mdi-qrcode-scan"
-            size="2.5em"
-          >
-            <q-tooltip content-class="bg-light-blue-1 text-black q-pa-sm shadow-4">
-              <span class="text-weight-medium"> Esperando leitura do QR Code </span>
-              <span class="row col"> Clique no botão 'QR CODE' e leia o QR Code com o seu celular para iniciar a sessão </span>
-            </q-tooltip>
-          </q-icon>
-          <q-icon
-            v-if="props.value == 'DISCONNECTED'"
-            color="negative"
-            size="2.5em"
-            name="mdi-wifi-alert"
-          >
-            <q-tooltip content-class="bg-light-blue-1 text-black q-pa-sm shadow-4">
-              <span class="text-weight-medium"> Falha ao iniciar sessão do WhatsApp </span>
-              <span class="row col"> Certifique-se de que seu celular esteja conectado à internet e tente novamente, ou solicite um novo QR Code </span>
-            </q-tooltip>
-          </q-icon>
-          <q-icon
-            name="mdi-wifi-arrow-up-down"
-            color="green-8"
-            size="2.5em"
-            v-if="props.value == 'CONNECTED'"
-          >
-            <q-tooltip content-class="bg-light-blue-1 text-black q-pa-sm shadow-4">
-              <span class="text-weight-medium"> Conexão estabelecida! </span>
-            </q-tooltip>
-          </q-icon>
-          <q-icon
-            v-if="['PAIRING', 'TIMEOUT'].includes(props.value)"
-            color="negative"
-            size="2.5em"
-            name="mdi-wifi-strength-1-alert"
-          >
-            <q-tooltip content-class="bg-light-blue-1 text-black q-pa-sm shadow-4">
-              <span class="text-weight-medium"> A conexão com o celular foi perdida </span>
-              <span class="row col"> Certifique-se de que seu celular esteja conectado à internet e o WhatsApp esteja aberto, ou clique no botão 'Desconectar' para obter um novo QR Code </span>
-            </q-tooltip>
-          </q-icon>
-          <q-spinner
-            v-if="props.value == 'OPENING'"
-            color="green-7"
-            size="3em"
-            :thickness="2"
-          >
-          </q-spinner>
-        </q-td>
-      </template>
-      <template v-slot:body-cell-session="props">
-        <q-td :props="props">
-          <q-btn
-            v-if="props.value == 'DESTROYED' || props.value == 'qrcode'"
-            color="blue-5"
-            label="Novo QR Code"
-            @click="handleRequestNewQrCode(props.row.id)"
-            icon-right="watch_later"
-            :disable="!isAdmin"
-          />
-          <q-btn-group
-            v-if="props.value == 'DISCONNECTED'"
-            outline
-          >
-            <q-btn
-              outline
-              color="black"
-              label="Tentar novamente"
-              @click="handleStartWhatsAppSession(props.row.id)"
-            />
-
-          </q-btn-group>
-          <q-btn
-            v-if="['CONNECTED', 'PAIRING', 'TIMEOUT', 'OPENING'].includes(props.value)"
-            color="negative"
-            label="Desconectar"
-            outline
-            @click="handleDisconectWhatsSession(props.row.id)"
-            :disable="!isAdmin"
-          />
-          <q-btn
-            v-if="props.value == 'OPENING'"
-            disable
-            :loading="true"
-            color="grey"
-            label="Conectando"
-          />
-        </q-td>
-      </template>
-      <template v-slot:body-cell-isDefault="props">
-        <q-td :props="props">
-          <q-icon
-            v-if="props.value"
-            name="mdi-check-circle"
-            size="2em"
-            color="positive"
-          />
-          <q-icon
-            v-else
-            name="mdi-checkbox-blank-circle-outline"
-            size="2em"
-          />
-        </q-td>
-      </template>
-      <template v-slot:body-cell-acoes="props">
-        <q-td :props="props">
-          <q-btn
-            round
-            flat
-            dense
-            icon="edit"
-            @click="handleOpenModalWhatsapp(props.row)"
-            v-if="isAdmin"
-          />
-        </q-td>
-      </template>
-    </q-table> -->
     <ModalQrCode
       :abrirModalQR.sync="abrirModalQR"
       :whatsAppId="whatsAppId"
@@ -364,13 +146,16 @@ import pt from 'date-fns/locale/pt-BR/index'
 import ModalQrCode from './ModalQrCode'
 import { mapGetters } from 'vuex'
 import ModalWhatsapp from './ModalWhatsapp'
+import ItemStatusChannel from './ItemStatusChannel'
+
 const userLogado = JSON.parse(localStorage.getItem('usuario'))
 
 export default {
   name: 'IndexSessoesWhatsapp',
   components: {
     ModalQrCode,
-    ModalWhatsapp
+    ModalWhatsapp,
+    ItemStatusChannel
   },
   data () {
     return {
@@ -467,7 +252,7 @@ export default {
           const whatsapp = this.whatsapps.find(w => w.id === whatsAppId)
           this.$store.commit('UPDATE_WHATSAPPS', {
             ...whatsapp,
-            status: 'DESTROYED'
+            status: whatsapp.type === 'whatsapp' ? 'DESTROYED' : 'DISCONNECTED'
           })
         }).finally(f => {
           this.loading = false

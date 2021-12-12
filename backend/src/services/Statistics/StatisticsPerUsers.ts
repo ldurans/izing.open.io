@@ -8,7 +8,7 @@ interface Request {
 }
 
 const query = `
-    select 
+    select
     distinct(email),
     name,
     --, email,)
@@ -16,16 +16,16 @@ const query = `
     count(*) FILTER (where t.status = 'pending') OVER (PARTITION by email) as qtd_pendentes,
     count(*) FILTER (where t.status = 'closed') OVER (PARTITION by email ) as qtd_resolvidos,
     count(*) OVER (PARTITION by email) as qtd_por_usuario,
-    min((DATE_PART('day',  t."updatedAt"::timestamp - t."createdAt"::timestamp) * 24 + 
-    DATE_PART('hour', t."updatedAt"::timestamp - t."createdAt"::timestamp)) * 60 +
-    DATE_PART('minute', t."updatedAt"::timestamp - t."createdAt" ::timestamp)) OVER (PARTITION by email) as menor_tempo_por_usuario,
-    max((DATE_PART('day',  t."updatedAt"::timestamp - t."createdAt"::timestamp) * 24 + 
-    DATE_PART('hour', t."updatedAt"::timestamp - t."createdAt"::timestamp)) * 60 +
-    DATE_PART('minute', t."updatedAt"::timestamp - t."createdAt" ::timestamp)) OVER (PARTITION by email) as maior_tempo_por_usuario,
-    avg((DATE_PART('day',  t."updatedAt"::timestamp - t."createdAt"::timestamp) * 24 + 
-    DATE_PART('hour', t."updatedAt"::timestamp - t."createdAt"::timestamp)) * 60 +
-    DATE_PART('minute', t."updatedAt"::timestamp - t."createdAt" ::timestamp)) OVER (PARTITION by email)  as tempo_medio_por_usuario
-    from "Tickets" t 
+    min((DATE_PART('day',  to_timestamp(t."closedAt"/1000) - to_timestamp(t."startedAttendanceAt"/1000)) * 24 +
+    DATE_PART('hour', to_timestamp(t."closedAt"/1000) - to_timestamp(t."startedAttendanceAt"/1000))) * 60 +
+    DATE_PART('minute', to_timestamp(t."closedAt"/1000) - to_timestamp(t."startedAttendanceAt"/1000))) OVER (PARTITION by email) as menor_tempo_por_usuario,
+    max((DATE_PART('day',  to_timestamp(t."closedAt"/1000) - to_timestamp(t."startedAttendanceAt"/1000)) * 24 +
+    DATE_PART('hour', to_timestamp(t."closedAt"/1000) - to_timestamp(t."startedAttendanceAt"/1000))) * 60 +
+    DATE_PART('minute', to_timestamp(t."closedAt"/1000) - to_timestamp(t."startedAttendanceAt"/1000))) OVER (PARTITION by email) as maior_tempo_por_usuario,
+    avg((DATE_PART('day',  to_timestamp(t."closedAt"/1000) - to_timestamp(t."startedAttendanceAt"/1000)) * 24 +
+    DATE_PART('hour', to_timestamp(t."closedAt"/1000) - to_timestamp(t."startedAttendanceAt"/1000))) * 60 +
+    DATE_PART('minute', to_timestamp(t."closedAt"/1000) - to_timestamp(t."startedAttendanceAt"/1000))) OVER (PARTITION by email)  as tempo_medio_por_usuario
+    from "Tickets" t
     left join "Users" u on t."userId" = "u"."id"
     left join "Queues" q on q.id  = t."queueId"
     where t."tenantId" = :tenantId
@@ -44,10 +44,9 @@ const StatisticsPerUser = async ({
       startDate,
       endDate
     },
-    type: QueryTypes.SELECT,
+    type: QueryTypes.SELECT
     // logging: console.log
   });
-  console.log("StatisticsPerUser", data);
   return data;
 };
 

@@ -5,10 +5,10 @@ import Whatsapp from "../models/Whatsapp";
 import { logger } from "../utils/logger";
 
 interface Session extends Telegraf {
-  id?: number;
+  id: number;
 }
 
-const sessions: Session[] = [];
+const TelegramSessions: Session[] = [];
 
 export const initTbot = async (connection: Whatsapp): Promise<Session> => {
   return new Promise((resolve, reject) => {
@@ -16,14 +16,17 @@ export const initTbot = async (connection: Whatsapp): Promise<Session> => {
       const io = getIO();
       const sessionName = connection.name;
       const { tenantId } = connection;
-      const tbot: Session = new Telegraf(connection.tokenTelegram, {});
-      const sessionIndex = sessions.findIndex(s => s.id === connection.id);
+      const tbot = new Telegraf(connection.tokenTelegram, {}) as Session;
+      tbot.id = connection.id;
+      const sessionIndex = TelegramSessions.findIndex(
+        s => s.id === connection.id
+      );
       if (sessionIndex === -1) {
         tbot.id = connection.id;
-        sessions.push(tbot);
+        TelegramSessions.push(tbot);
       } else {
         tbot.id = connection.id;
-        sessions[sessionIndex] = tbot;
+        TelegramSessions[sessionIndex] = tbot;
       }
       tbot.launch();
       connection.update({
@@ -43,6 +46,11 @@ export const initTbot = async (connection: Whatsapp): Promise<Session> => {
       process.once("SIGTERM", () => tbot.stop("SIGTERM"));
       resolve(tbot);
     } catch (error) {
+      connection.update({
+        status: "DISCONNECTED",
+        qrcode: "",
+        retries: 0
+      });
       logger.error(`initWbot error | Error: ${error}`);
       reject(new Error("Error starting telegram session."));
     }
@@ -51,19 +59,20 @@ export const initTbot = async (connection: Whatsapp): Promise<Session> => {
 
 export const getTbot = (whatsappId: number, checkState = true): Session => {
   logger.info(`whatsappId: ${whatsappId} | checkState: ${checkState}`);
-  const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
+  const sessionIndex = TelegramSessions.findIndex(s => s.id === whatsappId);
 
-  return sessions[sessionIndex];
+  return TelegramSessions[sessionIndex];
 };
 
 export const removeTbot = (whatsappId: number): void => {
   try {
-    const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
+    const sessionIndex = TelegramSessions.findIndex(s => s.id === whatsappId);
+    const sessionSet: any = TelegramSessions[sessionIndex];
     if (sessionIndex !== -1) {
       // Enable graceful stop
-      process.once("SIGINT", () => sessions[sessionIndex].stop("SIGINT"));
-      process.once("SIGTERM", () => sessions[sessionIndex].stop("SIGTERM"));
-      sessions.splice(sessionIndex, 1);
+      process.once("SIGINT", () => sessionSet.stop("SIGINT"));
+      process.once("SIGTERM", () => sessionSet.stop("SIGTERM"));
+      TelegramSessions.splice(sessionIndex, 1);
     }
   } catch (err) {
     logger.error(`removeTbot | Error: ${err}`);

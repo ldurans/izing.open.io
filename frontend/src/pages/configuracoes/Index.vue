@@ -81,21 +81,48 @@
         </q-item-section>
       </q-item>
 
+      <q-item
+        tag="label"
+        v-ripple
+      >
+        <q-item-section>
+          <q-item-label>Fluxo ativo para o Bot de atendimento</q-item-label>
+          <q-item-label caption>Fluxo a ser utilizado pelo Bot para os novos atendimentos</q-item-label>
+        </q-item-section>
+        <q-item-section avatar>
+          <q-select
+            style="width: 300px"
+            outlined
+            dense
+            v-model="botTicketActive"
+            :options="listaChatFlow"
+            map-options
+            emit-value
+            option-value="id"
+            option-label="name"
+            @input="atualizarConfiguracao('botTicketActive')"
+          />
+        </q-item-section>
+      </q-item>
+
     </q-list>
 
   </div>
 </template>
 
 <script>
+import { ListarChatFlow } from 'src/service/chatFlow'
 import { ListarConfiguracoes, AlterarConfiguracao } from 'src/service/configuracoes'
 export default {
   name: 'IndexConfiguracoes',
   data () {
     return {
       configuracoes: [],
+      listaChatFlow: [],
       NotViewAssignedTickets: null,
       NotViewTicketsChatBot: null,
-      DirectTicketsToWallets: null
+      DirectTicketsToWallets: null,
+      botTicketActive: null
     }
   },
   methods: {
@@ -103,9 +130,16 @@ export default {
       const { data } = await ListarConfiguracoes()
       this.configuracoes = data
       this.configuracoes.forEach(el => {
-        console.log(el)
-        this.$data[el.key] = el.value
+        let value = el.value
+        if (el.key === 'botTicketActive' && el.value) {
+          value = +el.value
+        }
+        this.$data[el.key] = value
       })
+    },
+    async listarChatFlow () {
+      const { data } = await ListarChatFlow()
+      this.listaChatFlow = data.chatFlow
     },
     async atualizarConfiguracao (key) {
       const params = {
@@ -131,8 +165,9 @@ export default {
       }
     }
   },
-  mounted () {
-    this.listarConfiguracoes()
+  async mounted () {
+    await this.listarConfiguracoes()
+    await this.listarChatFlow()
   }
 }
 </script>

@@ -70,7 +70,7 @@
             <q-menu>
               <q-list style="min-width: 100px">
                 <q-item-label header> Olá! <b> {{ username }} </b> </q-item-label>
-                <q-item
+                <!-- <q-item
                   clickable
                   v-close-popup
                 >
@@ -82,7 +82,7 @@
                       @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
                     />
                   </q-item-section>
-                </q-item>
+                </q-item> -->
                 <q-item
                   clickable
                   v-close-popup
@@ -112,16 +112,23 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+      :mini="miniState"
+      @mouseover="miniState = false"
+      @mouseout="miniState = true"
+      mini-to-overlay
       content-class="bg-white text-grey-9"
     >
       <q-scroll-area class="fit">
-        <q-list :key="userProfile">
-          <q-item-label
+        <q-list
+          padding
+          :key="userProfile"
+        >
+          <!-- <q-item-label
             header
             class="text-grey-8"
           >
             Menu
-          </q-item-label>
+          </q-item-label> -->
           <EssentialLink
             v-for="item in menuData"
             :key="item.title"
@@ -129,7 +136,8 @@
           />
           <div v-if="userProfile === 'admin'">
             <q-separator spaced />
-            <q-item-label header>Administração</q-item-label>
+            <div class="q-mb-lg"></div>
+            <!-- <q-item-label header>Administração</q-item-label> -->
             <template v-for="item in menuDataAdmin">
               <EssentialLink
                 v-if="exibirMenuBeta(item)"
@@ -141,6 +149,28 @@
 
         </q-list>
       </q-scroll-area>
+      <div
+        class="absolute-bottom text-center row justify-start"
+        :class="{'bg-grey-3': $q.dark.isActive}"
+        style="height: 40px"
+      >
+        <q-toggle
+          size="xl"
+          keep-color
+          dense
+          class="text-bold q-ml-xs"
+          :icon-color="$q.dark.isActive ? 'white' : 'white'"
+          color="dark"
+          :value="$q.dark.isActive"
+          checked-icon="mdi-white-balance-sunny"
+          unchecked-icon="mdi-weather-sunny"
+          @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
+        >
+          <q-tooltip content-class="text-body1 hide-scrollbar">
+            {{ $q.dark.isActive ? 'Desativar' : 'Ativar' }} Modo Escuro (Dark Mode)
+          </q-tooltip>
+        </q-toggle>
+      </div>
     </q-drawer>
 
     <q-page-container>
@@ -184,28 +214,17 @@ const socket = openSocket(process.env.API, {
 })
 
 const objMenu = [
-  // {
-  //   title: 'Dashboard',
-  //   caption: '',
-  //   icon: 'mdi-view-dashboard',
-  //   routeName: 'dashboard'
-  // },
   {
-    title: 'Painel Atendimentos',
-    caption: 'Visão dos atendimentos por usuário e filas',
-    icon: 'mdi-view-dashboard-variant',
-    routeName: 'painel-atendimentos'
+    title: 'Dashboard',
+    caption: '',
+    icon: 'mdi-home',
+    routeName: 'home-dashboard'
   },
-  {
-    title: 'Canais',
-    caption: 'Canais de Comunicação',
-    icon: 'mdi-cellphone-wireless',
-    routeName: 'sessoes'
-  },
+
   {
     title: 'Atendimentos',
     caption: 'Lista de atendimentos',
-    icon: 'mdi-whatsapp',
+    icon: 'mdi-forum-outline',
     routeName: 'atendimento'
   },
   {
@@ -218,6 +237,18 @@ const objMenu = [
 ]
 
 const objMenuAdmin = [
+  {
+    title: 'Canais',
+    caption: 'Canais de Comunicação',
+    icon: 'mdi-cellphone-wireless',
+    routeName: 'sessoes'
+  },
+  {
+    title: 'Painel Atendimentos',
+    caption: 'Visão geral dos atendimentos',
+    icon: 'mdi-view-dashboard-variant',
+    routeName: 'painel-atendimentos'
+  },
   {
     title: 'Relatórios',
     caption: 'Relatórios gerais',
@@ -238,15 +269,15 @@ const objMenuAdmin = [
   },
   {
     title: 'Mensagens Rápidas',
-    caption: 'Mensagens pré-definidas para envio rápido',
+    caption: 'Mensagens pré-definidas',
     icon: 'mdi-reply-all-outline',
     routeName: 'mensagens-rapidas'
   },
   {
     title: 'Chatbot',
     caption: 'Robô de atendimento',
-    icon: 'mdi-message-reply-text',
-    routeName: 'auto-resposta'
+    icon: 'mdi-robot',
+    routeName: 'chat-flow'
   },
   {
     title: 'Etiquetas',
@@ -256,7 +287,7 @@ const objMenuAdmin = [
   },
   {
     title: 'Horário de Atendimento',
-    caption: 'Horário de funcionamento da empresa',
+    caption: 'Horário de funcionamento',
     icon: 'mdi-calendar-clock',
     routeName: 'horarioAtendimento'
   },
@@ -295,6 +326,7 @@ export default {
         '@wchats.com.br',
         '@sispolos.com.br'
       ],
+      miniState: true,
       userProfile: 'user',
       modalUsuario: false,
       usuario,

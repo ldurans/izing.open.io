@@ -30,6 +30,7 @@ const VerifyMessage = async (
   };
   await ticket.update({
     lastMessage: ctx.message.text,
+    lastMessageAt: new Date().getTime(),
     answered: fromMe || false
   });
   await CreateMessageService({

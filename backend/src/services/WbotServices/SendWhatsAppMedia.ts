@@ -28,7 +28,10 @@ const SendWhatsAppMedia = async ({
       { sendAudioAsVoice: true }
     );
 
-    await ticket.update({ lastMessage: media.filename });
+    await ticket.update({
+      lastMessage: media.filename,
+      lastMessageAt: new Date().getTime()
+    });
     try {
       if (userId) {
         await UserMessagesLog.create({

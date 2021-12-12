@@ -147,6 +147,7 @@ export default {
       try {
         const { data: ticket } = await CriarTicket({
           contactId: this.contatoSelecionado.id,
+          isActiveDemand: true,
           userId: userId,
           status: 'open'
         })

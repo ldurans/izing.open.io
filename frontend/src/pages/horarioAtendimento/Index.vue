@@ -115,7 +115,7 @@
       class="q-ma-sm full-full-height"
     >
       <div class="text-h6 q-pa-sm q-ma-sm">
-        Menssagem de Ausência
+        Mensagem de Ausência
         <q-btn
           color="positive"
           label="Salvar"

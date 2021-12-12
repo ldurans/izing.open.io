@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row col q-pa-md justify-between items-center">
-      <h1> Painel Tickets </h1>
+      <h1> Painel Atendimentos </h1>
       <q-btn
         color="primary"
         icon="mdi-filter"
@@ -114,13 +114,13 @@
                 'bg-negative text-white': definirNomeUsuario(item[0]) === 'Pendente'
               }"
               >
-                <q-item-section avatar>
+                <!-- <q-item-section avatar>
                   <q-avatar>
                     <img src="https://cdn.quasar.dev/img/boy-avatar.png">
                   </q-avatar>
-                </q-item-section>
+                </q-item-section> -->
                 <q-item-section>
-                  <q-item-label>{{ definirNomeUsuario(item[0]) }}</q-item-label>
+                  <q-item-label class="text-bold text-h6">{{ definirNomeUsuario(item[0]) }}</q-item-label>
                   <q-item-label
                     caption
                     :class="{
@@ -214,7 +214,7 @@ export default {
       ],
       visao: 'U',
       pesquisaTickets: {
-        showAll: false,
+        showAll: true,
         dateStart: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd'),
         dateEnd: format(new Date(), 'yyyy-MM-dd'),
         queuesIds: []

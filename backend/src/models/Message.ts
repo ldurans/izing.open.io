@@ -102,7 +102,7 @@ class Message extends Model<Message> {
 
   @Default(null)
   @AllowNull
-  @Column(DataType.INTEGER)
+  @Column(DataType.BIGINT)
   timestamp: number;
 
   @ForeignKey(() => User)

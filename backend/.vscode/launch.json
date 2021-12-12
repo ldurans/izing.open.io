@@ -2,19 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach by Process ID",
-      "processId": "${command:PickProcess}",
-      "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "port": 9229,
-      "type": "node"
-    },
-    {
       "name": "Attach Node.js",
       "processId": "${command:PickProcess}",
       "request": "attach",
+      "restart": true,
+      "trace": true,
+      "sourceMaps": true,
       "skipFiles": [
         "<node_internals>/**"
       ],
@@ -32,18 +25,6 @@
       "cwd": "${workspaceFolder}",
       "outputCapture": "std",
       "protocol": "inspector",
-      "outFiles": [
-        "${workspaceFolder}/dist/**/*.js"
-      ]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/src/server.ts",
-      "sourceMaps": true,
-      "trace": true,
-      "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"
       ]

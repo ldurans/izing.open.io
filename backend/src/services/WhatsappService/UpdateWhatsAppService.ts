@@ -9,6 +9,9 @@ interface WhatsappData {
   status?: string;
   session?: string;
   isDefault?: boolean;
+  tokenTelegram?: string;
+  instagramUser?: string;
+  instagramKey?: string;
 }
 
 interface Request {
@@ -32,7 +35,15 @@ const UpdateWhatsAppService = async ({
     isDefault: Yup.boolean()
   });
 
-  const { name, status, isDefault, session } = whatsappData;
+  const {
+    name,
+    status,
+    isDefault,
+    session,
+    tokenTelegram,
+    instagramUser,
+    instagramKey
+  } = whatsappData;
 
   try {
     await schema.validate({ name, status, isDefault });
@@ -58,12 +69,21 @@ const UpdateWhatsAppService = async ({
   if (!whatsapp) {
     throw new AppError("ERR_NO_WAPP_FOUND", 404);
   }
-  await whatsapp.update({
+
+  const data: WhatsappData = {
     name,
     status,
     session,
-    isDefault
-  });
+    isDefault,
+    tokenTelegram,
+    instagramUser
+  };
+
+  if (instagramKey) {
+    data.instagramKey = instagramKey;
+  }
+
+  await whatsapp.update(data);
 
   return { whatsapp, oldDefaultWhatsapp };
 };

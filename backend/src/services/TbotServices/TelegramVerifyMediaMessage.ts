@@ -127,6 +127,7 @@ const VerifyMediaMessage = async (
 
   await ticket.update({
     lastMessage: ctx.message.text || ctx.message.caption || filename,
+    lastMessageAt: new Date().getTime(),
     answered: fromMe || false
   });
   const newMessage = await CreateMessageService({
