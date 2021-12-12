@@ -482,7 +482,6 @@ export default {
           tickPlacement: 'on'
           // labels: {
           //   formatter: function (value, timestamp, opts) {
-          //     console.log('v:', value, 't:', timestamp, 'o:', opts)
           //     return format(new Date(timestamp), 'dd/MM')
           //     // return opts.dateFormatter().format('dd MMM')
           //   }
@@ -686,7 +685,6 @@ export default {
         this.configWidth = { horizontal: true, width: 2200 }
       } else {
         const actualWidth = this.$q.screen.width
-        console.log(actualWidth - (actualWidth < 768 ? 0 : 100))
         this.configWidth = { horizontal: true, width: actualWidth - (actualWidth < 768 ? 40 : 100) }
       }
     },
@@ -741,7 +739,6 @@ export default {
           const dataLabel = groupBy({ ...this.ticketsEvolutionChannels }, 'dt_referencia')
           const labels = Object.keys(dataLabel)
           // .map(l => {
-          //   console.log(format(new Date(l), 'dd/MM'))
           //   return format(new Date(l), 'dd/MM')
           // })
           this.ticketsEvolutionChannelsOptions.labels = labels
@@ -770,7 +767,6 @@ export default {
       GetDashTicketsEvolutionByPeriod(this.params)
         .then(res => {
           this.ticketsEvolutionByPeriod = res.data
-          console.log('ticketsEvolutionByPeriod', res.data)
           const series = [{
             name: 'Atendimentos',
             type: 'column',
@@ -798,7 +794,6 @@ export default {
     getDashTicketsPerUsersDetail () {
       GetDashTicketsPerUsersDetail(this.params)
         .then(res => {
-          console.log('GetDashTicketsPerUsersDetail', res.data)
           this.ticketsPerUsersDetail = res.data
         })
         .catch(error => {

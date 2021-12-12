@@ -453,7 +453,6 @@ export default {
       this.$root.$emit('mensagem-chat:focar-input-mensagem', mensagem)
     },
     encaminharMensagem (mensagem) {
-      console.log(mensagem)
       this.$emit('mensagem-chat:encaminhar-mensagem', mensagem)
     },
     deletarMensagem (mensagem) {
@@ -500,9 +499,7 @@ export default {
   },
   mounted () {
     this.scrollToBottom()
-    // console.log('audioMessage', this.$refs.audioMessage)
     // this.$refs.audioMessage.forEach(element => {
-    //   console.log(element.playbackRate)
     //   element.playbackRate = 2
     // })
   },

@@ -979,7 +979,7 @@ export default {
       this.modalUsuario = true
     },
     async efetuarLogout () {
-      console.log('logout - index atendimento', usuario)
+      console.log('logout - index atendimento')
       try {
         await RealizarLogout(usuario)
         localStorage.removeItem('token')
@@ -1029,7 +1029,6 @@ export default {
       })
     },
     async tagSelecionada (tags) {
-      console.log('tagSelecionada', tags)
       await EditarEtiquetasContato(this.ticketFocado.contact.id, [...tags])
       // this.contatoEditado(data)
     },
@@ -1064,7 +1063,6 @@ export default {
     this.listarConfiguracoes()
     const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     if (!filtros?.pageNumber) {
-      console.log('filtros', filtros)
       localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
     }
   },
@@ -1074,7 +1072,6 @@ export default {
     // Caso não existam filtros ainda no localstorage, salvar.
     // const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     // if (!filtros?.pageNumber) {
-    //   console.log('filtros', filtros)
     //   localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
     // }
     this.pesquisaTickets = JSON.parse(localStorage.getItem('filtrosAtendimento'))

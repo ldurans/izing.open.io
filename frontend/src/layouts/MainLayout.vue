@@ -406,7 +406,6 @@ export default {
       this.modalUsuario = true
     },
     async efetuarLogout () {
-      console.log('logout - main atendimento', usuario)
       try {
         await RealizarLogout(usuario)
         localStorage.removeItem('token')
@@ -430,9 +429,8 @@ export default {
       localStorage.setItem('configuracoes', JSON.stringify(data))
     },
     conectarSocket (usuario) {
-      console.log('conectarSocket', usuario)
       socket.on(`${usuario.tenantId}-users`, data => {
-        console.log('usuarios status', data)
+        console.log('usuarios => status')
       })
     }
   },

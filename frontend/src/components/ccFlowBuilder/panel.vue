@@ -242,10 +242,8 @@ export default {
         ...this.cDataFlow.flow,
         flow: this.data
       }
-      console.log('saveFlow', data)
       UpdateChatFlow(data)
         .then(res => {
-          console.log('CriarChatFlow', res.data)
           this.$notificarSucesso('Fluxo salvo!')
         })
         .catch(error => {
@@ -345,7 +343,6 @@ export default {
 
         // 删除连线回调
         this.jsPlumb.bind('connectionDetached', (evt) => {
-          console.log('connectionDetached', evt)
           this.deleteLine(evt.sourceId, evt.targetId)
         })
 

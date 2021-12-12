@@ -71,7 +71,6 @@ export function ForceDirected (data = {}) {
     calculateTraction()
     updateCoordinates()
   }
-  // console.log(JSON.stringify(new Result(mNodeList, mEdgeList)))
   // 坐标添加px
   for (let i = 0; i < mNodeList.length; i++) {
     const node = mNodeList[i]
@@ -83,7 +82,6 @@ export function ForceDirected (data = {}) {
 
   data.nodeList = mNodeList
 
-  // console.log(data)
   return data
 }
 

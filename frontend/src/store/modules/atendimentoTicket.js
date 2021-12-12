@@ -167,7 +167,6 @@ const atendimentoTicket = {
     },
     // OK
     LOAD_TICKETS (state, payload) {
-      console.log('LOAD_TICKETS', payload)
       const newTickets = payload
       newTickets.forEach(ticket => {
         const ticketIndex = state.tickets.findIndex(t => t.id === ticket.id)
@@ -188,7 +187,6 @@ const atendimentoTicket = {
       state.tickets = []
     },
     RESET_UNREAD (state, payload) {
-      console.log('RESET_UNREAD', payload)
       const tickets = [...state.tickets]
       const ticketId = payload.ticketId
       const ticketIndex = tickets.findIndex(t => t.id === ticketId)
@@ -200,7 +198,6 @@ const atendimentoTicket = {
     },
     // OK
     UPDATE_TICKET (state, payload) {
-      console.log('UPDATE_TICKET', payload)
       const ticketIndex = state.tickets.findIndex(t => t.id === payload.id)
       if (ticketIndex !== -1) {
         // atualizar ticket se encontrado
@@ -247,7 +244,6 @@ const atendimentoTicket = {
     },
 
     // UPDATE_TICKET_MESSAGES_COUNT (state, payload) {
-    //   console.log('UPDATE_TICKET_MESSAGES_COUNT', payload)
 
     //   const { ticket, searchParam } = payload
     //   const ticketIndex = state.tickets.findIndex(t => t.id === ticket.id)
@@ -278,7 +274,6 @@ const atendimentoTicket = {
     },
     // OK
     TICKET_FOCADO (state, payload) {
-      console.log('>>> TICKET_FOCADO <<<', payload)
       const params = {
         ...payload,
         status: payload.status == 'pending' ? 'open' : payload.status
@@ -332,7 +327,6 @@ const atendimentoTicket = {
 
       const TicketIndexUpdate = state.tickets.findIndex(t => t.id == payload.ticket.id)
       if (TicketIndexUpdate !== -1) {
-        console.log('TicketIndexUpdate - MESSAGES', state.tickets[TicketIndexUpdate])
         const tickets = [...state.tickets]
         const unreadMessages = state.ticketFocado.id == payload.ticket.id ? 0 : payload.ticket.unreadMessages
         tickets[TicketIndexUpdate] = {

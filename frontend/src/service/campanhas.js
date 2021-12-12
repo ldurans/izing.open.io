@@ -36,7 +36,6 @@ export function ListarCampanhas () {
 }
 
 export function AlterarCampanha (data, id) {
-  console.log('AlterarCampanha', data)
   return request({
     url: `/campaigns/${id}`,
     method: 'put',

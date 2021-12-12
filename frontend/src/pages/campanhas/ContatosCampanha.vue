@@ -458,7 +458,7 @@ export default {
           })
         })
         .catch(error => {
-          console.log(error)
+          console.error(error)
           this.$notificarErro('Verifique os erros...', error)
         })
     },

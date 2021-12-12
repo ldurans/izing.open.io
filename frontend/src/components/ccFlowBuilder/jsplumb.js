@@ -2262,7 +2262,6 @@ copyright 2016 jsPlumb
       /* test to see if the parent needs to be scrolled (future)
        if (scroll) {
        var pnsl = dragEl.parentNode.scrollLeft, pnst = dragEl.parentNode.scrollTop;
-       console.log("scroll!", pnsl, pnst);
        }*/
     };
     this.destroy = function () {

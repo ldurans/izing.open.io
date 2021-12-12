@@ -411,7 +411,6 @@ export default {
       const msgArray = ['message1', 'message2', 'message3']
       if (this.arquivos?.type) {
         const blob = new Blob([this.arquivos], { type: this.arquivos.type })
-        console.log(window.URL.createObjectURL(blob), this.arquivos)
         messages.push({
           ...this.messageTemplate,
           id: 'mediaUrl',
@@ -439,7 +438,6 @@ export default {
           messages.push(msg)
         }
       })
-      console.log('messages', messages)
       return messages
     }
   },

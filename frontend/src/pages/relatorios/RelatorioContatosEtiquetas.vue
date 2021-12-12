@@ -209,7 +209,6 @@ export default {
           style: 'width: 500px',
           align: 'left',
           format: (v) => {
-            console.log(v)
             if (v) {
               const strs = v.map(i => i.tag)
               return strs.join(', ')

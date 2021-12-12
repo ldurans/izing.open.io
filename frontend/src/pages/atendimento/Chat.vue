@@ -472,7 +472,6 @@ export default {
           this.ativarMultiEncaminhamento = false
         })
         .catch(e => {
-          console.log('confirmarEncaminhamentoMensagem', e)
           this.$notificarErro('Não foi possível encaminhar mensagem. Tente novamente em alguns minutos!', e)
         })
     }
