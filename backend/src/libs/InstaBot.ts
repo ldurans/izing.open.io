@@ -47,11 +47,8 @@ export const initInstaBot = async (connection: Whatsapp): Promise<Session> => {
       const { accountLogin } = ig;
       await ig.importState(JSON.parse(connection.session));
       ig.accountLogin = accountLogin;
-      // await ig.state.deserialize(sessionCfg);
-      // await ig.user.info(ig.state.cookieUserId);
-      // await ig.user.info(ig.state.cookieUserId);
     } else {
-      await ig.simulate.preLoginFlow();
+      // await ig.simulate.preLoginFlow();
       loggedUser = await ig.account.login(username, password);
       ig.accountLogin = loggedUser;
       process.nextTick(async () => {
