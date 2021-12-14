@@ -6,6 +6,7 @@ import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
 import { sleepRandomTime } from "../../utils/sleepRandomTime";
+import Contact from "../../models/Contact";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 interface Session extends Client {
@@ -33,11 +34,23 @@ const SendMessagesSystemWbot = async (
       ]
     },
     include: [
-      "contact",
+      {
+        model: Contact,
+        as: "contact",
+        where: {
+          tenantId,
+          number: {
+            [Op.notIn]: ["", "null"]
+          }
+        }
+      },
       {
         model: Ticket,
         as: "ticket",
-        where: { tenantId },
+        where: {
+          tenantId,
+          channel: "whatsapp"
+        },
         include: ["contact"]
       },
       {

@@ -32,7 +32,7 @@ const VerifyContact = async (
       ? await ctx.telegram.getFileLink(chatInfo.photo?.small_file_id)
       : undefined;
   } catch (error) {
-    profilePicUrl = "https://app.wchats.com.br/user-profile-avatar.png";
+    profilePicUrl = undefined;
   }
 
   const contactData = {

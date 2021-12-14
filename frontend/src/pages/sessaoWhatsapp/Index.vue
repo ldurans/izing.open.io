@@ -77,17 +77,11 @@
             class="q-pa-md q-pt-none"
             align="center"
           >
-            <!-- <q-btn
-              v-if="props.value == 'qrcode'"
-              color="primary"
-              label="QR CODE"
-              @click="props.row.status === 'qrcode' ? handleOpenQrModal(props.row.id) : handleRequestNewQrCode(props.row.id) "
-            /> -->
             <q-btn
               v-if="item.status == 'DESTROYED' || item.status == 'qrcode'"
               color="blue-5"
               label="Novo QR Code"
-              @click="handleRequestNewQrCode(item)"
+              @click="handleRequestNewQrCode(item, 'btn-qrCode')"
               icon-right="watch_later"
               :disable="!isAdmin"
             />
@@ -123,8 +117,7 @@
     </div>
     <ModalQrCode
       :abrirModalQR.sync="abrirModalQR"
-      :whatsAppId="whatsAppId"
-      @modalQrCode:qrCodeInexistente="handleRequestNewQrCode(whatsAppId)"
+      :channel="whatsappSelecionado"
     />
     <ModalWhatsapp
       :modalWhatsapp.sync="modalWhatsapp"
@@ -140,7 +133,7 @@
 </template>
 
 <script>
-import { DeletarWhatsapp, DeleteWhatsappSession, StartWhatsappSession, RequestNewQrCode, ListarWhatsapps, SincronizarContatosWhatsapp } from 'src/service/sessoesWhatsapp'
+import { DeletarWhatsapp, DeleteWhatsappSession, StartWhatsappSession, ListarWhatsapps, SincronizarContatosWhatsapp } from 'src/service/sessoesWhatsapp'
 import { format, parseISO } from 'date-fns'
 import pt from 'date-fns/locale/pt-BR/index'
 import ModalQrCode from './ModalQrCode'
@@ -223,8 +216,8 @@ export default {
     formatarData (data, formato) {
       return format(parseISO(data), formato, { locale: pt })
     },
-    handleOpenQrModal (whatsAppId) {
-      this.whatsAppId = whatsAppId
+    handleOpenQrModal (channel) {
+      this.whatsappSelecionado = channel
       this.abrirModalQR = true
     },
     handleOpenModalWhatsapp (whatsapp) {
@@ -266,20 +259,22 @@ export default {
         console.error(error)
       }
     },
-    async handleRequestNewQrCode (whatsapp) {
-      if (whatsapp.type === 't' && !whatsapp.tokenTelegram) {
+    async handleRequestNewQrCode (channel, origem) {
+      console.log('origem', origem)
+      if (channel.type === 'telegram' && !channel.tokenTelegram) {
         this.$notificarErro('Necessário informar o token para Telegram')
       }
-      this.loading = true
-      try {
-        await RequestNewQrCode(whatsapp.id)
-        setTimeout(() => {
-          this.handleOpenQrModal(whatsapp.id)
-        }, 3000)
-      } catch (error) {
-        console.error(error)
-      }
-      this.loading = false
+      this.handleOpenQrModal(channel)
+      // this.loading = true
+      // try {
+      //   await RequestNewQrCode(whatsapp.id)
+      //   setTimeout(() => {
+      //     this.handleOpenQrModal(whatsapp.id)
+      //   }, 3000)
+      // } catch (error) {
+      //   console.error(error)
+      // }
+      // this.loading = false
     },
     async listarWhatsapps () {
       const { data } = await ListarWhatsapps()
@@ -348,14 +343,14 @@ export default {
   mounted () {
     this.isAdmin = localStorage.getItem('profile')
     this.listarWhatsapps()
-    this.$root.$on('UPDATE_SESSION', (whatsapp) => {
-      if (whatsapp.status === 'qrcode') {
-        this.handleOpenQrModal(whatsapp.id)
-      } else {
-        // if (whatsapp.status === 'qrcode') return
-        this.abrirModalQR = false
-      }
-    })
+    // this.$root.$on('UPDATE_SESSION', (whatsapp) => {
+    //   if (whatsapp.status === 'qrcode') {
+    //     this.handleOpenQrModal(whatsapp)
+    //   } else {
+    //     // if (whatsapp.status === 'qrcode') return
+    //     this.abrirModalQR = false
+    //   }
+    // })
   },
   destroyed () {
     this.$root.$off('UPDATE_SESSION')

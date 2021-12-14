@@ -36,7 +36,7 @@ const InstagramVerifyContact = async (
     user = threadData.thread?.users[0];
     profilePicUrl = user.profile_pic_url;
   } catch (error) {
-    profilePicUrl = "https://app.wchats.com.br/user-profile-avatar.png";
+    profilePicUrl = undefined;
   }
 
   const contactData = {

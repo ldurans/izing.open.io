@@ -10,7 +10,7 @@ const VerifyContact = async (
   try {
     profilePicUrl = await msgContact.getProfilePicUrl();
   } catch (error) {
-    profilePicUrl = "https://app.wchats.com.br/user-profile-avatar.png";
+    profilePicUrl = undefined;
   }
 
   const contactData = {
