@@ -1,5 +1,6 @@
 import { RealizarLogin } from '../../service/login'
 import { Notify, Dark } from 'quasar'
+import openSocket from 'socket.io-client'
 
 const pesquisaTicketsFiltroPadrao = {
   searchParam: '',
@@ -59,6 +60,12 @@ const user = {
         commit('SET_IS_SUPORTE', data)
         commit('SET_IS_ADMIN', data)
 
+        const socket = openSocket(process.env.API, {
+          query: { token: data.token },
+          forceNew: true
+        })
+        socket.emit(`${data.tenantId}:setUserActive`)
+
         // chamada deve ser feita após inserir o token no localstorage
         // const { data: usuario } = await DadosUsuario(data.userId)
         Notify.create({
@@ -67,9 +74,10 @@ const user = {
           position: 'top',
           progress: true
         })
+
         if (data.profile === 'admin') {
           this.$router.push({
-            name: 'contatos'
+            name: 'home-dashboard'
           })
         } else {
           this.$router.push({

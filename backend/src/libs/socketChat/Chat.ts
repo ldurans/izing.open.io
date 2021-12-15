@@ -415,7 +415,7 @@ const onDisconnect = (socket: Socket) => {
 
     // Save lastOnline Time
     const instance = await User.findByPk(user.id);
-    instance?.update({ lastOnline: new Date() });
+    instance?.update({ status: "offline", lastOnline: new Date() });
     UpdateOnlineBubbles(socket);
 
     if (reason === "transport error") {

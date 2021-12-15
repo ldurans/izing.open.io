@@ -47,12 +47,16 @@ const AuthUserService = async ({
 
   const token = createAccessToken(user);
   const refreshToken = createRefreshToken(user);
-  await user.update({ isOnline: true, lastLogin: new Date() });
+  await user.update({
+    isOnline: true,
+    status: "online",
+    lastLogin: new Date()
+  });
 
   // retornar listagem de usuarios online
   const usuariosOnline = await User.findAll({
     where: { tenantId: user.tenantId, isOnline: true },
-    attributes: ["id", "email", "name", "lastLogin"]
+    attributes: ["id", "email", "status", "lastOnline", "name", "lastLogin"]
     // include: [{ model: Queue, as: "queues" }]
   });
 

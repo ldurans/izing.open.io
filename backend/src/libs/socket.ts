@@ -39,6 +39,7 @@ export const initIO = (httpServer: Server): SocketIO => {
             "name",
             "email",
             "profile",
+            "status",
             "lastLogin",
             "lastOnline"
           ]
