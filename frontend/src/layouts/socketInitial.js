@@ -56,19 +56,19 @@ export default {
       //   }
       // })
 
-      socket.on(`${usuario.tenantId} - whatsapp`, data => {
+      socket.on(`${usuario.tenantId}-whatsapp`, data => {
         if (data.action === 'update') {
           this.$store.commit('UPDATE_WHATSAPPS', data.whatsapp)
         }
       })
 
-      socket.on(`${usuario.tenantId} - whatsapp`, data => {
+      socket.on(`${usuario.tenantId}-whatsapp`, data => {
         if (data.action === 'delete') {
           this.$store.commit('DELETE_WHATSAPPS', data.whatsappId)
         }
       })
 
-      socket.on(`${usuario.tenantId} - whatsappSession`, data => {
+      socket.on(`${usuario.tenantId}-whatsappSession`, data => {
         if (data.action === 'update') {
           this.$store.commit('UPDATE_SESSION', data.session)
           this.$root.$emit('UPDATE_SESSION', data.session)

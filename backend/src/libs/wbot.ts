@@ -52,7 +52,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
 
       const wbot = new Client({
         session: sessionCfg,
-        clientId: `${whatsapp.id}`, // slugify(whatsapp.name),
+        clientId: `wbot_${whatsapp.id}`, // slugify(whatsapp.name),
         qrRefreshIntervalMs: 10000,
         puppeteer: {
           // headless: false,

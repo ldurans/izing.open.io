@@ -104,6 +104,7 @@ export default {
 
         if (data.action === 'update' && data.session.status === 'CONNECTED') {
           this.fecharModalQrModal()
+          this.$store.commit('UPDATE_WHATSAPPS', data.session)
         }
       })
     }
