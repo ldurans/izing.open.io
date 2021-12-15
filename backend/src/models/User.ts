@@ -72,6 +72,9 @@ class User extends Model<User> {
   lastLogin: Date;
 
   @Column
+  lastOnline: Date;
+
+  @Column
   lastLogout: Date;
 
   @Column

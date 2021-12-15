@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import path from "path";
-import { rmdir } from "fs/promises";
+// import path from "path";
+// import { rmdir } from "fs/promises";
 import { getWbot, removeWbot } from "../libs/wbot";
 import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService";
 import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
@@ -34,10 +34,10 @@ const update = async (req: Request, res: Response): Promise<Response> => {
     tenantId
   });
 
-  const pathRoot = path.resolve(__dirname, "..", "..", "WWebJS");
-  const pathSession = `${pathRoot}/session-${whatsapp.name}`;
-  console.log("pathSession StartWhatsAppSession", pathSession);
-  await rmdir(pathSession, { recursive: true });
+  // const pathRoot = path.resolve(__dirname, "..", "..", "WWebJS");
+  // const pathSession = `${pathRoot}/session-${whatsapp.name}`;
+  // console.log("pathSession StartWhatsAppSession", pathSession);
+  // await rmdir(pathSession, { recursive: true });
   StartWhatsAppSession(whatsapp);
   return res.status(200).json({ message: "Starting session." });
 };

@@ -1,7 +1,7 @@
 import { Client, DefaultOptions } from "whatsapp-web.js";
 import { rmdir } from "fs/promises";
 import path from "path";
-import slugify from "slugify";
+// import slugify from "slugify";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
 import { getValue, setValue } from "./redisClient";
@@ -39,81 +39,20 @@ const apagarPastaSessao = async (whatsapp: Whatsapp): Promise<void> => {
   await rmdir(pathSession, { recursive: true });
 };
 
-// const syncContacts = async (wbot: Session, tenantId: string | number) => {
-//   let contacts;
-//   try {
-//     contacts = await wbot.getContacts();
-//   } catch (err) {
-//     logger.error(
-//       `Could not get whatsapp contacts from phone. Check connection page ${err}`
-//     );
-//   }
-
-//   if (!contacts) {
-//     return null;
-//   }
-
-//   // eslint-disable-next-line @typescript-eslint/ban-types
-//   const dataArray: object[] = [];
-//   await Promise.all(
-//     contacts.map(async ({ name, pushname, number, isGroup }) => {
-//       if ((name || pushname) && !isGroup) {
-//         // const profilePicUrl = await wbot.getProfilePicUrl(`${number}@c.us`);
-//         const contactObj = { name: name || pushname, number, tenantId };
-//         dataArray.push(contactObj);
-//       }
-//     })
-//   );
-//   if (dataArray.length) {
-//     await Contact.bulkCreate(dataArray, {
-//       fields: ["number", "name", "tenantId"],
-//       updateOnDuplicate: ["name", "number"],
-//       include: [
-//         {
-//           model: Tenant,
-//           as: "tenant",
-//           where: { tenantId }
-//         }
-//       ]
-//     });
-//     logger.info("Lista de contatos sincronizada-syncContacts");
-//   }
-//   return true;
-// };
-
-// const getConnectionStateIsValid = async (
-//   wbot: Session,
-//   whatsappId: number
-// ): Promise<void> => {
-//   const io = getIO();
-//   try {
-//     const state = await wbot.getState();
-//     console.log("getConnectionStateIsValid", state);
-//   } catch (error) {
-//     const whatsapp = await Whatsapp.findByPk(whatsappId);
-//     if (whatsapp) {
-//       await whatsapp.update({ status: "OPENING", retries: 0 });
-//       io.emit(`${whatsapp.tenantId}-whatsappSession`, {
-//         action: "update",
-//         session: whatsapp
-//       });
-//     }
-//     await wbot.initialize();
-//   }
-// };
-
 export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
   return new Promise((resolve, reject) => {
     try {
       const io = getIO();
       const sessionName = whatsapp.name;
       const { tenantId } = whatsapp;
-      // let sessionCfg;
-      // if (whatsapp && whatsapp.session) {
-      //   sessionCfg = JSON.parse(whatsapp.session);
-      // }
+      let sessionCfg;
+      if (whatsapp?.session) {
+        sessionCfg = JSON.parse(whatsapp.session);
+      }
+
       const wbot = new Client({
-        clientId: slugify(whatsapp.name),
+        session: sessionCfg,
+        clientId: `${whatsapp.id}`, // slugify(whatsapp.name),
         qrRefreshIntervalMs: 10000,
         puppeteer: {
           // headless: false,
@@ -167,9 +106,14 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         });
       });
 
-      wbot.on("authenticated", async () => {
+      wbot.on("authenticated", async session => {
         logger.info(`Session: ${sessionName} AUTHENTICATED`);
         await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
+        if (session) {
+          await whatsapp.update({
+            session: JSON.stringify(session)
+          });
+        }
       });
 
       wbot.on("auth_failure", async msg => {
@@ -197,13 +141,13 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         //   logger.info("Iniciando sincronização de contatos.");
         //   syncContacts(wbot, tenantId);
         // }
-
+        const info: any = wbot?.info;
         await whatsapp.update({
           status: "CONNECTED",
           qrcode: "",
           retries: 0,
-          number: wbot?.info?.wid?.user // || wbot?.info?.me?.user,
-          // phone: wbot?.info?.phone
+          number: wbot?.info?.wid?.user, // || wbot?.info?.me?.user,
+          phone: info?.phone || {}
         });
 
         await setValue(`wbotStatus-${tenantId}`, whatsapp.status);

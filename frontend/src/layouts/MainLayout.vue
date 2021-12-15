@@ -59,6 +59,18 @@
             </q-badge>
             <q-tooltip>Notificações (Em breve)</q-tooltip>
           </q-btn>
+          <q-avatar
+            :color="usuario.status === 'offline' ? 'negative': 'positive'"
+            text-color="white"
+            size="25px"
+            :icon="usuario.status === 'offline' ? 'mdi-account-off' : 'mdi-account-check'"
+            rounded
+            class="q-ml-lg"
+          >
+            <q-tooltip>
+              {{ usuario.status === 'offline' ? 'Usuário Offiline' : 'Usuário Online'}}
+            </q-tooltip>
+          </q-avatar>
           <q-btn
             round
             flat
@@ -83,6 +95,10 @@
                     />
                   </q-item-section>
                 </q-item> -->
+                <cStatusUsuario
+                  @update:usuario="atualizarUsuario"
+                  :usuario="usuario"
+                />
                 <q-item
                   clickable
                   v-close-popup
@@ -203,9 +219,9 @@ import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { mapGetters } from 'vuex'
 import { ListarConfiguracoes } from 'src/service/configuracoes'
 const token = JSON.parse(localStorage.getItem('token'))
-const usuario = JSON.parse(localStorage.getItem('usuario'))
 import openSocket from 'socket.io-client'
 import { RealizarLogout } from 'src/service/login'
+import cStatusUsuario from '../components/cStatusUsuario.vue'
 const socket = openSocket(process.env.API, {
   query: {
     token
@@ -318,7 +334,7 @@ const objMenuAdmin = [
 export default {
   name: 'MainLayout',
   mixins: [socketInitial],
-  components: { EssentialLink, ModalUsuario },
+  components: { EssentialLink, ModalUsuario, cStatusUsuario },
   data () {
     return {
       username,
@@ -329,7 +345,7 @@ export default {
       miniState: true,
       userProfile: 'user',
       modalUsuario: false,
-      usuario,
+      usuario: {},
       alertSound,
       leftDrawerOpen: false,
       menuData: objMenu,
@@ -349,6 +365,9 @@ export default {
     cOpening () {
       const idx = this.whatsapps.findIndex(w => w.status === 'OPENING')
       return (idx !== -1)
+    },
+    cUsersApp () {
+      return this.$store.state.usersApp
     },
     cObjMenu () {
       if (this.cProblemaConexao) {
@@ -407,7 +426,7 @@ export default {
     },
     async efetuarLogout () {
       try {
-        await RealizarLogout(usuario)
+        await RealizarLogout(this.usuario)
         localStorage.removeItem('token')
         localStorage.removeItem('username')
         localStorage.removeItem('profile')
@@ -429,12 +448,23 @@ export default {
       localStorage.setItem('configuracoes', JSON.stringify(data))
     },
     conectarSocket (usuario) {
-      socket.on(`${usuario.tenantId}-users`, data => {
-        console.log('usuarios => status')
+      socket.on(`${usuario.tenantId}:chat:updateOnlineBubbles`, data => {
+        console.log('chat:updateOnlineBubbles', data)
+        this.$store.commit('SET_USERS_APP', data)
       })
+    },
+    atualizarUsuario () {
+      this.usuario = JSON.parse(localStorage.getItem('usuario'))
+      if (this.usuario.status === 'offline') {
+        socket.emit(`${this.usuario.tenantId}:setUserIdle`)
+      }
+      if (this.usuario.status === 'online') {
+        socket.emit(`${this.usuario.tenantId}:setUserActive`)
+      }
     }
   },
   async mounted () {
+    this.atualizarUsuario()
     await this.listarWhatsapps()
     await this.listarConfiguracoes()
     if (!('Notification' in window)) {
@@ -443,7 +473,7 @@ export default {
     }
     this.usuario = JSON.parse(localStorage.getItem('usuario'))
     this.userProfile = localStorage.getItem('profile')
-    await this.conectarSocket(usuario)
+    await this.conectarSocket(this.usuario)
   },
   destroyed () {
     socket.disconnect()

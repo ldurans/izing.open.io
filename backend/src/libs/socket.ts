@@ -6,6 +6,7 @@ import AppError from "../errors/AppError";
 import decodeTokenSocket from "./decodeTokenSocket";
 import { logger } from "../utils/logger";
 import User from "../models/User";
+import Chat from "./socketChat/Chat";
 
 let io: SocketIO;
 
@@ -38,11 +39,12 @@ export const initIO = (httpServer: Server): SocketIO => {
             "name",
             "email",
             "profile",
-            "lastLogin"
+            "lastLogin",
+            "lastOnline"
           ]
         });
         socket.auth = verify.data;
-        socket.user = JSON.stringify(user);
+        socket.user = user;
         next();
       }
       next(new Error("authentication error"));
@@ -79,12 +81,14 @@ export const initIO = (httpServer: Server): SocketIO => {
         );
         socket.join(`${tenantId}-${status}`);
       });
+      Chat.register(socket);
     }
 
     socket.on("disconnect", (reason: WAState) => {
       logger.info({ message: "Client disconnected", tenantId, reason });
     });
   });
+
   return io;
 };
 export const getIO = (): SocketIO => {
