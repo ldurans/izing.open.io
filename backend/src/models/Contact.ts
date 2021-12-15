@@ -36,7 +36,7 @@ class Contact extends Model<Contact> {
   @Column
   name: string;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Column
   number: string;
 
@@ -52,6 +52,16 @@ class Contact extends Model<Contact> {
   @Default(null)
   @Column
   pushname: string;
+
+  @AllowNull(true)
+  @Default(null)
+  @Column
+  telegramId: string;
+
+  @AllowNull(true)
+  @Default(null)
+  @Column
+  instagramPK: number;
 
   @Default(false)
   @Column

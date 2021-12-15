@@ -8,7 +8,6 @@
 /* eslint-env node */
 
 module.exports = function (ctx) {
-  console.log('CTX', ctx)
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     // supportTS: false,

@@ -17,6 +17,9 @@ interface Request {
   pushname: string;
   isUser: boolean;
   isWAContact: boolean;
+  telegramId?: string | number;
+  instagramPK?: string | number;
+  origem?: string;
 }
 
 const CreateOrUpdateContactService = async ({
@@ -29,20 +32,35 @@ const CreateOrUpdateContactService = async ({
   isUser,
   isWAContact,
   email = "",
-  extraInfo = []
+  telegramId,
+  instagramPK,
+  extraInfo = [],
+  origem = "whatsapp"
 }: Request): Promise<Contact> => {
   const number = isGroup ? rawNumber : rawNumber.replace(/[^0-9]/g, "");
 
-  let contact: Contact | null;
+  let contact: Contact | null = null;
 
-  contact = await Contact.findOne({ where: { number, tenantId } });
+  if (origem === "whatsapp") {
+    contact = await Contact.findOne({ where: { number, tenantId } });
+  }
+
+  if (origem === "telegram" && telegramId) {
+    contact = await Contact.findOne({ where: { telegramId, tenantId } });
+  }
+
+  if (origem === "instagram" && instagramPK) {
+    contact = await Contact.findOne({ where: { instagramPK, tenantId } });
+  }
 
   if (contact) {
     contact.update({
       profilePicUrl,
       pushname,
       isUser,
-      isWAContact
+      isWAContact,
+      telegramId,
+      instagramPK
     });
   } else {
     contact = await Contact.create({
@@ -55,7 +73,9 @@ const CreateOrUpdateContactService = async ({
       isUser,
       isWAContact,
       tenantId,
-      extraInfo
+      extraInfo,
+      telegramId,
+      instagramPK
     });
   }
 

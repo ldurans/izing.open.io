@@ -187,14 +187,14 @@ const ListTicketsService = async ({
   // `;
 
   const query = `
-  select 
+  select
   count(*) OVER ( ) as count,
   c."profilePicUrl",
   c."name",
   u."name" as username,
   q.queue,
   t.*
-  from "Tickets" t 
+  from "Tickets" t
   left join "Contacts" c on (t."contactId" = c.id)
   left join "Users" u on (u.id = t."userId")
   left join "Queues" q on (t."queueId" = q.id)
@@ -202,15 +202,15 @@ const ListTicketsService = async ({
   and c."tenantId" = :tenantId
   and t.status in ( :status )
   and (( :isShowAll = 'N' and  (
-    (:isExistsQueueTenant = 'S' and t."queueId" in ( :queuesIdsUser )) 
-    or t."userId" = :userId or exists (select 1 from "ContactWallets" cw where cw."walletId" = :userId and cw."contactId" = t."contactId") ) 
+    (:isExistsQueueTenant = 'S' and t."queueId" in ( :queuesIdsUser ))
+    or t."userId" = :userId or exists (select 1 from "ContactWallets" cw where cw."walletId" = :userId and cw."contactId" = t."contactId") )
   ) OR (:isShowAll = 'S') OR (t."isGroup" = true) OR (:isExistsQueueTenant = 'N') )
   and (( :isUnread = 'S'  and t."unreadMessages" > 0) OR (:isUnread = 'N'))
   and ((:isNotAssigned = 'S' and t."userId" is null) OR (:isNotAssigned = 'N'))
-  and ((:isSearchParam = 'S' and ( exists (
-    select 1 from "Messages" m where m."ticketId" = t.id 
+  and ((:isSearchParam = 'S' and ( /*exists (
+    select 1 from "Messages" m where m."ticketId" = t.id
     and upper(m.body) like upper(:searchParam)
-    ) or (t.id::varchar like :searchParam) or (exists (select 1 from "Contacts" c where c.id = t."contactId" and upper(c."name") like upper(:searchParam)))) OR (:isSearchParam = 'N'))
+    ) or */ (t.id::varchar like :searchParam) or (exists (select 1 from "Contacts" c where c.id = t."contactId" and (upper(c."name") like upper(:searchParam) or c."number" like :searchParam)))) OR (:isSearchParam = 'N'))
   )
   order by t."updatedAt" desc
   limit :limit offset :offset ;

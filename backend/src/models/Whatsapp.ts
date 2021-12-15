@@ -68,8 +68,18 @@ class Whatsapp extends Model<Whatsapp> {
   @Column
   tokenTelegram: string;
 
-  @Default("w")
-  @Column(DataType.ENUM("w", "t"))
+  @Default(null)
+  @AllowNull
+  @Column
+  instagramUser: string;
+
+  @Default(null)
+  @AllowNull
+  @Column
+  instagramKey: string;
+
+  @Default("whatsapp")
+  @Column(DataType.ENUM("whatsapp", "telegram", "instagram"))
   type: string;
 
   @CreatedAt
@@ -94,6 +104,14 @@ class Whatsapp extends Model<Whatsapp> {
 
   @BelongsTo(() => Tenant)
   tenant: Tenant;
+
+  // @BeforeUpdate
+  // @BeforeCreate
+  // static hashPassword = async (instance: Whatsapp): Promise<void> => {
+  //   if (instance.instagramKey) {
+  //     instance.instagramKey = await hash(instance.instagramKey, 8);
+  //   }
+  // };
 
   @AfterUpdate
   static async HookStatus(instance: Whatsapp & any): Promise<void> {

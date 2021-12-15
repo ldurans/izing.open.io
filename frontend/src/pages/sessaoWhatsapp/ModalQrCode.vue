@@ -1,7 +1,7 @@
 <template>
   <q-dialog
     :value="abrirModalQR"
-    @show="fetchSession(whatsAppId)"
+    @before-show="fetchSession(channel)"
     @hide="fecharModalQrModal"
     persistent
   >
@@ -39,7 +39,8 @@
 </template>
 
 <script>
-import { GetWhatSession } from 'src/service/sessoesWhatsapp'
+
+import { RequestNewQrCode, GetWhatSession } from 'src/service/sessoesWhatsapp'
 import QrcodeVue from 'qrcode.vue'
 import openSocket from 'socket.io-client'
 const token = JSON.parse(localStorage.getItem('token'))
@@ -68,9 +69,9 @@ export default {
       type: Boolean,
       default: false
     },
-    whatsAppId: {
-      type: Number,
-      default: 0
+    channel: {
+      type: Object,
+      default: () => { }
     }
   },
   data () {
@@ -82,26 +83,28 @@ export default {
     fecharModalQrModal () {
       this.$emit('update:abrirModalQR', false)
     },
-    async fetchSession (whatsAppId) {
-      const { data } = await GetWhatSession(whatsAppId)
+    async fetchSession (channel) {
+      const { data } = await GetWhatSession(channel.id)
       this.qrCode = data.qrcode
       this.handlerModalQrCode()
       if (!this.qrCode) {
-        setTimeout(() => {
-          if (!this.qrCode) {
-            this.$emit('modalQrCode:qrCodeInexistente')
-          }
-        }, 3000)
+        // setTimeout(() => {
+        //   if (!this.qrCode) {
+        //     this.$emit('modalQrCode:qrCodeInexistente')
+        //   }
+        // }, 3000)
+        await RequestNewQrCode(channel.id)
       }
     },
     handlerModalQrCode () {
       socket.on(`${usuario.tenantId}-whatsappSession`, data => {
-        if (data.action === 'update' && data.session.id === this.whatsAppId) {
+        if (data.action === 'update' && data.session.id === this.channel.id) {
           this.qrCode = data.session.qrcode
         }
 
-        if (data.action === 'update' && data.session.qrcode === '') {
+        if (data.action === 'update' && data.session.status === 'CONNECTED') {
           this.fecharModalQrModal()
+          this.$store.commit('UPDATE_WHATSAPPS', data.session)
         }
       })
     }

@@ -24,7 +24,9 @@ const AutoReplyWelcome = async (instance: Ticket): Promise<void> => {
     (celularTeste && celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
     !celularContato
   ) {
-    return;
+    if (instance.channel !== "telegram") {
+      return;
+    }
   }
 
   await instance.update({

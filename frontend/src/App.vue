@@ -29,7 +29,6 @@ export default {
     if (usuario?.configs?.isDark) {
       this.$q.dark.set(usuario?.configs?.isDark)
     }
-    //   console.log(document.onclick)
     //   document.onclick = function () {
     //     this.idleSecondsCounter = 0
     //   }

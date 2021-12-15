@@ -41,7 +41,7 @@
               </div>
             </template>
             <q-list style="min-width: 100px">
-              <q-item
+              <!-- <q-item
                 clickable
                 v-close-popup
               >
@@ -53,7 +53,7 @@
                     @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
                   />
                 </q-item-section>
-              </q-item>
+              </q-item> -->
               <q-item
                 clickable
                 v-close-popup
@@ -83,29 +83,15 @@
               Retornar ao menu
             </q-tooltip>
           </q-btn>
-
-          <!-- <q-btn
-            flat
-            class="bg-padrao btn-rounded "
-            icon="mdi-comment-plus-outline"
-            @click="modalNovoTicket=true"
-          >
-            <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
-              Novo atendimento
-            </q-tooltip>
-          </q-btn> -->
-          <StatusWhatsapp
+          <!-- <StatusWhatsapp
             class="q-mr-sm"
             isIconStatusMenu
-          />
-          <!-- <q-toolbar
-            class="text-center bg-grey-3"
-            style="width: 60px;"
-          >
-            <StatusWhatsapp isIconStatusMenu />
-          </q-toolbar> -->
+          /> -->
         </q-toolbar>
-        <StatusWhatsapp class="q-mx-sm full-width" />
+        <StatusWhatsapp
+          v-if="false"
+          class="q-mx-sm full-width"
+        />
         <q-toolbar
           v-show="toolbarSearch"
           class="row q-gutter-sm q-py-sm items-center"
@@ -278,7 +264,7 @@
 
         <q-scroll-area
           ref="scrollAreaTickets"
-          style="height: calc(100% - 120px)"
+          style="height: calc(100% - 160px)"
           @scroll="onScroll"
         >
           <q-separator />
@@ -301,6 +287,54 @@
             </div>
           </div>
         </q-scroll-area>
+        <q-separator />
+        <div
+          class="absolute-bottom text-center row justify-between"
+          :class="{'bg-grey-3': $q.dark.isActive}"
+          style="height: 40px"
+        >
+          <q-toggle
+            size="xl"
+            keep-color
+            dense
+            class="text-bold q-ml-md"
+            :icon-color="$q.dark.isActive ? 'white' : 'white'"
+            color="dark"
+            :value="$q.dark.isActive"
+            checked-icon="mdi-white-balance-sunny"
+            unchecked-icon="mdi-weather-sunny"
+            @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
+          >
+            <q-tooltip content-class="text-body1">
+              {{ $q.dark.isActive ? 'Desativar' : 'Ativar' }} Modo Escuro (Dark Mode)
+            </q-tooltip>
+          </q-toggle>
+          <div>
+            <template v-for="item in whatsapps">
+              <q-btn
+                rounded
+                flat
+                dense
+                size="18px"
+                :key="item.id"
+                class="q-mx-xs q-pa-none"
+                :style="`opacity: ${item.status === 'CONNECTED' ? 1 : 0.2}`"
+                :icon="`img:${item.type}-logo.png`"
+              >
+                <!-- :color="item.status === 'CONNECTED' ? 'positive' : 'negative'"
+                :icon-right="item.status === 'CONNECTED' ? 'mdi-check-all' : 'mdi-alert-circle-outline'" -->
+                <q-tooltip
+                  max-height="300px"
+                  content-class="bg-blue-1 text-body1 text-grey-9 hide-scrollbar"
+                >
+                  <ItemStatusChannel :item="item" />
+                </q-tooltip>
+              </q-btn>
+
+            </template>
+
+          </div>
+        </div>
       </q-drawer>
 
       <q-page-container>
@@ -572,7 +606,7 @@
                             icon="mdi-trash-can-outline"
                             class="absolute-top-right q-mr-sm"
                             size="sm"
-                            @click="deletarMenssagem(message)"
+                            @click="deletarMensagem(message)"
                           />
                         </q-item-label>
                         <q-item-label
@@ -699,6 +733,7 @@
 </template>
 
 <script>
+import ItemStatusChannel from 'src/pages/sessaoWhatsapp/ItemStatusChannel.vue'
 import ContatoModal from 'src/pages/contatos/ContatoModal'
 import ItemTicket from './ItemTicket'
 import { ConsultarLogsTicket, ConsultarTickets, DeletarMensagem } from 'src/service/tickets'
@@ -734,7 +769,8 @@ export default {
     StatusWhatsapp,
     ContatoModal,
     ModalUsuario,
-    MensagemChat
+    MensagemChat,
+    ItemStatusChannel
   },
   data () {
     return {
@@ -792,7 +828,8 @@ export default {
     ...mapGetters([
       'tickets',
       'ticketFocado',
-      'hasMore'
+      'hasMore',
+      'whatsapps'
     ]),
     cUserQueues () {
       // try {
@@ -942,7 +979,7 @@ export default {
       this.modalUsuario = true
     },
     async efetuarLogout () {
-      console.log('logout - index atendimento', usuario)
+      console.log('logout - index atendimento')
       try {
         await RealizarLogout(usuario)
         localStorage.removeItem('token')
@@ -961,7 +998,7 @@ export default {
         )
       }
     },
-    deletarMenssagem (mensagem) {
+    deletarMensagem (mensagem) {
       const data = { ...mensagem }
       this.$q.dialog({
         title: 'Atenção!! Deseja realmente deletar a mensagem? ',
@@ -992,7 +1029,6 @@ export default {
       })
     },
     async tagSelecionada (tags) {
-      console.log('tagSelecionada', tags)
       await EditarEtiquetasContato(this.ticketFocado.contact.id, [...tags])
       // this.contatoEditado(data)
     },
@@ -1027,7 +1063,6 @@ export default {
     this.listarConfiguracoes()
     const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     if (!filtros?.pageNumber) {
-      console.log('filtros', filtros)
       localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
     }
   },
@@ -1037,7 +1072,6 @@ export default {
     // Caso não existam filtros ainda no localstorage, salvar.
     // const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     // if (!filtros?.pageNumber) {
-    //   console.log('filtros', filtros)
     //   localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
     // }
     this.pesquisaTickets = JSON.parse(localStorage.getItem('filtrosAtendimento'))

@@ -7,7 +7,8 @@ import User from "../../models/User";
 import ShowTicketService from "./ShowTicketService";
 import CampaignContacts from "../../models/CampaignContacts";
 import socketEmit from "../../helpers/socketEmit";
-import CheckChatBotWelcome from "../../helpers/CheckChatBotWelcome";
+// import CheckChatBotWelcome from "../../helpers/CheckChatBotWelcome";
+import CheckChatBotFlowWelcome from "../../helpers/CheckChatBotFlowWelcome";
 import CreateLogTicketService from "./CreateLogTicketService";
 
 interface Data {
@@ -16,8 +17,9 @@ interface Data {
   unreadMessages: number;
   tenantId: number | string;
   groupContact?: Contact;
-  msg?: Message;
+  msg?: Message | any;
   isSync?: boolean;
+  channel: string;
 }
 
 const FindOrCreateTicketService = async ({
@@ -27,12 +29,16 @@ const FindOrCreateTicketService = async ({
   tenantId,
   groupContact,
   msg,
-  isSync
+  isSync,
+  channel
 }: Data): Promise<Ticket | any> => {
   // se for uma mensagem de campanha, não abrir tícket
   if (msg && msg.fromMe) {
     const msgCampaign = await CampaignContacts.findOne({
-      where: { contactId: contact.id, messageId: msg.id.id }
+      where: {
+        contactId: contact.id,
+        messageId: msg.id?.id || msg.message_id || msg.item_id
+      }
     });
     if (msgCampaign?.id) {
       return { isCampaignMessage: true };
@@ -69,6 +75,10 @@ const FindOrCreateTicketService = async ({
   });
 
   if (ticket) {
+    unreadMessages =
+      ["telegram", "instagram"].includes(channel) && unreadMessages > 0
+        ? (unreadMessages += ticket.unreadMessages)
+        : unreadMessages;
     await ticket.update({ unreadMessages });
     socketEmit({
       tenantId,
@@ -179,7 +189,8 @@ const FindOrCreateTicketService = async ({
     isGroup: !!groupContact,
     unreadMessages,
     whatsappId,
-    tenantId
+    tenantId,
+    channel
   });
 
   await CreateLogTicketService({
@@ -188,7 +199,7 @@ const FindOrCreateTicketService = async ({
   });
 
   if ((msg && !msg.fromMe) || isSync) {
-    await CheckChatBotWelcome(ticketCreated);
+    await CheckChatBotFlowWelcome(ticketCreated);
   }
 
   ticket = await ShowTicketService({ id: ticketCreated.id, tenantId });

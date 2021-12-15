@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 import { Request, Response } from "express";
 import AppError from "../errors/AppError";
 // import GetTicketWbot from "../helpers/GetTicketWbot";
@@ -33,17 +35,12 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   const { pageNumber } = req.query as IndexQuery;
   const { tenantId } = req.user;
 
-  const {
-    count,
-    messages,
-    messagesOffLine,
-    ticket,
-    hasMore
-  } = await ListMessagesService({
-    pageNumber,
-    ticketId,
-    tenantId
-  });
+  const { count, messages, messagesOffLine, ticket, hasMore } =
+    await ListMessagesService({
+      pageNumber,
+      ticketId,
+      tenantId
+    });
 
   // verificar rotina para sync das mensagens.
   // const wbot = await GetTicketWbot(ticket);
@@ -129,13 +126,18 @@ export const forward = async (
   const data = req.body;
   const { user } = req;
   console.log(data);
-  await CreateForwardMessageService({
-    userId: user.id,
-    tenantId: user.tenantId,
-    message: data.message,
-    contact: data.contact,
-    ticketIdOrigin: data.message.ticketId
-  });
+  // await Promise.all(
+  // )
+
+  for (const message of data.messages) {
+    await CreateForwardMessageService({
+      userId: user.id,
+      tenantId: user.tenantId,
+      message,
+      contact: data.contact,
+      ticketIdOrigin: message.ticketId
+    });
+  }
 
   return res.send();
 };

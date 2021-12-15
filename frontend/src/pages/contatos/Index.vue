@@ -90,8 +90,23 @@
           <q-btn
             flat
             round
-            icon="mdi-whatsapp"
-            @click="handleSaveTicket(props.row.id)"
+            icon="img:whatsapp-logo.png"
+            @click="handleSaveTicket(props.row, 'whatsapp')"
+            v-if="props.row.number"
+          />
+          <q-btn
+            flat
+            round
+            icon="img:instagram-logo.png"
+            @click="handleSaveTicket(props.row, 'instagram')"
+            v-if="props.row.instagramPK"
+          />
+          <q-btn
+            flat
+            round
+            icon="img:telegram-logo.png"
+            @click="handleSaveTicket(props.row, 'telegram')"
+            v-if="props.row.telegramId"
           />
           <q-btn
             flat
@@ -153,8 +168,40 @@ export default {
       loading: false,
       columns: [
         { name: 'profilePicUrl', label: '', field: 'profilePicUrl', style: 'width: 50px', align: 'center' },
-        { name: 'name', label: 'Nome', field: 'name', align: 'left', style: 'width: 300px' },
+        {
+          name: 'name',
+          label: 'Nome',
+          field: 'name',
+          align: 'left',
+          style: 'width: 300px',
+          format: (v, r) => {
+            if (r.number && r.name == r.number && r.pushname) {
+              return r.pushname
+            }
+            return r.name
+          }
+        },
         { name: 'number', label: 'WhatsApp', field: 'number', align: 'center', style: 'width: 300px' },
+        {
+          name: 'instagramPK',
+          label: 'Instagram',
+          field: 'instagramPK',
+          align: 'center',
+          style: 'width: 300px',
+          format: (v, r) => {
+            return r.instagramPK ? r.pushname : ''
+          }
+        },
+        {
+          name: 'telegramId',
+          label: 'Id Telegram',
+          field: 'telegramId',
+          align: 'center',
+          style: 'width: 300px',
+          format: (v, r) => {
+            return r.telegramId ? r.pushname : ''
+          }
+        },
         { name: 'email', label: 'Email', field: 'email', style: 'width: 500px', align: 'left' },
         { name: 'acoes', label: 'Ações', field: 'acoes', align: 'center' }
       ]
@@ -215,13 +262,15 @@ export default {
         this.listarContatos()
       }
     },
-    async handleSaveTicket (contactId) {
-      if (!contactId) return
+    async handleSaveTicket (contact, channel) {
+      if (!contact.id) return
       this.loading = true
       try {
         const { data: ticket } = await CriarTicket({
-          contactId: contactId,
+          contactId: contact.id,
+          isActiveDemand: true,
           userId: userId,
+          channel,
           status: 'open'
         })
         await this.$store.commit('SET_HAS_MORE', true)
@@ -239,7 +288,11 @@ export default {
         })
         this.$router.push({ name: 'atendimento' })
       } catch (error) {
-        console.error(error)
+        if (error.status === 409) {
+          const ticketAtual = JSON.parse(error.data.error)
+          this.abrirAtendimentoExistente(contact, ticketAtual)
+          return
+        }
         this.$notificarErro('Ocorreu um erro!', error)
       }
       this.loading = false
@@ -285,6 +338,41 @@ export default {
             this.$notificarErro('Não é possível deletar o contato', error)
           })
         this.loading = false
+      })
+    },
+    abrirChatContato (ticket) {
+      // caso esteja em um tamanho mobile, fechar a drawer dos contatos
+      if (this.$q.screen.lt.md && ticket.status !== 'pending') {
+        this.$root.$emit('infor-cabecalo-chat:acao-menu')
+      }
+      if (!(ticket.status !== 'pending' && (ticket.id !== this.$store.getters.ticketFocado.id || this.$route.name !== 'chat'))) return
+      this.$store.commit('SET_HAS_MORE', true)
+      this.$store.dispatch('AbrirChatMensagens', ticket)
+    },
+    abrirAtendimentoExistente (contato, ticket) {
+      this.$q.dialog({
+        title: 'Atenção!!',
+        message: `${contato.name} possui um atendimento em curso (Atendimento: ${ticket.id}). Deseja abrir o atendimento?`,
+        cancel: {
+          label: 'Não',
+          color: 'primary',
+          push: true
+        },
+        ok: {
+          label: 'Sim',
+          color: 'negative',
+          push: true
+        },
+        persistent: true
+      }).onOk(async () => {
+        try {
+          this.abrirChatContato(ticket)
+        } catch (error) {
+          this.$notificarErro(
+            'Não foi possível atualizar o token',
+            error
+          )
+        }
       })
     }
 

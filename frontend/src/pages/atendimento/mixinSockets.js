@@ -79,7 +79,6 @@ export default {
       //   this.$root.$emit('handlerNotifications', data)
       // }
       socket.on(`${usuario.tenantId}-ticketList`, data => {
-        console.log('socketTicketListNew', data)
         if (data.type === 'chat:create') {
           this.$store.commit('UPDATE_MESSAGES', data.payload)
         }
@@ -94,7 +93,6 @@ export default {
       })
 
       socket.on(`${usuario.tenantId}-contactList`, data => {
-        console.log('contactListNew', data)
         this.$store.commit('UPDATE_CONTACT', data.payload)
       })
     },

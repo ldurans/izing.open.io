@@ -40,7 +40,7 @@ export default class QueueListener {
   }
 
   static onWaiting(jobId: string): void {
-    console.log(`Job with ID ${jobId} is waiting`);
+    // console.log(`Job with ID ${jobId} is waiting`);
   }
 
   static onActive(
@@ -48,17 +48,17 @@ export default class QueueListener {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     jobPromise: Promise<Job<JobConfig>>
   ): void {
-    console.log(`Job with ID ${job.id} active`);
+    // console.log(`Job with ID ${job.id} active`);
   }
 
   static onStalled(job: Job<JobConfig>): void {
-    console.log(`Job with ID ${job.id} stalled`);
+    // console.log(`Job with ID ${job.id} stalled`);
     // TODO: log stalled request. These requests are most probably double processed.
   }
 
   static onCompleted(job: Job<JobConfig>, result: any): void {
-    console.log(`Job with ID ${job.id} completed`);
-    console.log({ result });
+    // console.log(`Job with ID ${job.id} completed`);
+    // console.log({ result });
   }
 
   // eslint-disable-next-line consistent-return
@@ -76,7 +76,7 @@ export default class QueueListener {
           id: job.id,
           error: err
         };
-        console.log("Sending fallback hook");
+        // console.log("Sending fallback hook");
         return axios.post(jobConfig.retryOptions.fallbackUrl, apiBody);
       }
       // if no fallback, mail admin that the job has failed repeatedly
@@ -106,11 +106,11 @@ export default class QueueListener {
   }
 
   static onClean(jobs: Job<JobConfig>[], type: string): void {
-    console.log(`Jobs cleaned ${jobs.length} - ${type}`);
-    console.log(JSON.stringify(jobs));
+    // console.log(`Jobs cleaned ${jobs.length} - ${type}`);
+    // console.log(JSON.stringify(jobs));
   }
 
   static onRemoved(job: Job<JobConfig>): void {
-    console.log(`Job with ID ${job.id} removed`);
+    // console.log(`Job with ID ${job.id} removed`);
   }
 }

@@ -37,14 +37,14 @@ export default {
     socketInitial () {
       socket.emit(`${usuario.tenantId}-joinNotification`)
 
-      // socket.on(`${usuario.tenantId}-ticket`, data => {
+      // socket.on(`${ usuario.tenantId } - ticket`, data => {
       //   if (!verifySocketTicketAction(data.ticket, data.action)) return
       //   if (data.action === 'updateUnread' || data.action === 'delete') {
 
       //   }
       // })
 
-      // socket.on(`${usuario.tenantId}-appMessage`, data => {
+      // socket.on(`${ usuario.tenantId } - appMessage`, data => {
       //   if (
       //     data.action === 'create' &&
       //     !data.message.read &&
@@ -79,10 +79,10 @@ export default {
             position: 'top',
             icon: 'mdi-wifi-arrow-up-down',
             message: `
-              <p >
-              Conexão com o whatsapp está pronta. Agora já é possível enviar e receber mensagens!!
-              <p> Nome Conexão: <span class="q-ml-sm "> ${data.session.name} </span>  <span class="q-mx-sm"> || </span> Número: <span class="q-ml-sm"> ${data.session.number} </span> </p>
-              <p>`,
+        < p >
+        Conexão com o whatsapp está pronta.Agora já é possível enviar e receber mensagens!!
+        < p > Nome Conexão: <span class="q-ml-sm "> ${data.session.name} </span>  <span class="q-mx-sm"> || </span> Número: <span class="q-ml-sm"> ${data.session.number} </span> </p >
+        <p>`,
             type: 'positive',
             color: 'primary',
             html: true,

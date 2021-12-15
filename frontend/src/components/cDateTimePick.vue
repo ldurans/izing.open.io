@@ -157,7 +157,6 @@ export default {
   },
   methods: {
     emitDate (d, r, dt) {
-      console.log('d:', d, 'r:', r, dt)
       let date = d
       if (!date) {
         const time = format(new Date(), 'HH:mm')

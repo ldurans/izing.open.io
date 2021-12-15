@@ -24,6 +24,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     username: user.name,
     email: user.email,
     profile: user.profile,
+    status: user.status,
     userId: user.id,
     tenantId: user.tenantId,
     queues: user.queues,

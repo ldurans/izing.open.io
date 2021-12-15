@@ -19,13 +19,13 @@ export default {
   async handle({ data }: any) {
     const sending = await getValue(`sendingMessages_tenant_${data.tenantId}`);
     try {
-      logger.info(`Sending Tenant Initiated: ${data.tenantId} => ${sending}`);
+      // logger.info(`Sending Tenant Initiated: ${data.tenantId} => ${sending}`);
       if (sending) return;
       await setValue(`sendingMessages_tenant_${data.tenantId}`, true);
       const wbot = getWbot(data.sessionId);
       await SendMessagesSystemWbot(wbot, data.tenantId);
       await setValue(`sendingMessages_tenant_${data.tenantId}`, false);
-      logger.info(`Finalized Sending Tenant: ${data.tenantId}`);
+      // logger.info(`Finalized Sending Tenant: ${data.tenantId}`);
     } catch (error) {
       logger.error({ message: "Error send messages", error });
       await setValue(`sendingMessages_tenant_${data.tenantId}`, false);

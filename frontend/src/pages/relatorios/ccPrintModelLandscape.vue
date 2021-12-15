@@ -285,7 +285,6 @@ export default {
       this.d = new Printd()
       const { contentWindow } = this.d.getIFrame() //eslint-disable-line
       const elemento = `#pagePrint-${this.id}`
-      console.log('elemento', elemento)
       this.d.print(document.querySelector(elemento), [cssText, this.styleP])
     },
     printNomal () {

@@ -59,9 +59,9 @@ export function EnviarMensagemTexto (ticketId, data) {
   })
 }
 
-export function EncaminharMensagem (mensagem, contato) {
+export function EncaminharMensagem (messages, contato) {
   const data = {
-    message: mensagem,
+    messages,
     contact: contato
   }
   return request({

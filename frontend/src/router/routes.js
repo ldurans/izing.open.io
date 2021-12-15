@@ -6,6 +6,7 @@ const routes = [
     redirect: { name: 'contatos' },
     children: [
       { path: '', component: () => import('pages/contatos/Index.vue') },
+      { path: '/home', name: 'home-dashboard', component: () => import('pages/dashboard/Index.vue') },
       { path: '/painel-atendimentos', name: 'painel-atendimentos', component: () => import('pages/dashboard/DashTicketsFilas.vue') },
       // { path: '/ConsultarTicketsQueuesService', name: 'dashboard', component: () => import('pages/dashboard/Index.vue') },
       { path: '/sessoes', name: 'sessoes', component: () => import('pages/sessaoWhatsapp/Index.vue') },
@@ -19,8 +20,16 @@ const routes = [
       { path: '/campanhas', name: 'campanhas', component: () => import('pages/campanhas/Index.vue') },
       { path: '/campanhas/:campanhaId', name: 'contatos-campanha', component: () => import('pages/campanhas/ContatosCampanha.vue') },
       { path: '/horario-atendimento', name: 'horarioAtendimento', component: () => import('pages/horarioAtendimento/Index.vue') },
-      { path: '/api-service', name: 'api-service', component: () => import('pages/api/Index.vue') }
-
+      { path: '/api-service', name: 'api-service', component: () => import('pages/api/Index.vue') },
+      {
+        path: '/chat-flow',
+        component: () => import('pages/chatFlow/Index.vue'),
+        redirect: 'chat-flow',
+        children: [
+          { path: '', name: 'chat-flow', component: () => import('pages/chatFlow/ListaChatFlow.vue') },
+          { path: 'builder', name: 'chat-flow-builder', component: () => import('components/ccFlowBuilder/panel.vue') }
+        ]
+      }
     ]
   },
   {

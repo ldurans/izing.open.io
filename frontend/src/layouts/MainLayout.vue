@@ -59,6 +59,18 @@
             </q-badge>
             <q-tooltip>Notificações (Em breve)</q-tooltip>
           </q-btn>
+          <q-avatar
+            :color="usuario.status === 'offline' ? 'negative': 'positive'"
+            text-color="white"
+            size="25px"
+            :icon="usuario.status === 'offline' ? 'mdi-account-off' : 'mdi-account-check'"
+            rounded
+            class="q-ml-lg"
+          >
+            <q-tooltip>
+              {{ usuario.status === 'offline' ? 'Usuário Offiline' : 'Usuário Online'}}
+            </q-tooltip>
+          </q-avatar>
           <q-btn
             round
             flat
@@ -70,7 +82,7 @@
             <q-menu>
               <q-list style="min-width: 100px">
                 <q-item-label header> Olá! <b> {{ username }} </b> </q-item-label>
-                <q-item
+                <!-- <q-item
                   clickable
                   v-close-popup
                 >
@@ -82,7 +94,11 @@
                       @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
                     />
                   </q-item-section>
-                </q-item>
+                </q-item> -->
+                <cStatusUsuario
+                  @update:usuario="atualizarUsuario"
+                  :usuario="usuario"
+                />
                 <q-item
                   clickable
                   v-close-popup
@@ -112,16 +128,23 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+      :mini="miniState"
+      @mouseover="miniState = false"
+      @mouseout="miniState = true"
+      mini-to-overlay
       content-class="bg-white text-grey-9"
     >
       <q-scroll-area class="fit">
-        <q-list :key="userProfile">
-          <q-item-label
+        <q-list
+          padding
+          :key="userProfile"
+        >
+          <!-- <q-item-label
             header
             class="text-grey-8"
           >
             Menu
-          </q-item-label>
+          </q-item-label> -->
           <EssentialLink
             v-for="item in menuData"
             :key="item.title"
@@ -129,7 +152,8 @@
           />
           <div v-if="userProfile === 'admin'">
             <q-separator spaced />
-            <q-item-label header>Administração</q-item-label>
+            <div class="q-mb-lg"></div>
+            <!-- <q-item-label header>Administração</q-item-label> -->
             <template v-for="item in menuDataAdmin">
               <EssentialLink
                 v-if="exibirMenuBeta(item)"
@@ -141,6 +165,28 @@
 
         </q-list>
       </q-scroll-area>
+      <div
+        class="absolute-bottom text-center row justify-start"
+        :class="{'bg-grey-3': $q.dark.isActive}"
+        style="height: 40px"
+      >
+        <q-toggle
+          size="xl"
+          keep-color
+          dense
+          class="text-bold q-ml-xs"
+          :icon-color="$q.dark.isActive ? 'white' : 'white'"
+          color="dark"
+          :value="$q.dark.isActive"
+          checked-icon="mdi-white-balance-sunny"
+          unchecked-icon="mdi-weather-sunny"
+          @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
+        >
+          <q-tooltip content-class="text-body1 hide-scrollbar">
+            {{ $q.dark.isActive ? 'Desativar' : 'Ativar' }} Modo Escuro (Dark Mode)
+          </q-tooltip>
+        </q-toggle>
+      </div>
     </q-drawer>
 
     <q-page-container>
@@ -173,9 +219,9 @@ import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { mapGetters } from 'vuex'
 import { ListarConfiguracoes } from 'src/service/configuracoes'
 const token = JSON.parse(localStorage.getItem('token'))
-const usuario = JSON.parse(localStorage.getItem('usuario'))
 import openSocket from 'socket.io-client'
 import { RealizarLogout } from 'src/service/login'
+import cStatusUsuario from '../components/cStatusUsuario.vue'
 const socket = openSocket(process.env.API, {
   query: {
     token
@@ -184,28 +230,17 @@ const socket = openSocket(process.env.API, {
 })
 
 const objMenu = [
-  // {
-  //   title: 'Dashboard',
-  //   caption: '',
-  //   icon: 'mdi-view-dashboard',
-  //   routeName: 'dashboard'
-  // },
   {
-    title: 'Painel Atendimentos',
-    caption: 'Visão dos atendimentos por usuário e filas',
-    icon: 'mdi-view-dashboard-variant',
-    routeName: 'painel-atendimentos'
+    title: 'Dashboard',
+    caption: '',
+    icon: 'mdi-home',
+    routeName: 'home-dashboard'
   },
-  {
-    title: 'Sessões',
-    caption: 'Sessões Whatsapp',
-    icon: 'mdi-cellphone-wireless',
-    routeName: 'sessoes'
-  },
+
   {
     title: 'Atendimentos',
     caption: 'Lista de atendimentos',
-    icon: 'mdi-whatsapp',
+    icon: 'mdi-forum-outline',
     routeName: 'atendimento'
   },
   {
@@ -218,6 +253,18 @@ const objMenu = [
 ]
 
 const objMenuAdmin = [
+  {
+    title: 'Canais',
+    caption: 'Canais de Comunicação',
+    icon: 'mdi-cellphone-wireless',
+    routeName: 'sessoes'
+  },
+  {
+    title: 'Painel Atendimentos',
+    caption: 'Visão geral dos atendimentos',
+    icon: 'mdi-view-dashboard-variant',
+    routeName: 'painel-atendimentos'
+  },
   {
     title: 'Relatórios',
     caption: 'Relatórios gerais',
@@ -238,15 +285,15 @@ const objMenuAdmin = [
   },
   {
     title: 'Mensagens Rápidas',
-    caption: 'Mensagens pré-definidas para envio rápido',
+    caption: 'Mensagens pré-definidas',
     icon: 'mdi-reply-all-outline',
     routeName: 'mensagens-rapidas'
   },
   {
     title: 'Chatbot',
     caption: 'Robô de atendimento',
-    icon: 'mdi-message-reply-text',
-    routeName: 'auto-resposta'
+    icon: 'mdi-robot',
+    routeName: 'chat-flow'
   },
   {
     title: 'Etiquetas',
@@ -256,7 +303,7 @@ const objMenuAdmin = [
   },
   {
     title: 'Horário de Atendimento',
-    caption: 'Horário de funcionamento da empresa',
+    caption: 'Horário de funcionamento',
     icon: 'mdi-calendar-clock',
     routeName: 'horarioAtendimento'
   },
@@ -287,7 +334,7 @@ const objMenuAdmin = [
 export default {
   name: 'MainLayout',
   mixins: [socketInitial],
-  components: { EssentialLink, ModalUsuario },
+  components: { EssentialLink, ModalUsuario, cStatusUsuario },
   data () {
     return {
       username,
@@ -295,9 +342,10 @@ export default {
         '@wchats.com.br',
         '@sispolos.com.br'
       ],
+      miniState: true,
       userProfile: 'user',
       modalUsuario: false,
-      usuario,
+      usuario: {},
       alertSound,
       leftDrawerOpen: false,
       menuData: objMenu,
@@ -317,6 +365,9 @@ export default {
     cOpening () {
       const idx = this.whatsapps.findIndex(w => w.status === 'OPENING')
       return (idx !== -1)
+    },
+    cUsersApp () {
+      return this.$store.state.usersApp
     },
     cObjMenu () {
       if (this.cProblemaConexao) {
@@ -374,9 +425,8 @@ export default {
       this.modalUsuario = true
     },
     async efetuarLogout () {
-      console.log('logout - main atendimento', usuario)
       try {
-        await RealizarLogout(usuario)
+        await RealizarLogout(this.usuario)
         localStorage.removeItem('token')
         localStorage.removeItem('username')
         localStorage.removeItem('profile')
@@ -398,13 +448,23 @@ export default {
       localStorage.setItem('configuracoes', JSON.stringify(data))
     },
     conectarSocket (usuario) {
-      console.log('conectarSocket', usuario)
-      socket.on(`${usuario.tenantId}-users`, data => {
-        console.log('usuarios status', data)
+      socket.on(`${usuario.tenantId}:chat:updateOnlineBubbles`, data => {
+        console.log('chat:updateOnlineBubbles', data)
+        this.$store.commit('SET_USERS_APP', data)
       })
+    },
+    atualizarUsuario () {
+      this.usuario = JSON.parse(localStorage.getItem('usuario'))
+      if (this.usuario.status === 'offline') {
+        socket.emit(`${this.usuario.tenantId}:setUserIdle`)
+      }
+      if (this.usuario.status === 'online') {
+        socket.emit(`${this.usuario.tenantId}:setUserActive`)
+      }
     }
   },
   async mounted () {
+    this.atualizarUsuario()
     await this.listarWhatsapps()
     await this.listarConfiguracoes()
     if (!('Notification' in window)) {
@@ -413,7 +473,7 @@ export default {
     }
     this.usuario = JSON.parse(localStorage.getItem('usuario'))
     this.userProfile = localStorage.getItem('profile')
-    await this.conectarSocket(usuario)
+    await this.conectarSocket(this.usuario)
   },
   destroyed () {
     socket.disconnect()

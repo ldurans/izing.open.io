@@ -4,11 +4,15 @@ import HandleMessage from "./helpers/HandleMessage";
 import HandleMsgAck from "./helpers/HandleMsgAck";
 
 interface Session extends Client {
-  id?: number;
+  id: number;
 }
 
 const wbotMessageListener = (wbot: Session): void => {
   wbot.on("message_create", async msg => {
+    // desconsiderar atualização de status
+    if (msg.isStatus) {
+      return;
+    }
     HandleMessage(msg, wbot);
   });
 

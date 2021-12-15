@@ -16,7 +16,7 @@ import AppError from "./errors/AppError";
 import routes from "./routes";
 import { logger } from "./utils/logger";
 import Queue from "./libs/Queue";
-
+// import AMI from "./libs/AMI";
 // const pino = require("pino-http")();
 
 Sentry.init({ dsn: process.env.SENTRY_DSN });
@@ -24,6 +24,8 @@ Sentry.init({ dsn: process.env.SENTRY_DSN });
 const app = express();
 
 app.use(helmet());
+
+// console.log(AMI);
 
 // Sets all of the defaults, but overrides script-src
 app.use(

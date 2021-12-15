@@ -24,13 +24,8 @@ export const DashTicketsQueues = async (
   res: Response
 ): Promise<Response> => {
   const { tenantId, profile, id: userId } = req.user;
-  const {
-    dateStart,
-    dateEnd,
-    status,
-    queuesIds,
-    showAll
-  } = req.query as IndexQuery;
+  const { dateStart, dateEnd, status, queuesIds, showAll } =
+    req.query as IndexQuery;
 
   const tickets = await TicketsQueuesService({
     showAll: profile === "admin" ? showAll : false,

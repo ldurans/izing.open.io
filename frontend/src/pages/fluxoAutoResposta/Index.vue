@@ -1,271 +1,283 @@
 <template>
   <div>
-    <div class="row">
-      <div class="col">
-        <q-table
-          square
-          flat
-          bordered
-          class="my-sticky-dynamic q-ma-lg"
-          title="Auto Resposta"
-          hide-bottom
-          :data="listaAutoResposta"
-          :columns="columns"
-          :loading="loading"
-          row-key="id"
-          :pagination.sync="pagination"
-          :rows-per-page-options="[0]"
-        >
-          <template v-slot:top-right>
-            <q-btn
-              class="q-ml-md"
-              color="primary"
-              label="Adicionar"
-              @click="autoRespostaSelecionado = {}; modalAutoResposta = true"
-            />
-          </template>
-          <template v-slot:header="props">
-            <q-tr :props="props">
-              <q-th auto-width />
-              <q-th
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-              >
-                {{ col.label }}
-              </q-th>
-            </q-tr>
-          </template>
-          <template v-slot:body="props">
-            <q-tr :props="props">
-              <q-td auto-width>
-                <q-btn
-                  size="sm"
-                  color="accent"
-                  round
-                  dense
-                  @click="props.expand = !props.expand"
-                  :icon="props.expand ? 'remove' : 'add'"
-                />
-              </q-td>
-              <q-td
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-              >
-                {{ col.value }}
-              </q-td>
-              <q-td
-                auto-width
-                class="text-center"
-              >
-                <q-btn
-                  dense
-                  flat
-                  round
-                  icon="edit"
-                  @click="editarAutoResposta(props.row)"
-                />
-                <q-btn
-                  flat
-                  dense
-                  round
-                  icon="mdi-delete"
-                  @click="deletarAutoResposta(props.row)"
-                />
-              </q-td>
-            </q-tr>
-            <q-tr
-              v-show="props.expand"
-              :props="props"
-            >
-              <q-td colspan="100%">
-                <q-table
-                  class="my-sticky-dynamic"
-                  title="Etapas"
-                  square
-                  flat
-                  bordered
-                  hide-bottom
-                  :data="props.row.stepsReply"
-                  :columns="columnsEtapas"
-                  :loading="loading"
-                  row-key="id"
-                  :pagination.sync="pagination"
-                  :rows-per-page-options="[0]"
+    <q-card class="q-ma-md">
+      <q-card-section class="q-pa-sm">
+        <ccFlow
+          :filas="filas"
+          :usuarios="usuarios"
+        />
+      </q-card-section>
+    </q-card>
+
+    <template v-if="false">
+
+      <div class="row">
+        <div class="col">
+          <q-table
+            square
+            flat
+            bordered
+            class="my-sticky-dynamic q-ma-lg"
+            title="Auto Resposta"
+            hide-bottom
+            :data="listaAutoResposta"
+            :columns="columns"
+            :loading="loading"
+            row-key="id"
+            :pagination.sync="pagination"
+            :rows-per-page-options="[0]"
+          >
+            <template v-slot:top-right>
+              <q-btn
+                class="q-ml-md"
+                color="primary"
+                label="Adicionar"
+                @click="autoRespostaSelecionado = {}; modalAutoResposta = true"
+              />
+            </template>
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th auto-width />
+                <q-th
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
                 >
-                  <template v-slot:top-right>
-                    <q-btn
-                      class="q-ml-md"
-                      color="primary"
-                      outline
-                      label="Nova Etapa"
-                      @click="novaEtapa(props.row)"
-                    />
-                  </template>
-                  <template v-slot:header="props">
-                    <q-tr :props="props">
-                      <q-th auto-width />
-                      <q-th
-                        v-for="col in props.cols"
-                        :key="col.name"
-                        :props="props"
-                      >
-                        {{ col.label }}
-                      </q-th>
-                    </q-tr>
-                  </template>
-                  <template v-slot:body="etapas">
-                    <q-tr :props="etapas">
-                      <q-td auto-width>
-                        <q-btn
-                          size="sm"
-                          color="accent"
-                          round
-                          dense
-                          @click="etapas.expand = !etapas.expand"
-                          :icon="etapas.expand ? 'remove' : 'add'"
-                        />
-                      </q-td>
-                      <q-td
-                        v-for="col in etapas.cols"
-                        :key="col.name"
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td auto-width>
+                  <q-btn
+                    size="sm"
+                    color="accent"
+                    round
+                    dense
+                    @click="props.expand = !props.expand"
+                    :icon="props.expand ? 'remove' : 'add'"
+                  />
+                </q-td>
+                <q-td
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
+                >
+                  {{ col.value }}
+                </q-td>
+                <q-td
+                  auto-width
+                  class="text-center"
+                >
+                  <q-btn
+                    dense
+                    flat
+                    round
+                    icon="edit"
+                    @click="editarAutoResposta(props.row)"
+                  />
+                  <q-btn
+                    flat
+                    dense
+                    round
+                    icon="mdi-delete"
+                    @click="deletarAutoResposta(props.row)"
+                  />
+                </q-td>
+              </q-tr>
+              <q-tr
+                v-show="props.expand"
+                :props="props"
+              >
+                <q-td colspan="100%">
+                  <q-table
+                    class="my-sticky-dynamic"
+                    title="Etapas"
+                    square
+                    flat
+                    bordered
+                    hide-bottom
+                    :data="props.row.stepsReply"
+                    :columns="columnsEtapas"
+                    :loading="loading"
+                    row-key="id"
+                    :pagination.sync="pagination"
+                    :rows-per-page-options="[0]"
+                  >
+                    <template v-slot:top-right>
+                      <q-btn
+                        class="q-ml-md"
+                        color="primary"
+                        outline
+                        label="Nova Etapa"
+                        @click="novaEtapa(props.row)"
+                      />
+                    </template>
+                    <template v-slot:header="props">
+                      <q-tr :props="props">
+                        <q-th auto-width />
+                        <q-th
+                          v-for="col in props.cols"
+                          :key="col.name"
+                          :props="props"
+                        >
+                          {{ col.label }}
+                        </q-th>
+                      </q-tr>
+                    </template>
+                    <template v-slot:body="etapas">
+                      <q-tr :props="etapas">
+                        <q-td auto-width>
+                          <q-btn
+                            size="sm"
+                            color="accent"
+                            round
+                            dense
+                            @click="etapas.expand = !etapas.expand"
+                            :icon="etapas.expand ? 'remove' : 'add'"
+                          />
+                        </q-td>
+                        <q-td
+                          v-for="col in etapas.cols"
+                          :key="col.name"
+                          :props="etapas"
+                        >
+                          {{ col.value }}
+                        </q-td>
+                        <q-td
+                          auto-width
+                          class="text-center"
+                        >
+                          <q-btn
+                            dense
+                            flat
+                            round
+                            icon="edit"
+                            @click="editarEtapaAutoResposta(props.row, etapas.row)"
+                          />
+                          <q-btn
+                            flat
+                            dense
+                            round
+                            icon="mdi-delete"
+                            @click="deletarEtapaAutoResposta(props.row, etapas.row)"
+                          />
+                        </q-td>
+                      </q-tr>
+                      <q-tr
+                        v-show="etapas.expand"
                         :props="etapas"
                       >
-                        {{ col.value }}
-                      </q-td>
-                      <q-td
-                        auto-width
-                        class="text-center"
-                      >
-                        <q-btn
-                          dense
-                          flat
-                          round
-                          icon="edit"
-                          @click="editarEtapaAutoResposta(props.row, etapas.row)"
-                        />
-                        <q-btn
-                          flat
-                          dense
-                          round
-                          icon="mdi-delete"
-                          @click="deletarEtapaAutoResposta(props.row, etapas.row)"
-                        />
-                      </q-td>
-                    </q-tr>
-                    <q-tr
-                      v-show="etapas.expand"
-                      :props="etapas"
-                    >
-                      <q-td colspan="100%">
-                        <q-table
-                          square
-                          flat
-                          bordered
-                          class="my-sticky-dynamic"
-                          title="Ações"
-                          :data="etapas.row.stepsReplyAction"
-                          :columns="columnsAcoes"
-                          :loading="loading"
-                          row-key="id"
-                          hide-bottom
-                          :pagination.sync="pagination"
-                          :rows-per-page-options="[0]"
-                        >
-                          <template v-slot:top-right>
-                            <q-btn
-                              class="q-ml-md"
-                              color="black"
-                              glossy
-                              label="Nova Ação"
-                              outline
-                              @click="criarAcaoEtapa(props.row, etapas.row)"
-                            />
-                          </template>
-                          <template v-slot:body-cell-acoes="acao">
-                            <q-td class="text-center">
-                              <q-icon
-                                size="24px"
-                                :name="!acao.row.replyDefinition ? 'mdi-email-off-outline' : 'mdi-email-send-outline'"
-                                class="q-mr-sm"
-                              >
-                                <q-tooltip content-class="bg-light-blue-1 text-black q-pa-sm shadow-4">
-                                  <span class="text-weight-medium"> Mensagem de retorno: </span>
-                                  <span class="row col">
-                                    {{ acao.row.replyDefinition || 'Sem mensagem de retorno' }}
-                                  </span>
-                                </q-tooltip>
-
-                              </q-icon>
-
+                        <q-td colspan="100%">
+                          <q-table
+                            square
+                            flat
+                            bordered
+                            class="my-sticky-dynamic"
+                            title="Ações"
+                            :data="etapas.row.stepsReplyAction"
+                            :columns="columnsAcoes"
+                            :loading="loading"
+                            row-key="id"
+                            hide-bottom
+                            :pagination.sync="pagination"
+                            :rows-per-page-options="[0]"
+                          >
+                            <template v-slot:top-right>
                               <q-btn
-                                flat
-                                round
-                                icon="edit"
-                                @click="editarAcaoEtapa(props.row, etapas.row, acao.row)"
+                                class="q-ml-md"
+                                color="black"
+                                glossy
+                                label="Nova Ação"
+                                outline
+                                @click="criarAcaoEtapa(props.row, etapas.row)"
                               />
-                              <q-btn
-                                flat
-                                round
-                                icon="mdi-delete"
-                                @click="deletarAcaoEtapa(props.row, etapas.row, acao.row)"
-                              />
-                            </q-td>
-                          </template>
-                          <!-- <template :props="acao">
+                            </template>
+                            <template v-slot:body-cell-acoes="acao">
+                              <q-td class="text-center">
+                                <q-icon
+                                  size="24px"
+                                  :name="!acao.row.replyDefinition ? 'mdi-email-off-outline' : 'mdi-email-send-outline'"
+                                  class="q-mr-sm"
+                                >
+                                  <q-tooltip content-class="bg-light-blue-1 text-black q-pa-sm shadow-4">
+                                    <span class="text-weight-medium"> Mensagem de retorno: </span>
+                                    <span class="row col">
+                                      {{ acao.row.replyDefinition || 'Sem mensagem de retorno' }}
+                                    </span>
+                                  </q-tooltip>
+
+                                </q-icon>
+
+                                <q-btn
+                                  flat
+                                  round
+                                  icon="edit"
+                                  @click="editarAcaoEtapa(props.row, etapas.row, acao.row)"
+                                />
+                                <q-btn
+                                  flat
+                                  round
+                                  icon="mdi-delete"
+                                  @click="deletarAcaoEtapa(props.row, etapas.row, acao.row)"
+                                />
+                              </q-td>
+                            </template>
+                            <!-- <template :props="acao">
                             <q-tr v-show="acao.row.replyDefinition">
                               <q-td colspan="100%">
                                 Mensagem: acao.row.replyDefinition
                               </q-td>
                             </q-tr>
                           </template> -->
-                        </q-table>
-                      </q-td>
-                    </q-tr>
-                  </template>
+                          </q-table>
+                        </q-td>
+                      </q-tr>
+                    </template>
 
-                </q-table>
+                  </q-table>
+                </q-td>
+              </q-tr>
+            </template>
+            <template v-slot:body-cell-isActive="props">
+              <q-td class="text-center">
+                <q-icon
+                  size="24px"
+                  :name="props.value ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline'"
+                  :color="props.value ? 'positive' : 'negative'"
+                  class=""
+                />
               </q-td>
-            </q-tr>
-          </template>
-          <template v-slot:body-cell-isActive="props">
-            <q-td class="text-center">
-              <q-icon
-                size="24px"
-                :name="props.value ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline'"
-                :color="props.value ? 'positive' : 'negative'"
-                class=""
-              />
-            </q-td>
-          </template>
+            </template>
 
-        </q-table>
+          </q-table>
+        </div>
       </div>
-    </div>
-    <ModalAutoResposta
-      :modalAutoResposta.sync="modalAutoResposta"
-      :autoRespostaEdicao.sync="autoRespostaSelecionado"
-      @autoResposta:criada="autoRespostaCriada"
-      @autoResposta:editado="autoRespostaEditada"
-    />
-    <ModalEtapaAutoResposta
-      :modalEtapaAutoResposta.sync="modalEtapaAutoResposta"
-      :etapaAutoRespostaEdicao.sync="etapaAutoRespostaEdicao"
-      :autoReply="autoReply"
-      @etapaAutoResposta:criada="etapaAutoRespostaCriada"
-      @etapaAutoResposta:editada="etapaAutoRespostaEditada"
-    />
-    <ModalAcaoEtapa
-      :modalAcaoEtapa.sync="modalAcaoEtapa"
-      :acaoEtapaEdicao.sync="acaoEtapaEdicao"
-      :filas="filas"
-      :autoReply="autoReply"
-      :etapaAutoResposta.sync="etapaAutoRespostaEdicao"
-      :usuarios="usuarios"
-      @acaoEtapa:editada="acaoEditada"
-      @acaoEtapa:criada="acaoCriada"
-    />
+      <ModalAutoResposta
+        :modalAutoResposta.sync="modalAutoResposta"
+        :autoRespostaEdicao.sync="autoRespostaSelecionado"
+        @autoResposta:criada="autoRespostaCriada"
+        @autoResposta:editado="autoRespostaEditada"
+      />
+      <ModalEtapaAutoResposta
+        :modalEtapaAutoResposta.sync="modalEtapaAutoResposta"
+        :etapaAutoRespostaEdicao.sync="etapaAutoRespostaEdicao"
+        :autoReply="autoReply"
+        @etapaAutoResposta:criada="etapaAutoRespostaCriada"
+        @etapaAutoResposta:editada="etapaAutoRespostaEditada"
+      />
+      <ModalAcaoEtapa
+        :modalAcaoEtapa.sync="modalAcaoEtapa"
+        :acaoEtapaEdicao.sync="acaoEtapaEdicao"
+        :filas="filas"
+        :autoReply="autoReply"
+        :etapaAutoResposta.sync="etapaAutoRespostaEdicao"
+        :usuarios="usuarios"
+        @acaoEtapa:editada="acaoEditada"
+        @acaoEtapa:criada="acaoCriada"
+      />
+    </template>
   </div>
 </template>
 
@@ -276,10 +288,11 @@ import { ListarUsuarios } from 'src/service/user'
 import ModalAutoResposta from './ModalAutoResposta'
 import ModalEtapaAutoResposta from './ModalEtapaAutoResposta'
 import ModalAcaoEtapa from './ModalAcaoEtapa'
+import ccFlow from '../../components/ccFlowBuilder/panel.vue'
 
 export default {
   name: 'CadastroAutoReply',
-  components: { ModalAutoResposta, ModalEtapaAutoResposta, ModalAcaoEtapa },
+  components: { ccFlow, ModalAutoResposta, ModalEtapaAutoResposta, ModalAcaoEtapa },
   data () {
     return {
       autoRespostaSelecionado: {},

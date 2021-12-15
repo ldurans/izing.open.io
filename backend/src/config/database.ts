@@ -13,5 +13,5 @@ module.exports = {
   database: process.env.DB_NAME || "wchats",
   username: process.env.DB_USER || "postgres",
   password: process.env.DB_PASS || "marina@0509",
-  logging: false // console.log
+  logging: false
 };

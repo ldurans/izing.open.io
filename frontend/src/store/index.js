@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import user from './modules/user'
 import whatsapp from './modules/whatsapp'
 import atendimentoTicket from './modules/atendimentoTicket'
+import chatFlow from './modules/chatFlow'
+import usersApp from './modules/usersApp'
 import getters from './getters'
 // import example from './module-example'
 
@@ -24,7 +26,9 @@ export default function (/* { ssrContext } */) {
       // example
       user,
       atendimentoTicket,
-      whatsapp
+      whatsapp,
+      chatFlow,
+      usersApp
     },
 
     // enable strict mode (adds overhead!)

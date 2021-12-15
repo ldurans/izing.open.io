@@ -6,13 +6,18 @@ import {
   Model,
   PrimaryKey,
   ForeignKey,
-  BelongsTo
+  BelongsTo,
+  AutoIncrement
 } from "sequelize-typescript";
 import Tenant from "./Tenant";
 
 @Table
 class Setting extends Model<Setting> {
   @PrimaryKey
+  @AutoIncrement
+  @Column
+  id: number;
+
   @Column
   key: string;
 

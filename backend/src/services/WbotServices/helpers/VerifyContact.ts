@@ -6,7 +6,12 @@ const VerifyContact = async (
   msgContact: WbotContact,
   tenantId: string | number
 ): Promise<Contact> => {
-  const profilePicUrl = await msgContact.getProfilePicUrl();
+  let profilePicUrl;
+  try {
+    profilePicUrl = await msgContact.getProfilePicUrl();
+  } catch (error) {
+    profilePicUrl = undefined;
+  }
 
   const contactData = {
     name:
