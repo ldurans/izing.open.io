@@ -18,6 +18,7 @@
     "@androz2091/insta.js": "^1.6.1",
     "@sentry/node": "5.27.0",
     "@types/pino": "^6.3.5",
+    "amqplib": "^0.8.0",
     "asterisk-manager": "^0.2.0",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
@@ -60,11 +61,12 @@
     "telegraf": "^4.0.3",
     "telegraf-session-redis": "^5.1.0",
     "uuid": "^8.3.2",
-    "whatsapp-web.js": "^1.15.1",
+    "whatsapp-web.js": "^1.15.3",
     "winston": "^3.3.3",
     "yup": "^0.29.3"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.8.2",
     "@types/bcryptjs": "^2.4.2",
     "@types/bluebird": "^3.5.32",
     "@types/body-parser": "^1.19.0",

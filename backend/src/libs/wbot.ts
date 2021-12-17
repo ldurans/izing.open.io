@@ -1,6 +1,6 @@
-import { Client, DefaultOptions } from "whatsapp-web.js";
-import { rmdir } from "fs/promises";
-import path from "path";
+import { Client } from "whatsapp-web.js";
+// import { rmdir } from "fs/promises";
+// import path from "path";
 // import slugify from "slugify";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
@@ -30,14 +30,13 @@ const checkMessages = async (wbot: Session, tenantId: number | string) => {
   } catch (error) {
     logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
   }
-  // checking[tenantId] = false;
 };
 
-const apagarPastaSessao = async (whatsapp: Whatsapp): Promise<void> => {
-  const pathRoot = path.resolve(__dirname, "..", "..", "WWebJS");
-  const pathSession = `${pathRoot}/session-${whatsapp.name}`;
-  await rmdir(pathSession, { recursive: true });
-};
+// const apagarPastaSessao = async (whatsapp: Whatsapp): Promise<void> => {
+//   const pathRoot = path.resolve(__dirname, "..", "..", "WWebJS");
+//   const pathSession = `${pathRoot}/session-${whatsapp.name}`;
+//   await rmdir(pathSession, { recursive: true });
+// };
 
 export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
   return new Promise((resolve, reject) => {
@@ -52,31 +51,25 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
 
       const wbot = new Client({
         session: sessionCfg,
-        clientId: `wbot_${whatsapp.id}`, // slugify(whatsapp.name),
-        qrRefreshIntervalMs: 10000,
         puppeteer: {
-          // headless: false,
-          executablePath: process.env.CHROME_BIN || undefined, // "/usr/bin/google-chrome",
-          args: [`--user-agent=${DefaultOptions.userAgent}`]
-          // args: [
-          //   "--no-sandbox",
-          //   "--disable-setuid-sandbox",
-          //   "--disable-dev-shm-usage",
-          //   "--disable-accelerated-2d-canvas",
-          //   "--no-first-run",
-          //   "--no-zygote",
-          //   "--process-per-site",
-          //   "--disable-gpu"
-          // ]
+          executablePath: process.env.CHROME_BIN || undefined
+          //     // args: [`--user-agent=${DefaultOptions.userAgent}`]
         }
       }) as Session;
+
+      // const wbot = new Client({
+      //   session: sessionCfg,
+      //   puppeteer: {
+      //     // headless: false,
+      //     // executablePath: process.env.CHROME_BIN || undefined // "/usr/bin/google-chrome",
+      //   }
+      // }) as Session;
 
       wbot.id = whatsapp.id;
 
       wbot.initialize();
 
       wbot.on("qr", async qr => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         logger.info(
           `Session QR CODE: ${sessionName}-ID: ${whatsapp.id}-${whatsapp.status}`
         );
@@ -120,12 +113,21 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         logger.error(
           `Session: ${sessionName}-AUTHENTICATION FAILURE :: ${msg}`
         );
-        await apagarPastaSessao(whatsapp);
+        // await apagarPastaSessao(whatsapp);
+        if (whatsapp.retries > 1) {
+          await whatsapp.update({
+            status: "DESTROYED",
+            retries: 0,
+            session: ""
+          });
+        }
+
+        const retry = whatsapp.retries;
         await whatsapp.update({
-          status: "DESTROYED",
-          retries: 0,
-          session: ""
+          status: "DISCONNECTED",
+          retries: retry + 1
         });
+
         await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
         io.emit(`${tenantId}-whatsappSession`, {
           action: "update",
@@ -177,12 +179,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         resolve(wbot);
       });
 
-      wbot.on("TIMEOUT", async reason => {
-        logger.info(
-          `TIMEOUT-Cliente-${sessionName} | ${whatsapp.id} | ${whatsapp.status} | ${reason}`
-        );
-      });
-
       wbot.on("disconnected", async reason => {
         logger.info(`disconnected wbot ${reason}`);
 
@@ -206,7 +202,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
               session: ""
             });
             await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
-            await apagarPastaSessao(whatsapp);
+            // await apagarPastaSessao(whatsapp);
             await wbot.logout();
             await wbot.destroy();
           } else if (reason === "CONFLICT") {
@@ -219,7 +215,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
               session: ""
             });
             await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
-            await apagarPastaSessao(whatsapp);
+            // await apagarPastaSessao(whatsapp);
             await wbot.logout();
             await wbot.destroy();
           }
