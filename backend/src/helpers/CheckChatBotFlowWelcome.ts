@@ -3,6 +3,7 @@ import Ticket from "../models/Ticket";
 import Setting from "../models/Setting";
 import ChatFlow from "../models/ChatFlow";
 import CreateLogTicketService from "../services/TicketServices/CreateLogTicketService";
+import IsContactTest from "../services/ChatFlowServices/IsContactTest";
 
 const CheckChatBotFlowWelcome = async (instance: Ticket): Promise<void> => {
   if (instance.userId || instance.isGroup) return;
@@ -29,14 +30,7 @@ const CheckChatBotFlowWelcome = async (instance: Ticket): Promise<void> => {
   const { celularTeste } = chatFlow;
   const celularContato = contato?.number;
 
-  if (
-    (celularTeste && celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
-    !celularContato
-  ) {
-    if (instance.channel !== "telegram") {
-      return;
-    }
-  }
+  if (await IsContactTest(celularContato, celularTeste)) return;
 
   const lineFlow = chatFlow.flow.lineList.find(
     (line: any) => line.from === "start"

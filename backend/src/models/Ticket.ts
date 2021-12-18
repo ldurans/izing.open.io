@@ -64,6 +64,12 @@ class Ticket extends Model<Ticket> {
   @UpdatedAt
   updatedAt: Date;
 
+  @Column(DataType.DATE)
+  lastInteractionBot: Date;
+
+  @Column(DataType.INTEGER)
+  botRetries: number;
+
   @Column(DataType.BIGINT)
   closedAt: number;
 

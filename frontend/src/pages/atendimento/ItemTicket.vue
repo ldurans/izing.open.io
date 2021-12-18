@@ -128,7 +128,7 @@
               </q-tooltip>
             </q-icon>
             <q-icon
-              v-if="ticket.stepAutoReplyId && ticket.autoReplyId && ticket.status === 'pending'"
+              v-if="(ticket.stepAutoReplyId && ticket.autoReplyId && ticket.status === 'pending') || (ticket.chatFlowId && ticket.stepChatFlow && ticket.status === 'pending')"
               name="mdi-robot"
               color="primary"
               size="1.8em"

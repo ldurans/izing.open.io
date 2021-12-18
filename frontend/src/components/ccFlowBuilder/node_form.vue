@@ -33,7 +33,7 @@
           label="Nome"
           v-model="node.name"
           class="q-my-sm"
-          :disable="['start', 'exception'].includes(node.type)"
+          :disable="['start', 'configurations'].includes(node.type)"
         />
         <q-separator inset="" />
       </div>
@@ -268,7 +268,6 @@
                           map-options
                           emit-value
                         />
-
                         <q-select
                           v-if="condition.type === 'R'"
                           dense
@@ -281,7 +280,7 @@
                           hide-dropdown-icon
                           input-debounce="0"
                           new-value-mode="add-unique"
-                          hint="Exemplo: 1 | Exemplo: 1, 2, 3"
+                          hint="Digite o valor e aperte enter"
                         />
                       </q-card-section>
                       <q-separator
@@ -305,7 +304,7 @@
                               outlined
                               class="full-width"
                               :value="condition.nextStepId || ''"
-                              :options="nodesList.nodeList.filter(n => n.type !== 'exception')"
+                              :options="nodesList.nodeList.filter(n => n.type !== 'configurations')"
                               option-label="name"
                               option-value="id"
                               label="Etapa"
@@ -324,6 +323,7 @@
                               option-label="queue"
                               option-value="id"
                               label="Fila"
+                              :key="condition.queueId"
                               map-options
                               emit-value
                               clearable
@@ -382,7 +382,7 @@
       <q-card-section
         style="height: calc(100vh - 380px)"
         class="row bg-grey-3 q-pa-sm scroll col justify-start"
-        v-if="node.type === 'exception'"
+        v-if="node.type === 'configurations'"
       >
         <q-card
           class="full-width q-my-sm"
@@ -455,7 +455,7 @@
 
         <q-card
           class="full-width q-my-sm"
-          style="height: 350px;"
+          style="height: 300px;"
         >
           <div class="full-width bg-grey-3 text-bold row col justify-between text-left q-pa-md">
             Se nenhuma resposta esperada for enviada
@@ -519,7 +519,7 @@
                 </div>
               </div>
             </div>
-            <div class="row q-mt-md">
+            <!-- <div class="row q-mt-md">
               <div class="col">
                 <label
                   class="text-subtitle1 text-bold q-mb-sm "
@@ -537,7 +537,7 @@
                   color="primary"
                 />
               </div>
-            </div>
+            </div> -->
           </q-card-section>
         </q-card>
 
@@ -878,7 +878,7 @@ export default {
       // insert:
       self.txtContent = this.node.configurations.welcomeMessage.message
       self.txtContent = tmpStr.substring(0, startPos) + emoji.data + tmpStr.substring(endPos, tmpStr.length)
-      this.this.node.configurations.welcomeMessage.message = self.txtContent
+      this.node.configurations.welcomeMessage.message = self.txtContent
       // move cursor:
       setTimeout(() => {
         tArea.selectionStart = tArea.selectionEnd = cursorPos + emoji.data.length
@@ -886,7 +886,7 @@ export default {
     },
     onInsertSelectEmojiNotOptionsSelectMessage (emoji) {
       const self = this
-      var tArea = this.$refs.notOptionsSelectMessage
+      var tArea = this.$refs.inputEnvioMensagemnotOptionsSelectMessage
       // get cursor's position:
       var startPos = tArea.selectionStart,
         endPos = tArea.selectionEnd,
@@ -899,7 +899,7 @@ export default {
       // insert:
       self.txtContent = this.node.configurations.notOptionsSelectMessage.message
       self.txtContent = tmpStr.substring(0, startPos) + emoji.data + tmpStr.substring(endPos, tmpStr.length)
-      this.this.node.configurations.notOptionsSelectMessage.message = self.txtContent
+      this.node.configurations.notOptionsSelectMessage.message = self.txtContent
       // move cursor:
       setTimeout(() => {
         tArea.selectionStart = tArea.selectionEnd = cursorPos + emoji.data.length

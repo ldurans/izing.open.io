@@ -17,9 +17,9 @@ const data = {
       }
     },
     {
-      id: 'exception',
-      name: 'Exceções',
-      type: 'exception',
+      id: 'configurations',
+      name: 'Configurações',
+      type: 'configurations',
       left: '340px',
       top: '100px',
       viewOnly: true,

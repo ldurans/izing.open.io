@@ -9,11 +9,12 @@ import { logger } from "../../../utils/logger";
 import FindOrCreateTicketService from "../../TicketServices/FindOrCreateTicketService";
 import ShowWhatsAppService from "../../WhatsappService/ShowWhatsAppService";
 import IsValidMsg from "./IsValidMsg";
-import VerifyAutoReplyActionTicket from "./VerifyAutoReplyActionTicket";
+// import VerifyAutoReplyActionTicket from "./VerifyAutoReplyActionTicket";
 import VerifyContact from "./VerifyContact";
 import VerifyMediaMessage from "./VerifyMediaMessage";
 import VerifyMessage from "./VerifyMessage";
 import verifyBusinessHours from "./VerifyBusinessHours";
+import VerifyStepsChatFlowTicket from "../../ChatFlowServices/VerifyStepsChatFlowTicket";
 // import isMessageExistsService from "../../MessageServices/isMessageExistsService";
 
 interface Session extends Client {
@@ -90,7 +91,8 @@ const HandleMessage = async (
         } else {
           await VerifyMessage(msg, ticket, contact);
         }
-        await VerifyAutoReplyActionTicket(msg, ticket);
+        // await VerifyAutoReplyActionTicket(msg, ticket);
+        await VerifyStepsChatFlowTicket(msg, ticket);
 
         await verifyBusinessHours(msg, ticket);
         resolve();
