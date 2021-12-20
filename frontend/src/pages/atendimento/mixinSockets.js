@@ -13,7 +13,7 @@ const userId = +localStorage.getItem('userId')
 
 // localStorage.debug = '*'
 
-socket.on(`tokenInvalid-${socket.id}`, () => {
+socket.on(`tokenInvalid:${socket.id}`, () => {
   socket.disconnect()
   localStorage.removeItem('token')
   localStorage.removeItem('username')
@@ -38,7 +38,7 @@ export default {
 
     },
     socketTicket () {
-      socket.on(`${usuario.tenantId}-ticket`, data => {
+      socket.on(`${usuario.tenantId}:ticket`, data => {
         // verifySocketTicketAction(data.ticket, data.action)
 
         if (data.action === 'update' && data.ticket.userId === userId) {
@@ -48,7 +48,7 @@ export default {
         }
       })
 
-      // socket.on(`${usuario.tenantId}-contact`, data => {
+      // socket.on(`${usuario.tenantId}:contact`, data => {
       //   if (data.action === 'update') {
       //     this.$store.commit('UPDATE_TICKET_CONTACT', data.contact)
       //     if (this.$store.getters.ticketFocado.contactId === data.contact.id) {
@@ -63,11 +63,11 @@ export default {
     },
     socketTicketListNew () {
       // // if (status) {
-      // socket.emit(`${usuario.tenantId}-joinTickets`, 'open')
-      // socket.emit(`${usuario.tenantId}-joinTickets`, 'pending')
-      // socket.emit(`${usuario.tenantId}-joinTickets`, 'closed')
+      // socket.emit(`${usuario.tenantId}:joinTickets`, 'open')
+      // socket.emit(`${usuario.tenantId}:joinTickets`, 'pending')
+      // socket.emit(`${usuario.tenantId}:joinTickets`, 'closed')
       // // } else {
-      // socket.emit(`${usuario.tenantId}-joinNotification`)
+      // socket.emit(`${usuario.tenantId}:joinNotification`)
       // }
 
       // verifySocketTicketAction(data.message.ticket, data.action) // refatorar para verificar corretamente os parametros
@@ -78,7 +78,7 @@ export default {
       // ) {
       //   this.$root.$emit('handlerNotifications', data)
       // }
-      socket.on(`${usuario.tenantId}-ticketList`, data => {
+      socket.on(`${usuario.tenantId}:ticketList`, data => {
         if (data.type === 'chat:create') {
           this.$store.commit('UPDATE_MESSAGES', data.payload)
         }
@@ -92,7 +92,7 @@ export default {
         }
       })
 
-      socket.on(`${usuario.tenantId}-contactList`, data => {
+      socket.on(`${usuario.tenantId}:contactList`, data => {
         this.$store.commit('UPDATE_CONTACT', data.payload)
       })
     },

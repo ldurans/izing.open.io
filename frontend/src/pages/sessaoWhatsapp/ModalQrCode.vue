@@ -50,7 +50,7 @@ const socket = openSocket(process.env.API, {
 })
 const usuario = JSON.parse(localStorage.getItem('usuario'))
 
-socket.on(`tokenInvalid-${socket.id}`, () => {
+socket.on(`tokenInvalid:${socket.id}`, () => {
   socket.disconnect()
   localStorage.removeItem('token')
   localStorage.removeItem('username')
@@ -97,7 +97,7 @@ export default {
       }
     },
     handlerModalQrCode () {
-      socket.on(`${usuario.tenantId}-whatsappSession`, data => {
+      socket.on(`${usuario.tenantId}:whatsappSession`, data => {
         if (data.action === 'update' && data.session.id === this.channel.id) {
           this.qrCode = data.session.qrcode
         }

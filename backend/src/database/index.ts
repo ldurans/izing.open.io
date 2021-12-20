@@ -25,12 +25,19 @@ import ApiConfig from "../models/ApiConfig";
 import ApiMessage from "../models/ApiMessage";
 import LogTicket from "../models/LogTicket";
 import ChatFlow from "../models/ChatFlow";
+import * as QueueJobs from "../libs/Queue";
+import { logger } from "../utils/logger";
+
+interface CustomSequelize extends Sequelize {
+  afterConnect?: any;
+  afterDisconnect?: any;
+}
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
 // import dbConfig from "../config/database";
 
-const sequelize = new Sequelize(dbConfig);
+const sequelize: CustomSequelize = new Sequelize(dbConfig);
 
 const models = [
   User,
@@ -62,5 +69,25 @@ const models = [
 ];
 
 sequelize.addModels(models);
+
+// const startLoopDb = () => {
+//   // eslint-disable-next-line no-underscore-dangle
+//   global._loopDb = setInterval(() => {
+//     FindUpdateTicketsInactiveChatBot();
+//     console.log("DATABASE CONNECT");
+//   }, 60000);
+// };
+
+sequelize.afterConnect(() => {
+  logger.info("DATABASE CONNECT");
+  QueueJobs.default.add("VerifyTicketsChatBotInactives", {});
+});
+
+sequelize.afterDisconnect(() => {
+  logger.info("DATABASE DISCONNECT");
+
+  // eslint-disable-next-line no-underscore-dangle
+  // clearInterval(global._loopDb);
+});
 
 export default sequelize;

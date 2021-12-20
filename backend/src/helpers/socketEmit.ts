@@ -19,10 +19,10 @@ interface ObjEvent {
 
 const emitEvent = ({ tenantId, type, payload }: ObjEvent): void => {
   const io = getIO();
-  let eventChannel = `${tenantId}-ticketList`;
+  let eventChannel = `${tenantId}:ticketList`;
 
   if (type.indexOf("contact:") !== -1) {
-    eventChannel = `${tenantId}-contactList`;
+    eventChannel = `${tenantId}:contactList`;
   }
 
   io.emit(eventChannel, {

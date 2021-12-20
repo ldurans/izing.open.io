@@ -18,7 +18,7 @@ const socket = openSocket(process.env.API, {
 })
 // const userId = +localStorage.getItem('userId')
 
-socket.on(`tokenInvalid-${socket.id}`, () => {
+socket.on(`tokenInvalid:${socket.id}`, () => {
   socket.disconnect()
   localStorage.removeItem('token')
   localStorage.removeItem('username')
@@ -35,16 +35,16 @@ socket.on(`tokenInvalid-${socket.id}`, () => {
 export default {
   methods: {
     socketInitial () {
-      socket.emit(`${usuario.tenantId}-joinNotification`)
+      socket.emit(`${usuario.tenantId}:joinNotification`)
 
-      // socket.on(`${ usuario.tenantId } - ticket`, data => {
+      // socket.on(`${ usuario.tenantId }:ticket`, data => {
       //   if (!verifySocketTicketAction(data.ticket, data.action)) return
       //   if (data.action === 'updateUnread' || data.action === 'delete') {
 
       //   }
       // })
 
-      // socket.on(`${ usuario.tenantId } - appMessage`, data => {
+      // socket.on(`${ usuario.tenantId }:appMessage`, data => {
       //   if (
       //     data.action === 'create' &&
       //     !data.message.read &&
@@ -56,19 +56,19 @@ export default {
       //   }
       // })
 
-      socket.on(`${usuario.tenantId}-whatsapp`, data => {
+      socket.on(`${usuario.tenantId}:whatsapp`, data => {
         if (data.action === 'update') {
           this.$store.commit('UPDATE_WHATSAPPS', data.whatsapp)
         }
       })
 
-      socket.on(`${usuario.tenantId}-whatsapp`, data => {
+      socket.on(`${usuario.tenantId}:whatsapp`, data => {
         if (data.action === 'delete') {
           this.$store.commit('DELETE_WHATSAPPS', data.whatsappId)
         }
       })
 
-      socket.on(`${usuario.tenantId}-whatsappSession`, data => {
+      socket.on(`${usuario.tenantId}:whatsappSession`, data => {
         if (data.action === 'update') {
           this.$store.commit('UPDATE_SESSION', data.session)
           this.$root.$emit('UPDATE_SESSION', data.session)
@@ -98,7 +98,7 @@ export default {
         }
       })
 
-      socket.on(`${usuario.tenantId}-change_battery`, data => {
+      socket.on(`${usuario.tenantId}:change_battery`, data => {
         this.$q.notify({
           message: `Bateria do celular do whatsapp ${data.batteryInfo.sessionName} está com bateria em ${data.batteryInfo.battery}%. Necessário iniciar carregamento.`,
           type: 'negative',

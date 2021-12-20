@@ -51,7 +51,7 @@ export const initIO = (httpServer: Server): SocketIO => {
       next(new Error("authentication error"));
     } catch (error) {
       logger.warn(`tokenInvalid: ${socket}`);
-      socket.emit(`tokenInvalid-${socket.id}`);
+      socket.emit(`tokenInvalid:${socket.id}`);
       next(new Error("authentication error"));
     }
   });
@@ -63,24 +63,24 @@ export const initIO = (httpServer: Server): SocketIO => {
         message: "Client connected in tenant",
         data: socket.handshake.query
       });
-      socket.on(`${tenantId}-joinChatBox`, ticketId => {
+      socket.on(`${tenantId}:joinChatBox`, ticketId => {
         console.info({
-          message: `Client joined a ticket channel ${tenantId}-${ticketId}`
+          message: `Client joined a ticket channel ${tenantId}:${ticketId}`
         });
-        socket.join(`${tenantId}-${ticketId}`);
+        socket.join(`${tenantId}:${ticketId}`);
       });
 
-      socket.on(`${tenantId}-joinNotification`, () => {
+      socket.on(`${tenantId}:joinNotification`, () => {
         logger.info(
-          `A client joined notification channel ${tenantId}-notification`
+          `A client joined notification channel ${tenantId}:notification`
         );
-        socket.join(`${tenantId}-notification`);
+        socket.join(`${tenantId}:notification`);
       });
-      socket.on(`${tenantId}-joinTickets`, status => {
+      socket.on(`${tenantId}:joinTickets`, status => {
         logger.info(
-          `A client joined to ${tenantId} - ${status} tickets channel.`
+          `A client joined to ${tenantId}:${status} tickets channel.`
         );
-        socket.join(`${tenantId}-${status}`);
+        socket.join(`${tenantId}:${status}`);
       });
       Chat.register(socket);
     }

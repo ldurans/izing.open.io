@@ -314,7 +314,7 @@ export default {
       // verificar se o usuario possui ecesso a fila do ticket
     },
     conectSocketQueues (tenantId, queueId) {
-      // socket.on(`${tenantId}-${queueId}-ticket-queue`, data => {
+      // socket.on(`${tenantId}:${queueId}:ticket:queue`, data => {
       //   if (!this.verifyIsActionSocket(data.ticket)) return
 
       //   if (data.action === 'update') {
@@ -329,10 +329,10 @@ export default {
       // })
     },
     socketTickets (tenantId) {
-      // socket.emit(`${tenantId}-joinTickets`, 'open')
-      // socket.emit(`${tenantId}-joinTickets`, 'pending')
+      // socket.emit(`${tenantId}:joinTickets`, 'open')
+      // socket.emit(`${tenantId}:joinTickets`, 'pending')
 
-      // socket.on(`${tenantId}-ticket`, data => {
+      // socket.on(`${tenantId}:ticket`, data => {
       //   if (!this.verifyIsActionSocket(data.ticket)) return
 
       //   if (data.action === 'updateQueue' || data.action === 'create') {

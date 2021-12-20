@@ -190,7 +190,14 @@ const VerifyStepsChatFlowTicket = async (
       if (stepCondition && !ticket.isCreated) {
         // await CreateAutoReplyLogsService(stepAutoReplyAtual, ticket, msg.body);
         // Verificar se rotina em teste
-        if (await IsContactTest(ticket.contact.number, celularTeste)) return;
+        if (
+          await IsContactTest(
+            ticket.contact.number,
+            celularTeste
+            // ticket.channel
+          )
+        )
+          return;
 
         // action = 0: enviar para proximo step: nextStepId
         await isNextSteps(ticket, step, stepCondition);
@@ -210,7 +217,14 @@ const VerifyStepsChatFlowTicket = async (
         await sendWelcomeMessage(ticket, flowConfig);
       } else {
         // Verificar se rotina em teste
-        if (await IsContactTest(ticket.contact.number, celularTeste)) return;
+        if (
+          await IsContactTest(
+            ticket.contact.number,
+            celularTeste
+            // ticket.channel
+          )
+        )
+          return;
 
         // se ticket tiver sido criado, ingnorar na primeria passagem
         if (!ticket.isCreated) {
