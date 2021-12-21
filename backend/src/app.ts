@@ -11,11 +11,13 @@ import helmet from "helmet";
 import { setQueues, BullAdapter, router as bullRoute } from "bull-board";
 
 import "./database";
+import process from "process";
 import uploadConfig from "./config/upload";
 import AppError from "./errors/AppError";
 import routes from "./routes";
 import { logger } from "./utils/logger";
 import Queue from "./libs/Queue";
+import RabbitmqServer from "./libs/rabbitmq-server";
 // import AMI from "./libs/AMI";
 // const pino = require("pino-http")();
 
@@ -56,6 +58,14 @@ app.use(
 
 Queue.process();
 setQueues(Queue.queues.map((q: any) => new BullAdapter(q.bull)));
+
+if (process.env.URL_AMQP) {
+  (async () => {
+    const rabbit = new RabbitmqServer(process.env.URL_AMQP || "");
+    await rabbit.start();
+    app.rabbit = rabbit;
+  })();
+}
 
 if (process.env.NODE_ENV === "dev") {
   app.use("/admin/queues", bullRoute);
