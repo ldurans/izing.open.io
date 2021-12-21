@@ -32,7 +32,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     configs: user.configs
   };
 
-  io.emit(`${params.tenantId}-users`, {
+  io.emit(`${params.tenantId}:users`, {
     action: "update",
     data: {
       username: params.username,
@@ -78,7 +78,7 @@ export const logout = async (
     userLogout.update({ isOnline: false, lastLogout: new Date() });
   }
 
-  io.emit(`${userLogout?.tenantId}-users`, {
+  io.emit(`${userLogout?.tenantId}:users`, {
     action: "update",
     data: {
       username: userLogout?.name,

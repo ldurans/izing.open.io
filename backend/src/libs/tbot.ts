@@ -35,7 +35,7 @@ export const initTbot = async (connection: Whatsapp): Promise<Session> => {
         retries: 0
       });
 
-      io.emit(`${tenantId}-whatsappSession`, {
+      io.emit(`${tenantId}:whatsappSession`, {
         action: "update",
         session: connection
       });

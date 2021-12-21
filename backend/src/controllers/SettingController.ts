@@ -35,7 +35,7 @@ export const update = async (
   });
 
   const io = getIO();
-  io.emit(`${tenantId}-settings`, {
+  io.emit(`${tenantId}:settings`, {
     action: "update",
     setting
   });

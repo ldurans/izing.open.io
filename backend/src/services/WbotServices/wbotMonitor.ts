@@ -27,7 +27,7 @@ const wbotMonitor = async (
         logger.error(err);
       }
 
-      io.emit(`${whatsapp.tenantId}-whatsappSession`, {
+      io.emit(`${whatsapp.tenantId}:whatsappSession`, {
         action: "update",
         session: whatsapp
       });
@@ -40,7 +40,7 @@ const wbotMonitor = async (
       );
 
       if (battery <= 20 && !plugged) {
-        io.emit(`${whatsapp.tenantId}-change_battery`, {
+        io.emit(`${whatsapp.tenantId}:change_battery`, {
           action: "update",
           batteryInfo: {
             ...batteryInfo,
@@ -56,7 +56,7 @@ const wbotMonitor = async (
         logger.error(err);
       }
 
-      io.emit(`${whatsapp.tenantId}-whatsappSession`, {
+      io.emit(`${whatsapp.tenantId}:whatsappSession`, {
         action: "update",
         session: whatsapp
       });
@@ -64,7 +64,7 @@ const wbotMonitor = async (
 
     wbot.on("disconnected", async reason => {
       logger.info(`Disconnected session: ${sessionName} | Reason: ${reason}`);
-      io.emit(`${whatsapp.tenantId}-whatsappSession`, {
+      io.emit(`${whatsapp.tenantId}:whatsappSession`, {
         action: "update",
         session: whatsapp
       });

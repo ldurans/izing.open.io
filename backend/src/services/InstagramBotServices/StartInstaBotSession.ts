@@ -37,7 +37,7 @@ export const StartInstaBotSession = async (
 ): Promise<void> => {
   const io = getIO();
   await connection.update({ status: "OPENING" });
-  io.emit(`${connection.tenantId}-whatsappSession`, {
+  io.emit(`${connection.tenantId}:whatsappSession`, {
     action: "update",
     session: connection
   });
@@ -53,14 +53,14 @@ export const StartInstaBotSession = async (
     );
     logger.info(`Conexão Instagram iniciada | Empresa: ${connection.tenantId}`);
     await connection.update({ status: "CONNECTED" });
-    io.emit(`${connection.tenantId}-whatsappSession`, {
+    io.emit(`${connection.tenantId}:whatsappSession`, {
       action: "update",
       session: connection
     });
   } catch (err) {
     logger.error(`StartInstaBotSession | Error: ${err}`);
     await connection.update({ status: "DISCONNECTED" });
-    io.emit(`${connection.tenantId}-whatsappSession`, {
+    io.emit(`${connection.tenantId}:whatsappSession`, {
       action: "update",
       session: connection
     });

@@ -3,19 +3,17 @@ const IsContactTest = async (
   celularTeste: string
   // channel: undefined | string
 ): Promise<boolean> => {
-  // const celularContato = ticket.contact.number;
-  // Verificar se rotina em teste
+  // Verificar se rotina em teste e contato informado é compatível
   if (
     (celularTeste && celularContato?.indexOf(celularTeste.substr(1)) === -1) ||
     !celularContato
   ) {
     // if (ticket.channel !== "telegram") {
-    // eslint-disable-next-line no-throw-literal
-    return false;
+    return true;
     // }
   }
   // if (channel && ["telegram", "instagram"].includes(channel)) return false;
-  return true;
+  return false;
 };
 
 export default IsContactTest;

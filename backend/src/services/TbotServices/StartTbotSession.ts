@@ -27,7 +27,7 @@ const checkMessages = async (tbot: Session, tenantId: number | string) => {
 export const StartTbotSession = async (connection: Whatsapp): Promise<void> => {
   const io = getIO();
   await connection.update({ status: "OPENING" });
-  io.emit(`${connection.tenantId}-whatsappSession`, {
+  io.emit(`${connection.tenantId}:whatsappSession`, {
     action: "update",
     session: connection
   });

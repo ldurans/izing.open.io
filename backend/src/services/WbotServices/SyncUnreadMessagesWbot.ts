@@ -1,7 +1,8 @@
 import { Client } from "whatsapp-web.js";
 import { logger } from "../../utils/logger";
+import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
 import FindOrCreateTicketService from "../TicketServices/FindOrCreateTicketService";
-import verifyAutoReplyActionTicket from "./helpers/VerifyAutoReplyActionTicket";
+// import verifyAutoReplyActionTicket from "./helpers/VerifyAutoReplyActionTicket";
 // import verifyBusinessHours from "./helpers/VerifyBusinessHours";
 import VerifyContact from "./helpers/VerifyContact";
 import VerifyMediaMessage from "./helpers/VerifyMediaMessage";
@@ -51,7 +52,8 @@ const SyncUnreadMessagesWbot = async (
           }
           // enviar mensagem do bot na ultima mensagem
           if (idx === unreadMessages.length - 1) {
-            await verifyAutoReplyActionTicket(msg, ticket);
+            // await verifyAutoReplyActionTicket(msg, ticket);
+            await VerifyStepsChatFlowTicket(msg, ticket);
           }
           // await verifyBusinessHours(msg, ticket);
         });

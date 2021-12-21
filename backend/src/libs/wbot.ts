@@ -93,7 +93,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         //   await setValue(`wbotStatus-${ tenantId }`, whatsapp.status);
         // }
 
-        io.emit(`${tenantId}-whatsappSession`, {
+        io.emit(`${tenantId}:whatsappSession`, {
           action: "update",
           session: whatsapp
         });
@@ -129,7 +129,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         });
 
         await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
-        io.emit(`${tenantId}-whatsappSession`, {
+        io.emit(`${tenantId}:whatsappSession`, {
           action: "update",
           session: whatsapp
         });
@@ -154,12 +154,12 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
 
         await setValue(`wbotStatus-${tenantId}`, whatsapp.status);
 
-        io.emit(`${tenantId}-whatsappSession`, {
+        io.emit(`${tenantId}:whatsappSession`, {
           action: "update",
           session: whatsapp
         });
 
-        io.emit(`${tenantId}-whatsappSession`, {
+        io.emit(`${tenantId}:whatsappSession`, {
           action: "readySession",
           session: whatsapp
         });
@@ -223,7 +223,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           logger.error(`wbot: update: disconnected.Error: ${err}`);
         }
 
-        io.emit(`${whatsapp.tenantId}-whatsappSession`, {
+        io.emit(`${whatsapp.tenantId}:whatsappSession`, {
           action: "update",
           session: whatsapp
         });

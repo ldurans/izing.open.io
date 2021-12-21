@@ -113,7 +113,7 @@
         >
           #{{ ticket.id }}
           <span class="q-ml-sm">
-            {{ `Fila: ${ticket.queue || ''}` }}
+            {{ `Fila: ${ticket.queue || obterNomeFila(ticket) || ''}` }}
           </span>
           <span class="absolute-bottom-right ">
             <q-icon
@@ -212,10 +212,13 @@ export default {
     }
   },
   methods: {
-    obterNomeFila (filaId) {
+    obterNomeFila (ticket) {
       try {
-        const descricao = this.filas.find(f => f.id === filaId).queue
-        return descricao
+        const fila = this.filas.find(f => f.id === ticket.queueId)
+        if (fila) {
+          return fila.queue
+        }
+        return ''
       } catch (error) {
         return ''
       }

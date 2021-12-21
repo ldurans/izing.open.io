@@ -13,7 +13,9 @@ type logType =
   | "queue"
   | "userDefine"
   | "delete"
-  | "chatBot";
+  | "chatBot"
+  | "retriesLimitQueue"
+  | "retriesLimitUserDefine";
 
 interface Request {
   type: logType;

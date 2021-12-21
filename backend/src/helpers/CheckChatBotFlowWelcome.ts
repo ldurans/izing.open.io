@@ -39,7 +39,8 @@ const CheckChatBotFlowWelcome = async (instance: Ticket): Promise<void> => {
 
   await instance.update({
     chatFlowId: chatFlow.id,
-    stepChatFlow: lineFlow.to
+    stepChatFlow: lineFlow.to,
+    lastInteractionBot: new Date()
   });
 
   await CreateLogTicketService({

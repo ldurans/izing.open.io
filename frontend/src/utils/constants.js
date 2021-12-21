@@ -181,6 +181,16 @@ export const messagesLog = {
     color: 'cyan-2',
     icon: 'mdi-account-check'
   },
+  retriesLimitQueue: {
+    message: 'Bot: Fila definida (Limite de tentativas)',
+    color: 'green-2',
+    icon: 'mdi-arrow-decision'
+  },
+  retriesLimitUserDefine: {
+    message: 'Bot: Usuário definido (Limite de tentativas)',
+    color: 'cyan-2',
+    icon: 'mdi-account-check'
+  },
   chatBot: {
     message: 'ChatBot iniciado',
     color: 'blue-4',

@@ -9,6 +9,11 @@ const orderMessages = (messages) => {
   return [...newMessages]
 }
 
+const orderTickets = (tickets) => {
+  const newTickes = orderBy(tickets, (obj) => parseISO(obj.lastMessageAt || obj.updatedAt), ['asc'])
+  return [...newTickes]
+}
+
 const checkTicketFilter = (ticket) => {
   const filtroPadrao = {
     searchParam: '',
@@ -167,7 +172,7 @@ const atendimentoTicket = {
     },
     // OK
     LOAD_TICKETS (state, payload) {
-      const newTickets = payload
+      const newTickets = orderTickets(payload)
       newTickets.forEach(ticket => {
         const ticketIndex = state.tickets.findIndex(t => t.id === ticket.id)
         if (ticketIndex !== -1) {
@@ -223,7 +228,7 @@ const atendimentoTicket = {
         }
       } else {
         const tickets = [...state.tickets]
-        tickets.push({
+        tickets.unshift({
           ...payload,
           // ajustar informações por conta das mudanças no front
           username: payload?.user?.name || payload?.username,

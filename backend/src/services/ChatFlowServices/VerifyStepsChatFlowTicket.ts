@@ -123,7 +123,7 @@ const isRetriesLimit = async (
     };
     const logsRetry: any = {
       ticketId: ticket.id,
-      type: destinyType === 1 ? "queue" : "userDefine"
+      type: destinyType === 1 ? "retriesLimitQueue" : "retriesLimitUserDefine"
     };
 
     // enviar para fila
