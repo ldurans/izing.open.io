@@ -19,6 +19,7 @@ import apiConfigRoutes from "./apiConfigRoutes";
 import apiExternalRoutes from "./apiExternalRoutes";
 import chatFlowRoutes from "./chatFlowRoutes";
 import tenantRoutes from "./tenantRoutes";
+import WebHooksRoutes from "./WebHooksRoutes";
 
 const routes = Router();
 
@@ -42,5 +43,6 @@ routes.use(apiConfigRoutes);
 routes.use(apiExternalRoutes);
 routes.use(chatFlowRoutes);
 routes.use(tenantRoutes);
+routes.use(WebHooksRoutes);
 
 export default routes;
