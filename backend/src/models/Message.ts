@@ -37,6 +37,11 @@ class Message extends Model<Message> {
   @Column(DataType.ENUM("pending", "sended", "received"))
   status: string;
 
+  @Default(null)
+  @AllowNull
+  @Column(DataType.TEXT)
+  wabaMediaId: string;
+
   @Default(false)
   @Column
   read: boolean;

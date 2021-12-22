@@ -7,7 +7,7 @@ interface Request {
   apiKey: string;
 }
 
-const SetWebhookUrl = async ({ url, apiKey }: Request): Promise<boolean> => {
+const SetWebHookUrl = async ({ url, apiKey }: Request): Promise<boolean> => {
   const apiUrl360 = `${process.env.API_URL_360}/v1/configs/webhook`;
 
   try {
@@ -27,4 +27,4 @@ const SetWebhookUrl = async ({ url, apiKey }: Request): Promise<boolean> => {
   }
 };
 
-export default SetWebhookUrl;
+export default SetWebHookUrl;

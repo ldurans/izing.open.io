@@ -7,15 +7,20 @@ interface Request {
   apiKey: string;
 }
 
-// Use this endpoint to manage your profile photo.
-const SetPhotoProfileInfo = async ({
-  file,
-  apiKey
-}: Request): Promise<boolean> => {
-  const apiUrl360 = `${process.env.API_URL_360}/v1/settings/profile/photo`;
+interface mediaId {
+  id: string;
+}
+
+interface Response {
+  messages: mediaId[];
+}
+
+// Use this endpoint sent message waba.
+const UploadMedia = async ({ file, apiKey }: Request): Promise<Response> => {
+  const apiUrl360 = `${process.env.API_URL_360}/v1/media`;
 
   try {
-    await axios({
+    const res = await axios({
       method: "post",
       url: apiUrl360,
       data: { file },
@@ -24,11 +29,11 @@ const SetPhotoProfileInfo = async ({
         "Content-Type": "multipart/form-data"
       }
     });
-    return true;
+    return res.data;
   } catch (error) {
     logger.error(error);
-    throw new AppError(`360_NOT_SET_PHOTO: ${error}`);
+    throw new AppError(`360_NOT_UPLOAD_MEDIA: ${error}`);
   }
 };
 
-export default SetPhotoProfileInfo;
+export default UploadMedia;

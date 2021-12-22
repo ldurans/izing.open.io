@@ -33,7 +33,7 @@ interface Request {
 }
 
 // Use this edge to manage your profile's About section.
-const SetBussinessProfile = async ({
+const SetBusinessProfile = async ({
   data,
   apiKey
 }: Request): Promise<boolean> => {
@@ -41,7 +41,7 @@ const SetBussinessProfile = async ({
 
   try {
     await axios({
-      method: "patch",
+      method: "post",
       url: apiUrl360,
       data,
       headers: {
@@ -52,8 +52,8 @@ const SetBussinessProfile = async ({
     return true;
   } catch (error) {
     logger.error(error);
-    throw new AppError(`360_NOT_SET_ABOUT: ${error}`);
+    throw new AppError(`360_NOT_SET_BUSINESS: ${error}`);
   }
 };
 
-export default SetBussinessProfile;
+export default SetBusinessProfile;
