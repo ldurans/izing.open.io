@@ -1,13 +1,20 @@
 import { Request, Response } from "express";
 import AppError from "../errors/AppError";
 
-export const ReceivedRequest = async (
+export const ReceivedRequest360 = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    console.log("ReceivedRequest", req);
-    console.log("ReceivedRequest 2");
+    const message = {
+      token: req.params.token,
+      messages: req.body
+    };
+    await req.app.rabbit.publishInExchange(
+      "amq.direct",
+      "waba360",
+      JSON.stringify(message)
+    );
   } catch (error) {
     throw new AppError(error.message);
   }

@@ -5,6 +5,10 @@ import * as HooksController from "../controllers/WebHooksController";
 
 const webHooksRoutes = express.Router();
 
-webHooksRoutes.post("/wabahooks/:token", HooksController.ReceivedRequest);
+// 360 === wabaBSP da tabela whatsapps
+webHooksRoutes.post(
+  "/wabahooks/360/:token",
+  HooksController.ReceivedRequest360
+);
 
 export default webHooksRoutes;

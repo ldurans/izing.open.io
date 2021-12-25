@@ -130,21 +130,14 @@ class Whatsapp extends Model<Whatsapp> {
   @Column(DataType.VIRTUAL)
   get UrlWabaWebHook(): string | null {
     const key = this.getDataValue("wabaKeyHook");
+    const wabaBSP = this.getDataValue("wabaBSP");
     let BACKEND_URL;
     BACKEND_URL = process.env.BACKEND_URL;
     if (process.env.NODE_ENV === "dev") {
       BACKEND_URL = webHooks.urlWabahooks;
     }
-    return `${BACKEND_URL}/wabahooks/${key}`;
+    return `${BACKEND_URL}/wabahooks/${wabaBSP}/${key}`;
   }
-
-  // @BeforeUpdate
-  // @BeforeCreate
-  // static hashPassword = async (instance: Whatsapp): Promise<void> => {
-  //   if (instance.instagramKey) {
-  //     instance.instagramKey = await hash(instance.instagramKey, 8);
-  //   }
-  // };
 
   @AfterUpdate
   static async HookStatus(instance: Whatsapp & any): Promise<void> {

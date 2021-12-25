@@ -76,7 +76,7 @@ const FindOrCreateTicketService = async ({
 
   if (ticket) {
     unreadMessages =
-      ["telegram", "instagram"].includes(channel) && unreadMessages > 0
+      ["telegram", "waba", "instagram"].includes(channel) && unreadMessages > 0
         ? (unreadMessages += ticket.unreadMessages)
         : unreadMessages;
     await ticket.update({ unreadMessages });

@@ -14,7 +14,7 @@ const Consumer360 = async () => {
     const decode: any = verify(content.token, authConfig.secret);
     // const { tenantId, whatsappId } = decode;
     console.log(decode);
-    HandleMessage360(content.message, decode.tenantId);
+    HandleMessage360(content.messages, decode.whatsappId);
     // throw new Error("error consume");
   });
 };

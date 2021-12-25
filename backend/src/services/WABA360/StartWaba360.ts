@@ -20,7 +20,7 @@ export const StartWaba360 = async (connection: Whatsapp): Promise<void> => {
       url: connection.UrlWabaWebHook || "",
       apiKey: connection.wabaApiKey
     });
-    const phoneNumber = await GetRegisteredPhone(connection.wabaApiKey);
+    const phoneNumber = ""; // await GetRegisteredPhone(connection.wabaApiKey);
     logger.info(`Conexão Waba 360 iniciada | Empresa: ${connection.tenantId}`);
     await connection.update({ status: "CONNECTED", number: phoneNumber });
     io.emit(`${connection.tenantId}:whatsappSession`, {

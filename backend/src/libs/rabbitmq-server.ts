@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-constructor */
 import { Connection, Channel, connect, Message } from "amqplib";
+import { logger } from "../utils/logger";
 
 export default class RabbitmqServer {
   private conn: Connection;
@@ -24,14 +25,22 @@ export default class RabbitmqServer {
     routingKey: string,
     message: string
   ): Promise<boolean> {
-    return this.channel.publish(exchange, routingKey, Buffer.from(message));
+    return this.channel.publish(exchange, routingKey, Buffer.from(message), {
+      persistent: true
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   async consume(queue: string, callback: (message: Message) => void) {
     return this.channel.consume(queue, (message: any) => {
-      callback(message);
-      this.channel.ack(message);
+      try {
+        callback(message);
+        this.channel.ack(message);
+        return;
+      } catch (error) {
+        logger.error(error);
+        // this.channel.close();
+      }
     });
   }
 }

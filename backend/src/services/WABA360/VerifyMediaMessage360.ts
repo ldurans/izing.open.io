@@ -10,54 +10,41 @@ import Ticket from "../../models/Ticket";
 import Message from "../../models/Message";
 import CreateMessageService from "../MessageServices/CreateMessageService";
 import { logger } from "../../utils/logger";
+import GetMediaWaba360 from "./GetMediaWaba360";
+import Whatsapp from "../../models/Whatsapp";
 
 const writeFileAsync = promisify(writeFile);
 
 const VerifyMediaMessage = async (
+  channel: Whatsapp,
   msg: WabaMessage,
   ticket: Ticket,
   contact: Contact
 ): Promise<Message> => {
   // const quotedMsg = await VerifyQuotedMessage(msg);
 
-  const media = await ;
+  const filename: any = await GetMediaWaba360({ channel, msg, ticket });
 
-  if (!media) {
+  if (!filename) {
     throw new Error("ERR_WAPP_DOWNLOAD_MEDIA");
   }
 
-  if (!media.filename) {
-    const ext = media.mimetype.split("/")[1].split(";")[0];
-    media.filename = `${new Date().getTime()}.${ext}`;
-  }
-
-  try {
-    await writeFileAsync(
-      join(__dirname, "..", "..", "..", "..", "public", media.filename),
-      media.data,
-      "base64"
-    );
-  } catch (err) {
-    Sentry.captureException(err);
-    logger.error(err);
-  }
-
   const messageData = {
-    messageId: msg.id.id,
+    messageId: msg.id,
     ticketId: ticket.id,
     contactId: msg.fromMe ? undefined : contact.id,
-    body: msg.body || media.filename,
+    body: msg?.text?.body || filename,
     fromMe: msg.fromMe,
     read: msg.fromMe,
-    mediaUrl: media.filename,
-    mediaType: media.mimetype.split("/")[0],
-    quotedMsgId: quotedMsg?.id,
-    timestamp: msg.timestamp,
+    mediaUrl: filename,
+    mediaType: msg.type,
+    // quotedMsgId: undefind || quotedMsg?.id,
+    timestamp: +msg.timestamp,
     status: msg.fromMe ? "sended" : "received"
   };
 
   await ticket.update({
-    lastMessage: msg.body || media.filename,
+    lastMessage: msg?.text?.body || filename,
     lastMessageAt: new Date().getTime(),
     answered: msg.fromMe || false
   });
