@@ -1,0 +1,24 @@
+import { Request, Response } from "express";
+import AppError from "../errors/AppError";
+
+export const ReceivedRequest360 = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const message = {
+      token: req.params.token,
+      messages: req.body
+    };
+    await req.app.rabbit.publishInExchange(
+      "amq.direct",
+      "waba360",
+      JSON.stringify(message)
+    );
+  } catch (error) {
+    throw new AppError(error.message);
+  }
+  // Queue.add("SendMessageAPI", newMessage);
+
+  return res.status(200).json({ message: "Message add queue" });
+};

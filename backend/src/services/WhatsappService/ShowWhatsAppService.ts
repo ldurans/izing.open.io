@@ -25,7 +25,9 @@ const ShowWhatsAppService = async ({
     "updatedAt",
     "number",
     "phone",
-    "tenantId"
+    "tenantId",
+    "wabaBSP",
+    "wabaApiKey"
   ];
   if (isInternal) {
     attr.push("instagramKey");

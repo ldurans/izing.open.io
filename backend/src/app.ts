@@ -18,6 +18,7 @@ import routes from "./routes";
 import { logger } from "./utils/logger";
 import Queue from "./libs/Queue";
 import RabbitmqServer from "./libs/rabbitmq-server";
+import Consumer360 from "./services/WABA360/Consumer360";
 // import AMI from "./libs/AMI";
 // const pino = require("pino-http")();
 
@@ -65,6 +66,7 @@ if (process.env.URL_AMQP) {
     await rabbit.start();
     app.rabbit = rabbit;
   })();
+  Consumer360();
 }
 
 if (process.env.NODE_ENV === "dev") {

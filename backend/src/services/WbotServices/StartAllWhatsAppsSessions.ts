@@ -3,6 +3,7 @@ import { Op } from "sequelize";
 import Whatsapp from "../../models/Whatsapp";
 import { StartInstaBotSession } from "../InstagramBotServices/StartInstaBotSession";
 import { StartTbotSession } from "../TbotServices/StartTbotSession";
+import { StartWaba360 } from "../WABA360/StartWaba360";
 import { StartWhatsAppSession } from "./StartWhatsAppSession";
 // import { StartTbotSession } from "../TbotServices/StartTbotSession";
 
@@ -13,7 +14,7 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
         {
           [Op.and]: {
             type: {
-              [Op.in]: ["instagram", "telegram"]
+              [Op.in]: ["instagram", "telegram", "waba"]
             },
             status: {
               [Op.notIn]: ["DISCONNECTED"]
@@ -29,7 +30,8 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
             // "DISCONNECTED"
           }
         }
-      ]
+      ],
+      isActive: true
     }
   });
   const whatsappSessions = whatsapps.filter(w => w.type === "whatsapp");
@@ -37,6 +39,7 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
     w => w.type === "telegram" && !!w.tokenTelegram
   );
   const instagramSessions = whatsapps.filter(w => w.type === "instagram");
+  const waba360Sessions = whatsapps.filter(w => w.type === "waba");
 
   if (whatsappSessions.length > 0) {
     whatsappSessions.forEach(whatsapp => {
@@ -50,11 +53,19 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
     });
   }
 
+  if (waba360Sessions.length > 0) {
+    waba360Sessions.forEach(channel => {
+      if (channel.wabaApiKey && channel.wabaBSP === "360") {
+        StartWaba360(channel);
+      }
+    });
+  }
+
   if (instagramSessions.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const instagram of instagramSessions) {
-      // eslint-disable-next-line no-await-in-loop
-      StartInstaBotSession(instagram);
-    }
+    instagramSessions.forEach(channel => {
+      if (channel.instagramKey) {
+        StartInstaBotSession(channel);
+      }
+    });
   }
 };

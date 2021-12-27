@@ -12,6 +12,7 @@
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "rootDir": "./src",
+    "resolveJsonModule": true,
   },
   "include": [
     "src/**/*.ts"

@@ -1,3 +1,4 @@
+import { sign } from "jsonwebtoken";
 import {
   Table,
   Column,
@@ -13,9 +14,15 @@ import {
   Unique,
   ForeignKey,
   BelongsTo,
-  AfterUpdate
+  AfterUpdate,
+  BeforeCreate,
+  BeforeUpdate
   // DefaultScope
 } from "sequelize-typescript";
+import webHooks from "../config/webHooks.dev.json";
+
+import authConfig from "../config/auth";
+
 import Queue from "../libs/Queue";
 import ApiConfig from "./ApiConfig";
 import Tenant from "./Tenant";
@@ -50,6 +57,10 @@ class Whatsapp extends Model<Whatsapp> {
 
   @Column
   plugged: boolean;
+
+  @Default(true)
+  @Column
+  isActive: boolean;
 
   @Default(false)
   @Column
@@ -105,13 +116,32 @@ class Whatsapp extends Model<Whatsapp> {
   @BelongsTo(() => Tenant)
   tenant: Tenant;
 
-  // @BeforeUpdate
-  // @BeforeCreate
-  // static hashPassword = async (instance: Whatsapp): Promise<void> => {
-  //   if (instance.instagramKey) {
-  //     instance.instagramKey = await hash(instance.instagramKey, 8);
-  //   }
-  // };
+  @Default(null)
+  @AllowNull
+  @Column(DataType.ENUM("360", "gupshup"))
+  wabaBSP: string;
+
+  @Default(null)
+  @AllowNull
+  @Column(DataType.TEXT)
+  wabaApiKey: string;
+
+  @Default(null)
+  @AllowNull
+  @Column(DataType.TEXT)
+  wabaKeyHook: string;
+
+  @Column(DataType.VIRTUAL)
+  get UrlWabaWebHook(): string | null {
+    const key = this.getDataValue("wabaKeyHook");
+    const wabaBSP = this.getDataValue("wabaBSP");
+    let BACKEND_URL;
+    BACKEND_URL = process.env.BACKEND_URL;
+    if (process.env.NODE_ENV === "dev") {
+      BACKEND_URL = webHooks.urlWabahooks;
+    }
+    return `${BACKEND_URL}/wabahooks/${wabaBSP}/${key}`;
+  }
 
   @AfterUpdate
   static async HookStatus(instance: Whatsapp & any): Promise<void> {
@@ -154,6 +184,28 @@ class Whatsapp extends Model<Whatsapp> {
           });
         })
       );
+    }
+  }
+
+  @BeforeUpdate
+  @BeforeCreate
+  static async CreateWabaKeyWebHook(instance: Whatsapp): Promise<void> {
+    const { secret } = authConfig;
+
+    if (!instance?.wabaKeyHook && instance.type === "waba") {
+      const wabaKeyHook = sign(
+        {
+          tenantId: instance.tenantId,
+          whatsappId: instance.id
+          // wabaBSP: instance.wabaBSP
+        },
+        secret,
+        {
+          expiresIn: "1000d"
+        }
+      );
+
+      instance.wabaKeyHook = wabaKeyHook;
     }
   }
 }
