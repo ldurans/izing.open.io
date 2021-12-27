@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable camelcase */
 interface WabaMessageText {
   text: {
@@ -5,23 +6,32 @@ interface WabaMessageText {
   };
 }
 
-interface WabaMessageDocument {
-  caption: string;
-  filename: string;
+interface messageId {
   id: string;
-  mime_type: string;
-  sha256: string;
+}
+
+interface WabaResponse {
+  messages: messageId[];
+
+}
+
+interface WabaMessageDocument {
+  caption?: string;
+  filename?: string;
+  id?: string;
+  mime_type?: string;
+  sha256?: string;
 }
 
 interface WabaMessageMedia {
-  id: string;
+  id?: string;
   caption?: string;
   mime_type?: string;
-  sha256: string;
+  sha256?: string;
 }
 
 interface WabaMessage {
-  id: string;
+  id?: string;
   fromMe?: boolean;
   // eslint-disable-next-line camelcase
   recipient_type: "individual" | "group";

@@ -58,6 +58,10 @@ class Whatsapp extends Model<Whatsapp> {
   @Column
   plugged: boolean;
 
+  @Default(true)
+  @Column
+  isActive: boolean;
+
   @Default(false)
   @Column
   isDeleted: boolean;

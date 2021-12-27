@@ -1,19 +1,10 @@
-import { join } from "path";
-import { promisify } from "util";
-import { writeFile } from "fs";
-import * as Sentry from "@sentry/node";
-
-import { Message as WbotMessage } from "whatsapp-web.js";
 import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
 
 import Message from "../../models/Message";
 import CreateMessageService from "../MessageServices/CreateMessageService";
-import { logger } from "../../utils/logger";
 import GetMediaWaba360 from "./GetMediaWaba360";
 import Whatsapp from "../../models/Whatsapp";
-
-const writeFileAsync = promisify(writeFile);
 
 const VerifyMediaMessage = async (
   channel: Whatsapp,
@@ -22,24 +13,32 @@ const VerifyMediaMessage = async (
   contact: Contact
 ): Promise<Message> => {
   // const quotedMsg = await VerifyQuotedMessage(msg);
+  let filename;
+  try {
+    filename = await GetMediaWaba360({ channel, msg, ticket });
+  } catch (error) { }
 
-  const filename: any = await GetMediaWaba360({ channel, msg, ticket });
-
-  if (!filename) {
-    throw new Error("ERR_WAPP_DOWNLOAD_MEDIA");
+  // if (!filename) {
+  //   throw new Error("ERR_WAPP_DOWNLOAD_MEDIA");
+  // }
+  let wabaMediaId;
+  if (!["text", "chat", "template"].includes(msg.type)) {
+    const msgData: any = msg;
+    wabaMediaId = msgData[msg.type].id;
   }
 
   const messageData = {
-    messageId: msg.id,
+    messageId: msg.id || "",
     ticketId: ticket.id,
     contactId: msg.fromMe ? undefined : contact.id,
-    body: msg?.text?.body || filename,
+    body: msg?.text?.body || filename || "",
     fromMe: msg.fromMe,
     read: msg.fromMe,
     mediaUrl: filename,
     mediaType: msg.type,
     // quotedMsgId: undefind || quotedMsg?.id,
     timestamp: +msg.timestamp,
+    wabaMediaId,
     status: msg.fromMe ? "sended" : "received"
   };
 

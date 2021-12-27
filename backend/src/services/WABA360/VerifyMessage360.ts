@@ -10,7 +10,7 @@ const VerifyMessage360 = async (
   // const quotedMsg = await VerifyQuotedMessage(msg);
 
   const messageData = {
-    messageId: msg.id,
+    messageId: msg.id || "",
     ticketId: ticket.id,
     contactId: msg.fromMe ? undefined : contact.id,
     body: msg.text?.body || "",

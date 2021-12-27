@@ -36,7 +36,9 @@ export const StartWhatsAppSession = async (
     }
 
     if (whatsapp.type === "waba") {
-      StartWaba360(whatsapp);
+      if (whatsapp.wabaBSP === "360") {
+        StartWaba360(whatsapp);
+      }
     }
   } catch (err) {
     logger.error(`StartWhatsAppSession | Error: ${err}`);

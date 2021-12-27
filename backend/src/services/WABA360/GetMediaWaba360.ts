@@ -52,29 +52,28 @@ const GetMediaWaba360 = async ({
     let mediaId = "";
     let originalName;
     let mime_type;
-    console.log(msg);
     if (msg?.document) {
-      mediaId = msg.document.id;
+      mediaId = msg.document.id || "";
       originalName = msg.document.filename;
       mime_type = msg.document.mime_type;
     }
     if (msg?.image) {
-      mediaId = msg.image.id;
+      mediaId = msg.image.id || "";
       mime_type = msg.image.mime_type;
     }
     if (msg?.video) {
-      mediaId = msg.video.id;
+      mediaId = msg.video.id || "";
       mime_type = msg.video.mime_type;
     }
     if (msg?.voice) {
-      mediaId = msg.voice.id;
+      mediaId = msg.voice.id || "";
       const mime = msg.voice.mime_type || "";
       // necessário para tratar "audio/ogg; codecs=opus"
       const mimeSplit = mime.split(";");
       mime_type = mimeSplit.length > 1 ? mimeSplit[0] : msg.voice.mime_type;
     }
     if (msg?.audio) {
-      mediaId = msg.audio.id;
+      mediaId = msg.audio.id || "";
       mime_type = msg.audio.mime_type;
     }
 
