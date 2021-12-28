@@ -119,7 +119,7 @@
               `"
           :class="{
                 'bg-blue-1': !replyingMessage.fromMe && !$q.dark.isActive,
-                'bg-green-5 text-black': !replyingMessage.fromMe && $q.dark.isActive,
+                'bg-blue-2 text-black': !replyingMessage.fromMe && $q.dark.isActive,
                 'bg-grey-2 text-black': replyingMessage.fromMe
               }"
         >

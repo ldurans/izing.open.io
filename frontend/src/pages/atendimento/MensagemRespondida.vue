@@ -11,6 +11,7 @@
       class="text-weight-medium fit q-ma-none"
       id="chat-message-resp"
       style="min-width: 100px; max-width: 350px"
+      :bg-color="mensagem.fromMe ? 'grey-2' : $q.dark.isActive ? 'blue-2' : 'blue-1' "
     >
       <!-- @click="focarElemento(mensagem)" -->
 

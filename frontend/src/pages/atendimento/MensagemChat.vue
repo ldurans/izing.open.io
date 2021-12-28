@@ -30,7 +30,7 @@
           :stamp="dataInWords(mensagem.createdAt)"
           :sent="mensagem.fromMe"
           class="text-weight-medium"
-          :bg-color="$q.dark.isActive ? '' : mensagem.fromMe ? 'grey-2' : 'blue-1' "
+          :bg-color="mensagem.fromMe ? 'grey-2' : $q.dark.isActive ? 'blue-2' : 'blue-1' "
           :class="{pulseIdentications: identificarMensagem == `chat-message-${mensagem.id}` }"
         >
           <!-- :bg-color="mensagem.fromMe ? 'grey-2' : 'secondary' " -->
