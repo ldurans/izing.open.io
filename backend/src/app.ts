@@ -64,6 +64,7 @@ if (process.env.URL_AMQP) {
   (async () => {
     const rabbit = new RabbitmqServer(process.env.URL_AMQP || "");
     await rabbit.start();
+    logger.info("Rabbit started", process.env.URL_AMQP);
     app.rabbit = rabbit;
   })();
   Consumer360();
