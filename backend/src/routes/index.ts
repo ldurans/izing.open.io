@@ -20,6 +20,7 @@ import apiExternalRoutes from "./apiExternalRoutes";
 import chatFlowRoutes from "./chatFlowRoutes";
 import tenantRoutes from "./tenantRoutes";
 import WebHooksRoutes from "./WebHooksRoutes";
+import adminRoutes from "./adminRoutes";
 
 const routes = Router();
 
@@ -44,5 +45,6 @@ routes.use(apiExternalRoutes);
 routes.use(chatFlowRoutes);
 routes.use(tenantRoutes);
 routes.use(WebHooksRoutes);
+routes.use(adminRoutes);
 
 export default routes;

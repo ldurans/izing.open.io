@@ -1,0 +1,185 @@
+// Quasar Sass (& SCSS) Variables
+// --------------------------------------------------
+// To customize the look and feel of this app, you can override
+// the Sass/SCSS variables found in Quasar's source Sass/SCSS files.
+
+// Check documentation for full list of Quasar variables
+
+// Your own variables (that are declared here) and Quasar's own
+// ones will be available out of the box in your .vue/.scss/.sass files
+
+// It's highly recommended to change the default colors
+// to match your app's branding.
+// Tip: Use the "Theme Builder" on Quasar's documentation website.
+
+// Cor logo: #3E72AF
+// Cor icon: #3E72AF
+// Cor slogan: #8DB1DD
+
+// $primary   : #1976D2
+$neutral: #E0E1E2
+$primary: #0288d1 // #3E72AF
+$secondary: #e6ebf5 //#F5F7FB
+$accent: #7269ef
+$light: #8DB1DD
+
+$dark: #1D1D1D
+$faded: #777
+
+$positive: #21BA45
+$negative: #C10015
+$info: #31CCEC
+$warning: #F2C037
+
+//  SPACING
+
+$spacer: 2.2rem
+$spacer-sm: ($spacer / 2)
+$spacer-lg: ($spacer * 2)
+
+//  COLORS
+$success: #28C76F
+$danger: #EA5455
+$warning: #FF9F43
+$dark: #1E1E1E
+$grey: #b8c2cc
+$grey-light: #dae1e7
+$white: #fff
+$black: #22292f
+
+$chat-fromMe: #ededfa // #F5F7FB
+$chat-toMe: #7269ef
+$drawer-chat: #ededfa
+$active-item-ticket: #e6ebf5
+$message-replyed: #dededebf
+
+// $chat-toMe: 
+
+//  TYPOGRAPHY
+
+$font-family-sans-serif: 'Nunito', sans-serif !default
+$font-family-serif: 'Nunito', sans-serif !default
+
+// ** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+$font-family-monospace: 'Nunito', sans-serif !default
+$font-family-base: $font-family-sans-serif !default
+
+$font-size-base: 14px !default
+$font-size-large: ceil(($font-size-base * 1.25)) !default
+$font-size-small: ceil(($font-size-base * 0.85)) !default
+
+$h1-font-size: $font-size-base * 2
+$h2-font-size: $font-size-base * 1.74
+$h3-font-size: $font-size-base * 1.51
+$h4-font-size: $font-size-base * 1.32
+$h5-font-size: $font-size-base * 1.14
+$h6-font-size: $font-size-base
+
+$line-height-base: 1.625rem !default
+
+$headings-font-family: inherit !default
+$headings-font-weight: 500 !default
+$headings-line-height: 1.2 !default
+$headings-color: #2c2c2c
+$headings-margin-bottom: ($spacer / 2) !default
+
+$font-weight-light: 300
+$font-weight-normal: 400
+$font-weight-bold: 700
+
+$font-weight-base: $font-weight-normal
+$line-height-base: 1.45
+
+$content-color: #495057
+$theme-background: #f8f8f8
+
+//  TYPOGRAPHY
+
+$reduced-sidebar-width: 80px
+
+//  DARK THEME
+
+$sidebar-dark-bg: #10163a
+$content-dark-bg: #262c49
+$dark-card-color: #10163a
+$table-dark-stripe: #212744
+$table-light-stripe: #262c49
+$grid-dark-color: #343661
+
+$theme-light-dark-bg: #262c49
+$theme-dark-bg: #10163a
+$theme-dark-secondary-bg: #171e49
+$theme-dark-text-color: #c2c6dc
+$theme-dark-heading-color: #ebeefd
+// $theme-dark-heading-color: #C9CAD2;
+$theme-dark-border-color: #414561
+$theme-dark-shadow-color: #0C112E
+
+/// Ajustes para dark mode
+body.body--dark
+  background: #090E11// #263238
+  border-color: none !important
+  color: $grey
+
+  .bg-white
+    background: #1E1E1E !important
+    color: $grey !important
+    //  #2A2F32 !important
+  .bg-blue-1
+    background: rgba(7, 7, 7, 0.198) !important
+  .text-grey-8
+    color: $grey !important
+  .text-grey-9
+    color: #424242 !important
+
+  .bg-grey-3
+    background: #424242 !important
+    // color: $neutral !important
+  .bg-padrao
+    background: rgba(7, 7, 7, 0.609) !important
+
+  .bg-blue-grey-1
+    background: none !important
+
+  .ticket-active-item
+    background: rgba(7, 7, 7, 0.849) !important
+
+  #item-ticket-houve:hover
+    background: rgba(7, 7, 7, 0.849) !important
+
+  div.q-badge.bg-secondary
+    background: rgba(7, 7, 7, 0.198) !important
+
+  div.q-badge.text-grey-10
+    color: $neutral !important
+
+  hr.bg-grey-2
+    background: rgba(7, 7, 7, 0.198) !important
+
+  hr.q-separator--dark
+    background: rgba(7, 7, 7, 0.801) !important
+    border-color: rgba(7, 7, 7, 0.801) !important
+
+  aside div.bg-grey-1
+    background: rgba(7, 7, 7, 0.322) !important
+
+  .text-primary
+    color: $light !important
+
+  .bg-primary
+    background: rgba(7, 7, 7, 0.959) !important
+
+  label div.bg-grey-2
+    background: rgba(7, 7, 7, 0.801) !important
+
+  div .bg-amber .q-carousel--dark
+    color: rgba(7, 7, 7, 0.801) !important
+
+  div.q-fab > div.q-fab__actions
+    background: rgba(0, 0, 0, 0.897) !important
+
+  .q-table__top, table.q-table thead tr th, .q-table__bottom
+    background: #1E1E1E !important
+
+body.body--dark .q-header, body.body--dark .q-footer, body.body--dark .q-drawer
+  border-color: rgba(7, 7, 7, 0.801) !important

@@ -1,6 +1,5 @@
-import * as Yup from "yup";
-
 import AppError from "../../errors/AppError";
+import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
 
 interface Request {
@@ -11,6 +10,9 @@ interface Request {
   tokenTelegram?: string;
   instagramUser?: string;
   instagramKey?: string;
+  wabaBSP?: string;
+  wabaApiKey?: string;
+  type: "waba" | "instagram" | "telegram" | "whatsapp";
 }
 
 interface Response {
@@ -20,53 +22,41 @@ interface Response {
 
 const CreateWhatsAppService = async ({
   name,
-  status = "OPENING",
-  isDefault = false,
+  status = "DISCONNECTED",
   tenantId,
   tokenTelegram,
   instagramUser,
-  instagramKey
+  instagramKey,
+  type,
+  wabaBSP,
+  wabaApiKey,
+  isDefault = false
 }: Request): Promise<Response> => {
-  const schema = Yup.object().shape({
-    name: Yup.string()
-      .required()
-      .min(2)
-      .test(
-        "Check-name",
-        "This whatsapp name is already used.",
-        async value => {
-          if (value) {
-            const whatsappFound = await Whatsapp.findOne({
-              where: { name: value }
-            });
-            return !whatsappFound;
-          }
-          return true;
-        }
-      ),
-    isDefault: Yup.boolean().required()
-  });
-
-  try {
-    await schema.validate({ name, status, isDefault });
-  } catch (err) {
-    throw new AppError(err.message);
+  if (type === "waba" && (!wabaApiKey || !wabaBSP)) {
+    throw new AppError("WABA: favor informar o Token e a BSP");
   }
 
-  const whatsappFound = await Whatsapp.findOne({ where: { tenantId } });
+  if (type === "instagram" && !instagramUser) {
+    throw new AppError(
+      "Instagram: favor informar o Usuário e senha corretamente."
+    );
+  }
+
+  if (type === "telegram" && !tokenTelegram) {
+    throw new AppError("Telegram: favor informar o Token.");
+  }
+
+  const whatsappFound = await Whatsapp.findOne({
+    where: { tenantId, isDefault: true }
+  });
 
   if (!whatsappFound) {
     isDefault = !whatsappFound;
   }
 
-  let oldDefaultWhatsapp: Whatsapp | null = null;
-
   if (isDefault) {
-    oldDefaultWhatsapp = await Whatsapp.findOne({
-      where: { isDefault: true, tenantId }
-    });
-    if (oldDefaultWhatsapp) {
-      await oldDefaultWhatsapp.update({ isDefault: false });
+    if (whatsappFound) {
+      await whatsappFound.update({ isDefault: false });
     }
   }
 
@@ -77,10 +67,19 @@ const CreateWhatsAppService = async ({
     tenantId,
     tokenTelegram,
     instagramUser,
-    instagramKey
+    instagramKey,
+    type,
+    wabaBSP,
+    wabaApiKey
   });
 
-  return { whatsapp, oldDefaultWhatsapp };
+  const io = getIO();
+  io.emit(`${tenantId}:whatsapp`, {
+    action: "update",
+    whatsapp
+  });
+
+  return { whatsapp, oldDefaultWhatsapp: whatsappFound };
 };
 
 export default CreateWhatsAppService;

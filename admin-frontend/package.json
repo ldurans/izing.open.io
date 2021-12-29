@@ -1,0 +1,68 @@
+{
+  "name": "WChats",
+  "version": "0.0.1",
+  "description": "Bot Multi-atendimento para whatsapp",
+  "productName": "WChats",
+  "author": "Durans <lumardyelson@gmail.com>",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .js,.vue ./",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.0.0",
+    "apexcharts": "^3.32.0",
+    "axios": "^0.18.1",
+    "core-js": "^3.6.5",
+    "date-fns": "^2.16.1",
+    "drawflow": "0.0.53",
+    "js-base64": "^3.7.2",
+    "lodash": "^4.17.20",
+    "mic-recorder-to-mp3": "^2.2.2",
+    "printd": "^1.4.2",
+    "qrcode.vue": "^1.7.0",
+    "quasar": "^1.0.0",
+    "socket.io-client": "^2.3.1",
+    "v-emoji-picker": "^2.3.1",
+    "vdata-parser": "^0.1.5",
+    "vue-apexcharts": "^1.6.2",
+    "vue-codemirror": "^4.0.6",
+    "vue-easy-lightbox": "^0.14.0",
+    "vue-infinite-loading": "^2.4.5",
+    "vue-linkify": "^1.0.1",
+    "vuedraggable": "^2.24.3",
+    "vuelidate": "^0.7.6",
+    "vuelidate-error-extractor": "^2.4.1",
+    "xlsx": "^0.16.9"
+  },
+  "devDependencies": {
+    "@quasar/app": "^2.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^6.1.2",
+    "quasar-app-extension-qdatetimepicker": "^1.0.0-rc.17",
+    "workbox-webpack-plugin": "^5.1.4"
+  },
+  "browserslist": [
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 8 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Opera versions"
+  ],
+  "engines": {
+    "node": ">= 10.18.1",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}

@@ -99,9 +99,16 @@ app.use(
     origin(origin, callback) {
       // allow requests with no origin
       // (like mobile apps or curl requests)
-      const allowedOrigins = process.env.FRONTEND_URL || "localhost";
+      const allowedOrigins = [
+        process.env.FRONTEND_URL || "localhost",
+        process.env.ADMIN_FRONTEND_URL || "localhost"
+      ];
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
+      // eslint-disable-next-line consistent-return
+      const allowed = allowedOrigins.findIndex(
+        url => url.indexOf(origin) !== -1
+      );
+      if (allowed === -1) {
         const msg =
           "The CORS policy for this site does not " +
           "allow access from the specified Origin.";
