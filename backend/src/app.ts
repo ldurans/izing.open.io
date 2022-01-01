@@ -97,7 +97,7 @@ app.use(
     credentials: true,
     // origin: process.env.FRONTEND_URL
     origin(origin, callback) {
-      logger.info("cors-origin", origin);
+      logger.error(`cors-origin: ${origin}`);
       // allow requests with no origin
       // (like mobile apps or curl requests)
       const allowedOrigins = [
