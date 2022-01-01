@@ -264,10 +264,10 @@
 
         <q-scroll-area
           ref="scrollAreaTickets"
-          style="height: calc(100% - 160px)"
+          style="height: calc(100% - 180px)"
           @scroll="onScroll"
         >
-          <q-separator />
+          <!-- <q-separator /> -->
           <ItemTicket
             v-for="(ticket, key) in tickets"
             :key="key"
@@ -287,20 +287,19 @@
             </div>
           </div>
         </q-scroll-area>
-        <q-separator />
+        <!-- <q-separator /> -->
         <div
-          class="absolute-bottom text-center row justify-between"
-          :class="{'bg-grey-3': $q.dark.isActive}"
-          style="height: 40px"
+          class="absolute-bottom row justify-between"
+          style="height: 50px"
         >
           <q-toggle
             size="xl"
             keep-color
             dense
-            class="text-bold q-ml-md"
-            :icon-color="$q.dark.isActive ? 'white' : 'white'"
-            color="dark"
+            class="text-bold q-ml-md flex flex-block"
+            :icon-color="$q.dark.isActive ? 'black' : 'white'"
             :value="$q.dark.isActive"
+            :color="$q.dark.isActive ? 'grey-3' : 'black'"
             checked-icon="mdi-white-balance-sunny"
             unchecked-icon="mdi-weather-sunny"
             @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
@@ -309,29 +308,33 @@
               {{ $q.dark.isActive ? 'Desativar' : 'Ativar' }} Modo Escuro (Dark Mode)
             </q-tooltip>
           </q-toggle>
-          <div>
-            <template v-for="item in whatsapps">
-              <q-btn
-                rounded
-                flat
-                dense
-                size="18px"
-                :key="item.id"
-                class="q-mx-xs q-pa-none"
-                :style="`opacity: ${item.status === 'CONNECTED' ? 1 : 0.2}`"
-                :icon="`img:${item.type}-logo.png`"
-              >
-                <!-- :color="item.status === 'CONNECTED' ? 'positive' : 'negative'"
-                :icon-right="item.status === 'CONNECTED' ? 'mdi-check-all' : 'mdi-alert-circle-outline'" -->
-                <q-tooltip
-                  max-height="300px"
-                  content-class="bg-blue-1 text-body1 text-grey-9 hide-scrollbar"
+          <div class="flex flex-inline q-pt-xs">
+            <q-scroll-area
+              horizontal
+              style="heigth: 40px; width: 300px;"
+            >
+              <template v-for="item in whatsapps">
+                <q-btn
+                  rounded
+                  flat
+                  dense
+                  size="18px"
+                  :key="item.id"
+                  class="q-mx-xs q-pa-none"
+                  :style="`opacity: ${item.status === 'CONNECTED' ? 1 : 0.2}`"
+                  :icon="`img:${item.type}-logo.png`"
                 >
-                  <ItemStatusChannel :item="item" />
-                </q-tooltip>
-              </q-btn>
-
-            </template>
+                  <!-- :color="item.status === 'CONNECTED' ? 'positive' : 'negative'"
+                  :icon-right="item.status === 'CONNECTED' ? 'mdi-check-all' : 'mdi-alert-circle-outline'" -->
+                  <q-tooltip
+                    max-height="300px"
+                    content-class="bg-blue-1 text-body1 text-grey-9 hide-scrollbar"
+                  >
+                    <ItemStatusChannel :item="item" />
+                  </q-tooltip>
+                </q-btn>
+              </template>
+            </q-scroll-area>
 
           </div>
         </div>

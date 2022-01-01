@@ -27,17 +27,16 @@
           v-if="$q.screen.gt.xs"
         >
           <q-img
-            src="/bg-wchats.png"
-            spinner-color="white"
-            contain
-            style="height: 40px; width: 50px"
+            src="/izing-logo_5_transparent.png"
+            spinner-color="primary"
+            style="height: 50px; width: 120px"
           />
-          <q-toolbar-title
+          <!-- <q-toolbar-title
             shrink
             class="text-bold text-grey-7"
           >
-            WChats
-          </q-toolbar-title>
+            IZING
+          </q-toolbar-title> -->
         </q-btn>
 
         <q-space />
@@ -175,9 +174,9 @@
           keep-color
           dense
           class="text-bold q-ml-xs"
-          :icon-color="$q.dark.isActive ? 'white' : 'white'"
-          color="dark"
+          :icon-color="$q.dark.isActive ? 'black' : 'white'"
           :value="$q.dark.isActive"
+          :color="$q.dark.isActive ? 'grey-3' : 'black'"
           checked-icon="mdi-white-balance-sunny"
           unchecked-icon="mdi-weather-sunny"
           @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"

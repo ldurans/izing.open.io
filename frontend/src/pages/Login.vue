@@ -15,9 +15,9 @@
 
           <q-card-section class="text-primary text-center">
             <q-img
-              src="/logo-wchats-transp.png"
+              src="/izing-logo_5_transparent.png"
               spinner-color="white"
-              style="height: 100px; max-width: 200px"
+              style="height: 110px; max-width: 300px"
               class="q-mb-lg q-px-md"
             />
             <q-separator spaced />
