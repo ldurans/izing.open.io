@@ -73,13 +73,14 @@ const verifyBusinessHours = async (
 
       const messageData = {
         body: tenant.messageBusinessHours,
-        fromMe: msg.fromMe,
+        fromMe: true,
         read: true,
-        sendType: "bot"
+        sendType: "bot",
+        tenantId: ticket.tenantId
       };
       await CreateMessageSystemService({
         msg: messageData,
-        tenantId: tenant.id,
+        tenantId: ticket.tenantId,
         ticket,
         sendType: messageData.sendType,
         status: "pending"

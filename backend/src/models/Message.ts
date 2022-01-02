@@ -13,6 +13,7 @@ import {
 } from "sequelize-typescript";
 import { v4 as uuidV4 } from "uuid";
 import Contact from "./Contact";
+import Tenant from "./Tenant";
 import Ticket from "./Ticket";
 import User from "./User";
 
@@ -130,6 +131,13 @@ class Message extends Model<Message> {
     DataType.ENUM("campaign", "chat", "external", "schedule", "bot", "sync")
   )
   sendType: string;
+
+  @ForeignKey(() => Tenant)
+  @Column
+  tenantId: number;
+
+  @BelongsTo(() => Tenant)
+  tenant: Tenant;
 }
 
 // Message.sequelize?.define("Message", {

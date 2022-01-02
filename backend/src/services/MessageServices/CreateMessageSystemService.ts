@@ -25,6 +25,7 @@ interface MessageData {
   scheduleDate?: string | Date;
   sendType?: string;
   status?: string;
+  tenantId: string | number;
 }
 
 interface MessageRequest {
@@ -70,7 +71,8 @@ const CreateMessageSystemService = async ({
     userId,
     scheduleDate,
     sendType,
-    status
+    status,
+    tenantId
   };
 
   try {

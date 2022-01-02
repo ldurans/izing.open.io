@@ -67,7 +67,8 @@ const CreateForwardMessageService = async ({
     scheduleDate: null,
     sendType: "chat",
     status: "pending",
-    ticketId: ticket.id
+    ticketId: ticket.id,
+    tenantId
   };
 
   const msgCreated = await Message.create(msgData);

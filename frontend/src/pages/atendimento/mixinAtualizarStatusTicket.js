@@ -73,6 +73,7 @@ export default {
               }]
             })
             this.$store.commit('TICKET_FOCADO', {})
+            if (status !== 'open') this.$router.push({ name: 'chat-empty' })
           })
           .catch(error => {
             this.loading = false

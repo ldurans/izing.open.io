@@ -1090,6 +1090,25 @@ export default {
     }
     this.userProfile = localStorage.getItem('profile')
     // this.socketInitial()
+
+    // se existir ticket na url, abrir o ticket.
+    if (this.$route?.params?.ticketId) {
+      const ticketId = this.$route?.params?.ticketId
+      if (ticketId && this.tickets.length > 0) {
+        const ticket = this.tickets.find(t => t.id === +ticketId)
+        if (!ticket) return
+        // caso esteja em um tamanho mobile, fechar a drawer dos contatos
+        if (this.$q.screen.lt.md && ticket.status !== 'pending') {
+          this.$root.$emit('infor-cabecalo-chat:acao-menu')
+        }
+        console.log('before - AbrirChatMensagens', ticket)
+        this.$store.commit('SET_HAS_MORE', true)
+        this.$store.dispatch('AbrirChatMensagens', ticket)
+      }
+    } else {
+      console.log('chat-empty')
+      this.$router.push({ name: 'chat-empty' })
+    }
   },
   destroyed () {
     this.$root.$off('handlerNotifications', this.handlerNotifications)

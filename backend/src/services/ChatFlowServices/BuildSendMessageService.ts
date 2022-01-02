@@ -20,6 +20,7 @@ interface MessageData {
   timestamp?: number;
   internalId?: string;
   userId?: string | number;
+  tenantId: string | number;
   quotedMsgId?: string;
   // status?: string;
   scheduleDate?: string | Date;
@@ -69,7 +70,8 @@ const BuildSendMessageService = async ({
     userId,
     scheduleDate: undefined,
     sendType: "bot",
-    status: "pending"
+    status: "pending",
+    tenantId
   };
 
   try {

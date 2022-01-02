@@ -24,15 +24,15 @@ const CreateMessageService = async ({
   tenantId
 }: Request): Promise<Message> => {
   const msg = await Message.findOne({
-    where: { messageId: messageData.messageId }
+    where: { messageId: messageData.messageId, tenantId }
   });
   if (!msg) {
-    await Message.create(messageData);
+    await Message.create({ ...messageData, tenantId });
   } else {
     await msg.update(messageData);
   }
   const message = await Message.findOne({
-    where: { messageId: messageData.messageId },
+    where: { messageId: messageData.messageId, tenantId },
     include: [
       {
         model: Ticket,
