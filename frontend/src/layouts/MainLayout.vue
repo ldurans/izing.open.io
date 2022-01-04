@@ -113,6 +113,11 @@
                   <q-item-section>Sair</q-item-section>
                 </q-item>
                 <q-separator />
+                <q-item>
+                  <q-item-section>
+                    <cSystemVersion />
+                  </q-item-section>
+                </q-item>
 
               </q-list>
             </q-menu>
@@ -208,6 +213,7 @@
 </template>
 
 <script>
+import cSystemVersion from '../components/cSystemVersion.vue'
 import { ListarWhatsapps } from 'src/service/sessoesWhatsapp'
 import EssentialLink from 'components/EssentialLink.vue'
 import socketInitial from './socketInitial'
@@ -333,7 +339,7 @@ const objMenuAdmin = [
 export default {
   name: 'MainLayout',
   mixins: [socketInitial],
-  components: { EssentialLink, ModalUsuario, cStatusUsuario },
+  components: { EssentialLink, ModalUsuario, cStatusUsuario, cSystemVersion },
   data () {
     return {
       username,
