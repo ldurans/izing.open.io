@@ -1,0 +1,36 @@
+{
+  "name": "izing.io",
+  "version": "1.0.0",
+  "description": "system management customer service",
+  "main": "index.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ldurans/izing.io.git"
+  },
+  "scripts": {
+    "release": "semantic-release --no-ci",
+    "husk": "husky install"
+  },
+  "author": "durans@izing.io",
+  "license": "@izing.io",
+  "dependencies": {},
+  "devDependencies": {
+    "@commitlint/cli": "^16.0.1",
+    "@commitlint/config-conventional": "^16.0.0",
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "husky": "^7.0.4",
+    "semantic-release": "^18.0.1"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  }
+}
