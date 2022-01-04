@@ -1,6 +1,6 @@
 {
   "name": "izing.io",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "system management customer service",
   "main": "index.js",
   "private": true,
