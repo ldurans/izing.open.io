@@ -19,6 +19,7 @@ interface Request {
   isWAContact: boolean;
   telegramId?: string | number;
   instagramPK?: string | number;
+  messengerId?: string | number;
   origem?: string;
 }
 
@@ -34,6 +35,7 @@ const CreateOrUpdateContactService = async ({
   email = "",
   telegramId,
   instagramPK,
+  messengerId,
   extraInfo = [],
   origem = "whatsapp"
 }: Request): Promise<Contact> => {
@@ -53,6 +55,10 @@ const CreateOrUpdateContactService = async ({
     contact = await Contact.findOne({ where: { instagramPK, tenantId } });
   }
 
+  if (origem === "messenger" && messengerId) {
+    contact = await Contact.findOne({ where: { messengerId, tenantId } });
+  }
+
   if (contact) {
     contact.update({
       profilePicUrl,
@@ -60,7 +66,8 @@ const CreateOrUpdateContactService = async ({
       isUser,
       isWAContact,
       telegramId,
-      instagramPK
+      instagramPK,
+      messengerId
     });
   } else {
     contact = await Contact.create({
@@ -75,7 +82,8 @@ const CreateOrUpdateContactService = async ({
       tenantId,
       extraInfo,
       telegramId,
-      instagramPK
+      instagramPK,
+      messengerId
     });
   }
 

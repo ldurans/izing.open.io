@@ -61,6 +61,11 @@ class Contact extends Model<Contact> {
   @AllowNull(true)
   @Default(null)
   @Column
+  messengerId: string;
+
+  @AllowNull(true)
+  @Default(null)
+  @Column
   instagramPK: number;
 
   @Default(false)

@@ -1,29 +1,29 @@
 /* eslint-disable camelcase */
 import AppError from "../../errors/AppError";
+import { initMessengerBot } from "../../libs/messengerBot";
 import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
 import { logger } from "../../utils/logger";
-// import GetRegisteredPhone from "./GetRegisteredPhone";
-import SetWebHookUrl from "./SetWebHookUrl";
-import Waba360SendMessagesSystem from "./Waba360SendMessagesSystem";
 
-const checkingWaba360: any = {};
+const checkingMessenger: any = {};
 
-const checkMessagesWaba360 = async (connection: Whatsapp) => {
-  if (checkingWaba360[connection.tenantId]) return;
-  checkingWaba360[connection.tenantId] = true;
+const messengerCheckMessages = async (connection: Whatsapp) => {
+  if (checkingMessenger[connection.tenantId]) return;
+  checkingMessenger[connection.tenantId] = true;
   try {
-    await Waba360SendMessagesSystem(connection);
+    // await Waba360SendMessagesSystem(connection);
   } catch (error) {
     logger.error(
-      `ERROR: checkMessages Tenant: ${connection.tenantId}::`,
+      `ERROR Messenger: checkMessages Tenant: ${connection.tenantId}::`,
       error
     );
   }
-  checkingWaba360[connection.tenantId] = false;
+  checkingMessenger[connection.tenantId] = false;
 };
 
-export const StartWaba360 = async (connection: Whatsapp): Promise<void> => {
+export const StartMessengerBot = async (
+  connection: Whatsapp
+): Promise<void> => {
   const io = getIO();
   await connection.update({ status: "OPENING" });
   io.emit(`${connection.tenantId}:whatsappSession`, {
@@ -32,16 +32,12 @@ export const StartWaba360 = async (connection: Whatsapp): Promise<void> => {
   });
 
   try {
-    await SetWebHookUrl({
-      // eslint-disable-next-line no-bitwise
-      url: connection.UrlWabaWebHook || "",
-      apiKey: connection.tokenAPI
-    });
     const phoneNumber = ""; // await GetRegisteredPhone(connection.tokenAPI);
-    logger.info(`Conexão Waba 360 iniciada | Empresa: ${connection.tenantId}`);
+    logger.info(`Conexão Messenger iniciada | Empresa: ${connection.tenantId}`);
+    await initMessengerBot(connection);
     await connection.update({ status: "CONNECTED", number: phoneNumber });
     setInterval(
-      checkMessagesWaba360,
+      messengerCheckMessages,
       +(process.env.CHECK_INTERVAL || 5000),
       connection
     );

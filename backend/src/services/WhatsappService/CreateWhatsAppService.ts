@@ -11,7 +11,7 @@ interface Request {
   instagramUser?: string;
   instagramKey?: string;
   wabaBSP?: string;
-  wabaApiKey?: string;
+  tokenAPI?: string;
   type: "waba" | "instagram" | "telegram" | "whatsapp";
 }
 
@@ -29,10 +29,10 @@ const CreateWhatsAppService = async ({
   instagramKey,
   type,
   wabaBSP,
-  wabaApiKey,
+  tokenAPI,
   isDefault = false
 }: Request): Promise<Response> => {
-  if (type === "waba" && (!wabaApiKey || !wabaBSP)) {
+  if (type === "waba" && (!tokenAPI || !wabaBSP)) {
     throw new AppError("WABA: favor informar o Token e a BSP");
   }
 
@@ -70,7 +70,7 @@ const CreateWhatsAppService = async ({
     instagramKey,
     type,
     wabaBSP,
-    wabaApiKey
+    tokenAPI
   });
 
   const io = getIO();

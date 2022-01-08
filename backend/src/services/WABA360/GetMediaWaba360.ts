@@ -83,7 +83,7 @@ const GetMediaWaba360 = async ({
       ? `${originalName}_${ticket.id}_${mediaId}_${time}.${ext}`
       : `${ticket.id}_${mediaId}_${time}.${ext}`;
 
-    await downloadFile(channel.wabaApiKey, mediaId, filename);
+    await downloadFile(channel.tokenAPI, mediaId, filename);
     return filename;
   } catch (error) {
     logger.error(error);

@@ -15,7 +15,7 @@ interface WhatsappData {
   isActive?: boolean;
   type?: "waba" | "instagram" | "telegram" | "whatsapp";
   wabaBSP?: string;
-  wabaApiKey?: string;
+  tokenAPI?: string;
 }
 
 interface Request {
@@ -50,7 +50,7 @@ const UpdateWhatsAppService = async ({
     isActive,
     type,
     wabaBSP,
-    wabaApiKey
+    tokenAPI
   } = whatsappData;
 
   try {
@@ -85,7 +85,7 @@ const UpdateWhatsAppService = async ({
       isActive,
       type,
       wabaBSP,
-      wabaApiKey
+      tokenAPI
     };
 
     if (instagramKey) {

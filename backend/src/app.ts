@@ -19,6 +19,7 @@ import { logger } from "./utils/logger";
 import Queue from "./libs/Queue";
 import RabbitmqServer from "./libs/rabbitmq-server";
 import Consumer360 from "./services/WABA360/Consumer360";
+import MessengerConsumer from "./services/MessengerChannelServices/MessengerConsumer";
 // import AMI from "./libs/AMI";
 // const pino = require("pino-http")();
 
@@ -68,6 +69,7 @@ if (process.env.URL_AMQP) {
     app.rabbit = rabbit;
   })();
   Consumer360();
+  MessengerConsumer();
 }
 
 if (process.env.NODE_ENV === "dev") {

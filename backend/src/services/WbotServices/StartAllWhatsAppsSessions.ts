@@ -2,6 +2,7 @@ import { Op } from "sequelize";
 // import { initInstaBot } from "../../libs/InstaBot";
 import Whatsapp from "../../models/Whatsapp";
 import { StartInstaBotSession } from "../InstagramBotServices/StartInstaBotSession";
+import { StartMessengerBot } from "../MessengerChannelServices/StartMessengerBot";
 import { StartTbotSession } from "../TbotServices/StartTbotSession";
 import { StartWaba360 } from "../WABA360/StartWaba360";
 import { StartWhatsAppSession } from "./StartWhatsAppSession";
@@ -14,7 +15,7 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
         {
           [Op.and]: {
             type: {
-              [Op.in]: ["instagram", "telegram", "waba"]
+              [Op.in]: ["instagram", "telegram", "waba", "messenger"]
             },
             status: {
               [Op.notIn]: ["DISCONNECTED"]
@@ -40,6 +41,7 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
   );
   const instagramSessions = whatsapps.filter(w => w.type === "instagram");
   const waba360Sessions = whatsapps.filter(w => w.type === "waba");
+  const messengerSessions = whatsapps.filter(w => w.type === "messenger");
 
   if (whatsappSessions.length > 0) {
     whatsappSessions.forEach(whatsapp => {
@@ -55,7 +57,7 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
 
   if (waba360Sessions.length > 0) {
     waba360Sessions.forEach(channel => {
-      if (channel.wabaApiKey && channel.wabaBSP === "360") {
+      if (channel.tokenAPI && channel.wabaBSP === "360") {
         StartWaba360(channel);
       }
     });
@@ -65,6 +67,14 @@ export const StartAllWhatsAppsSessions = async (): Promise<void> => {
     instagramSessions.forEach(channel => {
       if (channel.instagramKey) {
         StartInstaBotSession(channel);
+      }
+    });
+  }
+
+  if (messengerSessions.length > 0) {
+    messengerSessions.forEach(channel => {
+      if (channel.tokenAPI) {
+        StartMessengerBot(channel);
       }
     });
   }

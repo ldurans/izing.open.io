@@ -8,6 +8,7 @@ import AppError from "../../errors/AppError";
 import { StartInstaBotSession } from "../InstagramBotServices/StartInstaBotSession";
 import { StartTbotSession } from "../TbotServices/StartTbotSession";
 import { StartWaba360 } from "../WABA360/StartWaba360";
+import { StartMessengerBot } from "../MessengerChannelServices/StartMessengerBot";
 
 export const StartWhatsAppSession = async (
   whatsapp: Whatsapp
@@ -33,6 +34,10 @@ export const StartWhatsAppSession = async (
 
     if (whatsapp.type === "instagram") {
       StartInstaBotSession(whatsapp);
+    }
+
+    if (whatsapp.type === "messenger") {
+      StartMessengerBot(whatsapp);
     }
 
     if (whatsapp.type === "waba") {
