@@ -1,6 +1,7 @@
 import { join } from "path";
 import axios from "axios";
 import { createWriteStream } from "fs";
+import contentDiposition from "content-disposition";
 import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
 
@@ -8,6 +9,7 @@ import Message from "../../models/Message";
 import CreateMessageService from "../MessageServices/CreateMessageService";
 import Whatsapp from "../../models/Whatsapp";
 import { EventMessage, MessengerRawEvent } from "./MessengerTypes";
+import getQuotedForMessageId from "../../helpers/getQuotedForMessageId";
 
 interface IMessage extends EventMessage {
   type: string;
@@ -21,9 +23,19 @@ const downloadFile = async (url: string, filename: string): Promise<string> => {
     responseType: "stream"
   });
 
-  const contentType = request.headers["content-type"];
-  const ext = contentType.split("/")[1];
-  const name = `${filename}.${ext}`;
+  const parseDisposition = request.headers["content-disposition"]
+    ? contentDiposition.parse(request.headers["content-disposition"] || "")
+    : { parameters: {} };
+  let name = "";
+
+  if (parseDisposition?.parameters?.filename) {
+    name = `${new Date().getTime()}-${parseDisposition.parameters.filename}`;
+  } else {
+    const contentType = request.headers["content-type"];
+    const ext = contentType.split("/")[1];
+    name = `${filename}-${new Date().getTime()}.${ext}`;
+  }
+
   const pathFile = join(__dirname, "..", "..", "..", "public", name);
 
   await new Promise((resolve, reject) => {
@@ -50,12 +62,21 @@ const MessengerVerifyMediaMessage = async (
   let filename;
 
   await Promise.all(
-    msg.message.attachments.map(async item => {
+    msg.message.attachments.map(async (item: any, idx: any) => {
       const name = `${ticket.id}_${msg.message_id}`;
       filename = await downloadFile(item.payload.url, name);
+      let quotedMsgId;
+
+      if (msg?.message?.reply_to?.mid) {
+        const messageQuoted = await getQuotedForMessageId(
+          msg.message.reply_to.mid
+        );
+        quotedMsgId = messageQuoted?.id || undefined;
+      }
 
       const messageData = {
-        messageId: msg.message_id || "",
+        // idx necessário em função do id ser o mesmo para todos os anexos
+        messageId: idx > 0 ? `${msg.message_id}__${idx}` : msg.message_id || "",
         ticketId: ticket.id,
         contactId: contact.id,
         body: msg.message?.text || "",
@@ -63,7 +84,7 @@ const MessengerVerifyMediaMessage = async (
         read: false,
         mediaUrl: filename,
         mediaType: msg.type,
-        // quotedMsgId: undefind || quotedMsg?.id,
+        quotedMsgId,
         timestamp: +msg.timestamp,
         status: "received"
       };
@@ -73,11 +94,12 @@ const MessengerVerifyMediaMessage = async (
         lastMessageAt: new Date().getTime(),
         answered: false
       });
-      const newMessage = await CreateMessageService({
+
+      await CreateMessageService({
         messageData,
         tenantId: ticket.tenantId
       });
-      return newMessage;
+      // return newMessage;
     })
   );
 };

@@ -242,7 +242,7 @@
                 "
               />
             </template>
-            <template v-if="mensagem.mediaType === 'application'">
+            <template v-if="['application', 'file', 'document'].includes(mensagem.mediaType)">
               <div class="text-center full-width hide-scrollbar no-scroll">
                 <iframe
                   v-if="isPDF(mensagem.mediaUrl)"
@@ -277,14 +277,15 @@
                     v-if="mensagem.mediaUrl"
                     content-class="text-bold"
                   >
-                    Baixar: {{ mensagem.body }}
+                    Baixar: {{ mensagem.mediaName }}
+                    {{ mensagem.body }}
                   </q-tooltip>
                   <div class="row items-center q-ma-xs ">
                     <div
                       class="ellipsis col-grow q-pr-sm"
                       style="max-width: 290px"
                     >
-                      {{ farmatarMensagemWhatsapp(mensagem.body) }}
+                      {{ farmatarMensagemWhatsapp(mensagem.body || mensagem.mediaName ) }}
                     </div>
                     <q-icon name="mdi-download" />
                   </div>

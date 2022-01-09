@@ -1,3 +1,4 @@
+import getQuotedForMessageId from "../../helpers/getQuotedForMessageId";
 import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
 import CreateMessageService from "../MessageServices/CreateMessageService";
@@ -14,6 +15,11 @@ const MessengerVerifyMessage = async (
   contact: Contact
 ): Promise<void> => {
   // const quotedMsg = await VerifyQuotedMessage(msg);
+  let quotedMsgId;
+  if (msg?.message?.reply_to?.mid) {
+    const messageQuoted = await getQuotedForMessageId(msg.message.reply_to.mid);
+    quotedMsgId = messageQuoted?.id || undefined;
+  }
 
   const messageData = {
     messageId: msg.message_id || "",
@@ -23,7 +29,7 @@ const MessengerVerifyMessage = async (
     fromMe: false,
     mediaType: msg.type,
     read: false,
-    quotedMsgId: msg?.replyTo?.mid,
+    quotedMsgId,
     timestamp: msg.timestamp,
     status: "received"
   };

@@ -1,24 +1,31 @@
 /* eslint-disable camelcase */
+import { MessengerClient } from "messaging-api-messenger";
 import AppError from "../../errors/AppError";
 import { initMessengerBot } from "../../libs/messengerBot";
 import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
 import { logger } from "../../utils/logger";
+import MessengerSendMessagesSystem from "./MessengerSendMessagesSystem";
+
+interface Session extends MessengerClient {
+  id: number;
+}
 
 const checkingMessenger: any = {};
 
-const messengerCheckMessages = async (connection: Whatsapp) => {
-  if (checkingMessenger[connection.tenantId]) return;
-  checkingMessenger[connection.tenantId] = true;
+const messengerCheckMessages = async (
+  messengerBot: Session,
+  tenantId: string | number
+) => {
+  if (checkingMessenger[tenantId]) return;
+  checkingMessenger[tenantId] = true;
   try {
     // await Waba360SendMessagesSystem(connection);
+    await MessengerSendMessagesSystem(messengerBot, tenantId);
   } catch (error) {
-    logger.error(
-      `ERROR Messenger: checkMessages Tenant: ${connection.tenantId}::`,
-      error
-    );
+    logger.error(`ERROR Messenger: checkMessages Tenant: ${tenantId}::`, error);
   }
-  checkingMessenger[connection.tenantId] = false;
+  checkingMessenger[tenantId] = false;
 };
 
 export const StartMessengerBot = async (
@@ -34,12 +41,13 @@ export const StartMessengerBot = async (
   try {
     const phoneNumber = ""; // await GetRegisteredPhone(connection.tokenAPI);
     logger.info(`Conexão Messenger iniciada | Empresa: ${connection.tenantId}`);
-    await initMessengerBot(connection);
+    const messengerBot = await initMessengerBot(connection);
     await connection.update({ status: "CONNECTED", number: phoneNumber });
     setInterval(
       messengerCheckMessages,
       +(process.env.CHECK_INTERVAL || 5000),
-      connection
+      messengerBot,
+      connection.tenantId
     );
     io.emit(`${connection.tenantId}:whatsappSession`, {
       action: "update",

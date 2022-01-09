@@ -1,9 +1,9 @@
 {
-  "name": "WChats",
+  "name": "IZING",
   "version": "0.0.1",
   "description": "Bot Multi-atendimento para whatsapp",
-  "productName": "WChats",
-  "author": "Durans <lumardyelson@gmail.com>",
+  "productName": "IZING",
+  "author": "Durans <durans@izing.io>",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",

@@ -345,6 +345,7 @@ export default {
       username,
       domainExperimentalsMenus: [
         '@wchats.com.br',
+        '@izing.io',
         '@sispolos.com.br'
       ],
       miniState: true,

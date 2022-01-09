@@ -8,6 +8,7 @@ import { getMessengerBot } from "../../libs/messengerBot";
 import MessengerVerifyContact from "./MessengerVerifyContact";
 import MessengerVerifyMessage from "./MessengerVerifyMessage";
 import MessengerVerifyMediaMessage from "./MessengerVerifyMediaMessage";
+import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
 
 // eslint-disable-next-line consistent-return
 const getMessageType = (message: any) => {
@@ -51,6 +52,7 @@ const MessengerHandleMessage = async (
           ...messageObj,
           type: getMessageType(messageObj.message),
           fromMe: false,
+          body: messageObj?.message?.text || "",
           timestamp: messageObj.timestamp,
           message_id: messageObj.message.mid
         };
@@ -72,7 +74,7 @@ const MessengerHandleMessage = async (
         } else {
           await MessengerVerifyMessage(msgData, ticket, contact);
         }
-        // await VerifyStepsChatFlowTicket(msgData, ticket);
+        await VerifyStepsChatFlowTicket(msgData, ticket);
 
         // await verifyBusinessHours(msgData, ticket);
         resolve();

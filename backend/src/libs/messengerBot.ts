@@ -36,7 +36,6 @@ export const initMessengerBot = async (
       // version: '6.0',
     }) as Session;
 
-    console.log("Cliente Messenger: ", messengerClient);
     messengerClient.id = connection.id;
 
     const sessionIndex = sessionsMessenger.findIndex(
