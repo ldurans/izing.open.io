@@ -16,6 +16,7 @@ import socketEmit from "../../helpers/socketEmit";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
+import { sleepRandomTime } from "../../utils/sleepRandomTime";
 // import { sleepRandomTime } from "../../utils/sleepRandomTime";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
@@ -152,10 +153,10 @@ const SendMessagesSystemWbot = async (
       await SetTicketMessagesAsRead(ticket);
 
       // delay para processamento da mensagem
-      // await sleepRandomTime({
-      //   minMilliseconds: Number(process.env.MIN_SLEEP_INTERVAL || 2000),
-      //   maxMilliseconds: Number(process.env.MAX_SLEEP_INTERVAL || 5000)
-      // });
+      await sleepRandomTime({
+        minMilliseconds: Number(2000),
+        maxMilliseconds: Number(3000)
+      });
 
       // logger.info("sendMessage", sendedMessage.id.id);
     } catch (error) {

@@ -1,3 +1,4 @@
+import { getMessengerBot } from "../libs/messengerBot";
 import Message from "../models/Message";
 import Ticket from "../models/Ticket";
 import ShowTicketService from "../services/TicketServices/ShowTicketService";
@@ -19,8 +20,16 @@ const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
   await ticket.update({ unreadMessages: 0 });
 
   try {
-    const wbot = await GetTicketWbot(ticket);
-    wbot.sendSeen(`${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`);
+    if (ticket.channel === "whatsapp") {
+      const wbot = await GetTicketWbot(ticket);
+      wbot.sendSeen(
+        `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`
+      );
+    }
+    if (ticket.channel === "messenger") {
+      const messengerBot = getMessengerBot(ticket.whatsappId);
+      messengerBot.markSeen(ticket.contact.messengerId);
+    }
   } catch (err) {
     logger.warn(
       `Could not mark messages as read. Maybe whatsapp session disconnected? Err: ${err}`

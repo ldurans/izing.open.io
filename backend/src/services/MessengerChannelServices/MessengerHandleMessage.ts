@@ -9,6 +9,7 @@ import MessengerVerifyContact from "./MessengerVerifyContact";
 import MessengerVerifyMessage from "./MessengerVerifyMessage";
 import MessengerVerifyMediaMessage from "./MessengerVerifyMediaMessage";
 import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
+import MessengerMarkRead from "./MessengerMarkRead";
 
 // eslint-disable-next-line consistent-return
 const getMessageType = (message: any) => {
@@ -40,6 +41,7 @@ const MessengerHandleMessage = async (
 
         if (!messageObj?.message && messageObj.read) {
           // criar lógica para leitura ack
+          MessengerMarkRead(messageObj, channel.tenantId);
           return;
         }
 

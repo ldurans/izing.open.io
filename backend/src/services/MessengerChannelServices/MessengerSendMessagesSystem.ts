@@ -12,6 +12,7 @@ import socketEmit from "../../helpers/socketEmit";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
+import { sleepRandomTime } from "../../utils/sleepRandomTime";
 // import { sleepRandomTime } from "../../utils/sleepRandomTime";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
@@ -65,7 +66,9 @@ const MessengerSendMessagesSystem = async (
     const message: Message | any = messageItem;
     // let quotedMsgSerializedId: string | undefined;
     const { ticket } = message;
-    const chatId = ticket.contact.messenderId;
+    const chatId = ticket.contact.messengerId;
+    // const user = await messengerBot.getUserProfile(chatId);
+    // console.log(user);
 
     // if (message.quotedMsg) {
     //   quotedMsgSerializedId = `${message.quotedMsg.fromMe}_${contactNumber}@${typeGroup}.us_${message.quotedMsg.messageId}`;
@@ -107,11 +110,9 @@ const MessengerSendMessagesSystem = async (
             filename: message.mediaName
           });
         }
-        logger.info("sendMessage media");
       }
       if (["chat", "text"].includes(message.mediaType) && !message.mediaName) {
         sendedMessage = await messengerBot.sendText(chatId, message.body);
-        logger.info("sendMessage text");
       }
 
       // enviar old_id para substituir no front a mensagem corretamente
@@ -120,7 +121,7 @@ const MessengerSendMessagesSystem = async (
         ...sendedMessage,
         id: message.id,
         timestamp: message.timestamp,
-        messageId: sendedMessage.item_id,
+        messageId: sendedMessage.messageId,
         status: "sended",
         ack: 2
       };
@@ -138,7 +139,7 @@ const MessengerSendMessagesSystem = async (
           mediaUrl: message.mediaUrl, // necessário para enviar error no envio do socket - call size
           id: message.id,
           timestamp: message.timestamp,
-          messageId: sendedMessage.item_id,
+          messageId: sendedMessage.messageId,
           status: "sended",
           ack: 2
         }
@@ -148,10 +149,10 @@ const MessengerSendMessagesSystem = async (
       await SetTicketMessagesAsRead(ticket);
 
       // delay para processamento da mensagem
-      // await sleepRandomTime({
-      //   minMilliseconds: Number(process.env.MIN_SLEEP_INTERVAL || 2000),
-      //   maxMilliseconds: Number(process.env.MAX_SLEEP_INTERVAL || 5000)
-      // });
+      await sleepRandomTime({
+        minMilliseconds: Number(2000),
+        maxMilliseconds: Number(3000)
+      });
 
       // logger.info("sendMessage", sendedMessage.id.id);
     } catch (error) {

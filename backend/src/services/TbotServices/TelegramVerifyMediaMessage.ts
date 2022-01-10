@@ -11,6 +11,7 @@ import Ticket from "../../models/Ticket";
 import Message from "../../models/Message";
 import CreateMessageService from "../MessageServices/CreateMessageService";
 import { logger } from "../../utils/logger";
+import getQuotedForMessageId from "../../helpers/getQuotedForMessageId";
 
 const writeFileAsync = promisify(writeFile);
 
@@ -92,8 +93,17 @@ const VerifyMediaMessage = async (
   ticket: Ticket,
   contact: Contact
 ): Promise<Message> => {
+  let message;
+  let updateMessage: any = {};
+  message = ctx?.message;
+  updateMessage = ctx?.update;
+
+  // Verificar se mensagem foi editada.
+  if (!message && updateMessage) {
+    message = updateMessage?.edited_message;
+  }
   // const quotedMsg = await VerifyQuotedMessage(msg);
-  const mediaInfo = await getMediaInfo(ctx.message);
+  const mediaInfo = await getMediaInfo(message);
   const media = await ctx.telegram.getFile(mediaInfo.fileId);
 
   if (!media) {
@@ -106,27 +116,32 @@ const VerifyMediaMessage = async (
 
   const linkDownload = await ctx.telegram.getFileLink(mediaInfo.fileId);
   await downloadFile(linkDownload, pathFile);
-  // const media = await ctx.telegram.getFile(ctx.message?.);
 
-  // Sentry.captureException(err);
-  // logger.error(err);
+  let quotedMsgId;
+  if (message?.reply_to_message?.message_id) {
+    const messageQuoted = await getQuotedForMessageId(
+      message.reply_to_message.message_id,
+      ticket.tenantId
+    );
+    quotedMsgId = messageQuoted?.id || undefined;
+  }
 
   const messageData = {
-    messageId: String(ctx.message?.message_id),
+    messageId: String(message?.message_id),
     ticketId: ticket.id,
     contactId: fromMe ? undefined : contact.id,
-    body: ctx.message.text || ctx.message.caption || filename,
+    body: message.text || message.caption || filename,
     fromMe,
     read: fromMe,
     mediaUrl: filename,
     mediaType: mediaInfo.mimeType.split("/")[0],
-    quotedMsgId: "",
-    timestamp: ctx.message.date,
+    quotedMsgId,
+    timestamp: +message.date * 1000, // compatibilizar JS
     status: fromMe ? "sended" : "received"
   };
 
   await ticket.update({
-    lastMessage: ctx.message.text || ctx.message.caption || filename,
+    lastMessage: message.text || message.caption || filename,
     lastMessageAt: new Date().getTime(),
     answered: fromMe || false
   });

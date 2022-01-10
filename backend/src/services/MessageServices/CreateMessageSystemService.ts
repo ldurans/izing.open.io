@@ -2,7 +2,6 @@
 // import { promisify } from "util";
 // import { join } from "path";
 import * as Sentry from "@sentry/node";
-import { getUnixTime } from "date-fns";
 import { logger } from "../../utils/logger";
 // import MessageOffLine from "../../models/MessageOffLine";
 import Ticket from "../../models/Ticket";
@@ -66,7 +65,7 @@ const CreateMessageSystemService = async ({
     read: true,
     mediaType: "chat",
     mediaUrl: undefined,
-    timestamp: getUnixTime(new Date()),
+    timestamp: new Date().getTime(),
     quotedMsgId: msg.quotedMsg?.id,
     userId,
     scheduleDate,

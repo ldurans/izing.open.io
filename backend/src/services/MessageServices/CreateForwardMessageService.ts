@@ -1,4 +1,3 @@
-import { getUnixTime } from "date-fns";
 import { Op } from "sequelize";
 import socketEmit from "../../helpers/socketEmit";
 import Contact from "../../models/Contact";
@@ -62,7 +61,7 @@ const CreateForwardMessageService = async ({
     mediaType: message?.mediaType,
     mediaUrl: message?.mediaName,
     mediaName: message?.mediaName,
-    timestamp: getUnixTime(new Date()),
+    timestamp: new Date().getTime(),
     userId,
     scheduleDate: null,
     sendType: "chat",
