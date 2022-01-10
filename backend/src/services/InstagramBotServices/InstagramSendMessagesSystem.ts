@@ -75,7 +75,6 @@ const SendMessagesSystemWbot = async (
     const chatId = ticket.contact.instagramPK;
 
     const threadEntity = await instaBot.entity.directThread([chatId]);
-    console.log(threadEntity);
     // if (message.quotedMsg) {
     //   quotedMsgSerializedId = `${message.quotedMsg.fromMe}_${contactNumber}@${typeGroup}.us_${message.quotedMsg.messageId}`;
     // }
