@@ -40,11 +40,11 @@ const HandleMessage = async (ctx: Context, tbot: Session): Promise<void> => {
     whatsappId: tbot.id!,
     unreadMessages: fromMe ? 0 : 1,
     tenantId: channel.tenantId,
-    msg: { ...message, fromMe },
+    msg: { ...messageData, fromMe },
     channel: "telegram"
   });
 
-  if (!message?.text && chat?.id) {
+  if (!messageData?.text && chat?.id) {
     await VerifyMediaMessage(ctx, fromMe, ticket, contact);
   } else {
     await VerifyMessage(ctx, fromMe, ticket, contact);

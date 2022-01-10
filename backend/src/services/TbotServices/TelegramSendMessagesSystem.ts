@@ -138,7 +138,7 @@ const SendMessagesSystemWbot = async (
           ...message.dataValues, // necessário para enviar error no envio do socket - call size
           id: message.id,
           mediaUrl: message.mediaUrl,
-          timestamp: sendedMessage.date,
+          timestamp: messageToUpdate.timestamp,
           messageId: sendedMessage.message_id,
           status: "sended",
           ack: 2
