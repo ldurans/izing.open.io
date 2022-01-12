@@ -89,6 +89,16 @@ class Whatsapp extends Model<Whatsapp> {
   @Column
   instagramKey: string;
 
+  @Default(null)
+  @AllowNull
+  @Column
+  fbAppId: string;
+
+  @Default(null)
+  @AllowNull
+  @Column
+  fbPageId: string;
+
   @Default("whatsapp")
   @Column(DataType.ENUM("whatsapp", "telegram", "instagram"))
   type: string;

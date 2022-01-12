@@ -2,7 +2,7 @@ import { differenceInHours, parseJSON } from "date-fns";
 import Message from "../models/Message";
 import Ticket from "../models/Ticket";
 import { getTbot } from "../libs/tbot";
-import { getInstaBot } from "../libs/InstaBot";
+// import { getInstaBot } from "../libs/InstaBot";
 import GetWbotMessage from "./GetWbotMessage";
 import socketEmit from "./socketEmit";
 import AppError from "../errors/AppError";
@@ -54,11 +54,12 @@ const DeleteMessageSystem = async (
   }
 
   if (ticket.channel === "instagram") {
-    const instagramBot = await getInstaBot(ticket.whatsappId);
-    await instagramBot.directThread.deleteItem(
-      ticket.contact.instagramPK,
-      message.messageId
-    );
+    // const chatId = ticket.contact.instagramPK;
+    // const instaBot = await getInstaBot(ticket.whatsappId);
+    // const threadEntity = await instaBot.entity.directThread([chatId]);
+    // if (!threadEntity.threadId) return;
+    // await threadEntity.deleteItem(message.messageId);
+    return;
   }
 
   // não possui suporte para apagar mensagem

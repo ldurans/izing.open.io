@@ -45,10 +45,12 @@ module.exports = function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: ctx.dev ? {
-        API: 'http://localhost:3030'
+        API: 'http://localhost:3030',
+        fbAppId: '3237415623048660'
       }
         : {
-          API: 'https://api.izing.io'
+          API: 'https://api.izing.io',
+          fbAppId: '3237415623048660'
         },
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 

@@ -29,6 +29,69 @@
               @blur="$v.whatsapp.name.$touch"
             />
           </div>
+          <template v-if="whatsapp.type === 'messenger'">
+            <VFacebookLogin
+              :app-id="cFbAppId"
+              @sdk-init="handleSdkInit"
+            />
+            <div class="col-12 q-mt-md">
+              <c-input
+                outlined
+                label="ID Aplicativo"
+                v-model="whatsapp.fbAppId"
+              />
+            </div>
+            <div class="col-12 q-mt-md">
+              <c-input
+                outlined
+                label="ID Página"
+                v-model="whatsapp.fbPageId"
+              />
+            </div>
+            <div class="col-12 q-mt-md">
+              <c-input
+                outlined
+                label="Token"
+                v-model="whatsapp.tokenAPI"
+              />
+            </div>
+            <!-- <div class="col-12 q-mt-md">
+              <p class="text-weight-medium ellipsis-3-lines">
+                <span class="text-bold">Url Integração:
+                </span>
+                {{ cBaseUrlIntegração }}
+              </p>
+            </div> -->
+            <div class="col-12 q-mt-md ">
+              <q-btn
+                class="bg-padrao"
+                flat
+                color="blue-8"
+                icon="mdi-content-copy"
+                label="Copiar Url de integração com o Messenger"
+                @click="copy(cBaseUrlIntegração)"
+              >
+                <q-tooltip>
+                  Copiar URL Integração
+                </q-tooltip>
+              </q-btn>
+            </div>
+            <div class="col-12 q-mt-md">
+              <q-btn
+                class="bg-padrao"
+                flat
+                color="primary"
+                icon="mdi-content-copy"
+                label="Token de Verificação"
+                @click="copy(whatsapp.tokenHook)"
+              >
+                <q-tooltip>
+                  Copiar Token de Verificação
+                </q-tooltip>
+              </q-btn>
+            </div>
+
+          </template>
           <div
             class="col-12 q-mt-md"
             v-if="whatsapp.type === 'telegram'"
@@ -121,7 +184,6 @@
             v-model="whatsapp.isDefault"
             label="Padrão"
           /> -->
-
         </div>
       </q-card-section>
       <q-card-actions
@@ -152,8 +214,11 @@
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import { UpdateWhatsapp, CriarWhatsapp } from 'src/service/sessoesWhatsapp'
 import cInput from 'src/components/cInput.vue'
+import { copyToClipboard } from 'quasar'
+import VFacebookLogin from 'vue-facebook-login-component'
+
 export default {
-  components: { cInput },
+  components: { cInput, VFacebookLogin },
   name: 'ModalWhatsapp',
   props: {
     modalWhatsapp: {
@@ -171,6 +236,8 @@ export default {
   },
   data () {
     return {
+      FB: {},
+      FBscope: {},
       isPwd: true,
       isEdit: false,
       whatsapp: {
@@ -178,7 +245,10 @@ export default {
         isDefault: false,
         tokenTelegram: '',
         instagramUser: '',
-        instagramKey: ''
+        instagramKey: '',
+        fbAppId: '',
+        fbPageId: '',
+        tokenAPI: ''
       }
     }
   },
@@ -188,7 +258,24 @@ export default {
       isDefault: {}
     }
   },
+  computed: {
+    cBaseUrlIntegração () {
+      return this.whatsapp.UrlMessengerWebHook
+    },
+    cFbAppId () {
+      return process.env.fbAppId
+    }
+  },
   methods: {
+    copy (text) {
+      copyToClipboard(text)
+        .then(this.$notificarSucesso('URL de integração copiada!'))
+        .catch()
+    },
+    handleSdkInit ({ FB, scope }) {
+      this.FB = FB
+      this.FBscope = scope
+    },
     fecharModal () {
       this.whatsapp = {
         name: '',

@@ -16,10 +16,9 @@ export const initMessengerBot = async (
   try {
     // const io = getIO();
 
-    const accessToken =
-      "EAAuAaZAAzvdQBAK4oFjybPwiWPlX0mdRMm3HVobVWfVx93LYa7DJ0ICNdrkFVxCdgWWc1d8SmTl4YkzY50SBNmhbP8FpQnw3RKcgltWjqmgzO89MhBU6qrQQTuZCk2lwS785AApwvkpV6yCexhgUenCYcSJvD8jbrR9VescAtsO3lXIN6K";
-    const appId = "3237415623048660";
-    const appSecret = "3266b8c98ac59f3e957a5efeaaa13500";
+    const accessToken = connection.tokenAPI;
+    const appId = connection.fbAppId;
+    // const appSecret = "3266b8c98ac59f3e957a5efeaaa13500";
     // const password = "";
     if (!accessToken) {
       throw new Error("Not token configured");
@@ -31,8 +30,8 @@ export const initMessengerBot = async (
 
     const messengerClient = new MessengerClient({
       accessToken,
-      appId,
-      appSecret
+      appId
+      // appSecret
       // version: '6.0',
     }) as Session;
 
