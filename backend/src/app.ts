@@ -101,6 +101,9 @@ app.use(
     origin(origin, callback) {
       // allow requests with no origin
       // (like mobile apps or curl requests)
+      if (process.env.NODE_ENV === "dev") {
+        return callback(null, true);
+      }
       const allowedOrigins = [
         process.env.FRONTEND_URL || "localhost",
         process.env.ADMIN_FRONTEND_URL || "localhost"

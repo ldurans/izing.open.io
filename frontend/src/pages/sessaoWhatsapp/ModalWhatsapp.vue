@@ -33,7 +33,11 @@
             <VFacebookLogin
               :app-id="cFbAppId"
               @sdk-init="handleSdkInit"
+              @login="fbLogin"
+              :login-options="FBLoginOptions"
+              version="v12.0"
             />
+
             <div class="col-12 q-mt-md">
               <c-input
                 outlined
@@ -216,6 +220,7 @@ import { UpdateWhatsapp, CriarWhatsapp } from 'src/service/sessoesWhatsapp'
 import cInput from 'src/components/cInput.vue'
 import { copyToClipboard } from 'quasar'
 import VFacebookLogin from 'vue-facebook-login-component'
+import { FetchFacebookPages } from 'src/service/facebook'
 
 export default {
   components: { cInput, VFacebookLogin },
@@ -238,6 +243,14 @@ export default {
     return {
       FB: {},
       FBscope: {},
+      FBLoginOptions: {
+        scope:
+          'pages_manage_metadata,pages_messaging,instagram_basic,pages_show_list,pages_read_engagement,instagram_manage_messages'
+      },
+      FBPageList: [],
+      fbSelectedPage: { name: null, id: null },
+      fbPageName: '',
+      fbUserToken: '',
       isPwd: true,
       isEdit: false,
       whatsapp: {
@@ -272,10 +285,50 @@ export default {
         .then(this.$notificarSucesso('URL de integração copiada!'))
         .catch()
     },
-    handleSdkInit ({ FB, scope }) {
+    handleSdkInit ({ FB }) {
       this.FB = FB
-      this.FBscope = scope
+      // this.FBscope = scope
     },
+    fbLogin (login) {
+      if (login.status === 'connected') {
+        this.fbFetchPages(
+          login.authResponse.accessToken,
+          login.authResponse.userID
+        )
+        console.log('fbLogin in connected')
+      } else if (login.status === 'not_authorized') {
+        // The person is logged into Facebook, but not your app.
+        console.log('fbLogin in not_authorized')
+      } else {
+        // The person is not logged into Facebook, so we're not sure if
+        // they are logged into this app or not.
+        console.log('fbLogin in not logged')
+      }
+    },
+    async fbFetchPages (_token, _accountId) {
+      console.log('fbFetchPages', _token, _accountId)
+      try {
+        const response = await FetchFacebookPages({
+          userToken: _token,
+          accountId: _accountId
+        })
+        const {
+          data: { data }
+        } = response
+        this.FBPageList = data.page_details
+        this.fbUserToken = data.user_access_token
+      } catch (error) {
+        // Ignore error
+      }
+    },
+    channelParams () {
+      return {
+        fbUserToken: this.fbUserToken,
+        fbPageAccessToken: this.selectedPage.access_token,
+        fbPageId: this.selectedPage.id
+      }
+    },
+
     fecharModal () {
       this.whatsapp = {
         name: '',

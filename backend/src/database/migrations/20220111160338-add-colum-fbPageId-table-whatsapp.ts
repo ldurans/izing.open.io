@@ -8,8 +8,8 @@ module.exports = {
         allowNull: true,
         defaultValue: null
       }),
-      queryInterface.addColumn("Whatsapps", "fbAppId", {
-        type: DataTypes.TEXT,
+      queryInterface.addColumn("Whatsapps", "fbObject", {
+        type: DataTypes.JSONB,
         allowNull: true,
         defaultValue: null
       })
@@ -19,7 +19,7 @@ module.exports = {
   down: (queryInterface: QueryInterface) => {
     return Promise.all([
       queryInterface.removeColumn("Whatsapps", "fbPageId"),
-      queryInterface.removeColumn("Whatsapps", "fbAppId")
+      queryInterface.removeColumn("Whatsapps", "fbObject")
     ]);
   }
 };

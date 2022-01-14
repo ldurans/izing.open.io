@@ -141,6 +141,12 @@ class Whatsapp extends Model<Whatsapp> {
   @Column(DataType.TEXT)
   tokenHook: string;
 
+  @Default(null)
+  @AllowNull
+  @Column(DataType.JSONB)
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  fbObject: object;
+
   @Column(DataType.VIRTUAL)
   get UrlWabaWebHook(): string | null {
     const key = this.getDataValue("tokenHook");
