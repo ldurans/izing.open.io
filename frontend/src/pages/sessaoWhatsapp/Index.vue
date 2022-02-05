@@ -71,46 +71,71 @@
           <q-separator />
           <q-card-section>
             <ItemStatusChannel :item="item" />
+            <template v-if="item.type === 'messenger'">
+              <div class="text-body2 text-bold q-mt-sm">
+                <span> Página: </span>
+                {{ item.fbObject && item.fbObject.name || 'Nenhuma página configurada.' }}
+              </div>
+            </template>
           </q-card-section>
           <q-separator />
           <q-card-actions
             class="q-pa-md q-pt-none"
             align="center"
           >
-            <q-btn
-              v-if="item.status == 'DESTROYED' || item.status == 'qrcode'"
-              color="blue-5"
-              label="Novo QR Code"
-              @click="handleRequestNewQrCode(item, 'btn-qrCode')"
-              icon-right="watch_later"
-              :disable="!isAdmin"
-            />
-            <q-btn-group
-              v-if="item.status == 'DISCONNECTED'"
-              outline
-            >
+            <template v-if="item.type !== 'messenger'">
               <q-btn
-                outline
-                color="black"
-                label="Conectar"
-                @click="handleStartWhatsAppSession(item.id)"
+                v-if="item.status == 'DESTROYED' || item.status == 'qrcode'"
+                color="blue-5"
+                label="Novo QR Code"
+                @click="handleRequestNewQrCode(item, 'btn-qrCode')"
+                icon-right="watch_later"
+                :disable="!isAdmin"
               />
-            </q-btn-group>
-            <q-btn
-              v-if="['CONNECTED', 'PAIRING', 'TIMEOUT', 'OPENING'].includes(item.status)"
-              color="negative"
-              label="Desconectar"
-              outline
-              @click="handleDisconectWhatsSession(item.id)"
-              :disable="!isAdmin"
-            />
-            <q-btn
-              v-if="item.status == 'OPENING'"
-              disable
-              :loading="true"
-              color="grey"
-              label="Conectando"
-            />
+              <q-btn-group
+                v-if="item.status == 'DISCONNECTED'"
+                outline
+              >
+                <q-btn
+                  outline
+                  color="black"
+                  label="Conectar"
+                  @click="handleStartWhatsAppSession(item.id)"
+                />
+              </q-btn-group>
+              <q-btn
+                v-if="['CONNECTED', 'PAIRING', 'TIMEOUT', 'OPENING'].includes(item.status)"
+                color="negative"
+                label="Desconectar"
+                outline
+                @click="handleDisconectWhatsSession(item.id)"
+                :disable="!isAdmin"
+              />
+              <q-btn
+                v-if="item.status == 'OPENING'"
+                disable
+                :loading="true"
+                color="grey"
+                label="Conectando"
+              />
+            </template>
+            <template v-if="item.type === 'messenger'">
+              <VFacebookLogin
+                :app-id="cFbAppId"
+                @sdk-init="handleSdkInit"
+                @login="login => fbLogin(login, item)"
+                @logout="logout => fbLogout(item)"
+                :login-options="FBLoginOptions"
+                version="v12.0"
+              >
+                <template slot="login">
+                  {{ item.status === 'CONNECTED' ? 'Editar' : 'Conectar' }}
+                </template>
+                <template slot="logout">
+                  {{ item.status === 'DISCONNECTED' ? 'Conectar' : 'Editar' }}
+                </template>
+              </VFacebookLogin>
+            </template>
           </q-card-actions>
         </q-card>
       </template>
@@ -140,6 +165,8 @@ import ModalQrCode from './ModalQrCode'
 import { mapGetters } from 'vuex'
 import ModalWhatsapp from './ModalWhatsapp'
 import ItemStatusChannel from './ItemStatusChannel'
+import VFacebookLogin from 'vue-facebook-login-component'
+import { FetchFacebookPages, LogoutFacebookPages } from 'src/service/facebook'
 
 const userLogado = JSON.parse(localStorage.getItem('usuario'))
 
@@ -148,7 +175,8 @@ export default {
   components: {
     ModalQrCode,
     ModalWhatsapp,
-    ItemStatusChannel
+    ItemStatusChannel,
+    VFacebookLogin
   },
   data () {
     return {
@@ -206,15 +234,71 @@ export default {
           field: 'acoes',
           align: 'center'
         }
-      ]
+      ],
+      FB: {},
+      FBscope: {},
+      FBLoginOptions: {
+        scope:
+          'pages_manage_metadata,pages_messaging,instagram_basic,pages_show_list,pages_read_engagement,instagram_manage_messages'
+      },
+      FBPageList: [],
+      fbSelectedPage: { name: null, id: null },
+      fbPageName: '',
+      fbUserToken: ''
     }
   },
   computed: {
-    ...mapGetters(['whatsapps'])
+    ...mapGetters(['whatsapps']),
+    cFbAppId () {
+      return process.env.fbAppId
+    }
   },
   methods: {
     formatarData (data, formato) {
       return format(parseISO(data), formato, { locale: pt })
+    },
+    handleSdkInit ({ FB }) {
+      this.FB = FB
+      // try login
+
+      // this.FBscope = scope
+    },
+    async fbLogout (whatsapp) {
+      console.log('fbLogout')
+      await LogoutFacebookPages(whatsapp)
+    },
+    fbLogin (login, channel) {
+      if (login?.status === 'connected') {
+        this.fbFetchPages(
+          login.authResponse.accessToken,
+          login.authResponse.userID,
+          channel
+        )
+        console.log('fbLogin in connected')
+      } else if (login?.status === 'not_authorized') {
+        // The person is logged into Facebook, but not your app.
+        console.log('fbLogin in not_authorized')
+      } else {
+        // The person is not logged into Facebook, so we're not sure if
+        // they are logged into this app or not.
+        console.log('fbLogin in not logged')
+      }
+    },
+    async fbFetchPages (_token, _accountId, channel) {
+      try {
+        const response = await FetchFacebookPages({
+          whatsapp: channel,
+          userToken: _token,
+          accountId: _accountId
+        })
+        const {
+          data: { data }
+        } = response
+        this.FBPageList = data.page_details
+        this.fbUserToken = data.user_access_token
+      } catch (error) {
+        // Ignore error
+      }
     },
     handleOpenQrModal (channel) {
       this.whatsappSelecionado = channel

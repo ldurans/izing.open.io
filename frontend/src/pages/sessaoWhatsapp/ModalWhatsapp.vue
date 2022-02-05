@@ -38,63 +38,6 @@
               version="v12.0"
             />
 
-            <div class="col-12 q-mt-md">
-              <c-input
-                outlined
-                label="ID Aplicativo"
-                v-model="whatsapp.fbAppId"
-              />
-            </div>
-            <div class="col-12 q-mt-md">
-              <c-input
-                outlined
-                label="ID Página"
-                v-model="whatsapp.fbPageId"
-              />
-            </div>
-            <div class="col-12 q-mt-md">
-              <c-input
-                outlined
-                label="Token"
-                v-model="whatsapp.tokenAPI"
-              />
-            </div>
-            <!-- <div class="col-12 q-mt-md">
-              <p class="text-weight-medium ellipsis-3-lines">
-                <span class="text-bold">Url Integração:
-                </span>
-                {{ cBaseUrlIntegração }}
-              </p>
-            </div> -->
-            <div class="col-12 q-mt-md ">
-              <q-btn
-                class="bg-padrao"
-                flat
-                color="blue-8"
-                icon="mdi-content-copy"
-                label="Copiar Url de integração com o Messenger"
-                @click="copy(cBaseUrlIntegração)"
-              >
-                <q-tooltip>
-                  Copiar URL Integração
-                </q-tooltip>
-              </q-btn>
-            </div>
-            <div class="col-12 q-mt-md">
-              <q-btn
-                class="bg-padrao"
-                flat
-                color="primary"
-                icon="mdi-content-copy"
-                label="Token de Verificação"
-                @click="copy(whatsapp.tokenHook)"
-              >
-                <q-tooltip>
-                  Copiar Token de Verificação
-                </q-tooltip>
-              </q-btn>
-            </div>
-
           </template>
           <div
             class="col-12 q-mt-md"
@@ -219,11 +162,9 @@ import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import { UpdateWhatsapp, CriarWhatsapp } from 'src/service/sessoesWhatsapp'
 import cInput from 'src/components/cInput.vue'
 import { copyToClipboard } from 'quasar'
-import VFacebookLogin from 'vue-facebook-login-component'
-import { FetchFacebookPages } from 'src/service/facebook'
 
 export default {
-  components: { cInput, VFacebookLogin },
+  components: { cInput },
   name: 'ModalWhatsapp',
   props: {
     modalWhatsapp: {
@@ -241,16 +182,6 @@ export default {
   },
   data () {
     return {
-      FB: {},
-      FBscope: {},
-      FBLoginOptions: {
-        scope:
-          'pages_manage_metadata,pages_messaging,instagram_basic,pages_show_list,pages_read_engagement,instagram_manage_messages'
-      },
-      FBPageList: [],
-      fbSelectedPage: { name: null, id: null },
-      fbPageName: '',
-      fbUserToken: '',
       isPwd: true,
       isEdit: false,
       whatsapp: {
@@ -259,8 +190,6 @@ export default {
         tokenTelegram: '',
         instagramUser: '',
         instagramKey: '',
-        fbAppId: '',
-        fbPageId: '',
         tokenAPI: ''
       }
     }
@@ -274,9 +203,6 @@ export default {
   computed: {
     cBaseUrlIntegração () {
       return this.whatsapp.UrlMessengerWebHook
-    },
-    cFbAppId () {
-      return process.env.fbAppId
     }
   },
   methods: {
@@ -284,49 +210,6 @@ export default {
       copyToClipboard(text)
         .then(this.$notificarSucesso('URL de integração copiada!'))
         .catch()
-    },
-    handleSdkInit ({ FB }) {
-      this.FB = FB
-      // this.FBscope = scope
-    },
-    fbLogin (login) {
-      if (login.status === 'connected') {
-        this.fbFetchPages(
-          login.authResponse.accessToken,
-          login.authResponse.userID
-        )
-        console.log('fbLogin in connected')
-      } else if (login.status === 'not_authorized') {
-        // The person is logged into Facebook, but not your app.
-        console.log('fbLogin in not_authorized')
-      } else {
-        // The person is not logged into Facebook, so we're not sure if
-        // they are logged into this app or not.
-        console.log('fbLogin in not logged')
-      }
-    },
-    async fbFetchPages (_token, _accountId) {
-      console.log('fbFetchPages', _token, _accountId)
-      try {
-        const response = await FetchFacebookPages({
-          userToken: _token,
-          accountId: _accountId
-        })
-        const {
-          data: { data }
-        } = response
-        this.FBPageList = data.page_details
-        this.fbUserToken = data.user_access_token
-      } catch (error) {
-        // Ignore error
-      }
-    },
-    channelParams () {
-      return {
-        fbUserToken: this.fbUserToken,
-        fbPageAccessToken: this.selectedPage.access_token,
-        fbPageId: this.selectedPage.id
-      }
     },
 
     fecharModal () {

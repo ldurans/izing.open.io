@@ -1,5 +1,6 @@
 /* eslint-disable eqeqeq */
 import { MessengerClient } from "messaging-api-messenger";
+import process from "process";
 import AppError from "../errors/AppError";
 import Whatsapp from "../models/Whatsapp";
 import { logger } from "../utils/logger";
@@ -17,7 +18,7 @@ export const initMessengerBot = async (
     // const io = getIO();
 
     const accessToken = connection.tokenAPI;
-    const appId = connection.fbAppId;
+    const appId = process.env.FACEBOOK_APP_ID;
     // const appSecret = "3266b8c98ac59f3e957a5efeaaa13500";
     // const password = "";
     if (!accessToken) {

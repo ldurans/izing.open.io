@@ -7,3 +7,11 @@ export function FetchFacebookPages (data) {
     data
   })
 }
+
+export function LogoutFacebookPages (data) {
+  return request({
+    url: '/fb/logout-pages',
+    method: 'post',
+    data
+  })
+}

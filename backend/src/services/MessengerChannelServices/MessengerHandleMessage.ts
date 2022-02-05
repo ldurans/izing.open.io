@@ -1,8 +1,5 @@
 import { logger } from "../../utils/logger";
 import FindOrCreateTicketService from "../TicketServices/FindOrCreateTicketService";
-import ShowWhatsAppService from "../WhatsappService/ShowWhatsAppService";
-// import VerifyMediaMessage360 from "./VerifyMediaMessage360";
-// import VerifyMessage360 from "./VerifyMessage360";
 import { MessengerRequestBody } from "./MessengerTypes";
 import { getMessengerBot } from "../../libs/messengerBot";
 import MessengerVerifyContact from "./MessengerVerifyContact";
@@ -10,6 +7,7 @@ import MessengerVerifyMessage from "./MessengerVerifyMessage";
 import MessengerVerifyMediaMessage from "./MessengerVerifyMediaMessage";
 import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
 import MessengerMarkRead from "./MessengerMarkRead";
+import MessengerShowChannel from "./MessengerShowChannel";
 
 // eslint-disable-next-line consistent-return
 const getMessageType = (message: any) => {
@@ -25,8 +23,7 @@ const getMessageType = (message: any) => {
 };
 
 const MessengerHandleMessage = async (
-  context: MessengerRequestBody,
-  channelId: number | string
+  context: MessengerRequestBody
 ): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     (async () => {
@@ -34,10 +31,16 @@ const MessengerHandleMessage = async (
       let contact;
       const unreadMessages = 1;
       try {
-        const messagerBot = await getMessengerBot(channelId);
-        channel = await ShowWhatsAppService({ id: channelId });
+        if (context.object !== "page") return;
+
         const entry: any = context.entry.shift();
         const messageObj = entry?.messaging.shift();
+
+        channel = await MessengerShowChannel({ fbPageId: entry.id });
+
+        if (!channel) return;
+
+        const messagerBot = await getMessengerBot(channel.id);
 
         if (!messageObj?.message && messageObj.read) {
           // criar lógica para leitura ack

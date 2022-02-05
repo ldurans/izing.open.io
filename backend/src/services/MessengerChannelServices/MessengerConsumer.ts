@@ -9,8 +9,8 @@ const MessengerConsumer = async () => {
   rabbit.consume("messenger", message => {
     const content = JSON.parse(message.content.toString());
     const decode: any = verify(content.token, authConfig.secret);
-    console.log(content.messages, decode.whatsappId);
-    MessengerHandleMessage(content.messages, decode.whatsappId);
+    if (!decode) return;
+    MessengerHandleMessage(content.messages);
   });
 };
 

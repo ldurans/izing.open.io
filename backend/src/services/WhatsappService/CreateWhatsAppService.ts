@@ -12,7 +12,6 @@ interface Request {
   instagramKey?: string;
   wabaBSP?: string;
   tokenAPI?: string;
-  fbAppId?: string;
   fbPageId?: string;
   type: "waba" | "instagram" | "telegram" | "whatsapp" | "messenger";
 }
@@ -32,7 +31,6 @@ const CreateWhatsAppService = async ({
   type,
   wabaBSP,
   tokenAPI,
-  fbAppId,
   fbPageId,
   isDefault = false
 }: Request): Promise<Response> => {
@@ -75,7 +73,6 @@ const CreateWhatsAppService = async ({
     type,
     wabaBSP,
     tokenAPI,
-    fbAppId,
     fbPageId
   });
 

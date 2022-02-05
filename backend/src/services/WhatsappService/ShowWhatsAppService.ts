@@ -28,7 +28,6 @@ const ShowWhatsAppService = async ({
     "tenantId",
     "wabaBSP",
     "tokenAPI",
-    "fbAppId",
     "fbPageId"
   ];
   if (isInternal) {

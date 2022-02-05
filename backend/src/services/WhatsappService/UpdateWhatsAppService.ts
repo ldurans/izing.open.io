@@ -16,7 +16,6 @@ interface WhatsappData {
   type?: "waba" | "instagram" | "telegram" | "whatsapp" | "messenger";
   wabaBSP?: string;
   tokenAPI?: string;
-  fbAppId?: string;
   fbPageId?: string;
 }
 
@@ -53,7 +52,6 @@ const UpdateWhatsAppService = async ({
     type,
     wabaBSP,
     tokenAPI,
-    fbAppId,
     fbPageId
   } = whatsappData;
 
@@ -90,7 +88,6 @@ const UpdateWhatsAppService = async ({
       type,
       wabaBSP,
       tokenAPI,
-      fbAppId,
       fbPageId
     };
 

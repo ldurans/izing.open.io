@@ -92,15 +92,16 @@ class Whatsapp extends Model<Whatsapp> {
   @Default(null)
   @AllowNull
   @Column
-  fbAppId: string;
+  fbPageId: string;
 
   @Default(null)
   @AllowNull
-  @Column
-  fbPageId: string;
+  @Column(DataType.JSONB)
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  fbObject: object;
 
   @Default("whatsapp")
-  @Column(DataType.ENUM("whatsapp", "telegram", "instagram"))
+  @Column(DataType.ENUM("whatsapp", "telegram", "instagram", "messenger"))
   type: string;
 
   @CreatedAt
@@ -140,12 +141,6 @@ class Whatsapp extends Model<Whatsapp> {
   @AllowNull
   @Column(DataType.TEXT)
   tokenHook: string;
-
-  @Default(null)
-  @AllowNull
-  @Column(DataType.JSONB)
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  fbObject: object;
 
   @Column(DataType.VIRTUAL)
   get UrlWabaWebHook(): string | null {
