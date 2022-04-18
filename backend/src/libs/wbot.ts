@@ -50,7 +50,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       }
 
       const wbot = new Client({
-        session: sessionCfg,
+        // session: sessionCfg,
         authStrategy: new LocalAuth({ clientId: `wbot_${whatsapp.id}` }),
         puppeteer: {
           // headless: false,

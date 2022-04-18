@@ -4,7 +4,7 @@ import authConfig from "../../config/auth";
 import MessengerHandleMessage from "./MessengerHandleMessage";
 
 const MessengerConsumer = async () => {
-  const rabbit = new RabbitmqServer(process.env.URL_AMQP || "");
+  const rabbit = new RabbitmqServer(process.env.AMQP_URL || "");
   await rabbit.start();
   rabbit.consume("messenger", message => {
     const content = JSON.parse(message.content.toString());

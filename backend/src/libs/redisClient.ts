@@ -3,9 +3,9 @@ import Redis from "ioredis";
 // import { logger } from "../utils/logger";
 
 const redisClient = new Redis({
-  port: Number(process.env.IO_REDIS_PORT) || 6379, // Redis port
-  host: process.env.IO_REDIS_SERVER || "localhost",
-  db: Number(process.env.IO_REDIS_DB_SESSION) || 9
+  port: Number(process.env.REDIS_PORT) || 6379, // Redis port
+  host: process.env.REDIS_HOST || "localhost",
+  db: Number(process.env.REDIS_DB_SESSION) || 9
   // host: "127.0.0.1", // Redis host
   // family: 4 // 4 (IPv4) or 6 (IPv6)
 });

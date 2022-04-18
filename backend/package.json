@@ -63,7 +63,7 @@
     "telegraf": "^4.0.3",
     "telegraf-session-redis": "^5.1.0",
     "uuid": "^8.3.2",
-    "whatsapp-web.js": "^1.16.4",
+    "whatsapp-web.js": "^1.16.5",
     "winston": "^3.3.3",
     "yup": "^0.29.3"
   },

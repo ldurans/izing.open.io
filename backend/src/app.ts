@@ -61,11 +61,11 @@ app.use(
 Queue.process();
 setQueues(Queue.queues.map((q: any) => new BullAdapter(q.bull)));
 
-if (process.env.URL_AMQP) {
+if (process.env.AMQP_URL) {
   (async () => {
-    const rabbit = new RabbitmqServer(process.env.URL_AMQP || "");
+    const rabbit = new RabbitmqServer(process.env.AMQP_URL || "");
     await rabbit.start();
-    logger.info("Rabbit started", process.env.URL_AMQP);
+    logger.info("Rabbit started", process.env.AMQP_URL);
     app.rabbit = rabbit;
   })();
   Consumer360();
