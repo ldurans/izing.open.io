@@ -343,11 +343,7 @@ export default {
   data () {
     return {
       username,
-      domainExperimentalsMenus: [
-        '@wchats.com.br',
-        '@izing.io',
-        '@sispolos.com.br'
-      ],
+      domainExperimentalsMenus: [ '@wchats.com.br', '@izing.io' ],
       miniState: true,
       userProfile: 'user',
       modalUsuario: false,
