@@ -1005,7 +1005,7 @@ export default {
       const data = { ...mensagem }
       this.$q.dialog({
         title: 'Atenção!! Deseja realmente deletar a mensagem? ',
-        message: 'Mensagens antigas não serão apagadas no whatsapp.',
+        message: 'Mensagens antigas não serão apagadas no cliente.',
         cancel: {
           label: 'Não',
           color: 'primary',

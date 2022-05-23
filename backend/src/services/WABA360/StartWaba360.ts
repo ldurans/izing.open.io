@@ -35,9 +35,9 @@ export const StartWaba360 = async (connection: Whatsapp): Promise<void> => {
     await SetWebHookUrl({
       // eslint-disable-next-line no-bitwise
       url: connection.UrlWabaWebHook || "",
-      apiKey: connection.wabaApiKey
+      apiKey: connection.tokenAPI
     });
-    const phoneNumber = ""; // await GetRegisteredPhone(connection.wabaApiKey);
+    const phoneNumber = ""; // await GetRegisteredPhone(connection.tokenAPI);
     logger.info(`Conexão Waba 360 iniciada | Empresa: ${connection.tenantId}`);
     await connection.update({ status: "CONNECTED", number: phoneNumber });
     setInterval(

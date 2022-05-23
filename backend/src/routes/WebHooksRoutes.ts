@@ -11,4 +11,14 @@ webHooksRoutes.post(
   HooksController.ReceivedRequest360
 );
 
+webHooksRoutes.get(
+  "/fb-messenger-hooks/:token",
+  HooksController.CheckServiceMessenger
+);
+
+webHooksRoutes.post(
+  "/fb-messenger-hooks/:token",
+  HooksController.ReceivedRequestMessenger
+);
+
 export default webHooksRoutes;

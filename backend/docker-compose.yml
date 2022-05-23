@@ -1,78 +1,91 @@
 version: '3'
 
 services:
-  postgres:
-    image: postgres:12
-    container_name: wchats-postgres
-    hostname: wchats-postgres
-    restart: always
-    volumes:
-      - /var/data/postgres:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=wchats
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=marina@0509
-    networks: 
-      - wchats-network
-  
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: wchats-pgadmin4
-    hostname: wchats-pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "durans@wchats.com.br"
-      PGADMIN_DEFAULT_PASSWORD: "marina@0509"
-    depends_on:
-      - postgres
-    networks:
-      - wchats-network
-
-  redis:
-    image: redis:alpine
-    container_name: wchats-redis
-    hostname: wchats-redis
-    restart: always
-    command: ["sh", "-c", "redis-server --requirepass \"$DB_PASS\""]
-    env_file: .env
-    volumes:
-      - /var/data/redis:/data
-    networks: 
-      - wchats-network
-
-  wchats-server:
-    build: 
+  izing-backend:
+    build:
       context: .
-      dockerfile: Dockerfile
-    restart: always
-    env_file: .env
-    image: wchats-server
-    container_name: wchats-server
-    hostname: wchats-server
-    # command: bash -c "npm run build "
-    entrypoint: docker-entrypoint.sh npm run build
-    # && pm2 start dist/server.js --name wchats-backend"
-    # entrypoint: docker-entrypoint-server.sh
-    networks: 
-      - wchats-network
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    stdin_open: true
     tty: true
+    # command: ./start_production
+    ports:
+      - ${PROXY_PORT:-8080}:3000
+    volumes:
+      - ".:/usr/src/app"
+      - "/home/dev/izing-media:/usr/src/app/public/"
+    networks:
+      - izing_network
+      - izing_db_network
+    depends_on:
+      - izing-redis
+      - izing-db
+      - izing-rabbitmq
 
-  # nginx:
-  #   build: 
-  #     context: ./wppconnect-nginx
-  #     dockerfile: Dockerfile
-  #   container_name: nginx
-  #   entrypoint: nginx -g "daemon off;"
-  #   ports:
-  #     - "8080:8080" #chatwoot
-  #     - "8081:8081" #wppconnect
-  #     - "8082:8082" #pgadmin
-  #     - "8083:8083" #redis
-  #   networks: 
-  #     - wpp-network
-  #   depends_on:
-  #     - wppconnect-server
+  izing-redis:
+    container_name: "izing-redis"
+    image: 'redis:latest'
+    restart: always
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env
+    volumes:
+      - '/home/dev/izing/redis:/data'
+    networks:
+      - izing_network
 
-networks: 
-  wchats-network:
-    # name: wchats-network
+   # database containers, one for each db
+  izing-fixPermissionsPostregres:
+    image: 'bitnami/postgresql:14'
+    user: root
+    command: chown -R 1001:1001 /bitnami/postgresql
+    volumes:
+      - "/home/dev/izing/pg:/bitnami/postgresql/data"
+
+  izing-db:
+    image: 'bitnami/postgresql:14'
+    restart: always
+    container_name: "izing-db"
+    env_file:
+      - .env
+    volumes:
+      - "/home/dev/izing/pg:/bitnami/postgresql/data"
+    ports:
+      - "5432:5432"
+    depends_on:
+      - izing-fixPermissionsPostregres
+    networks:
+      - izing_db_network
+
+
+  izing-rabbitmq:
+    image: rabbitmq:3-management
+    hostname: izing-rabbit
+    restart: always
+    env_file:
+      - ./.env
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    volumes:
+      # - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+      # - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      # - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+      - /home/dev/izing/rabbitmq/data/:/var/lib/rabbitmq/
+      - /home/dev/izing/rabbitmq/logs/:/var/log/rabbitmq/log
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - izing_network
+
+
+networks:
+  izing_network:
+    driver: bridge
+  izing_db_network:
     driver: bridge

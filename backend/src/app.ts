@@ -19,6 +19,7 @@ import { logger } from "./utils/logger";
 import Queue from "./libs/Queue";
 import RabbitmqServer from "./libs/rabbitmq-server";
 import Consumer360 from "./services/WABA360/Consumer360";
+import MessengerConsumer from "./services/MessengerChannelServices/MessengerConsumer";
 // import AMI from "./libs/AMI";
 // const pino = require("pino-http")();
 
@@ -60,14 +61,15 @@ app.use(
 Queue.process();
 setQueues(Queue.queues.map((q: any) => new BullAdapter(q.bull)));
 
-if (process.env.URL_AMQP) {
+if (process.env.AMQP_URL) {
   (async () => {
-    const rabbit = new RabbitmqServer(process.env.URL_AMQP || "");
+    const rabbit = new RabbitmqServer(process.env.AMQP_URL || "");
     await rabbit.start();
-    logger.info("Rabbit started", process.env.URL_AMQP);
+    logger.info("Rabbit started", process.env.AMQP_URL);
     app.rabbit = rabbit;
   })();
   Consumer360();
+  MessengerConsumer();
 }
 
 if (process.env.NODE_ENV === "dev") {
@@ -99,6 +101,9 @@ app.use(
     origin(origin, callback) {
       // allow requests with no origin
       // (like mobile apps or curl requests)
+      if (process.env.NODE_ENV === "dev") {
+        return callback(null, true);
+      }
       const allowedOrigins = [
         process.env.FRONTEND_URL || "localhost",
         process.env.ADMIN_FRONTEND_URL || "localhost"

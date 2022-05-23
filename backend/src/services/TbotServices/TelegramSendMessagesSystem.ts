@@ -61,35 +61,57 @@ const SendMessagesSystemWbot = async (
     // let quotedMsgSerializedId: string | undefined;
     const { ticket } = message;
     const chatId = ticket.contact.telegramId;
-    // if (message.quotedMsg) {
-    //   quotedMsgSerializedId = `${message.quotedMsg.fromMe}_${contactNumber}@${typeGroup}.us_${message.quotedMsg.messageId}`;
-    // }
+    const extraInfo: any = {};
+
+    if (message.quotedMsg) {
+      extraInfo.reply_to_message_id = message.quotedMsg.messageId;
+    }
 
     try {
       if (!["chat", "text"].includes(message.mediaType) && message.mediaName) {
         const customPath = join(__dirname, "..", "..", "..", "public");
         const mediaPath = join(customPath, message.mediaName);
         if (message.mediaType === "audio" || message.mediaType === "ptt") {
-          sendedMessage = await tbot.telegram.sendVoice(chatId, {
-            source: mediaPath
-          });
+          sendedMessage = await tbot.telegram.sendVoice(
+            chatId,
+            {
+              source: mediaPath
+            },
+            extraInfo
+          );
         } else if (message.mediaType === "image") {
-          sendedMessage = await tbot.telegram.sendPhoto(chatId, {
-            source: mediaPath
-          });
+          sendedMessage = await tbot.telegram.sendPhoto(
+            chatId,
+            {
+              source: mediaPath
+            },
+            extraInfo
+          );
         } else if (message.mediaType === "video") {
-          sendedMessage = await tbot.telegram.sendVideo(chatId, {
-            source: mediaPath
-          });
+          sendedMessage = await tbot.telegram.sendVideo(
+            chatId,
+            {
+              source: mediaPath
+            },
+            extraInfo
+          );
         } else {
-          sendedMessage = await tbot.telegram.sendDocument(chatId, {
-            source: mediaPath
-          });
+          sendedMessage = await tbot.telegram.sendDocument(
+            chatId,
+            {
+              source: mediaPath
+            },
+            extraInfo
+          );
         }
 
         logger.info("sendMessage media");
       } else {
-        sendedMessage = await tbot.telegram.sendMessage(chatId, message.body);
+        sendedMessage = await tbot.telegram.sendMessage(
+          chatId,
+          message.body,
+          extraInfo
+        );
         logger.info("sendMessage text");
       }
 
@@ -98,7 +120,7 @@ const SendMessagesSystemWbot = async (
         ...message,
         ...sendedMessage,
         id: message.id,
-        timestamp: sendedMessage.date,
+        timestamp: sendedMessage.date * 1000, // compatibilizar JS
         messageId: sendedMessage.message_id,
         status: "sended",
         ack: 2
@@ -116,7 +138,7 @@ const SendMessagesSystemWbot = async (
           ...message.dataValues, // necessário para enviar error no envio do socket - call size
           id: message.id,
           mediaUrl: message.mediaUrl,
-          timestamp: sendedMessage.date,
+          timestamp: messageToUpdate.timestamp,
           messageId: sendedMessage.message_id,
           status: "sended",
           ack: 2

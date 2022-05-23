@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -137,4 +136,9 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
->>>>>>> Iniciando a construção do bot whatChats
+
+
+.quasar/
+.wwebjs_auth/
+.wwebjs_auth
+/.wwebjs_auth/*

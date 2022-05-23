@@ -134,10 +134,14 @@
               >
                 <q-list style="min-width: 100px">
                   <q-item
+                    :disable="!['whatsapp', 'telegram'].includes(ticketFocado.channel)"
                     clickable
                     @click="citarMensagem(mensagem)"
                   >
                     <q-item-section>Responder</q-item-section>
+                    <q-tooltip v-if="!['whatsapp', 'telegram'].includes(ticketFocado.channel)">
+                      Disponível apenas para WhatsApp e Telegram
+                    </q-tooltip>
                   </q-item>
                   <q-item
                     clickable
@@ -156,17 +160,19 @@
                     @click="deletarMensagem(mensagem)"
                     clickable
                     v-if="mensagem.fromMe"
+                    :disable="isDesactivatDelete(mensagem) || ticketFocado.channel === 'messenger'"
                   >
                     <q-item-section>
                       <q-item-label>Deletar</q-item-label>
-                      <q-item-label caption>
+                      <!-- <q-item-label caption>
                         Apagará mensagem: {{ isDesactivatDelete(mensagem) ? 'PARA TODOS' : 'PARAM MIN' }}
-                      </q-item-label>
+                      </q-item-label> -->
                       <q-tooltip
                         :delay="500"
                         content-class="text-black bg-red-3 text-body1"
                       >
-                        Após 7 min do envio, não será possível apagar a mensagem para o cliente.
+                        * Após 5 min do envio, não será possível apagar a mensagem. <br>
+                        ** Não está disponível para Messenger.
                       </q-tooltip>
                     </q-item-section>
                   </q-item>
@@ -242,7 +248,7 @@
                 "
               />
             </template>
-            <template v-if="mensagem.mediaType === 'application'">
+            <template v-if="['application', 'file', 'document'].includes(mensagem.mediaType)">
               <div class="text-center full-width hide-scrollbar no-scroll">
                 <iframe
                   v-if="isPDF(mensagem.mediaUrl)"
@@ -277,14 +283,15 @@
                     v-if="mensagem.mediaUrl"
                     content-class="text-bold"
                   >
-                    Baixar: {{ mensagem.body }}
+                    Baixar: {{ mensagem.mediaName }}
+                    {{ mensagem.body }}
                   </q-tooltip>
                   <div class="row items-center q-ma-xs ">
                     <div
                       class="ellipsis col-grow q-pr-sm"
                       style="max-width: 290px"
                     >
-                      {{ farmatarMensagemWhatsapp(mensagem.body) }}
+                      {{ farmatarMensagemWhatsapp(mensagem.body || mensagem.mediaName ) }}
                     </div>
                     <q-icon name="mdi-download" />
                   </div>
@@ -319,7 +326,7 @@
 </template>
 
 <script>
-import { differenceInMinutes, fromUnixTime } from 'date-fns'
+import { differenceInMinutes } from 'date-fns'
 import mixinCommon from './mixinCommon'
 import axios from 'axios'
 import VueEasyLightbox from 'vue-easy-lightbox'
@@ -427,8 +434,7 @@ export default {
     },
     isDesactivatDelete (msg) {
       if (msg) {
-        const dataMensagem = msg.timestamp ? fromUnixTime(msg.timestamp) : new Date(msg.updatedAt)
-        return !(differenceInMinutes(new Date(), dataMensagem) > 7)
+        return (differenceInMinutes(new Date(), new Date(+msg.timestamp)) > 5)
       }
       return false
     },
@@ -456,10 +462,20 @@ export default {
       this.$emit('mensagem-chat:encaminhar-mensagem', mensagem)
     },
     deletarMensagem (mensagem) {
+      if (this.isDesactivatDelete(mensagem)) {
+        this.$notificarErro('Não foi possível apagar mensagem com mais de 5min do envio.')
+      }
+      // const diffHoursDate = differenceInHours(
+      //   new Date(),
+      //   parseJSON(mensagem.createdAt)
+      // )
+      // if (diffHoursDate > 2) {
+      //   // throw new AppError("No delete message afeter 2h sended");
+      // }
       const data = { ...mensagem }
       this.$q.dialog({
         title: 'Atenção!! Deseja realmente deletar a mensagem? ',
-        message: 'Mensagens antigas não serão apagadas no whatsapp.',
+        message: 'Mensagens antigas não serão apagadas no cliente.',
         cancel: {
           label: 'Não',
           color: 'primary',

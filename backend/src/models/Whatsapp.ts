@@ -89,8 +89,19 @@ class Whatsapp extends Model<Whatsapp> {
   @Column
   instagramKey: string;
 
+  @Default(null)
+  @AllowNull
+  @Column
+  fbPageId: string;
+
+  @Default(null)
+  @AllowNull
+  @Column(DataType.JSONB)
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  fbObject: object;
+
   @Default("whatsapp")
-  @Column(DataType.ENUM("whatsapp", "telegram", "instagram"))
+  @Column(DataType.ENUM("whatsapp", "telegram", "instagram", "messenger"))
   type: string;
 
   @CreatedAt
@@ -124,16 +135,16 @@ class Whatsapp extends Model<Whatsapp> {
   @Default(null)
   @AllowNull
   @Column(DataType.TEXT)
-  wabaApiKey: string;
+  tokenAPI: string;
 
   @Default(null)
   @AllowNull
   @Column(DataType.TEXT)
-  wabaKeyHook: string;
+  tokenHook: string;
 
   @Column(DataType.VIRTUAL)
   get UrlWabaWebHook(): string | null {
-    const key = this.getDataValue("wabaKeyHook");
+    const key = this.getDataValue("tokenHook");
     const wabaBSP = this.getDataValue("wabaBSP");
     let BACKEND_URL;
     BACKEND_URL = process.env.BACKEND_URL;
@@ -141,6 +152,17 @@ class Whatsapp extends Model<Whatsapp> {
       BACKEND_URL = webHooks.urlWabahooks;
     }
     return `${BACKEND_URL}/wabahooks/${wabaBSP}/${key}`;
+  }
+
+  @Column(DataType.VIRTUAL)
+  get UrlMessengerWebHook(): string | null {
+    const key = this.getDataValue("tokenHook");
+    let BACKEND_URL;
+    BACKEND_URL = process.env.BACKEND_URL;
+    if (process.env.NODE_ENV === "dev") {
+      BACKEND_URL = webHooks.urlWabahooks;
+    }
+    return `${BACKEND_URL}/fb-messenger-hooks/${key}`;
   }
 
   @AfterUpdate
@@ -189,11 +211,14 @@ class Whatsapp extends Model<Whatsapp> {
 
   @BeforeUpdate
   @BeforeCreate
-  static async CreateWabaKeyWebHook(instance: Whatsapp): Promise<void> {
+  static async CreateTokenWebHook(instance: Whatsapp): Promise<void> {
     const { secret } = authConfig;
 
-    if (!instance?.wabaKeyHook && instance.type === "waba") {
-      const wabaKeyHook = sign(
+    if (
+      !instance?.tokenHook &&
+      (instance.type === "waba" || instance.type === "messenger")
+    ) {
+      const tokenHook = sign(
         {
           tenantId: instance.tenantId,
           whatsappId: instance.id
@@ -201,11 +226,11 @@ class Whatsapp extends Model<Whatsapp> {
         },
         secret,
         {
-          expiresIn: "1000d"
+          expiresIn: "10000d"
         }
       );
 
-      instance.wabaKeyHook = wabaKeyHook;
+      instance.tokenHook = tokenHook;
     }
   }
 }

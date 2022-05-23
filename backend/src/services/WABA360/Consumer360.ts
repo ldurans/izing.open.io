@@ -4,7 +4,7 @@ import authConfig from "../../config/auth";
 import HandleMessage360 from "./HandleMessage360";
 
 const Consumer360 = async () => {
-  const rabbit = new RabbitmqServer(process.env.URL_AMQP || "");
+  const rabbit = new RabbitmqServer(process.env.AMQP_URL || "");
   await rabbit.start();
   rabbit.consume("waba360", message => {
     const content = JSON.parse(message.content.toString());

@@ -2,6 +2,7 @@
 /* eslint-disable no-restricted-syntax */
 import { Request, Response } from "express";
 import AppError from "../errors/AppError";
+import DeleteMessageSystem from "../helpers/DeleteMessageSystem";
 // import GetTicketWbot from "../helpers/GetTicketWbot";
 
 import SetTicketMessagesAsRead from "../helpers/SetTicketMessagesAsRead";
@@ -110,7 +111,7 @@ export const remove = async (
   const { messageId } = req.params;
   const { tenantId } = req.user;
   try {
-    await DeleteWhatsAppMessage(req.body.id, messageId, tenantId);
+    await DeleteMessageSystem(req.body.id, messageId, tenantId);
   } catch (error) {
     logger.error(`ERR_DELETE_SYSTEM_MSG: ${error}`);
     throw new AppError("ERR_DELETE_SYSTEM_MSG");

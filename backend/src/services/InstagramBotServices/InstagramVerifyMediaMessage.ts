@@ -97,7 +97,7 @@ const VerifyMediaMessage = async (
     mediaUrl: filename,
     mediaType,
     quotedMsgId: "",
-    timestamp: new Date().getTime(), // Math.trunc(ctx.message.timestamp / 1000),
+    timestamp: new Date().getTime(),
     status: fromMe ? "sended" : "received"
   };
 

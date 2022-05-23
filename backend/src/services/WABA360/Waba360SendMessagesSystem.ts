@@ -129,7 +129,7 @@ const Waba360SendMessagesSystem = async (
     const buldedMessage = await buildWabaMessage360(messageItem, chatId);
     const sendedMessage: any = await SentMessage({
       message: buldedMessage,
-      apiKey: connection.wabaApiKey
+      apiKey: connection.tokenAPI
     });
 
     const messageToUpdate: any = {

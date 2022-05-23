@@ -1,4 +1,4 @@
-import { Client } from "whatsapp-web.js";
+import { Client, LocalAuth, DefaultOptions } from "whatsapp-web.js";
 // import { rmdir } from "fs/promises";
 // import path from "path";
 // import slugify from "slugify";
@@ -50,9 +50,12 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       }
 
       const wbot = new Client({
-        session: sessionCfg,
+        // session: sessionCfg,
+        authStrategy: new LocalAuth({ clientId: `wbot_${whatsapp.id}` }),
         puppeteer: {
-          executablePath: process.env.CHROME_BIN || undefined
+          // headless: false,
+          executablePath: process.env.CHROME_BIN || undefined,
+          args: [`--user-agent=${DefaultOptions.userAgent}`]
           //     // args: [`--user-agent=${DefaultOptions.userAgent}`]
         }
       }) as Session;

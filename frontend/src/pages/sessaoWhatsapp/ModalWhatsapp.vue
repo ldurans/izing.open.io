@@ -29,6 +29,16 @@
               @blur="$v.whatsapp.name.$touch"
             />
           </div>
+          <template v-if="whatsapp.type === 'messenger'">
+            <VFacebookLogin
+              :app-id="cFbAppId"
+              @sdk-init="handleSdkInit"
+              @login="fbLogin"
+              :login-options="FBLoginOptions"
+              version="v12.0"
+            />
+
+          </template>
           <div
             class="col-12 q-mt-md"
             v-if="whatsapp.type === 'telegram'"
@@ -121,7 +131,6 @@
             v-model="whatsapp.isDefault"
             label="Padrão"
           /> -->
-
         </div>
       </q-card-section>
       <q-card-actions
@@ -152,6 +161,8 @@
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import { UpdateWhatsapp, CriarWhatsapp } from 'src/service/sessoesWhatsapp'
 import cInput from 'src/components/cInput.vue'
+import { copyToClipboard } from 'quasar'
+
 export default {
   components: { cInput },
   name: 'ModalWhatsapp',
@@ -178,7 +189,8 @@ export default {
         isDefault: false,
         tokenTelegram: '',
         instagramUser: '',
-        instagramKey: ''
+        instagramKey: '',
+        tokenAPI: ''
       }
     }
   },
@@ -188,7 +200,18 @@ export default {
       isDefault: {}
     }
   },
+  computed: {
+    cBaseUrlIntegração () {
+      return this.whatsapp.UrlMessengerWebHook
+    }
+  },
   methods: {
+    copy (text) {
+      copyToClipboard(text)
+        .then(this.$notificarSucesso('URL de integração copiada!'))
+        .catch()
+    },
+
     fecharModal () {
       this.whatsapp = {
         name: '',
