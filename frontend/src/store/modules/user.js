@@ -23,7 +23,7 @@ const user = {
   },
   mutations: {
     SET_IS_SUPORTE (state, payload) {
-      const domains = ['@wchats.com.br']
+      const domains = ['@izing.io']
       let authorized = false
       domains.forEach(domain => {
         if (payload?.email.toLocaleLowerCase().indexOf(domain.toLocaleLowerCase()) !== -1) {

@@ -254,7 +254,6 @@ const objMenu = [
     icon: 'mdi-card-account-mail',
     routeName: 'contatos'
   }
-
 ]
 
 const objMenuAdmin = [
@@ -333,7 +332,6 @@ const objMenuAdmin = [
     routeName: 'api-service',
     isBeta: true
   }
-
 ]
 
 export default {
@@ -343,10 +341,7 @@ export default {
   data () {
     return {
       username,
-      domainExperimentalsMenus: [
-        '@wchats.com.br',
-        '@sispolos.com.br'
-      ],
+      domainExperimentalsMenus: ['@izing.io'],
       miniState: true,
       userProfile: 'user',
       modalUsuario: false,
@@ -360,16 +355,20 @@ export default {
   computed: {
     ...mapGetters(['whatsapps']),
     cProblemaConexao () {
-      const idx = this.whatsapps.findIndex(w => ['PAIRING', 'TIMEOUT', 'DISCONNECTED'].includes(w.status))
-      return (idx !== -1)
+      const idx = this.whatsapps.findIndex(w =>
+        ['PAIRING', 'TIMEOUT', 'DISCONNECTED'].includes(w.status)
+      )
+      return idx !== -1
     },
     cQrCode () {
-      const idx = this.whatsapps.findIndex(w => w.status === 'qrcode' || w.status === 'DESTROYED')
-      return (idx !== -1)
+      const idx = this.whatsapps.findIndex(
+        w => w.status === 'qrcode' || w.status === 'DESTROYED'
+      )
+      return idx !== -1
     },
     cOpening () {
       const idx = this.whatsapps.findIndex(w => w.status === 'OPENING')
-      return (idx !== -1)
+      return idx !== -1
     },
     cUsersApp () {
       return this.$store.state.usersApp
@@ -442,10 +441,7 @@ export default {
 
         this.$router.go({ name: 'login', replace: true })
       } catch (error) {
-        this.$notificarErro(
-          'Não foi possível realizar logout',
-          error
-        )
+        this.$notificarErro('Não foi possível realizar logout', error)
       }
     },
     async listarConfiguracoes () {
