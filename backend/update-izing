@@ -1,0 +1,15 @@
+#!/bin/bash
+echo  "Updating izing, please wait."
+cd  ~
+cd izing.io
+git checkout master
+git pull
+cd backend
+npm install
+rm -rf dist
+npm run build
+npx sequelize db:migrate
+#npx sequelize db:seed
+pm2 restart all
+
+echo  "Update finished. Enjoy!"
