@@ -23,7 +23,7 @@ const downloadFile = async (url: string, filename: string): Promise<string> => {
     responseType: "stream"
   });
 
-  const parseDisposition = request.headers["content-disposition"]
+  const parseDisposition: any = request.headers["content-disposition"]
     ? contentDiposition.parse(request.headers["content-disposition"] || "")
     : { parameters: {} };
   let name = "";
