@@ -93,7 +93,8 @@ if (process.env.NODE_ENV === "dev") {
 // }, cors());
 // }
 
-app.use(cors({ origin: "*" }));
+// app.use(cors({ origin: "*" }));
+app.use(cors());
 // app.use(
 //   cors({
 //     credentials: true,
