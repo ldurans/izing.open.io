@@ -93,37 +93,38 @@ if (process.env.NODE_ENV === "dev") {
 // }, cors());
 // }
 
-// app.use(cors({ origin: "*" }));
-app.use(
-  cors({
-    credentials: true,
-    // origin: process.env.FRONTEND_URL
-    origin(origin, callback) {
-      // allow requests with no origin
-      // (like mobile apps or curl requests)
-      if (process.env.NODE_ENV === "dev") {
-        return callback(null, true);
-      }
-      const allowedOrigins = [
-        process.env.FRONTEND_URL || "localhost",
-        process.env.ADMIN_FRONTEND_URL || "localhost"
-      ];
-      if (!origin) return callback(null, true);
-      // eslint-disable-next-line consistent-return
-      const allowed = allowedOrigins.findIndex(
-        url => url.indexOf(origin) !== -1
-      );
-      if (allowed === -1) {
-        return callback(null, true);
-        // const msg =
-        //   "The CORS policy for this site does not " +
-        //   "allow access from the specified Origin.";
-        // return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    }
-  })
-);
+app.use(cors({ origin: "*" }));
+// app.use(
+//   cors({
+//     credentials: true,
+//     // origin: process.env.FRONTEND_URL
+//     origin(origin, callback) {
+//       // allow requests with no origin
+//       // (like mobile apps or curl requests)
+//       if (process.env.NODE_ENV === "dev") {
+//         return callback(null, true);
+//       }
+//       const allowedOrigins = [
+//         process.env.FRONTEND_URL || "localhost",
+//         process.env.ADMIN_FRONTEND_URL || "localhost"
+//       ];
+//       if (!origin) return callback(null, true);
+//       // eslint-disable-next-line consistent-return
+//       const allowed = allowedOrigins.findIndex(
+//         url => url.indexOf(origin) !== -1
+//       );
+//       if (allowed === -1) {
+//         return callback(null, true);
+//         // const msg =
+//         //   "The CORS policy for this site does not " +
+//         //   "allow access from the specified Origin.";
+//         // return callback(new Error(msg), false);
+//       }
+//       return callback(null, true);
+//     }
+//   })
+// );
+
 app.use(cookieParser());
 app.use(express.json({ limit: "6MB" }));
 app.use(express.urlencoded({ extended: true, limit: "6MB" }));
