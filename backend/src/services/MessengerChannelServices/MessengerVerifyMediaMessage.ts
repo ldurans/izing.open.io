@@ -28,8 +28,10 @@ const downloadFile = async (url: string, filename: string): Promise<string> => {
     : { parameters: {} };
   let name = "";
 
-  if (parseDisposition?.parameters?.filename) {
-    name = `${new Date().getTime()}-${parseDisposition.parameters.filename}`;
+  const filenameExists: any = parseDisposition?.parameters?.filename;
+  if (filenameExists) {
+    const fileName: any = parseDisposition.parameters.filename;
+    name = `${new Date().getTime()}-${fileName}`;
   } else {
     const contentType = request.headers["content-type"];
     const ext = contentType.split("/")[1];
