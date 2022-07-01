@@ -3,5 +3,24 @@
   "workbench.colorTheme": "Dracula Soft",
   "html.format.contentUnformatted": "",
   "workbench.preferredDarkColorTheme": "Palenight Theme",
-  "peacock.color": "#5ea4f3"
+  "peacock.color": "#5ea4f3",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#8dbff7",
+    "activityBar.activeBorder": "#ee1179",
+    "activityBar.background": "#8dbff7",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#ee1179",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "sash.hoverBorder": "#8dbff7",
+    "statusBar.background": "#5ea4f3",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#2f89ef",
+    "statusBarItem.remoteBackground": "#5ea4f3",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#5ea4f3",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#5ea4f399",
+    "titleBar.inactiveForeground": "#15202b99"
+  }
 }

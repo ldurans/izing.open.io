@@ -181,9 +181,9 @@ const VerifyStepsChatFlowTicket = async (
       // verificar condição com a ação do step
       const stepCondition = step.conditions.find((conditions: any) => {
         const newConditions = conditions.condition.map((c: any) =>
-          String(c).toLowerCase()
+          String(c).toLowerCase().trim()
         );
-        const message = String(msg.body).toLowerCase();
+        const message = String(msg.body).toLowerCase().trim();
         return newConditions.includes(message);
       });
 

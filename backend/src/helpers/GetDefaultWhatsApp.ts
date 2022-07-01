@@ -5,7 +5,7 @@ const GetDefaultWhatsApp = async (
   tenantId: string | number
 ): Promise<Whatsapp> => {
   const defaultWhatsapp = await Whatsapp.findOne({
-    where: { isDefault: true, tenantId }
+    where: { tenantId, type: "whatsapp", status: "CONNECTED" }
   });
 
   if (!defaultWhatsapp) {

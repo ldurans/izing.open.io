@@ -14,7 +14,7 @@ services:
       - ${PROXY_PORT:-8080}:3000
     volumes:
       - ".:/usr/src/app"
-      - "/home/dev/izing-media:/usr/src/app/public/"
+      # - "/home/dev/izing-media:/usr/src/app/public/"
     networks:
       - izing_network
       - izing_db_network
@@ -36,7 +36,7 @@ services:
     networks:
       - izing_network
 
-   # database containers, one for each db
+  # database containers, one for each db
   izing-fixPermissionsPostregres:
     image: 'bitnami/postgresql:14'
     user: root
@@ -58,7 +58,6 @@ services:
       - izing-fixPermissionsPostregres
     networks:
       - izing_db_network
-
 
   izing-rabbitmq:
     image: rabbitmq:3-management
@@ -82,7 +81,6 @@ services:
       - 15672:15672
     networks:
       - izing_network
-
 
 networks:
   izing_network:
