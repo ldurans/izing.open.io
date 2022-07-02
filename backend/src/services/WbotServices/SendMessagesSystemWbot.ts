@@ -50,6 +50,7 @@ const SendMessagesSystemWbot = async (
         as: "ticket",
         where: {
           tenantId,
+          status: { [Op.ne]: "closed" },
           channel: "whatsapp"
         },
         include: ["contact"]
