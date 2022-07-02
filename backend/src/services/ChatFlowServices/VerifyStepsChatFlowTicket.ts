@@ -168,7 +168,9 @@ const VerifyStepsChatFlowTicket = async (
   ) {
     if (ticket.chatFlowId) {
       const chatFlow = await ticket.getChatFlow();
-      celularTeste = chatFlow.celularTeste; // ticket.chatFlow?.celularTeste;
+      if (chatFlow.celularTeste) {
+        celularTeste = chatFlow.celularTeste.replace(/\s/g, ""); // retirar espaços
+      }
 
       const step = chatFlow.flow.nodeList.find(
         (node: any) => node.id === ticket.stepChatFlow
