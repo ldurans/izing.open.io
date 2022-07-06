@@ -1,6 +1,0 @@
-2022/07/01-20:34:03.780 2ef7f Reusing MANIFEST /home/durans/Projetos/izing.io/backend/.wwebjs_auth/session-wbot_8/Default/Local Storage/leveldb/MANIFEST-000001
-2022/07/01-20:34:03.781 2ef7f Recovering log #3
-2022/07/01-20:34:03.781 2ef7f Reusing old log /home/durans/Projetos/izing.io/backend/.wwebjs_auth/session-wbot_8/Default/Local Storage/leveldb/000003.log 
-2022/07/01-20:37:04.225 2ef7b Level-0 table #5: started
-2022/07/01-20:37:04.229 2ef7b Level-0 table #5: 15399 bytes OK
-2022/07/01-20:37:04.232 2ef7b Delete type=0 #3
