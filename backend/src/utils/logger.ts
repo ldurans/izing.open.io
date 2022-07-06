@@ -14,7 +14,7 @@ if (process.env?.NODE_ENV) {
   env = process.env.NODE_ENV;
 }
 
-const level = env === "prod" ? "error" : "debug";
+const level = env === "prod" ? "info" : "debug";
 
 // Create file loggers
 const logger = winston.createLogger({
