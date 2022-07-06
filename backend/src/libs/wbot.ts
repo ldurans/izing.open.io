@@ -22,9 +22,14 @@ const checkMessages = async (wbot: Session, tenantId: number | string) => {
   // checking[tenantId] = true;
   try {
     const isConnectStatus = await getValue(`wbotStatus-${tenantId}`);
-    logger.info("wbot:checkMessages:status", wbot, tenantId, isConnectStatus);
+    logger.info(
+      "wbot:checkMessages:status",
+      wbot.id,
+      tenantId,
+      isConnectStatus
+    );
 
-    if (isConnectStatus === "CONNECTED") {
+    if (isConnectStatus === "CONNECTED" || !isConnectStatus) {
       logger.info("wbot:connected:checkMessages", wbot, tenantId);
       // logger.info(`checking new message tenant ${tenantId}`);
       // await SendMessagesSystemWbot(wbot, tenantId);
