@@ -22,7 +22,10 @@ const checkMessages = async (wbot: Session, tenantId: number | string) => {
   // checking[tenantId] = true;
   try {
     const isConnectStatus = await getValue(`wbotStatus-${tenantId}`);
+    logger.info("wbot:checkMessages:status", wbot, tenantId, isConnectStatus);
+
     if (isConnectStatus === "CONNECTED") {
+      logger.info("wbot:connected:checkMessages", wbot, tenantId);
       // logger.info(`checking new message tenant ${tenantId}`);
       // await SendMessagesSystemWbot(wbot, tenantId);
       Queue.add("SendMessages", { sessionId: wbot.id, tenantId });
