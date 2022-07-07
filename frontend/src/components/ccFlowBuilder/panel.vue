@@ -1,39 +1,31 @@
 <template>
-  <div
-    v-if="easyFlowVisible"
+  <div v-if="easyFlowVisible"
     :class="{
       'fullscreen bg-white': isFullScreen,
       'flowHeightDefault': !isFullScreen
-    }"
-  >
+    }">
     <q-toolbar class="text-grey-8 ">
       <q-toolbar-title>
-        <div class="text-h6">{{data.name}}</div>
+        <div class="text-h6">{{ data.name }}</div>
       </q-toolbar-title>
-      <q-btn
-        round
+      <q-btn round
         flat
         icon="mdi-delete"
         @click="deleteElement"
-        :disabled="!this.activeElement.type || ['start', 'exception'].includes(this.activeElement.type)"
-      ></q-btn>
-      <q-separator
-        inset
+        :disabled="!this.activeElement.type || ['start', 'exception'].includes(this.activeElement.type)"></q-btn>
+      <q-separator inset
         spaced
-        vertical
-      />
+        vertical />
       <!-- <q-btn
         round
         flat
         icon="mdi-download"
         @click="downloadData"
       ></q-btn> -->
-      <q-btn
-        round
+      <q-btn round
         flat
         :icon="isFullScreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen'"
-        @click="isFullScreen = !isFullScreen"
-      />
+        @click="isFullScreen = !isFullScreen" />
       <!-- <div class="q-gutter-md q-mx-md">
         <q-btn
           type="info"
@@ -49,32 +41,26 @@
       </div> -->
     </q-toolbar>
     <q-separator color="text-grey-3" />
-    <div
-      class="q-mt-sm"
-      style="display: flex; height: calc(100% - 60px);"
-    >
+    <div class="q-mt-sm"
+      style="display: flex; height: calc(100% - 60px);">
       <!-- <div style="width: 230px;border-right: 1px solid #dce3e8;">
         <node-menu
           @addNode="addNode"
           ref="nodeMenu"
         ></node-menu>
       </div> -->
-      <div
-        id="efContainer"
+      <div id="efContainer"
         ref="efContainer"
         class="container"
-        v-flowDrag
-      >
+        v-flowDrag>
         <template v-for="node in data.nodeList">
-          <flow-node
-            :id="node.id"
+          <flow-node :id="node.id"
             :key="node.id"
             :node="node"
             :activeElement="activeElement"
             @changeNodeSite="changeNodeSite"
             @nodeRightMenu="nodeRightMenu"
-            @clickNode="clickNode"
-          >
+            @clickNode="clickNode">
           </flow-node>
         </template>
         <!-- Forçar área de construção -->
@@ -82,8 +68,7 @@
       </div>
       <!-- Configuração node -->
       <div style="width: 500px; border-left: 1px solid #dce3e8;">
-        <flow-node-form
-          ref="nodeForm"
+        <flow-node-form ref="nodeForm"
           @setLineLabel="setLineLabel"
           @repaintEverything="repaintEverything"
           :filas="cDataFlow.filas"
@@ -92,21 +77,16 @@
           @addNode="addNode"
           @deleteLine="deleteLine"
           @addNewLineCondition="addNewLineCondition"
-          @saveFlow="saveFlow"
-        >
+          @saveFlow="saveFlow">
         </flow-node-form>
       </div>
     </div>
     <!-- Visualização Resultado -->
-    <flow-info
-      v-if="flowInfoVisible"
+    <flow-info v-if="flowInfoVisible"
       ref="flowInfo"
-      :data="data"
-    ></flow-info>
-    <flow-help
-      v-if="flowHelpVisible"
-      ref="flowHelp"
-    ></flow-help>
+      :data="data"></flow-info>
+    <flow-help v-if="flowHelpVisible"
+      ref="flowHelp"></flow-help>
   </div>
 
 </template>
@@ -124,6 +104,7 @@ import FlowHelp from './help'
 import FlowNodeForm from './node_form'
 import { merge, cloneDeep } from 'lodash'
 import './index.css'
+import { uid } from 'quasar'
 
 import { UpdateChatFlow } from '../../service/chatFlow'
 
@@ -213,7 +194,7 @@ export default {
   },
   methods: {
     getUUID () {
-      return Math.random().toString(36).substr(3, 10)
+      return uid()
     },
     // updateLineNodes (node) {
     //   this.jsPlumb.repaintEverything()

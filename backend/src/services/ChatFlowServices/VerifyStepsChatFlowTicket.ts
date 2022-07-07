@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 import { Message as WbotMessage } from "whatsapp-web.js";
 import socketEmit from "../../helpers/socketEmit";
 // import SetTicketMessagesAsRead from "../../../helpers/SetTicketMessagesAsRead";
@@ -12,6 +13,7 @@ import IsContactTest from "./IsContactTest";
 
 const isNextSteps = async (
   ticket: Ticket,
+  chatFlow: any,
   step: any,
   stepCondition: any
 ): Promise<void> => {
@@ -23,7 +25,16 @@ const isNextSteps = async (
       lastInteractionBot: new Date()
     });
 
-    for (const interaction of step.interactions) {
+    const nodesList = [...chatFlow.flow.nodeList];
+
+    /// pegar os dados do proxumo step
+    const nextStep = nodesList.find(
+      (n: any) => n.id === stepCondition.nextStepId
+    );
+
+    if (!nextStep) return;
+
+    for (const interaction of nextStep.interactions) {
       await BuildSendMessageService({
         msg: interaction,
         tenantId: ticket.tenantId,
@@ -202,7 +213,7 @@ const VerifyStepsChatFlowTicket = async (
           return;
 
         // action = 0: enviar para proximo step: nextStepId
-        await isNextSteps(ticket, step, stepCondition);
+        await isNextSteps(ticket, chatFlow, step, stepCondition);
 
         // action = 1: enviar para fila: queue
         await isQueueDefine(ticket, step, stepCondition);
@@ -216,7 +227,9 @@ const VerifyStepsChatFlowTicket = async (
           payload: ticket
         });
 
-        await sendWelcomeMessage(ticket, flowConfig);
+        if (stepCondition.action === 1 || stepCondition.action === 2) {
+          await sendWelcomeMessage(ticket, flowConfig);
+        }
       } else {
         // Verificar se rotina em teste
         if (
