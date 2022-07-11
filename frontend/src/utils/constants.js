@@ -195,5 +195,10 @@ export const messagesLog = {
     message: 'ChatBot iniciado',
     color: 'blue-4',
     icon: 'mdi-robot'
+  },
+  autoClose: {
+    message: 'Bot: Atendimento fechado pelo cliente',
+    color: 'blue-8',
+    icon: 'mdi-check-circle-outline'
   }
 }

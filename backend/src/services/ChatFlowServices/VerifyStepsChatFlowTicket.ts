@@ -8,6 +8,7 @@ import Ticket from "../../models/Ticket";
 import CreateMessageSystemService from "../MessageServices/CreateMessageSystemService";
 import CreateLogTicketService from "../TicketServices/CreateLogTicketService";
 import BuildSendMessageService from "./BuildSendMessageService";
+import DefinedUserBotService from "./DefinedUserBotService";
 // import SendWhatsAppMessage from "../SendWhatsAppMessage";
 import IsContactTest from "./IsContactTest";
 
@@ -47,6 +48,7 @@ const isNextSteps = async (
 
 const isQueueDefine = async (
   ticket: Ticket,
+  flowConfig: any,
   step: any,
   stepCondition: any
 ): Promise<void> => {
@@ -65,6 +67,15 @@ const isQueueDefine = async (
       type: "queue",
       queueId: stepCondition.queueId
     });
+
+    if (flowConfig?.configurations?.autoDistributeTickets) {
+      DefinedUserBotService(
+        ticket,
+        stepCondition.queueId,
+        ticket.tenantId,
+        flowConfig?.configurations?.autoDistributeTickets
+      );
+    }
   }
 };
 
@@ -164,6 +175,55 @@ const isRetriesLimit = async (
   return false;
 };
 
+const isAnswerCloseTicket = async (
+  flowConfig: any,
+  ticket: Ticket,
+  message: string
+): Promise<boolean> => {
+  if (
+    !flowConfig?.configurations?.answerCloseTicket ||
+    flowConfig?.configurations?.answerCloseTicket?.length < 1
+  ) {
+    return false;
+  }
+
+  // verificar condição com a ação
+  const params = flowConfig.configurations.answerCloseTicket.find(
+    (condition: any) => {
+      return (
+        String(condition).toLowerCase().trim() ===
+        String(message).toLowerCase().trim()
+      );
+    }
+  );
+
+  if (params) {
+    await ticket.update({
+      chatFlowId: null,
+      stepChatFlow: null,
+      botRetries: 0,
+      lastInteractionBot: new Date(),
+      unreadMessages: 0,
+      answered: false,
+      status: "closed"
+    });
+
+    await CreateLogTicketService({
+      ticketId: ticket.id,
+      type: "autoClose"
+    });
+
+    socketEmit({
+      tenantId: ticket.tenantId,
+      type: "ticket:update",
+      payload: ticket
+    });
+
+    return true;
+  }
+  return false;
+};
+
 const VerifyStepsChatFlowTicket = async (
   msg: WbotMessage | any,
   ticket: Ticket | any
@@ -200,6 +260,12 @@ const VerifyStepsChatFlowTicket = async (
         return newConditions.includes(message);
       });
 
+      if (
+        !ticket.isCreated &&
+        (await isAnswerCloseTicket(flowConfig, ticket, msg.body))
+      )
+        return;
+
       if (stepCondition && !ticket.isCreated) {
         // await CreateAutoReplyLogsService(stepAutoReplyAtual, ticket, msg.body);
         // Verificar se rotina em teste
@@ -216,7 +282,7 @@ const VerifyStepsChatFlowTicket = async (
         await isNextSteps(ticket, chatFlow, step, stepCondition);
 
         // action = 1: enviar para fila: queue
-        await isQueueDefine(ticket, step, stepCondition);
+        await isQueueDefine(ticket, flowConfig, step, stepCondition);
 
         // action = 2: enviar para determinado usuário
         await isUserDefine(ticket, step, stepCondition);

@@ -214,7 +214,7 @@
                           emit-value />
                         <q-select v-if="condition.type === 'R'"
                           dense
-                          label="Respostas (separadas por ',')"
+                          label="Respostas"
                           outlined
                           v-model="condition.condition"
                           use-input
@@ -551,6 +551,61 @@
                   map-options
                   emit-value
                   clearable />
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+
+        <q-card class="full-width q-my-sm"
+          style="height: 330px;">
+          <div class="full-width bg-grey-3 text-bold text-body1 row col justify-between text-left q-pa-md">
+            Auto Distribuir Atendimento
+            <div class="row text-subtitle2">
+              Não: Desativado. <br />
+              Balancear: Definirá o usuário com base na quantidade de atendimentos de cada usuário da fila. Usuário com
+              menos atendimentos será escolhido.<br />
+              Aleatória: Definirá o usuário de forma aleatória/randômica para os usuários da fila.
+            </div>
+          </div>
+          <q-card-section class="q-pa-sm">
+            <div class="row q-mt-sm">
+              <div class="col">
+                <q-option-group class="text-center"
+                  inline
+                  v-model="node.configurations.autoDistributeTickets"
+                  :options="[
+                    { value: 'N', label: 'Não' },
+                    { value: 'R', label: 'Aleatória' },
+                    { value: 'B', label: 'Balanceada' }
+                  ]"
+                  color="primary" />
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+
+        <q-card class="full-width q-my-sm"
+          style="height: 330px;">
+          <div class="full-width bg-grey-3 text-bold text-body1 row col justify-between text-left q-pa-md">
+            Encerrar Atendimento
+            <div class="row text-subtitle2">
+              Caso o cliente digite algumas das informações esperadas, o atendimento será encerrado.
+            </div>
+          </div>
+          <q-card-section class="q-pa-sm">
+            <div class="row q-mt-sm">
+              <div class="col">
+                <q-select dense
+                  label="Parâmetros"
+                  outlined
+                  v-model="node.configurations.answerCloseTicket"
+                  use-input
+                  use-chips
+                  multiple
+                  hide-dropdown-icon
+                  input-debounce="0"
+                  new-value-mode="add-unique"
+                  hint="Digite o valor e aperte enter" />
               </div>
             </div>
           </q-card-section>

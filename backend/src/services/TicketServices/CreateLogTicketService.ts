@@ -14,6 +14,7 @@ type logType =
   | "userDefine"
   | "delete"
   | "chatBot"
+  | "autoClose"
   | "retriesLimitQueue"
   | "retriesLimitUserDefine";
 
