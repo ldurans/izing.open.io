@@ -6,6 +6,12 @@ module.exports = {
     collate: "utf8mb4_bin"
     // freezeTableName: true
   },
+  pool: {
+    max: 100,
+    min: 5,
+    acquire: 60000,
+    idle: 15000
+  },
   dialect: process.env.DB_DIALECT || "postgres",
   timezone: "UTC",
   host: process.env.POSTGRES_HOST || "localhost",

@@ -166,6 +166,7 @@ class Whatsapp extends Model<Whatsapp> {
   }
 
   @AfterUpdate
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static async HookStatus(instance: Whatsapp & any): Promise<void> {
     const statusHook = ["DESTROYED", "DISCONNECTED", "CONNECTED"];
 

@@ -4,6 +4,7 @@
     "module": "commonjs",
     "outDir": "./dist",
     "strict": true,
+    "noImplicitAny": false,
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -18,6 +19,10 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "./node_modules",
+    "./node_modules/*",
+    "./node_modules/sequelize/types/model.d.ts",
+    "./node_modules/@types/node/index.d.ts"
   ]
 }

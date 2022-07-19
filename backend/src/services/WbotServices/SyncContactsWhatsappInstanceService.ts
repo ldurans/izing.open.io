@@ -1,10 +1,12 @@
+import { QueryTypes } from "sequelize";
 import { getWbot } from "../../libs/wbot";
 import Contact from "../../models/Contact";
 import AppError from "../../errors/AppError";
 import { logger } from "../../utils/logger";
 
 const SyncContactsWhatsappInstanceService = async (
-  whatsappId: number
+  whatsappId: number,
+  tenantId: number
 ): Promise<void> => {
   const wbot = getWbot(whatsappId);
 
@@ -29,16 +31,35 @@ const SyncContactsWhatsappInstanceService = async (
       contacts.map(async ({ name, pushname, number, isGroup }) => {
         if ((name || pushname) && !isGroup) {
           // const profilePicUrl = await wbot.getProfilePicUrl(`${number}@c.us`);
-          const contactObj = { name: name || pushname, number };
+          const contactObj = { name: name || pushname, number, tenantId };
           dataArray.push(contactObj);
         }
       })
     );
     if (dataArray.length) {
-      Contact.bulkCreate(dataArray, {
-        fields: ["number", "name"],
-        updateOnDuplicate: ["number"]
+      const d = "2022-07-15 14:48:04";
+      const query = `INSERT INTO Contacts (number, name, tenantId, createdAt, updatedAt) VALUES
+        ${dataArray
+          .map((e: any) => {
+            return `('${e.number}',
+              '${e.name}',
+              '${e.tenantId}',
+              '${d}'::timestamp,
+              '${d}'::timestamp)`;
+          })
+          .join(",")}
+        ON CONFLICT (number, tenantId) DO UPDATE SET name = EXCLUDED.name, number = EXCLUDED.number;`;
+
+      await Contact.sequelize?.query(query, {
+        type: QueryTypes.INSERT,
+        logging: console.log
       });
+      // await Contact.bulkCreate(dataArray, {
+      //   fields: ["number", "name", "tenantId"],
+      //   updateOnDuplicate: ["number", "name"],
+      //   logging: console.log
+      // });
+      console.log("sql contact");
     }
   } catch (error) {
     console.error(error);

@@ -11,6 +11,8 @@ import CheckIsValidContact from "../services/WbotServices/CheckIsValidContact";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
 import AppError from "../errors/AppError";
 import UpdateContactWalletsService from "../services/ContactServices/UpdateContactWalletsService";
+import SyncContactsWhatsappInstanceService from "../services/WbotServices/SyncContactsWhatsappInstanceService";
+import Whatsapp from "../models/Whatsapp";
 
 type IndexQuery = {
   searchParam: string;
@@ -162,4 +164,38 @@ export const updateContactWallet = async (
   });
 
   return res.status(200).json(contact);
+};
+
+export const syncContacts = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { tenantId } = req.user;
+  const sessoes = await Whatsapp.findAll({
+    where: {
+      tenantId,
+      status: "CONNECTED",
+      type: "whatsapp"
+    }
+  });
+
+  if (!sessoes.length) {
+    throw new AppError(
+      "Não existem sessões ativas para sincronização dos contatos."
+    );
+  }
+
+  await Promise.all(
+    sessoes.map(async s => {
+      if (s.id) {
+        if (s.id) {
+          await SyncContactsWhatsappInstanceService(s.id, +tenantId);
+        }
+      }
+    })
+  );
+
+  return res
+    .status(200)
+    .json({ message: "Contatos estão sendo sincronizados." });
 };

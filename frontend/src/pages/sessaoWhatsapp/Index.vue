@@ -1,11 +1,9 @@
 <template>
   <div>
     <div class="row col full-width q-pa-lg">
-      <q-card
-        flat
+      <q-card flat
         bordered
-        class="full-width"
-      >
+        class="full-width">
         <q-card-section class="text-h6 text-bold">
           Canais de Comunicação
           <q-separator />
@@ -14,19 +12,15 @@
     </div>
     <div class="row full-width q-py-lg q-px-md ">
       <template v-for="item in whatsapps">
-        <q-card
-          flat
+        <q-card flat
           bordered
           class="col-xs-12 col-sm-5 col-md-4 col-lg-3 q-ma-md"
-          :key="item.id"
-        >
+          :key="item.id">
           <q-item>
             <q-item-section avatar>
               <q-avatar>
-                <q-icon
-                  size="40px"
-                  :name="`img:${item.type}-logo.png`"
-                />
+                <q-icon size="40px"
+                  :name="`img:${item.type}-logo.png`" />
               </q-avatar>
             </q-item-section>
             <q-item-section>
@@ -36,14 +30,12 @@
               </q-item-label>
             </q-item-section>
             <q-item-section side>
-              <q-btn
-                round
+              <q-btn round
                 flat
                 dense
                 icon="edit"
                 @click="handleOpenModalWhatsapp(item)"
-                v-if="isAdmin"
-              />
+                v-if="isAdmin" />
               <!-- <q-btn
             round
             flat
@@ -79,55 +71,41 @@
             </template>
           </q-card-section>
           <q-separator />
-          <q-card-actions
-            class="q-pa-md q-pt-none"
-            align="center"
-          >
+          <q-card-actions class="q-pa-md q-pt-none"
+            align="center">
             <template v-if="item.type !== 'messenger'">
-              <q-btn
-                v-if="item.status == 'DESTROYED' || item.status == 'qrcode'"
+              <q-btn v-if="item.status == 'DESTROYED' || item.status == 'qrcode'"
                 color="blue-5"
                 label="Novo QR Code"
                 @click="handleRequestNewQrCode(item, 'btn-qrCode')"
                 icon-right="watch_later"
-                :disable="!isAdmin"
-              />
-              <q-btn-group
-                v-if="item.status == 'DISCONNECTED'"
-                outline
-              >
-                <q-btn
-                  outline
+                :disable="!isAdmin" />
+              <q-btn-group v-if="item.status == 'DISCONNECTED'"
+                outline>
+                <q-btn outline
                   color="black"
                   label="Conectar"
-                  @click="handleStartWhatsAppSession(item.id)"
-                />
+                  @click="handleStartWhatsAppSession(item.id)" />
               </q-btn-group>
-              <q-btn
-                v-if="['CONNECTED', 'PAIRING', 'TIMEOUT', 'OPENING'].includes(item.status)"
+              <q-btn v-if="['CONNECTED', 'PAIRING', 'TIMEOUT', 'OPENING'].includes(item.status)"
                 color="negative"
                 label="Desconectar"
                 outline
                 @click="handleDisconectWhatsSession(item.id)"
-                :disable="!isAdmin"
-              />
-              <q-btn
-                v-if="item.status == 'OPENING'"
+                :disable="!isAdmin" />
+              <q-btn v-if="item.status == 'OPENING'"
                 disable
                 :loading="true"
                 color="grey"
-                label="Conectando"
-              />
+                label="Conectando" />
             </template>
             <template v-if="item.type === 'messenger'">
-              <VFacebookLogin
-                :app-id="cFbAppId"
+              <VFacebookLogin :app-id="cFbAppId"
                 @sdk-init="handleSdkInit"
                 @login="login => fbLogin(login, item)"
                 @logout="logout => fbLogout(item)"
                 :login-options="FBLoginOptions"
-                version="v12.0"
-              >
+                version="v12.0">
                 <template slot="login">
                   {{ item.status === 'CONNECTED' ? 'Editar' : 'Conectar' }}
                 </template>
@@ -140,25 +118,19 @@
         </q-card>
       </template>
     </div>
-    <ModalQrCode
-      :abrirModalQR.sync="abrirModalQR"
-      :channel="whatsappSelecionado"
-    />
-    <ModalWhatsapp
-      :modalWhatsapp.sync="modalWhatsapp"
-      :whatsAppEdit.sync="whatsappSelecionado"
-    />
+    <ModalQrCode :abrirModalQR.sync="abrirModalQR"
+      :channel="whatsappSelecionado" />
+    <ModalWhatsapp :modalWhatsapp.sync="modalWhatsapp"
+      :whatsAppEdit.sync="whatsappSelecionado" />
     <q-inner-loading :showing="loading">
-      <q-spinner-gears
-        size="50px"
-        color="primary"
-      />
+      <q-spinner-gears size="50px"
+        color="primary" />
     </q-inner-loading>
   </div>
 </template>
 
 <script>
-import { DeletarWhatsapp, DeleteWhatsappSession, StartWhatsappSession, ListarWhatsapps, SincronizarContatosWhatsapp } from 'src/service/sessoesWhatsapp'
+import { DeletarWhatsapp, DeleteWhatsappSession, StartWhatsappSession, ListarWhatsapps } from 'src/service/sessoesWhatsapp'
 import { format, parseISO } from 'date-fns'
 import pt from 'date-fns/locale/pt-BR/index'
 import ModalQrCode from './ModalQrCode'
@@ -386,41 +358,6 @@ export default {
         }).finally(f => {
           this.loading = false
         })
-      })
-    },
-    sincronizarContatos (whatsapp) {
-      this.$q.dialog({
-        title: 'Atenção!! Deseja realmente sincronizar os contatos? ',
-        message: 'Todas os contatos com os quais você já conversou pelo Whatsapp serão criados. Isso pode demorar um pouco...',
-        cancel: {
-          label: 'Não',
-          color: 'primary',
-          push: true
-        },
-        ok: {
-          label: 'Sim',
-          color: 'negative',
-          push: true
-        },
-        persistent: true
-      }).onOk(() => {
-        this.loading = true
-        SincronizarContatosWhatsapp(whatsapp.id).then(res => {
-          this.$q.notify({
-            type: 'positive',
-            message: 'Contatos estão sendo sincronizados e importados. Poderão ser consultados posteriormente na Lista de Contatos.',
-            progress: true,
-            actions: [{
-              icon: 'close',
-              round: true,
-              color: 'white'
-            }]
-          })
-        }).catch(error => {
-          console.error(error)
-          this.$notificarErro('Não foi possível sincronizar os contatos', error)
-        })
-        this.loading = false
       })
     }
   },

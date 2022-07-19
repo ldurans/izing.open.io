@@ -23,10 +23,4 @@ whatsappRoutes.put("/whatsapp/:whatsappId", isAuth, WhatsAppController.update);
 //   WhatsAppController.remove
 // );
 
-whatsappRoutes.post(
-  "/whatsapp/sync-contacts/:whatsappId",
-  isAuth,
-  WhatsAppController.syncContactsWhatsapp
-);
-
 export default whatsappRoutes;

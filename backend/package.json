@@ -89,6 +89,7 @@
     "@types/node": "^14.11.8",
     "@types/pino-http": "^5.4.2",
     "@types/redis": "^2.8.28",
+    "@types/sequelize": "^4.28.14",
     "@types/sharp": "^0.29.4",
     "@types/socket.io": "^2.1.11",
     "@types/socket.io-redis": "^1.0.26",

@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { getIO } from "../libs/socket";
 import { removeWbot } from "../libs/wbot";
-import SyncContactsWhatsappInstanceService from "../services/WbotServices/SyncContactsWhatsappInstanceService";
 
 import DeleteWhatsAppService from "../services/WhatsappService/DeleteWhatsAppService";
 import ListWhatsAppsService from "../services/WhatsappService/ListWhatsAppsService";
@@ -58,13 +57,4 @@ export const remove = async (
   });
 
   return res.status(200).json({ message: "Whatsapp deleted." });
-};
-
-export const syncContactsWhatsapp = async (
-  req: Request,
-  res: Response
-): Promise<Response> => {
-  const { whatsappId } = req.params;
-  await SyncContactsWhatsappInstanceService(+whatsappId);
-  return res.status(200);
 };

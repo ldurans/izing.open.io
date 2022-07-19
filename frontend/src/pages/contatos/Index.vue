@@ -1,7 +1,6 @@
 <template>
   <div>
-    <q-table
-      class="my-sticky-dynamic"
+    <q-table class="my-sticky-dynamic"
       title="Contatos"
       :id="`tabela-contatos-${isChatContact ? 'atendimento' : ''}`"
       :data="contacts"
@@ -21,26 +20,22 @@
       :class="{
         'q-ma-lg': !isChatContact,
         'q-ml-md heightChat': isChatContact
-      }"
-    >
+      }">
       <template v-slot:top>
         <div class="row col-2 q-table__title items-center ">
-          <q-btn
-            v-if="isChatContact"
+          <q-btn v-if="isChatContact"
             class="q-mr-sm"
             color="black"
             round
             flat
             icon="mdi-close"
-            @click="$router.push({name: 'chat-empty'})"
-          />
+            @click="$router.push({ name: 'chat-empty' })" />
           Contatos
         </div>
         <q-space />
-        <q-input
-          :class="{
-            'order-last q-mt-md': $q.screen.width < 500
-          }"
+        <q-input :class="{
+          'order-last q-mt-md': $q.screen.width < 500
+        }"
           style="width: 300px"
           filled
           dense
@@ -48,38 +43,33 @@
           v-model="filter"
           clearable
           placeholder="Localize"
-          @input="filtrarContato"
-        >
+          @input="filtrarContato">
           <template v-slot:prepend>
             <q-icon name="search" />
           </template>
         </q-input>
-        <q-btn
-          class="q-ml-md"
+        <!-- <q-btn class="q-ml-md"
+          color="warning"
+          label="Sincronizar"
+          @click="sincronizarContatos" /> -->
+        <q-btn class="q-ml-md"
           color="primary"
           label="Adicionar"
-          @click="selectedContactId = null; modalContato = true"
-        />
+          @click="selectedContactId = null; modalContato = true" />
       </template>
       <template v-slot:body-cell-profilePicUrl="props">
         <q-td>
           <q-avatar style="border: 1px solid #9e9e9ea1 !important">
-            <q-icon
-              name="mdi-account"
+            <q-icon name="mdi-account"
               size="1.5em"
               color="grey-5"
-              v-if="!props.value"
-            />
-            <q-img
-              :src="props.value"
-              style="max-width: 150px"
-            >
+              v-if="!props.value" />
+            <q-img :src="props.value"
+              style="max-width: 150px">
               <template v-slot:error>
-                <q-icon
-                  name="mdi-account"
+                <q-icon name="mdi-account"
                   size="1.5em"
-                  color="grey-5"
-                />
+                  color="grey-5" />
               </template>
             </q-img>
           </q-avatar>
@@ -87,58 +77,46 @@
       </template>
       <template v-slot:body-cell-acoes="props">
         <q-td class="text-center">
-          <q-btn
-            flat
+          <q-btn flat
             round
             icon="img:whatsapp-logo.png"
             @click="handleSaveTicket(props.row, 'whatsapp')"
-            v-if="props.row.number"
-          />
-          <q-btn
-            flat
+            v-if="props.row.number" />
+          <q-btn flat
             round
             icon="img:instagram-logo.png"
             @click="handleSaveTicket(props.row, 'instagram')"
-            v-if="props.row.instagramPK"
-          />
-          <q-btn
-            flat
+            v-if="props.row.instagramPK" />
+          <q-btn flat
             round
             icon="img:telegram-logo.png"
             @click="handleSaveTicket(props.row, 'telegram')"
-            v-if="props.row.telegramId"
-          />
-          <q-btn
-            flat
+            v-if="props.row.telegramId" />
+          <q-btn flat
             round
             icon="edit"
-            @click="editContact(props.row.id)"
-          />
-          <q-btn
-            flat
+            @click="editContact(props.row.id)" />
+          <q-btn flat
             round
             icon="mdi-delete"
-            @click="deleteContact(props.row.id)"
-          />
+            @click="deleteContact(props.row.id)" />
         </q-td>
       </template>
       <template v-slot:pagination="{ pagination }">
         {{ contacts.length }}/{{ pagination.rowsNumber }}
       </template>
     </q-table>
-    <ContatoModal
-      :contactId="selectedContactId"
+    <ContatoModal :contactId="selectedContactId"
       :modalContato.sync="modalContato"
       @contatoModal:contato-editado="UPDATE_CONTACTS"
-      @contatoModal:contato-criado="UPDATE_CONTACTS"
-    />
+      @contatoModal:contato-criado="UPDATE_CONTACTS" />
   </div>
 </template>
 
 <script>
 const userId = +localStorage.getItem('userId')
 import { CriarTicket } from 'src/service/tickets'
-import { ListarContatos, DeletarContato } from 'src/service/contatos'
+import { ListarContatos, DeletarContato, SyncronizarContatos } from 'src/service/contatos'
 import ContatoModal from './ContatoModal'
 export default {
   name: 'IndexContatos',
@@ -374,6 +352,50 @@ export default {
           )
         }
       })
+    },
+    confirmarSincronizarContatos () {
+      this.$q.dialog({
+        title: 'Atenção!! Deseja realmente sincronizar os contatos? ',
+        message: 'Todas os contatos com os quais você já conversou pelo Whatsapp serão criados. Isso pode demorar um pouco...',
+        cancel: {
+          label: 'Não',
+          color: 'primary',
+          push: true
+        },
+        ok: {
+          label: 'Sim',
+          color: 'warning',
+          push: true
+        },
+        persistent: true
+      }).onOk(async () => {
+        this.loading = true
+        await this.sincronizarContatos()
+        this.loading = false
+      })
+    },
+    async sincronizarContatos () {
+      try {
+        this.loading = true
+        await SyncronizarContatos()
+        this.$q.notify({
+          type: 'info',
+          progress: true,
+          position: 'top',
+          textColor: 'black',
+          message: 'Contatos estão sendo atualizados. Isso pode levar um tempo...',
+          actions: [{
+            icon: 'close',
+            round: true,
+            color: 'white'
+          }]
+        })
+      } catch (error) {
+        console.error(error)
+        this.$notificarErro('Ocorreu um erro ao sincronizar os contatos', error)
+        this.loading = true
+      }
+      this.loading = true
     }
 
   },

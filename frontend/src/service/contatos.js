@@ -23,6 +23,13 @@ export function CriarContato (data) {
   })
 }
 
+export function SyncronizarContatos () {
+  return request({
+    url: '/contacts/sync',
+    method: 'post'
+  })
+}
+
 export function EditarContato (contactId, data) {
   return request({
     url: `/contacts/${contactId}`,
