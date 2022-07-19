@@ -113,7 +113,7 @@ const SendMessagesSystemWbot = async (
         { where: { id: message.id } }
       );
 
-      logger.info("Message Update ok");
+      logger.info("Message Update");
       // await SetTicketMessagesAsRead(ticket);
 
       // delay para processamento da mensagem
