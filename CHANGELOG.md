@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/ldurans/izing.io/compare/v1.2.0...v1.2.1) (2022-07-19)
+
+
+### Bug Fixes
+
+* **wwebjs:** update wwebjs. ([07cd943](https://github.com/ldurans/izing.io/commit/07cd943efbede169354ba8e795ba74dab44b5abf))
+
 # [1.2.0](https://github.com/ldurans/izing.io/compare/v1.1.0...v1.2.0) (2022-07-11)
 
 
