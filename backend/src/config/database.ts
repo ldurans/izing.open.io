@@ -8,9 +8,7 @@ module.exports = {
   },
   pool: {
     max: 100,
-    min: 5,
-    acquire: 60000,
-    idle: 15000
+    min: 5
   },
   dialect: process.env.DB_DIALECT || "postgres",
   timezone: "UTC",
