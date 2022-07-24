@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/ldurans/izing.io/compare/v1.4.0...v1.4.1) (2022-07-24)
+
+
+### Bug Fixes
+
+* **whtsapp:** correção de mensagem via bot. ([14f747c](https://github.com/ldurans/izing.io/commit/14f747c20f7a6bb4fce78552c345dbea4a239dd3))
+
 # [1.4.0](https://github.com/ldurans/izing.io/compare/v1.3.0...v1.4.0) (2022-07-24)
 
 
