@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/ldurans/izing.io/compare/v1.3.0...v1.4.0) (2022-07-24)
+
+
+### Features
+
+* **whtsapp:** implementado rotina de envio de mensagem com rabbitmq. ([7b79ee2](https://github.com/ldurans/izing.io/commit/7b79ee20467ee07fe5bd7b77ecaf5bf18396361a))
+
 # [1.3.0](https://github.com/ldurans/izing.io/compare/v1.2.1...v1.3.0) (2022-07-24)
 
 
