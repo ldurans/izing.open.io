@@ -8,6 +8,7 @@ interface Session extends Client {
 }
 
 const wbotMessageListener = (wbot: Session): void => {
+  // const queue = `whatsapp::${wbot.id}`;
   wbot.on("message_create", async msg => {
     // desconsiderar atualização de status
     if (msg.isStatus) {

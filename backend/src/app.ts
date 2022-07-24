@@ -68,6 +68,12 @@ if (process.env.AMQP_URL) {
     logger.info("Rabbit started", process.env.AMQP_URL);
     app.rabbit = rabbit;
   })();
+  (async () => {
+    const rabbitWhatsapp = new RabbitmqServer(process.env.AMQP_URL || "");
+    await rabbitWhatsapp.start();
+    logger.info("Rabbit started", process.env.AMQP_URL);
+    global.rabbitWhatsapp = rabbitWhatsapp;
+  })();
   Consumer360();
   MessengerConsumer();
 }

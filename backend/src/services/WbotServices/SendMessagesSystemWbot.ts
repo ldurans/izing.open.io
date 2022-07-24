@@ -118,8 +118,8 @@ const SendMessagesSystemWbot = async (
 
       // delay para processamento da mensagem
       await sleepRandomTime({
-        minMilliseconds: Number(process.env.MIN_SLEEP_INTERVAL || 2000),
-        maxMilliseconds: Number(process.env.MAX_SLEEP_INTERVAL || 5000)
+        minMilliseconds: Number(process.env.MIN_SLEEP_INTERVAL || 500),
+        maxMilliseconds: Number(process.env.MAX_SLEEP_INTERVAL || 2000)
       });
 
       logger.info("sendMessage", sendedMessage.id.id);

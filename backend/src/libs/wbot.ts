@@ -4,10 +4,11 @@ import { Client, LocalAuth, DefaultOptions } from "whatsapp-web.js";
 // import slugify from "slugify";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
-import { getValue, setValue } from "./redisClient";
+import { setValue } from "./redisClient";
 import { logger } from "../utils/logger";
 import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesWbot";
-import Queue from "./Queue";
+// import Queue from "./Queue";
+import WhatsappConsumer from "../services/WbotServices/WhatsappConsumer";
 
 interface Session extends Client {
   id: number;
@@ -17,28 +18,28 @@ const sessions: Session[] = [];
 
 // const checking: any = {};
 
-const checkMessages = async (wbot: Session, tenantId: number | string) => {
-  // if (checking[tenantId]) return;
-  // checking[tenantId] = true;
-  try {
-    const isConnectStatus = await getValue(`wbotStatus-${tenantId}`);
-    logger.info(
-      "wbot:checkMessages:status",
-      wbot.id,
-      tenantId,
-      isConnectStatus
-    );
+// const checkMessages = async (wbot: Session, tenantId: number | string) => {
+//   // if (checking[tenantId]) return;
+//   // checking[tenantId] = true;
+//   try {
+//     const isConnectStatus = await getValue(`wbotStatus-${tenantId}`);
+//     logger.info(
+//       "wbot:checkMessages:status",
+//       wbot.id,
+//       tenantId,
+//       isConnectStatus
+//     );
 
-    if (isConnectStatus === "CONNECTED" || !isConnectStatus) {
-      logger.info("wbot:connected:checkMessages", wbot, tenantId);
-      // logger.info(`checking new message tenant ${tenantId}`);
-      // await SendMessagesSystemWbot(wbot, tenantId);
-      Queue.add("SendMessages", { sessionId: wbot.id, tenantId });
-    }
-  } catch (error) {
-    logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
-  }
-};
+//     if (isConnectStatus === "CONNECTED" || !isConnectStatus) {
+//       logger.info("wbot:connected:checkMessages", wbot, tenantId);
+//       // logger.info(`checking new message tenant ${tenantId}`);
+//       // await SendMessagesSystemWbot(wbot, tenantId);
+//       Queue.add("SendMessages", { sessionId: wbot.id, tenantId });
+//     }
+//   } catch (error) {
+//     logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
+//   }
+// };
 
 // const apagarPastaSessao = async (whatsapp: Whatsapp): Promise<void> => {
 //   const pathRoot = path.resolve(__dirname, "..", "..", "WWebJS");
@@ -240,12 +241,13 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         });
       });
       setValue(`sendingMessages_tenant_${whatsapp.tenantId}`, false);
-      setInterval(
-        checkMessages,
-        +(process.env.CHECK_INTERVAL || 5000),
-        wbot,
-        tenantId
-      );
+      // setInterval(
+      //   checkMessages,
+      //   +(process.env.CHECK_INTERVAL || 5000),
+      //   wbot,
+      //   tenantId
+      // );
+      WhatsappConsumer(tenantId);
     } catch (err) {
       logger.error(`initWbot error | Error: ${err}`);
       // 'Error: Protocol error (Runtime.callFunctionOn): Session closed.'

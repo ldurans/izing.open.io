@@ -171,6 +171,14 @@ const CreateMessageSystemService = async ({
         type: "chat:create",
         payload: messageCreated
       });
+
+      global.rabbitWhatsapp.publishInQueue(
+        `whatsapp::${tenantId}`,
+        JSON.stringify({
+          ...messageCreated.toJSON(),
+          contact: ticket.contact.toJSON()
+        })
+      );
     }
   } catch (error) {
     logger.error("CreateMessageSystemService", error);

@@ -1,14 +1,9 @@
 <template>
-  <div
-    style="min-height: 80px"
-    class="row q-pb-md q-pt-sm bg-white justify-start items-center text-grey-9 relative-position"
-  >
-    <div
-      class="row col-12 q-pa-sm"
-      v-if="isScheduleDate"
-    >
-      <q-datetime-picker
-        style="width: 300px"
+  <div style="min-height: 80px"
+    class="row q-pb-md q-pt-sm bg-white justify-start items-center text-grey-9 relative-position">
+    <div class="row col-12 q-pa-sm"
+      v-if="isScheduleDate">
+      <q-datetime-picker style="width: 300px"
         dense
         rounded
         hide-bottom-space
@@ -19,13 +14,11 @@
         mode="datetime"
         color="primary"
         v-model="scheduleDate"
-        format24h
-      />
+        format24h />
     </div>
     <div class="full-width relative-position">
       <div class="full-width absolute-top">
-        <q-menu
-          max-width="600px"
+        <q-menu max-width="600px"
           :key="cMensagensRapidas.length"
           square
           no-focus
@@ -33,17 +26,14 @@
           fit
           persistent
           max-height="200px"
-          :offset="[0,-45]"
+          :offset="[0, -45]"
           @hide="visualizarMensagensRapidas = false"
-          :value="textChat.startsWith('/') || visualizarMensagensRapidas"
-        >
+          :value="textChat.startsWith('/') || visualizarMensagensRapidas">
           <!-- :value="textChat.startsWith('/')" -->
-          <q-list
-            class="no-shadow no-box-shadow"
+          <q-list class="no-shadow no-box-shadow"
             style="min-width: 100px"
             separator
-            v-if="!cMensagensRapidas.length"
-          >
+            v-if="!cMensagensRapidas.length">
             <q-item>
               <q-item-section>
                 <q-item-label class="text-negative text-bold">Ops... Nada por aqui!</q-item-label>
@@ -52,25 +42,19 @@
             </q-item>
           </q-list>
 
-          <q-list
-            class="no-shadow no-box-shadow"
+          <q-list class="no-shadow no-box-shadow"
             style="min-width: 100px"
             separator
-            v-else
-          >
-            <q-item
-              v-for="resposta in cMensagensRapidas"
+            v-else>
+            <q-item v-for="resposta in cMensagensRapidas"
               :key="resposta.key"
               clickable
               v-close-popup
-              @click="mensagemRapidaSelecionada(resposta.message)"
-            >
+              @click="mensagemRapidaSelecionada(resposta.message)">
               <q-item-section>
                 <q-item-label class="text-bold"> {{ resposta.key }} </q-item-label>
-                <q-item-label
-                  caption
-                  lines="2"
-                > {{ resposta.message }} </q-item-label>
+                <q-item-label caption
+                  lines="2"> {{ resposta.message }} </q-item-label>
               </q-item-section>
               <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
                 {{ resposta.message }}
@@ -82,53 +66,44 @@
     </div>
 
     <template v-if="!isRecordingAudio">
-      <q-btn
-        v-if="$q.screen.width > 500"
+      <q-btn v-if="$q.screen.width > 500"
         flat
         @click="abrirEnvioArquivo"
         icon="mdi-paperclip"
         :disable="cDisableActions"
         class="bg-padrao btn-rounded q-mx-xs"
-        :color="$q.dark.isActive ? 'white' : ''"
-      >
+        :color="$q.dark.isActive ? 'white' : ''">
         <q-tooltip content-class="text-bold">
           Enviar arquivo
         </q-tooltip>
       </q-btn>
-      <q-btn
-        v-if="$q.screen.width > 500"
+      <q-btn v-if="$q.screen.width > 500"
         flat
         icon="mdi-emoticon-happy-outline"
         :disable="cDisableActions"
         class="bg-padrao btn-rounded q-mx-xs"
-        :color="$q.dark.isActive ? 'white' : ''"
-      >
+        :color="$q.dark.isActive ? 'white' : ''">
         <q-tooltip content-class="text-bold">
           Emoji
         </q-tooltip>
-        <q-menu
-          anchor="top right"
+        <q-menu anchor="top right"
           self="bottom middle"
-          :offset="[5, 40]"
-        >
-          <VEmojiPicker
-            style="width: 40vw"
+          :offset="[5, 40]">
+          <VEmojiPicker style="width: 40vw"
             :showSearch="false"
             :emojisByRow="20"
             labelSearch="Localizar..."
             lang="pt-BR"
-            @select="onInsertSelectEmoji"
-          />
+            @select="onInsertSelectEmoji" />
         </q-menu>
       </q-btn>
-      <q-input
-        hide-bottom-space
+      <q-input hide-bottom-space
         :loading="loading"
         :disable="cDisableActions"
         ref="inputEnvioMensagem"
         id="inputEnvioMensagem"
         type="textarea"
-        @keypress.enter.exact="() => textChat.trim().length ? enviarMensagem() : ''"
+        @keydown.exact.enter.prevent="() => textChat.trim().length ? enviarMensagem() : ''"
         v-show="!cMostrarEnvioArquivo"
         class="col-grow q-mx-xs text-grey-10 inputEnvioMensagem"
         bg-color="grey-2"
@@ -141,45 +116,35 @@
         outlined
         v-model="textChat"
         :value="textChat"
-        @paste="handleInputPaste"
-      >
+        @paste="handleInputPaste">
         <!-- <template v-slot:hint>
           "Quebra linha: Shift + Enter"
         </template> -->
-        <template
-          v-slot:prepend
-          v-if="$q.screen.width < 500"
-        >
-          <q-btn
-            flat
+        <template v-slot:prepend
+          v-if="$q.screen.width < 500">
+          <q-btn flat
             icon="mdi-emoticon-happy-outline"
             :disable="cDisableActions"
             dense
             round
-            :color="$q.dark.isActive ? 'white' : ''"
-          >
+            :color="$q.dark.isActive ? 'white' : ''">
             <q-tooltip content-class="text-bold">
               Emoji
             </q-tooltip>
-            <q-menu
-              anchor="top right"
+            <q-menu anchor="top right"
               self="bottom middle"
-              :offset="[5, 40]"
-            >
-              <VEmojiPicker
-                style="width: 40vw"
+              :offset="[5, 40]">
+              <VEmojiPicker style="width: 40vw"
                 :showSearch="false"
                 :emojisByRow="20"
                 labelSearch="Localizar..."
                 lang="pt-BR"
-                @select="onInsertSelectEmoji"
-              />
+                @select="onInsertSelectEmoji" />
             </q-menu>
           </q-btn>
         </template>
         <template v-slot:append>
-          <q-btn
-            flat
+          <q-btn flat
             @click="abrirEnvioArquivo"
             icon="mdi-paperclip"
             :disable="cDisableActions"
@@ -187,19 +152,16 @@
             round
             v-if="$q.screen.width < 500"
             class="bg-padrao btn-rounded"
-            :color="$q.dark.isActive ? 'white' : ''"
-          >
+            :color="$q.dark.isActive ? 'white' : ''">
             <q-tooltip content-class=" text-bold">
               Enviar arquivo
             </q-tooltip>
           </q-btn>
-          <q-btn
-            dense
+          <q-btn dense
             flat
             round
             icon="mdi-message-flash-outline"
-            @click="visualizarMensagensRapidas = !visualizarMensagensRapidas"
-          >
+            @click="visualizarMensagensRapidas = !visualizarMensagensRapidas">
             <q-tooltip content-class="text-bold">
               Mensagens Rápidas
             </q-tooltip>
@@ -207,8 +169,7 @@
         </template>
       </q-input>
       <!-- tamanho maximo por arquivo de 10mb -->
-      <q-file
-        :loading="loading"
+      <q-file :loading="loading"
         :disable="cDisableActions"
         ref="PickerFileMessage"
         id="PickerFileMessage"
@@ -228,31 +189,26 @@
         :max-file-size="5485760"
         :max-total-size="5485760"
         accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
-        @rejected="onRejectedFiles"
-      />
-      <q-btn
-        v-if="textChat || cMostrarEnvioArquivo"
+        @rejected="onRejectedFiles" />
+      <q-btn v-if="textChat || cMostrarEnvioArquivo"
         ref="btnEnviarMensagem"
         @click="enviarMensagem"
         :disabled="ticketFocado.status !== 'open'"
         flat
         icon="mdi-send"
         class="bg-padrao btn-rounded q-mx-xs"
-        :color="$q.dark.isActive ? 'white' : ''"
-      >
+        :color="$q.dark.isActive ? 'white' : ''">
         <q-tooltip content-class=" text-bold">
           Enviar Mensagem
         </q-tooltip>
       </q-btn>
-      <q-btn
-        v-if="!textChat && !cMostrarEnvioArquivo && !isRecordingAudio"
+      <q-btn v-if="!textChat && !cMostrarEnvioArquivo && !isRecordingAudio"
         @click="handleSartRecordingAudio"
         :disabled="cDisableActions"
         flat
         icon="mdi-microphone"
         class="bg-padrao btn-rounded q-mx-xs"
-        :color="$q.dark.isActive ? 'white' : ''"
-      >
+        :color="$q.dark.isActive ? 'white' : ''">
         <q-tooltip content-class="text-bold">
           Enviar Áudio
         </q-tooltip>
@@ -260,78 +216,58 @@
     </template>
     <template v-else>
       <div class="full-width items-center row justify-end ">
-        <q-skeleton
-          animation="pulse-y"
+        <q-skeleton animation="pulse-y"
           class="col-grow q-mx-md"
-          type="text"
-        />
-        <div
-          style="width: 200px"
+          type="text" />
+        <div style="width: 200px"
           class="flex flex-center items-center"
-          v-if="isRecordingAudio"
-        >
-          <q-btn
-            flat
+          v-if="isRecordingAudio">
+          <q-btn flat
             icon="mdi-close"
             color="negative"
             @click="handleCancelRecordingAudio"
-            class="bg-padrao btn-rounded q-mx-xs"
-          />
-          <RecordingTimer
-            class="text-bold"
-            :class="{'text-white': $q.dark.isActive}"
-          />
-          <q-btn
-            flat
+            class="bg-padrao btn-rounded q-mx-xs" />
+          <RecordingTimer class="text-bold"
+            :class="{ 'text-white': $q.dark.isActive }" />
+          <q-btn flat
             icon="mdi-send-circle-outline"
             color="positive"
             @click="handleStopRecordingAudio"
-            class="bg-padrao btn-rounded q-mx-xs"
-          />
+            class="bg-padrao btn-rounded q-mx-xs" />
         </div>
 
       </div>
     </template>
 
-    <q-dialog
-      v-model="abrirModalPreviewImagem"
+    <q-dialog v-model="abrirModalPreviewImagem"
       position="right"
       @hide="hideModalPreviewImagem"
-      @show="showModalPreviewImagem"
-    >
-      <q-card
-        style="height: 90vh; min-width: 60vw; max-width: 60vw"
-        class="q-pa-md"
-      >
+      @show="showModalPreviewImagem">
+      <q-card style="height: 90vh; min-width: 60vw; max-width: 60vw"
+        class="q-pa-md">
         <q-card-section>
-          <div class="text-h6">{{ urlMediaPreview.title  }}
-            <q-btn
-              class="float-right"
+          <div class="text-h6">{{ urlMediaPreview.title }}
+            <q-btn class="float-right"
               icon="close"
               color="negative"
               round
               outline
-              @click="hideModalPreviewImagem"
-            />
+              @click="hideModalPreviewImagem" />
           </div>
         </q-card-section>
         <q-card-section>
-          <q-img
-            :src="urlMediaPreview.src"
+          <q-img :src="urlMediaPreview.src"
             spinner-color="white"
             class="img-responsive mdi-image-auto-adjust q-uploader__file--img"
-            style="height: 60vh; min-width: 55vw; max-width: 55vw"
-          />
+            style="height: 60vh; min-width: 55vw; max-width: 55vw" />
         </q-card-section>
         <q-card-actions align="center">
-          <q-btn
-            ref="qbtnPasteEnvioMensagem"
+          <q-btn ref="qbtnPasteEnvioMensagem"
             label="Enviar"
             color="primary"
             v-close-popup
             @click="enviarMensagem"
-            @keypress.enter.exact="enviarMensagem()"
-          />
+            @keypress.enter.exact="enviarMensagem()" />
         </q-card-actions>
         <span class="row col text-caption text-blue-grey-10">* Confirmar envio: Enter</span>
         <span class="row col text-caption text-blue-grey-10">** Cancelar: ESC</span>
