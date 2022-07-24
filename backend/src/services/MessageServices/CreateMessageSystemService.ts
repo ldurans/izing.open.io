@@ -127,6 +127,14 @@ const CreateMessageSystemService = async ({
             lastMessageAt: new Date().getTime()
           });
 
+          global.rabbitWhatsapp.publishInQueue(
+            `whatsapp::${tenantId}`,
+            JSON.stringify({
+              ...messageCreated.toJSON(),
+              contact: ticket.contact.toJSON()
+            })
+          );
+
           socketEmit({
             tenantId,
             type: "chat:create",
