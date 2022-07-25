@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/ldurans/izing.io/compare/v1.4.1...v1.4.2) (2022-07-25)
+
+
+### Bug Fixes
+
+* **mensagens:** ajuste no envio de mensagens agendadas. ([bc32611](https://github.com/ldurans/izing.io/commit/bc326117da014264f5e241600b8d437b088cd100))
+
 ## [1.4.1](https://github.com/ldurans/izing.io/compare/v1.4.0...v1.4.1) (2022-07-24)
 
 
