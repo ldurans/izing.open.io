@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/ldurans/izing.io/compare/v1.4.2...v1.4.3) (2022-07-25)
+
+
+### Bug Fixes
+
+* **bull:** ui queues ([5ddd98b](https://github.com/ldurans/izing.io/commit/5ddd98b028e328822789abb5a01ef1b5982a319a))
+
 ## [1.4.2](https://github.com/ldurans/izing.io/compare/v1.4.1...v1.4.2) (2022-07-25)
 
 
