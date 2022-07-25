@@ -1,4 +1,3 @@
-// import * as Sentry from "@sentry/node";
 import { MessageSyncMessageWrapper } from "instagram_mqtt";
 
 import Contact from "../../models/Contact";
@@ -13,7 +12,6 @@ const VerifyMessage = async (
   contact: Contact
 ): Promise<void> => {
   // const quotedMsg = await VerifyQuotedMessage(msg);
-  // Sentry.captureException(err);
   // logger.error(err);
 
   const messageData = {

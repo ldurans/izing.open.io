@@ -81,6 +81,7 @@ sequelize.addModels(models);
 sequelize.afterConnect(() => {
   logger.info("DATABASE CONNECT");
   QueueJobs.default.add("VerifyTicketsChatBotInactives", {});
+  QueueJobs.default.add("SendMessageSchenduled", {});
 });
 
 sequelize.afterDisconnect(() => {

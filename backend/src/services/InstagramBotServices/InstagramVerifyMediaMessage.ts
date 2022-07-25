@@ -84,7 +84,6 @@ const VerifyMediaMessage = async (
   await downloadFile(linkDownload, pathFile);
   // const media = await ctx.telegram.getFile(ctx.message?.);
 
-  // Sentry.captureException(err);
   // logger.error(err);
 
   const messageData = {

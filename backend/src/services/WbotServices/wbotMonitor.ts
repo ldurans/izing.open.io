@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import { Client } from "whatsapp-web.js";
 
 import { getIO } from "../../libs/socket";
@@ -23,7 +22,6 @@ const wbotMonitor = async (
       try {
         await whatsapp.update({ status: newState });
       } catch (err) {
-        Sentry.captureException(err);
         logger.error(err);
       }
 
@@ -52,7 +50,6 @@ const wbotMonitor = async (
       try {
         await whatsapp.update({ battery, plugged });
       } catch (err) {
-        Sentry.captureException(err);
         logger.error(err);
       }
 
@@ -72,7 +69,6 @@ const wbotMonitor = async (
       // setTimeout(() => StartWhatsAppSession(whatsapp), 2000);
     });
   } catch (err) {
-    Sentry.captureException(err);
     logger.error(err);
   }
 };

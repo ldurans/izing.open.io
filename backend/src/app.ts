@@ -1,10 +1,10 @@
+import "newrelic";
 import "./bootstrap";
 import "reflect-metadata";
 import "express-async-errors";
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import * as Sentry from "@sentry/node";
 
 import helmet from "helmet";
 
@@ -22,8 +22,6 @@ import Consumer360 from "./services/WABA360/Consumer360";
 import MessengerConsumer from "./services/MessengerChannelServices/MessengerConsumer";
 // import AMI from "./libs/AMI";
 // const pino = require("pino-http")();
-
-Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
 
@@ -135,11 +133,8 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.json({ limit: "6MB" }));
 app.use(express.urlencoded({ extended: true, limit: "6MB" }));
-app.use(Sentry.Handlers.requestHandler());
 app.use("/public", express.static(uploadConfig.directory));
 app.use(routes);
-
-app.use(Sentry.Handlers.errorHandler());
 
 app.use(async (err: Error, req: Request, res: Response, _: NextFunction) => {
   if (err instanceof AppError) {

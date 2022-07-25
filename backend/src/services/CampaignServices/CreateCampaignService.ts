@@ -1,5 +1,4 @@
 // import AppError from "../../errors/AppError";
-import * as Sentry from "@sentry/node";
 import { parseISO, setHours, setMinutes } from "date-fns";
 import { logger } from "../../utils/logger";
 
@@ -38,7 +37,6 @@ const CreateCampaignService = async ({
           }
           mediaData = media;
         } catch (err) {
-          Sentry.captureException(err);
           logger.error(err);
         }
       })

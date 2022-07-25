@@ -1,5 +1,4 @@
 import { Message as WbotMessage, MessageAck } from "whatsapp-web.js";
-import * as Sentry from "@sentry/node";
 import Message from "../../../models/Message";
 import Ticket from "../../../models/Ticket";
 import { logger } from "../../../utils/logger";
@@ -54,7 +53,6 @@ const HandleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
       await messageCampaign.update({ ack });
     }
   } catch (err) {
-    Sentry.captureException(err);
     logger.error(err);
   }
 };

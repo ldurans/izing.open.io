@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import { setMinutes, setHours, parseISO } from "date-fns";
 import AppError from "../../errors/AppError";
 import Campaign from "../../models/Campaign";
@@ -63,7 +62,6 @@ const UpdateCampaignService = async ({
           }
           mediaData = media;
         } catch (err) {
-          Sentry.captureException(err);
           logger.error(err);
         }
       })

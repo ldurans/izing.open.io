@@ -3,7 +3,6 @@ import {
   Message as WbotMessage,
   Client
 } from "whatsapp-web.js";
-import * as Sentry from "@sentry/node";
 import Contact from "../../../models/Contact";
 import { logger } from "../../../utils/logger";
 import FindOrCreateTicketService from "../../TicketServices/FindOrCreateTicketService";
@@ -97,7 +96,6 @@ const HandleMessage = async (
         await verifyBusinessHours(msg, ticket);
         resolve();
       } catch (err) {
-        Sentry.captureException(err);
         logger.error(err);
         reject(err);
       }

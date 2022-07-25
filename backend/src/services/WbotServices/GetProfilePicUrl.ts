@@ -1,6 +1,6 @@
-import { logger } from "@sentry/utils";
 import GetDefaultWhatsApp from "../../helpers/GetDefaultWhatsApp";
 import { getWbot } from "../../libs/wbot";
+import { logger } from "../../utils/logger";
 
 const GetProfilePicUrl = async (
   number: string,

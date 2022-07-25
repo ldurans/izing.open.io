@@ -1,5 +1,3 @@
-// import * as Sentry from "@sentry/node";
-
 import { Context } from "telegraf";
 import getQuotedForMessageId from "../../helpers/getQuotedForMessageId";
 import Contact from "../../models/Contact";
@@ -14,7 +12,6 @@ const VerifyMessage = async (
   contact: Contact
 ): Promise<void> => {
   // const quotedMsg = await VerifyQuotedMessage(msg);
-  // Sentry.captureException(err);
   // logger.error(err);
   let message;
   let updateMessage: any = {};

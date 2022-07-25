@@ -1,7 +1,6 @@
 import { join } from "path";
 import { promisify } from "util";
 import { writeFile } from "fs";
-import * as Sentry from "@sentry/node";
 
 import { Message as WbotMessage } from "whatsapp-web.js";
 import Contact from "../../../models/Contact";
@@ -39,7 +38,6 @@ const VerifyMediaMessage = async (
       "base64"
     );
   } catch (err) {
-    Sentry.captureException(err);
     logger.error(err);
   }
 

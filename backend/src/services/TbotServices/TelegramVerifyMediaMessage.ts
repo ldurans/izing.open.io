@@ -1,7 +1,6 @@
 import { join } from "path";
 import { promisify } from "util";
 import { writeFile, createWriteStream } from "fs";
-import * as Sentry from "@sentry/node";
 
 import { Context } from "telegraf";
 import axios from "axios";

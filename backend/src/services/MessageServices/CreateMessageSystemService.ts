@@ -1,7 +1,6 @@
 // import { writeFile } from "fs";
 // import { promisify } from "util";
 // import { join } from "path";
-import * as Sentry from "@sentry/node";
 import { logger } from "../../utils/logger";
 // import MessageOffLine from "../../models/MessageOffLine";
 import Ticket from "../../models/Ticket";
@@ -90,7 +89,6 @@ const CreateMessageSystemService = async ({
             //   "base64"
             // );
           } catch (err) {
-            Sentry.captureException(err);
             logger.error(err);
           }
 
@@ -127,13 +125,15 @@ const CreateMessageSystemService = async ({
             lastMessageAt: new Date().getTime()
           });
 
-          global.rabbitWhatsapp.publishInQueue(
-            `whatsapp::${tenantId}`,
-            JSON.stringify({
-              ...messageCreated.toJSON(),
-              contact: ticket.contact.toJSON()
-            })
-          );
+          if (!scheduleDate) {
+            global.rabbitWhatsapp.publishInQueue(
+              `whatsapp::${tenantId}`,
+              JSON.stringify({
+                ...messageCreated.toJSON(),
+                contact: ticket.contact.toJSON()
+              })
+            );
+          }
 
           socketEmit({
             tenantId,
@@ -174,19 +174,21 @@ const CreateMessageSystemService = async ({
         answered: true
       });
 
+      if (!scheduleDate) {
+        global.rabbitWhatsapp.publishInQueue(
+          `whatsapp::${tenantId}`,
+          JSON.stringify({
+            ...messageCreated.toJSON(),
+            contact: ticket.contact.toJSON()
+          })
+        );
+      }
+
       socketEmit({
         tenantId,
         type: "chat:create",
         payload: messageCreated
       });
-
-      global.rabbitWhatsapp.publishInQueue(
-        `whatsapp::${tenantId}`,
-        JSON.stringify({
-          ...messageCreated.toJSON(),
-          contact: ticket.contact.toJSON()
-        })
-      );
     }
   } catch (error) {
     logger.error("CreateMessageSystemService", error);

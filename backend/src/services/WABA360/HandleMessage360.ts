@@ -47,7 +47,6 @@ const HandleMessage360 = async (
         // await verifyBusinessHours(msgData, ticket);
         resolve();
       } catch (error) {
-        // Sentry.captureException(err);
         logger.error(error);
         reject(error);
       }

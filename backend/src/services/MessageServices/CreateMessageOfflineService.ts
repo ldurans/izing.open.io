@@ -1,7 +1,6 @@
 import { writeFile } from "fs";
 import { promisify } from "util";
 import { join } from "path";
-import * as Sentry from "@sentry/node";
 import { logger } from "../../utils/logger";
 import MessageOffLine from "../../models/MessageOffLine";
 import { getIO } from "../../libs/socket";
@@ -77,7 +76,6 @@ const CreateMessageOffilineService = async ({
               "base64"
             );
           } catch (err) {
-            Sentry.captureException(err);
             logger.error(err);
           }
 
