@@ -63,8 +63,8 @@ const SendMessage = async (message: Message): Promise<void> => {
 
 const WhatsappConsumer = tenantId => {
   const queue = `whatsapp::${tenantId}`;
-  logger.info(`SendMessage: ${queue}`);
   global.rabbitWhatsapp.consumeWhatsapp(queue, async message => {
+    logger.info(`SendMessage Queue: ${queue}`);
     const content = JSON.parse(message.content.toString());
     await SendMessage(content);
   });
