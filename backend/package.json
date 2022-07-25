@@ -23,7 +23,7 @@
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
-    "bull": "^3.22.8",
+    "bull": "3.22.8",
     "bull-board": "^1.4.1",
     "content-disposition": "^0.5.4",
     "cookie-parser": "^1.4.5",

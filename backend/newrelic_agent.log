@@ -168,3 +168,36 @@
 {"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":214079,"time":"2022-07-25T03:21:38.570Z","msg":"Valid event_harvest_config received. Updating harvest cycles. {\"report_period_ms\":5000,\"harvest_limits\":{\"error_event_data\":8,\"log_event_data\":833,\"analytic_event_data\":833,\"custom_event_data\":83}}"}
 {"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":214079,"time":"2022-07-25T03:21:38.575Z","msg":"Agent state changed from connected to started."}
 {"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":214079,"time":"2022-07-25T03:21:39.576Z","msg":"Starting initial 1000ms harvest."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:13.843Z","msg":"Using New Relic for Node.js. Agent version: 8.16.0; Node version: v14.19.3."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:13.952Z","msg":"Using LegacyContextManager"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:14.022Z","msg":"Agent state changed from stopped to starting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:14.053Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:14.053Z","msg":"Agent state changed from starting to connecting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:22.654Z","msg":"Agent state changed from connecting to connected."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:22.654Z","msg":"Connected to collector-004.newrelic.com:443 with agent run ID BWzgt_XGKMK2ADZm2zjb5O1i3hW4AAgBAAAnIQEAA4NDAgQ42-a9AwAGOC4xNi4wAAlkdXJhbnMtbHgACWFwaS1pemluZw.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:22.654Z","msg":"Reporting to: https://rpm.newrelic.com/accounts/3565275/applications/953935549","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:22.655Z","msg":"Valid event_harvest_config received. Updating harvest cycles. {\"report_period_ms\":5000,\"harvest_limits\":{\"error_event_data\":8,\"log_event_data\":833,\"analytic_event_data\":833,\"custom_event_data\":83}}"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:22.658Z","msg":"Agent state changed from connected to started."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":230211,"time":"2022-07-25T04:00:23.683Z","msg":"Starting initial 1000ms harvest."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:03.269Z","msg":"Using New Relic for Node.js. Agent version: 8.16.0; Node version: v14.19.3."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:03.359Z","msg":"Using LegacyContextManager"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:03.395Z","msg":"Agent state changed from stopped to starting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:03.422Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:03.422Z","msg":"Agent state changed from starting to connecting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:12.199Z","msg":"Agent state changed from connecting to connected."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:12.199Z","msg":"Connected to collector-004.newrelic.com:443 with agent run ID Bavw6qjuatUsADZm2zjb5O1i3hvQAAgBAAAnIQEAA7mXAgQ42-a9AwAGOC4xNi4wAAlkdXJhbnMtbHgACWFwaS1pemluZw.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:12.200Z","msg":"Reporting to: https://rpm.newrelic.com/accounts/3565275/applications/953935549","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:12.200Z","msg":"Valid event_harvest_config received. Updating harvest cycles. {\"report_period_ms\":5000,\"harvest_limits\":{\"error_event_data\":8,\"log_event_data\":833,\"analytic_event_data\":833,\"custom_event_data\":83}}"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:12.203Z","msg":"Agent state changed from connected to started."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":244119,"time":"2022-07-25T04:26:13.202Z","msg":"Starting initial 1000ms harvest."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:32:48.051Z","msg":"Using New Relic for Node.js. Agent version: 8.16.0; Node version: v14.19.3."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:32:48.345Z","msg":"Using LegacyContextManager"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:32:48.518Z","msg":"Agent state changed from stopped to starting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:32:48.544Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:32:48.544Z","msg":"Agent state changed from starting to connecting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:33:06.118Z","msg":"Agent state changed from connecting to connected."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:33:06.119Z","msg":"Connected to collector-004.newrelic.com:443 with agent run ID BYMHQsm8xPhpADZm2zjb5O1i3h10AAgBAAAnIQEAA-LTAgQ42-a9AwAGOC4xNi4wAAlkdXJhbnMtbHgACWFwaS1pemluZw.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:33:06.119Z","msg":"Reporting to: https://rpm.newrelic.com/accounts/3565275/applications/953935549","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:33:06.120Z","msg":"Valid event_harvest_config received. Updating harvest cycles. {\"report_period_ms\":5000,\"harvest_limits\":{\"error_event_data\":8,\"log_event_data\":833,\"analytic_event_data\":833,\"custom_event_data\":83}}"}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:33:06.124Z","msg":"Agent state changed from connected to started."}
+{"v":0,"level":30,"name":"newrelic","hostname":"durans-lx","pid":254675,"time":"2022-07-25T04:33:07.125Z","msg":"Starting initial 1000ms harvest."}
