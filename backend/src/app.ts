@@ -76,9 +76,9 @@ if (process.env.AMQP_URL) {
   MessengerConsumer();
 }
 
-if (process.env.NODE_ENV === "dev") {
-  app.use("/admin/queues", bullRoute);
-}
+// if (process.env.NODE_ENV === "dev") {
+// }
+app.use("/admin/queues", bullRoute);
 
 // em produção estou usando assim:
 // if (process.env.NODE_ENV === "prod") {

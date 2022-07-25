@@ -23,3 +23,5 @@ yarn-error.log
 .quasar/
 
 backend/.wwebjs_auth/
+backend/newrelic_agent.log
+newrelic_agent.log
