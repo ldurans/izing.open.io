@@ -45,7 +45,7 @@ export default class RabbitmqServer {
     queue: string,
     callback: (message: Message) => Promise<void>
   ) {
-    this.channel.prefetch(1, false);
+    this.channel.prefetch(10, false);
     await this.channel.assertQueue(queue, { durable: true });
     this.channel.consume(queue, async (message: any) => {
       try {

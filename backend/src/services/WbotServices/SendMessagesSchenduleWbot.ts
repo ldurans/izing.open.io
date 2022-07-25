@@ -55,6 +55,7 @@ const SendMessagesSchenduleWbot = async (): Promise<void> => {
         contact: message.ticket.contact.toJSON()
       })
     );
+    message.update({ status: "queue" });
   }
 };
 

@@ -9,6 +9,7 @@ import { getWbot } from "../../libs/wbot";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 const SendMessage = async (message: Message): Promise<void> => {
+  logger.info(`SendMessage: ${message.id}`);
   const wbot = getWbot(message.ticket.whatsappId);
   let sendedMessage;
 
@@ -35,13 +36,11 @@ const SendMessage = async (message: Message): Promise<void> => {
       linkPreview: false, // fix: send a message takes 2 seconds when there's a link on message body
       sendAudioAsVoice: true
     });
-    logger.info("rabbit::sendMessage media");
   } else {
     sendedMessage = await wbot.sendMessage(chatId, message.body, {
       quotedMessageId: quotedMsgSerializedId,
       linkPreview: false // fix: send a message takes 2 seconds when there's a link on message body
     });
-    logger.info("rabbit::sendMessage text");
   }
 
   // enviar old_id para substituir no front a mensagem corretamente
@@ -58,12 +57,13 @@ const SendMessage = async (message: Message): Promise<void> => {
   logger.info("rabbit::Message Update");
   // await SetTicketMessagesAsRead(ticket);
 
-  logger.info("rabbit::sendMessage", sendedMessage.id.id);
+  logger.info("rabbit::sendedMessage", sendedMessage.id.id);
   // throw new Error("SIMULANDO ERRO");
 };
 
 const WhatsappConsumer = tenantId => {
   const queue = `whatsapp::${tenantId}`;
+  logger.info(`SendMessage: ${queue}`);
   global.rabbitWhatsapp.consumeWhatsapp(queue, async message => {
     const content = JSON.parse(message.content.toString());
     await SendMessage(content);

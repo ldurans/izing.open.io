@@ -7,3 +7,13 @@ docker run -d --name rabbitmq \
  --hostname rabbitmq \
  -v /home/durans/database/rabbitmq/data:/var/lib/rabbitmq \
  rabbitmq:3-management-alpine
+
+
+docker run -d --name redis-izing \
+ -p 6378:6379 \
+ --restart=always \
+ --hostname redis-izing \
+ -v /home/durans/database/redis-izing/data:/var/lib/rabbitmq \
+ redis:latest
+
+
