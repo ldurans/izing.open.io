@@ -12,7 +12,7 @@ import IsValidMsg from "./IsValidMsg";
 import VerifyContact from "./VerifyContact";
 import VerifyMediaMessage from "./VerifyMediaMessage";
 import VerifyMessage from "./VerifyMessage";
-import verifyBusinessHours from "./VerifyBusinessHours";
+// import verifyBusinessHours from "./VerifyBusinessHours";
 import VerifyStepsChatFlowTicket from "../../ChatFlowServices/VerifyStepsChatFlowTicket";
 // import isMessageExistsService from "../../MessageServices/isMessageExistsService";
 
@@ -93,7 +93,7 @@ const HandleMessage = async (
         // await VerifyAutoReplyActionTicket(msg, ticket);
         await VerifyStepsChatFlowTicket(msg, ticket);
 
-        await verifyBusinessHours(msg, ticket);
+        // await verifyBusinessHours(msg, ticket);
         resolve();
       } catch (err) {
         logger.error(err);
