@@ -1,4 +1,4 @@
-import "newrelic";
+// import "newrelic";
 import "./bootstrap";
 import "reflect-metadata";
 import "express-async-errors";
