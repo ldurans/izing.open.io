@@ -5,6 +5,7 @@ import { logger } from "../../../utils/logger";
 import CampaignContacts from "../../../models/CampaignContacts";
 import ApiMessage from "../../../models/ApiMessage";
 import socketEmit from "../../../helpers/socketEmit";
+import Queue from "../../../libs/Queue";
 
 const HandleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
   await new Promise(r => setTimeout(r, 500));
@@ -17,7 +18,7 @@ const HandleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
         {
           model: Ticket,
           as: "ticket",
-          attributes: ["id", "tenantId"]
+          attributes: ["id", "tenantId", "apiConfig"]
         },
         {
           model: Message,
@@ -35,6 +36,23 @@ const HandleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
         type: "chat:ack",
         payload: messageToUpdate
       });
+
+      const apiConfig: any = ticket.apiConfig || {};
+      if (apiConfig?.externalKey && apiConfig?.urlMessageStatus) {
+        const payload = {
+          ack,
+          messageId: msg.id.id,
+          ticketId: ticket.id,
+          externalKey: apiConfig?.externalKey,
+          authToken: apiConfig?.authToken,
+          type: "hookMessageStatus"
+        };
+        Queue.add("WebHooksAPI", {
+          url: apiConfig.urlMessageStatus,
+          type: payload.type,
+          payload
+        });
+      }
     }
 
     const messageAPI = await ApiMessage.findOne({

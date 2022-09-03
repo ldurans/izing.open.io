@@ -168,46 +168,36 @@ class Whatsapp extends Model<Whatsapp> {
   @AfterUpdate
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static async HookStatus(instance: Whatsapp & any): Promise<void> {
-    const statusHook = ["DESTROYED", "DISCONNECTED", "CONNECTED"];
+    const { status, name, qrcode, number, tenantId, id: sessionId } = instance;
+    const payload: any = {
+      name,
+      number,
+      status,
+      qrcode,
+      timestamp: Date.now(),
+      type: "hookSessionStatus"
+    };
 
-    if (
-      statusHook.includes(instance.status) &&
-      // eslint-disable-next-line no-underscore-dangle
-      instance._previousDataValues.status !== instance.status
-    ) {
-      const messages: any = {
-        DESTROYED:
-          "Desconectado devido à várias tentativas de extabelecimento da conexão sem sucesso. Verifique o celular e internet do aparelho.",
-        DISCONNECTED:
-          "Desconectado por: Telefone sem internet / Número despareado / Utilizado no whatsapp web.",
-        CONNECTED: "Sessão conectada."
-      };
-      const { status, name, number, tenantId, id: sessionId } = instance;
-      const payload = {
-        name,
-        number,
-        status,
-        timestamp: Date.now(),
-        msg: messages[status],
-        type: "hookSessionStatus"
-      };
+    const apiConfig: any = await ApiConfig.findAll({
+      where: { tenantId, sessionId }
+    });
 
-      const apiConfig = await ApiConfig.findAll({
-        where: { tenantId, sessionId }
-      });
+    if (!apiConfig) return;
 
-      if (!apiConfig) return;
-
-      await Promise.all(
-        apiConfig.map((api: ApiConfig) => {
+    await Promise.all(
+      apiConfig.map((api: ApiConfig) => {
+        if (api.urlServiceStatus) {
+          if (api.authToken) {
+            payload.authToken = api.authToken;
+          }
           return Queue.add("WebHooksAPI", {
             url: api.urlServiceStatus,
             type: payload.type,
             payload
           });
-        })
-      );
-    }
+        }
+      })
+    );
   }
 
   @BeforeUpdate

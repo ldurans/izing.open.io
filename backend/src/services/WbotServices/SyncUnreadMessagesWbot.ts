@@ -1,4 +1,5 @@
 import { Client } from "whatsapp-web.js";
+import Queue from "../../libs/Queue";
 import { logger } from "../../utils/logger";
 import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
 import FindOrCreateTicketService from "../TicketServices/FindOrCreateTicketService";
@@ -54,6 +55,30 @@ const SyncUnreadMessagesWbot = async (
           if (idx === unreadMessages.length - 1) {
             // await verifyAutoReplyActionTicket(msg, ticket);
             await VerifyStepsChatFlowTicket(msg, ticket);
+
+            const apiConfig: any = ticket.apiConfig || {};
+            if (
+              !msg.fromMe &&
+              !ticket.isGroup &&
+              !ticket.answered &&
+              apiConfig?.externalKey &&
+              apiConfig?.urlMessageStatus
+            ) {
+              const payload = {
+                timestamp: Date.now(),
+                msg,
+                messageId: msg.id.id,
+                ticketId: ticket.id,
+                externalKey: apiConfig?.externalKey,
+                authToken: apiConfig?.authToken,
+                type: "hookMessage"
+              };
+              Queue.add("WebHooksAPI", {
+                url: apiConfig.urlMessageStatus,
+                type: payload.type,
+                payload
+              });
+            }
           }
           // await verifyBusinessHours(msg, ticket);
         });

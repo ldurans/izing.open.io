@@ -1,11 +1,15 @@
-// import { writeFile } from "fs";
+import fs from "fs";
 // import { promisify } from "util";
-// import { join } from "path";
+import { join } from "path";
+import axios from "axios";
+import mime from "mime";
+import { v4 as uuid } from "uuid";
 import { logger } from "../../utils/logger";
 // import MessageOffLine from "../../models/MessageOffLine";
 import Ticket from "../../models/Ticket";
 import Message from "../../models/Message";
 import socketEmit from "../../helpers/socketEmit";
+import Queue from "../../libs/Queue";
 
 interface MessageData {
   ticketId: number;
@@ -34,7 +38,7 @@ interface MessageRequest {
 }
 
 interface Request {
-  msg: MessageRequest;
+  msg: MessageRequest | any;
   scheduleDate?: string | Date;
   sendType: string;
   status: string;
@@ -45,6 +49,60 @@ interface Request {
 }
 
 // const writeFileAsync = promisify(writeFile);
+
+const downloadMedia = async (msg: any): Promise<any> => {
+  try {
+    const request = await axios.get(msg.mediaUrl, {
+      responseType: "stream"
+    });
+    const cType = request.headers["content-type"];
+    const fileExt = mime.extension(cType);
+    const mediaName = uuid();
+    const dir = join(__dirname, "..", "..", "..", "public");
+    const fileName = `${mediaName}.${fileExt}`;
+    const mediaPath = join(dir, fileName);
+    const mediaData = {
+      originalname: fileName,
+      filename: fileName,
+      mediaType: fileExt
+    };
+    await new Promise((resolve, reject) => {
+      request.data
+        .pipe(fs.createWriteStream(mediaPath))
+        .on("finish", async () => {
+          resolve(mediaData);
+        })
+        .on("error", (error: any) => {
+          console.error("ERROR DONWLOAD", error);
+          fs.rmdirSync(mediaPath, { recursive: true });
+          reject(new Error(error));
+        });
+    });
+    return mediaData;
+  } catch (error) {
+    if (error.response.status === 404) {
+      const payload = {
+        ack: -1,
+        body: msg.body,
+        messageId: "",
+        number: msg.number,
+        externalKey: msg.externalKey,
+        error: error.message,
+        authToken: msg.apiConfig.authToken,
+        type: "hookMessageStatus"
+      };
+      if (msg?.apiConfig?.urlMessageStatus) {
+        Queue.add("WebHooksAPI", {
+          url: msg.apiConfig.urlMessageStatus,
+          type: payload.type,
+          payload
+        });
+      }
+      return {};
+    }
+    throw new Error(error);
+  }
+};
 
 const CreateMessageSystemService = async ({
   msg,
@@ -60,12 +118,12 @@ const CreateMessageSystemService = async ({
     ticketId: ticket.id,
     body: msg.body,
     contactId: ticket.contactId,
-    fromMe: msg.fromMe,
+    fromMe: sendType === "API" ? true : msg?.fromMe,
     read: true,
     mediaType: "chat",
     mediaUrl: undefined,
     timestamp: new Date().getTime(),
-    quotedMsgId: msg.quotedMsg?.id,
+    quotedMsgId: msg?.quotedMsg?.id,
     userId,
     scheduleDate,
     sendType,
@@ -74,20 +132,25 @@ const CreateMessageSystemService = async ({
   };
 
   try {
+    if (sendType === "API" && msg.mediaUrl) {
+      medias = [];
+      const mediaData = await downloadMedia(msg);
+      medias.push(mediaData);
+    }
+
+    if (sendType === "API" && !msg.mediaUrl && msg.media) {
+      medias = [];
+      medias.push(msg.media);
+    }
+
     if (medias) {
       await Promise.all(
-        medias.map(async (media: Express.Multer.File) => {
+        medias.map(async (media: Express.Multer.File | any) => {
           try {
             if (!media.filename) {
               const ext = media.mimetype.split("/")[1].split(";")[0];
               media.filename = `${new Date().getTime()}.${ext}`;
             }
-
-            // await writeFileAsync(
-            //   join(__dirname, "..", "..", "..", "..", "public", media.filename),
-            //   media.buffer,
-            //   "base64"
-            // );
           } catch (err) {
             logger.error(err);
           }
@@ -96,7 +159,9 @@ const CreateMessageSystemService = async ({
             ...messageData,
             body: media.originalname,
             mediaUrl: media.filename,
-            mediaType: media.mimetype.substr(0, media.mimetype.indexOf("/"))
+            mediaType:
+              media.mediaType ||
+              media.mimetype.substr(0, media.mimetype.indexOf("/"))
           };
 
           const msgCreated = await Message.create(message);

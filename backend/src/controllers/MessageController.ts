@@ -65,25 +65,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
   try {
     SetTicketMessagesAsRead(ticket);
-
-    // if (medias) {
-    //   await Promise.all(
-    //     medias.map(async (media: Express.Multer.File) => {
-    //       await SendWhatsAppMedia({ media, ticket, userId });
-    //     })
-    //   );
-    // } else {
-    //   await SendWhatsAppMessage({ body, ticket, quotedMsg, userId });
-    // }
   } catch (error) {
     console.log("SetTicketMessagesAsRead", error);
-    // CreateMessageOffilineService({
-    //   msg: req.body,
-    //   tenantId,
-    //   medias,
-    //   ticket,
-    //   userId
-    // });
   }
 
   try {

@@ -157,6 +157,12 @@ class Ticket extends Model<Ticket> {
 
   @HasMany(() => MessagesOffLine)
   messagesOffLine: MessagesOffLine[];
+
+  @Default(null)
+  @AllowNull
+  @Column(DataType.JSONB)
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  apiConfig: object;
 }
 
 export default Ticket;

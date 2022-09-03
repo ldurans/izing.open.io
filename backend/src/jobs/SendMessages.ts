@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { v4 as uuid } from "uuid";
-import { getValue, setValue } from "../libs/redisClient";
 import { getWbot } from "../libs/wbot";
 import SendMessagesSystemWbot from "../services/WbotServices/SendMessagesSystemWbot";
 import { logger } from "../utils/logger";
+
+const sending: any = {};
 
 export default {
   key: "SendMessages",
@@ -17,18 +18,17 @@ export default {
   },
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   async handle({ data }: any) {
-    const sending = await getValue(`sendingMessages_tenant_${data.tenantId}`);
     try {
-      logger.info(`Sending Tenant Initiated: ${data.tenantId} => ${sending}`);
-      if (sending) return;
-      await setValue(`sendingMessages_tenant_${data.tenantId}`, true);
+      logger.info(`Sending Tenant Initiated: ${data.tenantId}`);
+      if (sending[data.tenantId]) return;
       const wbot = getWbot(data.sessionId);
+      sending[data.tenantId] = true;
       await SendMessagesSystemWbot(wbot, data.tenantId);
-      await setValue(`sendingMessages_tenant_${data.tenantId}`, false);
+      sending[data.tenantId] = false;
       logger.info(`Finalized Sending Tenant: ${data.tenantId}`);
     } catch (error) {
       logger.error({ message: "Error send messages", error });
-      await setValue(`sendingMessages_tenant_${data.tenantId}`, false);
+      sending[data.tenantId] = false;
       throw new Error(error);
     }
   }

@@ -14,6 +14,7 @@ const ShowWhatsAppService = async ({
 }: Data): Promise<Whatsapp> => {
   const attr = [
     "id",
+    "qrcode",
     "name",
     "status",
     "plugged",

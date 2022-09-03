@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 import { join } from "path";
-import { Client, MessageMedia } from "whatsapp-web.js";
+import { Buttons, Client, List, MessageMedia } from "whatsapp-web.js";
 import { Op } from "sequelize";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
@@ -92,6 +92,30 @@ const SendMessagesSystemWbot = async (
         });
         logger.info("sendMessage media");
       } else {
+        const btn = new Buttons(
+          "Button body",
+          [{ body: "bt1" }, { body: "bt2" }, { body: "bt3" }],
+          "title",
+          "footer"
+        );
+        const sections = [
+          {
+            title: "sectionTitle",
+            rows: [
+              { title: "ListItem1", description: "desc" },
+              { title: "ListItem2" }
+            ]
+          }
+        ];
+        // const list = new List(
+        //   "List body",
+        //   "btnText",
+        //   sections,
+        //   "Title",
+        //   "footer"
+        // );
+        // await wbot.sendMessage(chatId, list);
+        await wbot.sendMessage(chatId, btn);
         sendedMessage = await wbot.sendMessage(chatId, message.body, {
           quotedMessageId: quotedMsgSerializedId,
           linkPreview: false // fix: send a message takes 2 seconds when there's a link on message body
@@ -126,6 +150,13 @@ const SendMessagesSystemWbot = async (
     } catch (error) {
       const idMessage = message.id;
       const ticketId = message.ticket.id;
+
+      if (error.code === "ENOENT") {
+        await Message.destroy({
+          where: { id: message.id }
+        });
+      }
+
       logger.error(
         `Error message is (tenant: ${tenantId} | Ticket: ${ticketId})`
       );

@@ -14,6 +14,7 @@ import VerifyMediaMessage from "./VerifyMediaMessage";
 import VerifyMessage from "./VerifyMessage";
 // import verifyBusinessHours from "./VerifyBusinessHours";
 import VerifyStepsChatFlowTicket from "../../ChatFlowServices/VerifyStepsChatFlowTicket";
+import Queue from "../../../libs/Queue";
 // import isMessageExistsService from "../../MessageServices/isMessageExistsService";
 
 interface Session extends Client {
@@ -92,6 +93,30 @@ const HandleMessage = async (
         }
         // await VerifyAutoReplyActionTicket(msg, ticket);
         await VerifyStepsChatFlowTicket(msg, ticket);
+
+        const apiConfig: any = ticket.apiConfig || {};
+        if (
+          !msg.fromMe &&
+          !ticket.isGroup &&
+          !ticket.answered &&
+          apiConfig?.externalKey &&
+          apiConfig?.urlMessageStatus
+        ) {
+          const payload = {
+            timestamp: Date.now(),
+            msg,
+            messageId: msg.id.id,
+            ticketId: ticket.id,
+            externalKey: apiConfig?.externalKey,
+            authToken: apiConfig?.authToken,
+            type: "hookMessage"
+          };
+          Queue.add("WebHooksAPI", {
+            url: apiConfig.urlMessageStatus,
+            type: payload.type,
+            payload
+          });
+        }
 
         // await verifyBusinessHours(msg, ticket);
         resolve();

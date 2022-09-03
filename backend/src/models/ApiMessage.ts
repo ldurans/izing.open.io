@@ -100,7 +100,8 @@ class ApiMessage extends Model<ApiMessage> {
         messageId: instance.messageId,
         number: instance.number,
         externalKey: instance.externalKey,
-        type: "hookMessageStatus"
+        type: "hookMessageStatus",
+        authToken: instance.authToken
       };
 
       Queue.add("WebHooksAPI", {

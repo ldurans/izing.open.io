@@ -28,4 +28,10 @@ apiExternalRoute.post(
   APIExternalController.sendMessageAPI
 );
 
+apiExternalRoute.post(
+  "/v1/api/external/:apiId/start-session",
+  isAPIAuth,
+  APIExternalController.startSession
+);
+
 export default apiExternalRoute;

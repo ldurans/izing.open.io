@@ -15,6 +15,7 @@ interface ApiData {
   urlMessageStatus?: string;
   userId: string | number;
   tenantId: string | number;
+  authToken?: string;
   isActive?: boolean;
 }
 

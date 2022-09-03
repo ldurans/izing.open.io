@@ -8,6 +8,7 @@ interface ApiData {
   urlMessageStatus?: string;
   userId: string | number;
   tenantId: string | number;
+  authToken?: string;
   isActive?: boolean;
 }
 
@@ -36,6 +37,7 @@ const UpdateApiConfigService = async ({
     urlServiceStatus,
     urlMessageStatus,
     userId,
+    authToken,
     isActive
   } = apiData;
 
@@ -45,6 +47,7 @@ const UpdateApiConfigService = async ({
     urlServiceStatus,
     urlMessageStatus,
     userId,
+    authToken,
     isActive
   });
 

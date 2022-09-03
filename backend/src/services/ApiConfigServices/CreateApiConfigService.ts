@@ -8,6 +8,7 @@ interface Request {
   sessionId: string | number;
   urlServiceStatus?: string;
   urlMessageStatus?: string;
+  authToken?: string;
   userId: string | number;
   tenantId: string | number;
 }
@@ -18,6 +19,7 @@ const CreateApiConfigService = async ({
   urlServiceStatus,
   urlMessageStatus,
   userId,
+  authToken,
   tenantId
 }: Request): Promise<ApiConfig> => {
   const { secret } = authConfig;
@@ -38,6 +40,7 @@ const CreateApiConfigService = async ({
     name,
     sessionId,
     token,
+    authToken,
     urlServiceStatus,
     urlMessageStatus,
     userId,

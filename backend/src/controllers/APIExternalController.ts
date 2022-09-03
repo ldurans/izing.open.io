@@ -4,6 +4,9 @@ import { Request, Response } from "express";
 import AppError from "../errors/AppError";
 import ApiConfig from "../models/ApiConfig";
 import Queue from "../libs/Queue";
+import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService";
+import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
+import { getWbot } from "../libs/wbot";
 
 interface MessageDataRequest {
   apiId: string;
@@ -78,4 +81,40 @@ export const sendMessageAPI = async (
   Queue.add("SendMessageAPI", newMessage);
 
   return res.status(200).json({ message: "Message add queue" });
+};
+
+export const startSession = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { tenantId, sessionId } = req.APIAuth;
+  const { apiId } = req.params;
+
+  const APIConfig = await ApiConfig.findOne({
+    where: {
+      id: apiId,
+      tenantId
+    }
+  });
+
+  if (APIConfig?.sessionId !== sessionId) {
+    throw new AppError("ERR_SESSION_NOT_AUTH_TOKEN", 403);
+  }
+
+  const whatsapp = await ShowWhatsAppService({
+    id: APIConfig.sessionId,
+    tenantId: APIConfig.tenantId,
+    isInternal: true
+  });
+  try {
+    const wbot = getWbot(APIConfig.sessionId);
+    const isConnectStatus = (await wbot.getState()) === "CONNECTED";
+    if (!isConnectStatus) {
+      throw new Error("Necessário iniciar sessão");
+    }
+  } catch (error) {
+    StartWhatsAppSession(whatsapp);
+  }
+
+  return res.status(200).json(whatsapp);
 };

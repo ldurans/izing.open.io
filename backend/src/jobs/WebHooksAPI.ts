@@ -36,7 +36,17 @@ export default {
         payload = {
           ack: data.payload.ack,
           messageId: data.payload.messageId,
-          number: data.payload.number,
+          externalKey: data.payload.externalKey,
+          type: data.type
+        };
+      }
+
+      if (data.type === "hookMessage") {
+        payload = {
+          timestamp: data.payload.timestamp,
+          message: data.payload.msg,
+          messageId: data.payload.messageId,
+          ticketId: data.payload.ticketId,
           externalKey: data.payload.externalKey,
           type: data.type
         };
@@ -46,14 +56,21 @@ export default {
         payload = {
           name: data.payload.name,
           number: data.payload.number,
-          timestamp: data.payload.timestamp,
-          msg: data.payload.msg,
           status: data.payload.status,
+          qrcode: data.payload.qrcode,
+          timestamp: data.payload.timestamp,
           type: data.type
         };
       }
 
-      await axios.post(data.url, payload);
+      if (data.payload.authToken) {
+        await axios.post(data.url, payload, {
+          headers: { authorization: data.payload.authToken }
+        });
+      } else {
+        await axios.post(data.url, payload);
+      }
+
       logger.info(
         `Queue WebHooksAPI success: Data: ${data} Payload: ${payload}`
       );
