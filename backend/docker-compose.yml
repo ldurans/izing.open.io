@@ -6,15 +6,15 @@ services:
       context: .
       dockerfile: ./Dockerfile
     env_file:
-      - .env
+      - ./.env
     stdin_open: true
     tty: true
     # command: ./start_production
     ports:
-      - ${PROXY_PORT:-8080}:3000
+      - ${PROXY_PORT:-3000}:3000
     volumes:
       - ".:/usr/src/app"
-      # - "/home/dev/izing-media:/usr/src/app/public/"
+      # - "/var/izing-media:/usr/src/app/public/"
     networks:
       - izing_network
       - izing_db_network
@@ -28,11 +28,11 @@ services:
     image: 'redis:latest'
     restart: always
     ports:
-      - "6379:6379"
+      - "6377:6379"
     env_file:
-      - .env
+      - ./.env
     volumes:
-      - '/home/dev/izing/redis:/data'
+      - '/var/izing/redis:/data'
     networks:
       - izing_network
 
@@ -42,16 +42,16 @@ services:
     user: root
     command: chown -R 1001:1001 /bitnami/postgresql
     volumes:
-      - "/home/dev/izing/pg:/bitnami/postgresql/data"
+      - "/var/izing/pg:/bitnami/postgresql/data"
 
   izing-db:
     image: 'bitnami/postgresql:14'
     restart: always
     container_name: "izing-db"
     env_file:
-      - .env
+      - ./.env
     volumes:
-      - "/home/dev/izing/pg:/bitnami/postgresql/data"
+      - "/var/izing/pg:/bitnami/postgresql/data"
     ports:
       - "5432:5432"
     depends_on:
@@ -74,8 +74,8 @@ services:
       # - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
       # - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
       # - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
-      - /home/dev/izing/rabbitmq/data/:/var/lib/rabbitmq/
-      - /home/dev/izing/rabbitmq/logs/:/var/log/rabbitmq/log
+      - /var/izing/rabbitmq/data/:/var/lib/rabbitmq/
+      - /var/izing/rabbitmq/logs/:/var/log/rabbitmq/log
     ports:
       - 5672:5672
       - 15672:15672
