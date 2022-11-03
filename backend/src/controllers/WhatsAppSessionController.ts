@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 // import path from "path";
 // import { rmdir } from "fs/promises";
-import { getWbot, removeWbot } from "../libs/wbot";
+import { getWbot, removeWbot, apagarPastaSessao } from "../libs/wbot";
 import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService";
 import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
 import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppService";
@@ -34,10 +34,7 @@ const update = async (req: Request, res: Response): Promise<Response> => {
     tenantId
   });
 
-  // const pathRoot = path.resolve(__dirname, "..", "..", "WWebJS");
-  // const pathSession = `${pathRoot}/session-${whatsapp.name}`;
-  // console.log("pathSession StartWhatsAppSession", pathSession);
-  // await rmdir(pathSession, { recursive: true });
+  await apagarPastaSessao(whatsappId);
   StartWhatsAppSession(whatsapp);
   return res.status(200).json({ message: "Starting session." });
 };
@@ -54,6 +51,7 @@ const remove = async (req: Request, res: Response): Promise<Response> => {
       await wbot.logout();
       await wbot.destroy();
       await removeWbot(channel.id);
+      await apagarPastaSessao(whatsappId);
     }
     if (channel.type === "telegram") {
       const tbot = getTbot(channel.id);

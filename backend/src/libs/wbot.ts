@@ -1,14 +1,11 @@
 import { Client, LocalAuth, DefaultOptions } from "whatsapp-web.js";
-// import { rmdir } from "fs/promises";
-// import path from "path";
-// import slugify from "slugify";
+import path from "path";
+import { rmdir } from "fs/promises";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
-import { getValue, setValue } from "./redisClient";
 import { logger } from "../utils/logger";
 import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesWbot";
 import Queue from "./Queue";
-// import WhatsappConsumer from "../services/WbotServices/WhatsappConsumer";
 
 interface Session extends Client {
   id: number;
@@ -18,12 +15,16 @@ const sessions: Session[] = [];
 
 const checking: any = {};
 
+export const apagarPastaSessao = async (id: number | string): Promise<void> => {
+  const pathRoot = path.resolve(__dirname, "..", "..", ".wwebjs_auth");
+  const pathSession = `${pathRoot}/session-wbot_${id}`;
+  const rm = await rmdir(pathSession, { recursive: true });
+  console.log(`apagarPastaSessao:: ${pathSession}`, rm);
+};
+
 const checkMessages = async (wbot: Session, tenantId: number | string) => {
-  // if (checking[tenantId]) return;
-  // checking[tenantId] = true;
   try {
-    const isConnectStatus = (await wbot.getState()) === "CONNECTED"; // getValue(`wbotStatus-${tenantId}`);
-    console.log("isConnectStatus", isConnectStatus);
+    const isConnectStatus = wbot && (await wbot.getState()) === "CONNECTED"; // getValue(`wbotStatus-${tenantId}`);
     logger.info(
       "wbot:checkMessages:status",
       wbot.id,
@@ -33,20 +34,12 @@ const checkMessages = async (wbot: Session, tenantId: number | string) => {
 
     if (isConnectStatus) {
       logger.info("wbot:connected:checkMessages", wbot, tenantId);
-      // logger.info(`checking new message tenant ${tenantId}`);
-      // await SendMessagesSystemWbot(wbot, tenantId);
       Queue.add("SendMessages", { sessionId: wbot.id, tenantId });
     }
   } catch (error) {
     logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
   }
 };
-
-// const apagarPastaSessao = async (whatsapp: Whatsapp): Promise<void> => {
-//   const pathRoot = path.resolve(__dirname, "..", "..", "WWebJS");
-//   const pathSession = `${pathRoot}/session-${whatsapp.name}`;
-//   await rmdir(pathSession, { recursive: true });
-// };
 
 export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
   return new Promise((resolve, reject) => {
@@ -60,23 +53,13 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       }
 
       const wbot = new Client({
-        // session: sessionCfg,
         authStrategy: new LocalAuth({ clientId: `wbot_${whatsapp.id}` }),
         puppeteer: {
           // headless: false,
           executablePath: process.env.CHROME_BIN || undefined,
           args: [`--user-agent=${DefaultOptions.userAgent}`]
-          //     // args: [`--user-agent=${DefaultOptions.userAgent}`]
         }
       }) as Session;
-
-      // const wbot = new Client({
-      //   session: sessionCfg,
-      //   puppeteer: {
-      //     // headless: false,
-      //     // executablePath: process.env.CHROME_BIN || undefined // "/usr/bin/google-chrome",
-      //   }
-      // }) as Session;
 
       wbot.id = whatsapp.id;
 
@@ -95,14 +78,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           wbot.id = whatsapp.id;
           sessions[sessionIndex] = wbot;
         }
-
-        // if (retryQrCode > 5) {
-        //   await wbot.destroy();
-        //   await setValue(`${ whatsapp.id }-retryQrCode`, 0);
-        //   await whatsapp.update({ status: "DESTROYED", retries: 0 });
-        //   await apagarPastaSessao(whatsapp);
-        //   await setValue(`wbotStatus-${ tenantId }`, whatsapp.status);
-        // }
 
         io.emit(`${tenantId}:whatsappSession`, {
           action: "update",
@@ -123,7 +98,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         logger.error(
           `Session: ${sessionName}-AUTHENTICATION FAILURE :: ${msg}`
         );
-        // await apagarPastaSessao(whatsapp);
         if (whatsapp.retries > 1) {
           await whatsapp.update({
             status: "DESTROYED",
@@ -181,7 +155,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         }
         wbot.sendPresenceAvailable();
         SyncUnreadMessagesWbot(wbot, tenantId);
-        // SendOffLineMessagesWbot(wbot, tenantId);
         resolve(wbot);
       });
 
@@ -206,7 +179,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
               retries: 0,
               session: ""
             });
-            // await apagarPastaSessao(whatsapp);
+            await apagarPastaSessao(whatsapp.id);
             await wbot.logout();
             await wbot.destroy();
           } else if (reason === "CONFLICT") {
@@ -217,7 +190,7 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
               retries: 0,
               session: ""
             });
-            // await apagarPastaSessao(whatsapp);
+            await apagarPastaSessao(whatsapp.id);
             await wbot.logout();
             await wbot.destroy();
           }
@@ -239,25 +212,12 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       // WhatsappConsumer(tenantId);
     } catch (err) {
       logger.error(`initWbot error | Error: ${err}`);
-      // 'Error: Protocol error (Runtime.callFunctionOn): Session closed.'
     }
   });
 };
 
 export const getWbot = (whatsappId: number): Session => {
-  // logger.info(`whatsappId: ${ whatsappId } | checkState: ${ checkState }`);
   const sessionIndex = sessions.findIndex(s => s.id === whatsappId);
-
-  // if (sessionIndex === -1) {
-  //   StartWhatsAppSessionVerify(whatsappId, "ERR_WAPP_NOT_INITIALIZED")
-  //     .then(() => {
-  //       throw new AppError("ERR_WAPP_INITIALIZED");
-  //     })
-  //     .catch(() => {
-  //       throw new Error("ERR_WAPP_NOT_INITIALIZED");
-  //     });
-  // }
-
   return sessions[sessionIndex];
 };
 
