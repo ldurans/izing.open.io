@@ -1,3 +1,23 @@
+# [1.5.0](https://github.com/ldurans/izing.io/compare/v1.4.3...v1.5.0) (2022-11-03)
+
+
+### Bug Fixes
+
+* **bull:** atualizado versão. ([d2af79e](https://github.com/ldurans/izing.io/commit/d2af79ed4767a8697e084a91fe7c2b565b3f1cc6))
+* **bull:** atualizado versão. ([c2fa874](https://github.com/ldurans/izing.io/commit/c2fa874c1f3822aff982a382f867f472eec13069))
+* **bull:** atualizado versão. ([ebac4fa](https://github.com/ldurans/izing.io/commit/ebac4fa9d6f3a13197b2c586ab69a7c6ed372909))
+* **bull:** atualizado versão. ([74513de](https://github.com/ldurans/izing.io/commit/74513de6d389b8d048194d495d976daaef958902))
+* **bull:** atualizado versão. ([49441e2](https://github.com/ldurans/izing.io/commit/49441e28099b97b65afcf1ef4228610156399c51))
+* **bull:** atualizado versão. ([00af4fb](https://github.com/ldurans/izing.io/commit/00af4fb7a278f8f705293009d6fedc41738e0f5f))
+* **docker:** ajustes iniciais para docker ([281a83e](https://github.com/ldurans/izing.io/commit/281a83ed2ed0bc90c03c1782e7f5cad3df69b80a))
+* **verifyBusinessHours:** desativado momentaneamente para revisão. ([cc71018](https://github.com/ldurans/izing.io/commit/cc71018461bc5bd7592c5f9aebd0c03cd03503a1))
+* **wwebjs:** atualização lib whatsapp. ([bd5540d](https://github.com/ldurans/izing.io/commit/bd5540dbab801bad465fd1f8559bc2affdba4fa6))
+
+
+### Features
+
+* **session:** função para apagar a pasta ao desconectar. ([0e2e181](https://github.com/ldurans/izing.io/commit/0e2e1816bb8ae246fc30a872c8d0e8b1eaff6532))
+
 ## [1.4.3](https://github.com/ldurans/izing.io/compare/v1.4.2...v1.4.3) (2022-07-25)
 
 
