@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/ldurans/izing.io/compare/v1.5.0...v1.6.0) (2022-11-04)
+
+
+### Features
+
+* **seeds:** adicionado seeds com dados iniciais do projeto. ([9b550fc](https://github.com/ldurans/izing.io/commit/9b550fc53bff0a98b85a148d616aacf8dc79e046))
+
 # [1.5.0](https://github.com/ldurans/izing.io/compare/v1.4.3...v1.5.0) (2022-11-03)
 
 
