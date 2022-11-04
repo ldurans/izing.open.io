@@ -1,10 +1,10 @@
 {
-  "name": "IZING",
+  "name": "izing",
   "version": "0.0.1",
-  "description": "Bot Multi-atendimento para whatsapp",
+  "description": "Bot Multiatendimento, multicanais e multiempresas.",
   "productName": "IZING",
-  "author": "Durans <durans@izing.io>",
-  "private": true,
+  "author": "Durans <lumardyelson@gmail.com>",
+  "private": false,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0"

@@ -1,9 +1,9 @@
 {
   "name": "izing.io",
   "version": "1.5.0",
-  "description": "system management customer service",
+  "description": "Bot Multiatendimento, multicanais e multiempresas.",
   "main": "index.js",
-  "private": true,
+  "private": false,
   "repository": {
     "type": "git",
     "url": "git@github.com:ldurans/izing.io.git"
@@ -12,7 +12,7 @@
     "release": "semantic-release --no-ci",
     "husk": "husky install"
   },
-  "author": "durans@izing.io",
+  "author": "lumardyelson@gmail.com",
   "license": "@izing.io",
   "dependencies": {},
   "devDependencies": {

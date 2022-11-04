@@ -1,67 +1,72 @@
-# WChats
+[![Doação](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=TZ26S3D3Q4PE6)
 
-A _very simple_ Ticket System based on WhatsApp messages.
+# Izing
 
-Backend uses [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) to receive and send WhatsApp messages, create tickets from them and store all in a MySQL database.
+Um sistema para gestão de atendimento multicanais centralizado.
 
-Frontend is a full-featured multi-user _chat app_ bootstrapped with react-create-app and Material UI, that comunicates with backend using REST API and Websockets. It allows you to interact with contacts, tickets, send and receive WhatsApp messages.
+Sistema possui o backend e canais baseado em:
+- Whatsapp [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)
+- Telegram [telegraf](github.com/telegraf/telegraf)
+- Instagram [instagram-private-api](https://github.com/dilame/instagram-private-api)
+- Messenger [messaging-api-messenger](https://github.com/Yoctol/messaging-apis#readme)
 
-**NOTE**: I can't guarantee you will not be blocked by using this method, although it has worked for me. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.
+Como escolha para o banco de dados, optamos pelo [PostgresSql 14](https://www.postgresql.org/).
 
-## Motivation
+No front, todas as funcionalidades são baseadas no [vue](https://vuejs.org/) e [quasar](https://quasar.dev/), com integração via REST API e Websockets.
 
-I'm a SysAdmin, and in my daily work, I do a lot of support through WhatsApp. Since WhatsApp Web doesn't allow multiple users, and 90% of our tickets comes from this channel, we created this to share same whatsapp account cross our team.
+Esse projeto tem inspiração e também é baseado no projeto fantástico [whaticket](https://github.com/canove/whaticket-community).
 
-## How it works?
 
-On every new message received in an associated WhatsApp, a new Ticket is created. Then, this ticket can be reached in a _queue_ on _Tickets_ page, where you can assign ticket to your yourself by _aceppting_ it, respond ticket messagee and eventually _resolve_ it.
+**IMPORTANTE**: não garantimos que a utilização desta ferramenta não irá gerar bloqueio nas contas utilizadas. São bots que em sua maioria utilizam APIs segundarias para comunicação com os fornecedores dos serviços. Use com responsabilidade!
 
-Subsequent messages from same contact will be related to first **open/pending** ticket found.
-
-If a contact sent a new message in less than 2 hours interval, and there is no ticket from this contact with **pending/open** status, the newest **closed** ticket will be reopen, instead of creating a new one.
 
 ## Screenshots
+>![Doação](screenshots/Bot.gif) 
+___  
+>![Doação](screenshots/dashboard.gif)
+___
+>![Doação](screenshots/izing.gif)
+___
 
-## Features
+## Principais funcionalidades
 
-- Have multiple users chating in same WhatsApp Number ✅
-- Connect to multiple WhatsApp accounts and receive all messages in one place ✅ 🆕
-- Create and chat with new contacts without touching cellphone ✅
-- Send and receive message ✅
-- Send media (images/audio/documents) ✅
-- Receive media (images/audio/video/documents) ✅
+- Multíplos canais de atendimento ✅
+- Multíplos usuários simultâneos por canais de atendimento ✅
+- Iniciar conversa com contatos existentes (whatsapp) ✅
+- Construção de Chatbot interativo ✅
+- Enviar e receber mensagens ✅
+- Enviar e receber mídias diversas (imagens/áudio/documentos) ✅
+- Multiempresas (abordagem de base compartilhada)
 
-## Demo
 
-## Installation and Usage (Linux Ubuntu - Development)
+## Instalação (Linux Ubuntu - Desenvolvimento)
 
-Create Mysql Database using docker:
-_Note_: change MYSQL_DATABASE, MYSQL_PASSWORD, MYSQL_USER and MYSQL_ROOT_PASSWORD.
-
-```bash
-docker run --name wchatsdb -e MYSQL_ROOT_PASSWORD=strongpassword -e MYSQL_DATABASE=wchats -e MYSQL_USER=wchats -e MYSQL_PASSWORD=wchats --restart always -p 3306:3306 -d mariadb:latest --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
 ```
-
+Instale o postgres;
+Instale o rabbitmq;
+Instale o redis;
+```
+ 
 Install puppeteer dependencies:
 
 ```bash
 sudo apt-get install -y libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils
 ```
 
-Clone this repo
+Clone este repositório
 
 ```bash
-git clone https://github.com/ldurans/wchats.com.br.git
+git clone git@github.com:ldurans/izing.io.git
 ```
 
-Go to backend folder and create .env file:
+Navegue até a pasta backend e crie o arquivo .env:
 
 ```bash
 cp .env.example .env
 nano .env
 ```
 
-Fill `.env` file with environment variables:
+Edite os valores das variáveis do arquivo `.env`:
 
 ```bash
 NODE_ENV=DEVELOPMENT #it helps on debugging
@@ -70,17 +75,31 @@ FRONTEND_URL=https://localhost:3000
 PROXY_PORT=8080
 PORT=8080
 
-POSTGRES_HOST= #DB host IP, usually localhost
-DB_DIALECT=
+POSTGRES_HOST=
+DB_PORT=
+POSTGRES_DB=
 POSTGRES_USER=
 POSTGRES_PASSWORD=
-POSTGRES_DB=
 
-JWT_SECRET=3123123213123
-JWT_REFRESH_SECRET=75756756756
+JWT_SECRET=ainjpansaiubspiusbpsjp918921601826
+JWT_REFRESH_SECRET=ain@@@@jpansai_!0ubspiusbpsjp
+MIN_SLEEP_BUSINESS_HOURS=10000
+MAX_SLEEP_BUSINESS_HOURS=20000
+MIN_SLEEP_AUTO_REPLY=4000
+MAX_SLEEP_AUTO_REPLY=6000
+MIN_SLEEP_INTERVAL=2000
+MAX_SLEEP_INTERVAL=5000
+RABBITMQ_DEFAULT_USER=
+RABBITMQ_DEFAULT_PASS=
+AMQP_URL='amqp://USER:SENHAS@HOST:PORTA?connection_attempts=5&retry_delay=5'
+API_URL_360=https://waba-sandbox.360dialog.io
+ADMIN_DOMAIN=izing.io
+FACEBOOK_APP_ID=
+FACEBOOK_APP_SECRET_KEY=
+
 ```
 
-Install backend dependencies, build app, run migrations and seeds:
+Instale as dependências do backend e execute as migrações e carga de dados iniciais:
 
 ```bash
 npm install
@@ -89,90 +108,81 @@ npx sequelize db:migrate
 npx sequelize db:seed:all
 ```
 
-Start backend:
+Inicie o backend:
 
 ```bash
 npm start
 ```
 
-Open a second terminal, go to frontend folder:
+Abra um novo terminal e navegue até a pasta do frontend.
 
-Start frontend app:
+Instale as dependências do backend e execute as migrações e carga de dados iniciais:
 
 ```bash
-npm start
+npm install
 ```
 
-- Go to http://your_server_ip:3000/signup
-- Create an user and login with it.
-- On the sidebard, go to _Connections_ page and create your first WhatsApp connection.
-- Wait for QR CODE button to appear, click it and read qr code.
-- Done. Every message received by your synced WhatsApp number will appear in Tickets List.
+Inicie o frontend (suponto que já possua instalado as cli do vue e quasar):
+```bash
+quasar c && quasar d
+```
   
-## Basic production deployment (Ubuntu 18.04 VPS)
+## Guia básico para produção (Ubuntu >= 18.04 VPS)
 
-All instructions below assumes you are NOT running as root, since it will give an error in puppeteer. So let's start creating a new user and granting sudo privileges to it:
+```
+Instale o postgres;
+Instale o rabbitmq;
+Instale o redis;
+```
+ 
+
+As instruções assumem que não está executando como root. Vamos iniciar criando um usuário e as permissões necessárias.
 
 ```bash
 adduser deploy
 usermod -aG sudo deploy
 ```
 
-Now we can login with this new user:
+Faça login com o novo usuário:
 
 ```bash
 su deploy
 ```
 
-You'll need two subdomains forwarding to yours VPS ip to follow these instructions. We'll use `myapp.mydomain.com` to frontend and `api.mydomain.com` to backend in the following example.
+> Para o front, recomendamos a utilização de serviços como Vercel e Netlify.
 
-Update all system packages:
+Você vai precisar de dois subdomains encaminhados para o seu IP/VPS.
+Utilizaremos `myapp.mydomain.com` para o frontend e `api.mydomain.com` para o backend para este exemplo.
+
+Atualize o sistema (SO):
 
 ```bash
 sudo apt update && sudo apt upgrade
 ```
 
-Install node and confirm node command is available:
-
+Instale o node:
 ```bash
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
 node -v
 npm -v
 ```
 
-Install docker and add you user to docker group:
+> `Assumiremos que você já possui o Postgres instalado e o banco criado.`
 
-```bash
-sudo apt install apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-sudo apt update
-sudo apt install docker-ce
-sudo systemctl status docker
-sudo usermod -aG docker ${USER}
-su - ${USER}
-```
 
-Create Mysql Database using docker:
-_Note_: change MYSQL_DATABASE, MYSQL_PASSWORD, MYSQL_USER and MYSQL_ROOT_PASSWORD.
-
-```bash
-docker run --name wchatsdb -e MYSQL_ROOT_PASSWORD=strongpassword -e MYSQL_DATABASE=wchats -e MYSQL_USER=wchats -e MYSQL_PASSWORD=wchats --restart always -p 3306:3306 -d mariadb:latest --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
-```
-
-Clone this repository:
+Clone o repositório:
 
 ```bash
 cd  ~
-git clone https://github.com/ldurans/wchats.com.br.git
+git clone git@github.com:ldurans/izing.io.git
 ```
 
-Create backend .env file and fill with details:
+Na pasta backend, crie o arquivo .env:
 
 ```bash
-cp wchats/backend/.env.example wchats/backend/.env
-nano wchats/backend/.env
+cp izing/backend/.env.example izing/backend/.env
+nano izing/backend/.env
 ```
 
 ```bash
@@ -182,137 +192,97 @@ FRONTEND_URL=https://myapp.mydomain.com #USE HTTPS HERE, WE WILL ADD SSL LATTER,
 PROXY_PORT=443 #USE NGINX REVERSE PROXY PORT HERE, WE WILL CONFIGURE IT LATTER
 PORT=8080
 
-POSTGRES_HOST=localhost
-DB_DIALECT=
-POSTGRES_USER=
+DB_DIALECT=postgres
+DB_PORT=5432
+POSTGRES_HOST=
+POSTGRES_USER=postgres
 POSTGRES_PASSWORD=
-POSTGRES_DB=
+POSTGRES_DB=izing
+IO_REDIS_SERVER=localhost
+IO_REDIS_PORT='6379'
+IO_REDIS_DB_SESSION='2'
+JWT_SECRET=DPHmNRZ!!@56WZ4isLF9vXkMv1QabvpcA80Rc
+JWT_REFRESH_SECRET=EMPehEbr908879Adi7s8fGSeYzqGQbV5wrjH4i
+MIN_SLEEP_BUSINESS_HOURS=10000
+MAX_SLEEP_BUSINESS_HOURS=20000
+MIN_SLEEP_AUTO_REPLY=4000
+MAX_SLEEP_AUTO_REPLY=6000
+MIN_SLEEP_INTERVAL=2000
+MAX_SLEEP_INTERVAL=5000RABBITMQ_DEFAULT_USER=durans
+RABBITMQ_DEFAULT_PASS=marina0509
+AMQP_URL='amqp://USER:SENHAS@HOST:PORTA?connection_attempts=5&retry_delay=5'
+API_URL_360=https://waba-sandbox.360dialog.io
 
-JWT_SECRET=3123123213123
-JWT_REFRESH_SECRET=75756756756
+FACEBOOK_APP_ID=
+FACEBOOK_APP_SECRET_KEY=
+
 ```
 
-Install puppeteer dependencies:
+Instale as dependências do puppeteer:
 
 ```bash
 sudo apt-get install -y libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils
 ```
 
-Install backend dependencies, build app, run migrations and seeds:
+Instale as dependências do backend e execute as migrações e carga de dados iniciais:
 
 ```bash
-cd wchats/backend
+cd izing/backend
 npm install
 npm run build
 npx sequelize db:migrate
 npx sequelize db:seed:all
 ```
 
-Start it with `npm start`, you should see: `Server started on port...` on console. Hit `CTRL + C` to exit.
 
-Install pm2 **with sudo**, and start backend with it:
+Instale o pm2 **com sudo**, e inicie o backend com ele:
 
 ```bash
 sudo npm install -g pm2
-pm2 start dist/server.js --name wchats-backend
+pm2 start dist/server.js --name izing-backend
 ```
 
-Make pm2 auto start afeter reboot:
+Após isso, faça o pm2 auto iniciar:
 
 ```bash
 pm2 startup ubuntu -u `YOUR_USERNAME`
 ```
 
-Copy the last line outputed from previus command and run it, its something like:
+Copie a última saída do terminal e a execute. O camando deverá ser parecido com:
 
 ```bash
 sudo env PATH=\$PATH:/usr/bin pm2 startup ubuntu -u YOUR_USERNAME --hp /home/YOUR_USERNAM
 ```
 
-Go to frontend folder and install dependencies:
-
+Agora vamos preparar o frontend.
 ```bash
 cd ../frontend
 npm install
 ```
 
-Build frontend app:
-
+Faça o build do front:
 ```bash
-npm run build
+quasar build -P -m pwa
 ```
 
-Start frontend with pm2, and save pm2 process list to start automatically after reboot:
+___
+___
 
-```bash
-pm2 start server.js --name wchats-frontend
-pm2 save
-```
-
-To check if it's running, run `pm2 list`, it should look like:
-
-```bash
-deploy@ubuntu-whats:~$ pm2 list
-
-┌─────┬─────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
-
-│ id │ name │ namespace │ version │ mode │ pid │ uptime │ . │ status │ cpu │ mem │ user │ watching │
-
-├─────┼─────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-
-│ 1 │ wchats-frontend │ default │ 0.1.0 │ fork │ 179249 │ 12D │ 0 │ online │ 0.3% │ 50.2mb │ deploy │ disabled │
-
-│ 6 │ wchats-backend │ default │ 1.0.0 │ fork │ 179253 │ 12D │ 15 │ online │ 0.3% │ 118.5mb │ deploy │ disabled │
-
-└─────┴─────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
-
-```
-
-Install nginx:
+Instale o nginx:
 
 ```bash
 sudo apt install nginx
 ```
 
-Remove nginx default site:
+Remova o site padrão do nginx:
 
 ```bash
 sudo rm /etc/nginx/sites-enabled/default
 ```
 
-Create a new nginx site to frontend app:
-
+Crie o site para o Backend
 ```bash
-sudo nano /etc/nginx/sites-available/wchats-frontend
-```
-
-Edit and fill it with this information, changing `server_name` to yours equivalent to `myapp.mydomain.com`:
-
-```bash
-server {
-  server_name myapp.mydomain.com;
-
-  location / {
-    proxy_pass http://127.0.0.1:3333;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection 'upgrade';
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_cache_bypass $http_upgrade;
-  }
-
-}
-
-```
-
-Create another one to backend api, changing `server_name` to yours equivalent to `api.mydomain.com`, and `proxy_pass` to your localhost backend node server URL:
-
-```bash
-sudo cp /etc/nginx/sites-available/wchats-frontend /etc/nginx/sites-available/wchats-backend
-sudo nano /etc/nginx/sites-available/wchats-backend
+sudo nano /etc/nginx/sites-available/izing-backend
 ```
 
 ```bash
@@ -326,14 +296,40 @@ server {
 
 ```
 
-Create a symbolic links to enalbe nginx sites:
-
+Crie o site para o Front
 ```bash
-sudo ln -s /etc/nginx/sites-available/wchats-frontend /etc/nginx/sites-enabled
-sudo ln -s /etc/nginx/sites-available/wchats-backend /etc/nginx/sites-enabled
+sudo nano /etc/nginx/sites-available/izing-frontend
 ```
 
-By default, nginx limit body size to 1MB, what isn't enough to some media uploads. Lets change it to 20MB adding a new line to config file:
+```bash
+server {
+  server_name myapp.mydomain.com;
+  
+  root /home/user/izing/frontend/dist/pwa; # caminho da pasta dist/pwa
+  
+  add_header X-Frame-Options "SAMEORIGIN";
+  add_header X-XSS-Protection "1; mode=block";
+  add_header X-Content-Type-Options "nosniff"; 
+  
+  index index.html;
+  charset utf-8;
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+
+  access_log off;
+
+}
+```
+
+Crie os links simbólicos para habilitar os sites:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/izing-backend /etc/nginx/sites-enabled
+sudo ln -s /etc/nginx/sites-available/izing-frontend /etc/nginx/sites-enabled
+```
+
+Vamos alterar a configuração do nginx para aceitar 20MB de corpo nas requisições:
 
 ```bash
 sudo nano /etc/nginx/nginx.conf
@@ -346,42 +342,42 @@ http {
 
 ```
 
-Test nginx configuration and restart server:
+Teste a configuração e reinicie o nginx:
 
 ```bash
 sudo nginx -t
 sudo service nginx restart
 ```
 
-Now, enable SSL (https) on your sites to use all app features like notifications and sending audio messages. A easy way to this is using Certbot:
+Agora, ative o SSL (https) nos seus sites para utilizar todas as funcionalidades da aplicação como notificações e envio de mensagens áudio. Uma forma fácil de o fazer é utilizar Certbot:
 
-Install certbor with snapd:
+Instale o certbor com snapd:
 
 ```bash
 sudo snap install --classic certbot
 ```
 
-Enable SSL on nginx (Accept all information asked):
+Habilite SSL com nginx:
 
 ```bash
 sudo certbot --nginx
 ```
 
-## Upgrading
+## Atualizando
 
-wchats is a working in progress and we are adding new features frequently. To update your old installation and get all the new features, you can use a bash script like this:
+Izing é um trabalho em progresso e estamos frequentemente adicionando novas funcionalidades e correções de bugs.
 
-**Note**: Always check the .env.example and adjust your .env file before upgrading, since some new variable may be added.
+**IMPORTANTE**: verifique sempre o .env.example e ajuste o seu .env antes de atualizar, uma vez que algumas novas variáveis podem ser adicionadas.
 
 ```bash
-nano updateWChats
+nano updateIzing
 ```
 
 ```bash
 #!/bin/bash
-echo  "Updating WChats, please wait."
+echo  "Atualizando izing, aguarde..."
 cd  ~
-cd wchats
+cd izing
 git pull
 cd backend
 npm install
@@ -391,23 +387,27 @@ npx sequelize db:migrate
 npx sequelize db:seed
 cd ../frontend
 npm install
-rm -rf build
-npm run build
+quasar build -P -m pwa
 pm2 restart all
 
-echo  "Update finished. Enjoy!"
+echo  "Atualização finalizada!"
 ```
 
-Make it executable and run it:
+Marque o arquivo como executável:
 
 ```bash
-chmod +x updateWChats
-./updateWChats
+chmod +x updateIzing
+./updateIzing
 ```
 
-## Disclaimer
+## FIQUE ATENTO
 
-I just started leaning Javascript a few months ago and this is my first project. It may have security issues and many bugs. I recommend using it only on local network.
+A utilização desta ferramenta é feita por sua conta e risco. O código é aberto e todos podem contribuir. Espero que não (rsrrs), mas podem existir bugs e problemas de segurança.
 
-This project is not affiliated, associated, authorized, endorsed by, or in any way officially connected with WhatsApp or any of its subsidiaries or its affiliates. The official WhatsApp website can be found at https://whatsapp.com. "WhatsApp" as well as related names, marks, emblems and images are registered trademarks of their respective owners.
+Este projeto não é afiliado, associado, autorizado, endossado por, ou de qualquer forma oficialmente ligado à WhatsApp, ou a qualquer uma das suas filiais ou afiliadas. O website oficial da WhatsApp pode ser encontrado em https://whatsapp.com. "WhatsApp", bem como nomes, marcas, emblemas e imagens relacionadas são marcas registadas dos seus respectivos proprietários.
 
+
+
+--------------------------
+### Curtiu? Pague-me um café!! 
+![Doação](donate.png)

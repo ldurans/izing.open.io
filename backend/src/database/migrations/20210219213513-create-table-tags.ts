@@ -46,18 +46,11 @@ module.exports = {
           type: DataTypes.DATE,
           allowNull: false
         }
-      }),
-      queryInterface.addConstraint("Tags", ["tag", "tenantId"], {
-        type: "unique",
-        name: "unique_constraint_tag_tenant"
       })
     ]);
   },
 
   down: (queryInterface: QueryInterface) => {
-    return Promise.all([
-      queryInterface.removeConstraint("Tags", "unique_constraint_tag_tenant"),
-      queryInterface.dropTable("Tags")
-    ]);
+    return Promise.all([queryInterface.dropTable("Tags")]);
   }
 };
