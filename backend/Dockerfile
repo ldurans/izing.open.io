@@ -29,12 +29,15 @@ COPY . .
 RUN npm run build
 
 ENV NODE_ENV=production
-ENV PORT=3000
 ENV CHROME_BIN=google-chrome-stable
 
-EXPOSE 3000
+COPY ./start_production /start_production
+RUN sed -i 's/\r$//g' /start_production
+RUN chmod +x /start_production
+
 
 ENTRYPOINT ["dumb-init", "--"]
+
 CMD dockerize -wait tcp://${POSTGRES_HOST}:${DB_PORT} \
   && npx sequelize db:migrate \
   && node dist/server.js

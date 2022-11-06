@@ -1,34 +1,26 @@
 <template>
-  <q-dialog
-    :value="abrirModalQR"
+  <q-dialog :value="abrirModalQR"
     @before-show="fetchSession(channel)"
     @hide="fecharModalQrModal"
-    persistent
-  >
+    persistent>
     <q-card style="bg-white">
       <q-card-section>
         <div class="text-h6 text-primary">
           Leia o QrCode para iniciar a sessão
-          <q-btn
-            round
+          <q-btn round
             class="q-ml-md"
             color="negative"
             icon="mdi-close"
-            @click="fecharModalQrModal"
-          />
+            @click="fecharModalQrModal" />
 
         </div>
       </q-card-section>
-      <q-card-section
-        class="text-center"
-        :style="$q.dark.isActive ? 'background: white !important' : ''"
-      >
-        <QrcodeVue
-          v-if="qrCode"
+      <q-card-section class="text-center"
+        :style="$q.dark.isActive ? 'background: white !important' : ''">
+        <QrcodeVue v-if="qrCode"
           :value="qrCode"
           :size="300"
-          level="H"
-        />
+          level="H" />
         <span v-else>
           Aguardando o Qr Code
         </span>
@@ -44,7 +36,7 @@ import { RequestNewQrCode, GetWhatSession } from 'src/service/sessoesWhatsapp'
 import QrcodeVue from 'qrcode.vue'
 import openSocket from 'socket.io-client'
 const token = JSON.parse(localStorage.getItem('token'))
-const socket = openSocket(process.env.API, {
+const socket = openSocket(process.env.URL_API, {
   query: { token },
   forceNew: true
 })
@@ -113,4 +105,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 </style>

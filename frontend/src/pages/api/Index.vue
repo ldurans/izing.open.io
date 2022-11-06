@@ -19,7 +19,7 @@
 
           <q-item-section top>
             <q-item-label class="text-bold text-h6 q-my-sm">
-              Nome: {{  api.name  }}
+              Nome: {{ api.name }}
               <div class="text-grey-8 q-gutter-xs float-right">
                 <q-btn class="gt-xs"
                   size="12px"
@@ -73,31 +73,31 @@
               <p class="text-weight-medium text-nowrap q-pr-md">
                 <span class="text-bold">Url:
                 </span>
-                {{  montarUrlIntegração(api.id)  }}
+                {{ montarUrlIntegração(api.id) }}
               </p>
             </q-item-label>
             <q-item-label style="word-break: break-all;">
               <p class="text-weight-medium text-nowrap q-pr-md">
                 <span class="text-bold">Token:
                 </span>
-                {{  api.token  }}
+                {{ api.token }}
               </p>
             </q-item-label>
             <q-item-label caption>
               <p class="text-weight-medium">
-                <span class="text-bold">WebHook Status Whatsapp:</span> <span> {{  api.urlServiceStatus  }} </span>
+                <span class="text-bold">WebHook Status Whatsapp:</span> <span> {{ api.urlServiceStatus }} </span>
               </p>
             </q-item-label>
             <q-item-label caption>
               <p class="text-weight-medium">
-                <span class="text-bold">WebHook Status Mensagem:</span> <span> {{  api.urlMessageStatus  }} </span>
+                <span class="text-bold">WebHook Status Mensagem:</span> <span> {{ api.urlMessageStatus }} </span>
               </p>
             </q-item-label>
             <q-item-label style="word-break: break-all;">
               <p class="text-weight-medium text-nowrap q-pr-md">
                 <span class="text-bold">Token Autenticação:
                 </span>
-                {{  api.authToken  }}
+                {{ api.authToken }}
               </p>
             </q-item-label>
             <q-item-label lines="1"
@@ -147,7 +147,7 @@ export default {
   },
   computed: {
     cBaseUrlIntegração () {
-      return `${process.env.API}/v1/api/external`
+      return `${process.env.URL_API}/v1/api/external`
     }
   },
   methods: {
@@ -247,4 +247,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 </style>

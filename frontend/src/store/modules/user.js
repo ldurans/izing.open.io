@@ -60,7 +60,7 @@ const user = {
         commit('SET_IS_SUPORTE', data)
         commit('SET_IS_ADMIN', data)
 
-        const socket = openSocket(process.env.API, {
+        const socket = openSocket(process.env.URL_API, {
           query: { token: data.token },
           forceNew: true
         })

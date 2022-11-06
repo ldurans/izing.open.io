@@ -2,49 +2,36 @@
   <div>
     <div class="row col q-pa-md justify-between items-center">
       <h1> Painel Atendimentos </h1>
-      <q-btn
-        color="primary"
+      <q-btn color="primary"
         icon="mdi-filter"
         label="Filtros"
-        @click="visualizarFiltros = true"
-      />
+        @click="visualizarFiltros = true" />
       <q-separator />
     </div>
 
-    <q-dialog
-      full-height
+    <q-dialog full-height
       position="right"
-      v-model="visualizarFiltros"
-    >
+      v-model="visualizarFiltros">
       <q-card style="width: 300px">
         <q-card-section>
           <div class="text-h6">Filtros</div>
         </q-card-section>
         <q-card-section class="q-gutter-md">
-          <DatePick
-            dense
+          <DatePick dense
             class="row col"
-            v-model="pesquisaTickets.dateStart"
-          />
-          <DatePick
-            dense
+            v-model="pesquisaTickets.dateStart" />
+          <DatePick dense
             class="row col"
-            v-model="pesquisaTickets.dateEnd"
-          />
+            v-model="pesquisaTickets.dateEnd" />
           <q-separator v-if="profile === 'admin'" />
-          <q-toggle
-            v-if="profile === 'admin'"
+          <q-toggle v-if="profile === 'admin'"
             class="q-ml-lg"
             v-model="pesquisaTickets.showAll"
-            label="(Admin) - Visualizar Todos"
-          />
-          <q-separator
-            class="q-mb-md"
-            v-if="profile === 'admin'"
-          />
+            label="(Admin) - Visualizar Todos" />
+          <q-separator class="q-mb-md"
+            v-if="profile === 'admin'" />
 
-          <q-select
-            v-if="!pesquisaTickets.showAll"
+          <q-select v-if="!pesquisaTickets.showAll"
             square
             dense
             outlined
@@ -61,59 +48,44 @@
             :input-debounce="700"
             option-value="id"
             option-label="queue"
-            input-style="width: 280px; max-width: 280px;"
-          />
+            input-style="width: 280px; max-width: 280px;" />
           <!-- @input="debounce(BuscarTicketFiltro(), 700)" -->
         </q-card-section>
         <q-card-section>
           <q-separator />
           <div class="text-h6 q-mt-md">Tipo de visualização</div>
-          <q-option-group
-            :options="optionsVisao"
+          <q-option-group :options="optionsVisao"
             label="Visão"
             type="radio"
-            v-model="visao"
-          />
+            v-model="visao" />
         </q-card-section>
         <q-card-actions align="center">
-          <q-btn
-            outline
+          <q-btn outline
             label="Atualizar"
             color="primary"
             v-close-popup
-            @click="consultarTickets"
-          />
+            @click="consultarTickets" />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <div
-      style="height: 85vh"
-      class="scroll"
-    >
+    <div style="height: 85vh"
+      class="scroll">
       <template v-for="(items, key) in sets">
-        <div
-          :style="{ height: 800 }"
+        <div :style="{ height: 800 }"
           :key="key"
-          class="row q-pa-md q-col-gutter-md q-mb-sm"
-        >
-          <div
-            :class="contentClass"
+          class="row q-pa-md q-col-gutter-md q-mb-sm">
+          <div :class="contentClass"
             v-for="(item, index) in items"
-            :key="index"
-          >
-            <q-card
-              bordered
+            :key="index">
+            <q-card bordered
               square
-              flat
-            >
-              <q-item
-                v-if="visao === 'U' || visao === 'US'"
+              flat>
+              <q-item v-if="visao === 'U' || visao === 'US'"
                 class="text-bold"
                 :class="{
-                'bg-negative text-white': definirNomeUsuario(item[0]) === 'Pendente'
-              }"
-              >
+                  'bg-negative text-white': definirNomeUsuario(item[0]) === 'Pendente'
+                }">
                 <!-- <q-item-section avatar>
                   <q-avatar>
                     <img src="https://cdn.quasar.dev/img/boy-avatar.png">
@@ -121,24 +93,20 @@
                 </q-item-section> -->
                 <q-item-section>
                   <q-item-label class="text-bold text-h6">{{ definirNomeUsuario(item[0]) }}</q-item-label>
-                  <q-item-label
-                    caption
+                  <q-item-label caption
                     :class="{
                       'text-white': definirNomeUsuario(item[0]) === 'Pendente'
-                    }"
-                  >
+                    }">
                     Atendimentos: {{ item.length }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
 
-              <q-item
-                v-if="visao === 'F' || visao === 'FS'"
+              <q-item v-if="visao === 'F' || visao === 'FS'"
                 class="text-bold"
                 :class="{
-                'bg-negative text-white': definirNomeFila(item[0]) === 'Sem Fila'
-              }"
-              >
+                  'bg-negative text-white': definirNomeFila(item[0]) === 'Sem Fila'
+                }">
                 <q-item-section avatar>
                   <q-avatar>
                     <img src="https://cdn.quasar.dev/img/boy-avatar.png">
@@ -146,28 +114,24 @@
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ definirNomeFila(item[0]) }}</q-item-label>
-                  <q-item-label
-                    caption
+                  <q-item-label caption
                     :class="{
                       'text-white': definirNomeFila(item[0]) === 'Sem Fila'
-                    }"
-                  >
-                    Abertos: {{ counterStatus(item).open }} | Pendentes: {{ counterStatus(item).pending }} | Total: {{ item.length }}
+                    }">
+                    Abertos: {{ counterStatus(item).open }} | Pendentes: {{ counterStatus(item).pending }} | Total: {{
+                        item.length
+                    }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
               <q-separator />
-              <q-card-section
-                :style="{ height: '320px' }"
+              <q-card-section :style="{ height: '320px' }"
                 class="scroll"
-                v-if="visao === 'U' || visao === 'F'"
-              >
-                <ItemTicket
-                  v-for="(ticket, i) in item"
+                v-if="visao === 'U' || visao === 'F'">
+                <ItemTicket v-for="(ticket, i) in item"
                   :key="i"
                   :ticket="ticket"
-                  :filas="filas"
-                />
+                  :filas="filas" />
               </q-card-section>
             </q-card>
           </div>
@@ -184,7 +148,7 @@ const token = JSON.parse(localStorage.getItem('token'))
 // const userId = +localStorage.getItem('userId')
 const usuario = JSON.parse(localStorage.getItem('usuario'))
 import openSocket from 'socket.io-client'
-const socket = openSocket(process.env.API, {
+const socket = openSocket(process.env.URL_API, {
   query: {
     token
   },
@@ -410,4 +374,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 </style>

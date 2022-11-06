@@ -5,4 +5,5 @@ set -o pipefail
 set -o nounset
 
 
-bash -c "rm -Rf dist/ && npm run build && npx sequelize db:migrate && node dist/server.js"
+# bash -c "npx sequelize db:migrate && node dist/server.js"
+bash -c "node dist/server.js"

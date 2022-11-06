@@ -10,11 +10,7 @@ export const ReceivedRequest360 = async (
       token: req.params.token,
       messages: req.body
     };
-    await req.app.rabbit.publishInExchange(
-      "amq.direct",
-      "waba360",
-      JSON.stringify(message)
-    );
+    await req.app.rabbit.publishInQueue("waba360", JSON.stringify(message));
   } catch (error) {
     throw new AppError(error.message);
   }
@@ -41,11 +37,7 @@ export const ReceivedRequestMessenger = async (
       token: req.params.token,
       messages: req.body
     };
-    await req.app.rabbit.publishInExchange(
-      "amq.direct",
-      "messenger",
-      JSON.stringify(message)
-    );
+    await req.app.rabbit.publishInQueue("messenger", JSON.stringify(message));
   } catch (error) {
     throw new AppError(error.message);
   }

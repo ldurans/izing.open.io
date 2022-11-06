@@ -10,7 +10,7 @@ import Router from 'src/router/index'
 // }
 
 import openSocket from 'socket.io-client'
-const socket = openSocket(process.env.API, {
+const socket = openSocket(process.env.URL_API, {
   query: {
     token
   },

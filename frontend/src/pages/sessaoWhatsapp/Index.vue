@@ -222,7 +222,7 @@ export default {
   computed: {
     ...mapGetters(['whatsapps']),
     cFbAppId () {
-      return process.env.fbAppId
+      return process.env.FACEBOOK_APP_ID
     }
   },
   methods: {
@@ -380,4 +380,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 </style>

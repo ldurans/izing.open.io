@@ -1,36 +1,28 @@
 <template>
   <q-layout view="hHh Lpr lFf">
 
-    <q-header
-      class="bg-white text-grey-8 q-py-xs "
+    <q-header class="bg-white text-grey-8 q-py-xs "
       height-hint="58"
-      bordered
-    >
+      bordered>
       <q-toolbar>
-        <q-btn
-          flat
+        <q-btn flat
           dense
           round
           @click="leftDrawerOpen = !leftDrawerOpen"
           aria-label="Menu"
-          icon="menu"
-        >
+          icon="menu">
           <q-tooltip>Menu</q-tooltip>
         </q-btn>
 
-        <q-btn
-          flat
+        <q-btn flat
           no-caps
           no-wrap
           dense
           class="q-ml-sm"
-          v-if="$q.screen.gt.xs"
-        >
-          <q-img
-            src="/izing-logo_5_transparent.png"
+          v-if="$q.screen.gt.xs">
+          <q-img src="/izing-logo_5_transparent.png"
             spinner-color="primary"
-            style="height: 50px; width: 120px"
-          />
+            style="height: 50px; width: 120px" />
           <!-- <q-toolbar-title
             shrink
             class="text-bold text-grey-7"
@@ -42,39 +34,31 @@
         <q-space />
 
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn
-            round
+          <q-btn round
             dense
             flat
             color="grey-8"
-            icon="notifications"
-          >
-            <q-badge
-              color="red"
+            icon="notifications">
+            <q-badge color="red"
               text-color="white"
-              floating
-            >
+              floating>
               2
             </q-badge>
             <q-tooltip>Notificações (Em breve)</q-tooltip>
           </q-btn>
-          <q-avatar
-            :color="usuario.status === 'offline' ? 'negative': 'positive'"
+          <q-avatar :color="usuario.status === 'offline' ? 'negative': 'positive'"
             text-color="white"
             size="25px"
             :icon="usuario.status === 'offline' ? 'mdi-account-off' : 'mdi-account-check'"
             rounded
-            class="q-ml-lg"
-          >
+            class="q-ml-lg">
             <q-tooltip>
               {{ usuario.status === 'offline' ? 'Usuário Offiline' : 'Usuário Online'}}
             </q-tooltip>
           </q-avatar>
-          <q-btn
-            round
+          <q-btn round
             flat
-            class="bg-padrao text-bold q-mx-sm q-ml-lg"
-          >
+            class="bg-padrao text-bold q-mx-sm q-ml-lg">
             <q-avatar size="26px">
               {{ $iniciaisString(username) }}
             </q-avatar>
@@ -94,22 +78,16 @@
                     />
                   </q-item-section>
                 </q-item> -->
-                <cStatusUsuario
-                  @update:usuario="atualizarUsuario"
-                  :usuario="usuario"
-                />
-                <q-item
-                  clickable
+                <cStatusUsuario @update:usuario="atualizarUsuario"
+                  :usuario="usuario" />
+                <q-item clickable
                   v-close-popup
-                  @click="abrirModalUsuario"
-                >
+                  @click="abrirModalUsuario">
                   <q-item-section>Perfil</q-item-section>
                 </q-item>
-                <q-item
-                  clickable
+                <q-item clickable
                   v-close-popup
-                  @click="efetuarLogout"
-                >
+                  @click="efetuarLogout">
                   <q-item-section>Sair</q-item-section>
                 </q-item>
                 <q-separator />
@@ -128,54 +106,43 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
+    <q-drawer v-model="leftDrawerOpen"
       show-if-above
       bordered
       :mini="miniState"
       @mouseover="miniState = false"
       @mouseout="miniState = true"
       mini-to-overlay
-      content-class="bg-white text-grey-9"
-    >
+      content-class="bg-white text-grey-9">
       <q-scroll-area class="fit">
-        <q-list
-          padding
-          :key="userProfile"
-        >
+        <q-list padding
+          :key="userProfile">
           <!-- <q-item-label
             header
             class="text-grey-8"
           >
             Menu
           </q-item-label> -->
-          <EssentialLink
-            v-for="item in menuData"
+          <EssentialLink v-for="item in menuData"
             :key="item.title"
-            v-bind="item"
-          />
+            v-bind="item" />
           <div v-if="userProfile === 'admin'">
             <q-separator spaced />
             <div class="q-mb-lg"></div>
             <!-- <q-item-label header>Administração</q-item-label> -->
             <template v-for="item in menuDataAdmin">
-              <EssentialLink
-                v-if="exibirMenuBeta(item)"
+              <EssentialLink v-if="exibirMenuBeta(item)"
                 :key="item.title"
-                v-bind="item"
-              />
+                v-bind="item" />
             </template>
           </div>
 
         </q-list>
       </q-scroll-area>
-      <div
-        class="absolute-bottom text-center row justify-start"
+      <div class="absolute-bottom text-center row justify-start"
         :class="{'bg-grey-3': $q.dark.isActive}"
-        style="height: 40px"
-      >
-        <q-toggle
-          size="xl"
+        style="height: 40px">
+        <q-toggle size="xl"
           keep-color
           dense
           class="text-bold q-ml-xs"
@@ -184,8 +151,7 @@
           :color="$q.dark.isActive ? 'grey-3' : 'black'"
           checked-icon="mdi-white-balance-sunny"
           unchecked-icon="mdi-weather-sunny"
-          @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
-        >
+          @input="$setConfigsUsuario({isDark: !$q.dark.isActive})">
           <q-tooltip content-class="text-body1 hide-scrollbar">
             {{ $q.dark.isActive ? 'Desativar' : 'Ativar' }} Modo Escuro (Dark Mode)
           </q-tooltip>
@@ -199,16 +165,12 @@
       </q-page>
     </q-page-container>
     <audio ref="audioNotification">
-      <source
-        :src="alertSound"
-        type="audio/mp3"
-      >
+      <source :src="alertSound"
+        type="audio/mp3">
     </audio>
-    <ModalUsuario
-      :isProfile="true"
+    <ModalUsuario :isProfile="true"
       :modalUsuario.sync="modalUsuario"
-      :usuarioEdicao.sync="usuario"
-    />
+      :usuarioEdicao.sync="usuario" />
   </q-layout>
 </template>
 
@@ -227,7 +189,7 @@ const token = JSON.parse(localStorage.getItem('token'))
 import openSocket from 'socket.io-client'
 import { RealizarLogout } from 'src/service/login'
 import cStatusUsuario from '../components/cStatusUsuario.vue'
-const socket = openSocket(process.env.API, {
+const socket = openSocket(process.env.URL_API, {
   query: {
     token
   },

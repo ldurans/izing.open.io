@@ -10,8 +10,6 @@ services:
     stdin_open: true
     tty: true
     # command: ./start_production
-    ports:
-      - ${PROXY_PORT:-3000}:3000
     volumes:
       - ".:/usr/src/app"
       # - "/var/izing-media:/usr/src/app/public/"

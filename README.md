@@ -39,6 +39,23 @@ ___
 - Multiempresas (abordagem de base compartilhada)
 
 
+## Docker compose Localhost
+
+Execute comando na pasta raiz do projeto (izing.io)
+```
+docker compose -f "docker-compose.yml" up -d --build
+```
+Após os containers estarem rodando, faça a carga de dados iniciais (apenas na primeira vez)
+```
+docker compose exec -it izing-backend  bash -c 'npx sequelize db:seed:all'    
+```
+> Se tudo correu bem, acesse o sistema e faça login no link: [http://localhost:8080/#/login](http://localhost:8080/#/login).
+```
+usuário: admin@izing.io
+senha: 123456
+```
+
+
 ## Instalação (Linux Ubuntu - Desenvolvimento)
 
 ```
@@ -121,6 +138,19 @@ Instale as dependências do backend e execute as migrações e carga de dados in
 ```bash
 npm install
 ```
+
+
+Crie o arquivo .env na pasta frontend:
+
+```bash
+cp .env.example .env
+nano .env
+```
+```bash
+URL_API='http://api.mydomain.com' # URL do backend
+FACEBOOK_APP_ID='1554345554575413' # id do app criado na console do facebook
+```
+
 
 Inicie o frontend (suponto que já possua instalado as cli do vue e quasar):
 ```bash
@@ -258,6 +288,17 @@ Agora vamos preparar o frontend.
 ```bash
 cd ../frontend
 npm install
+```
+
+Crie o arquivo .env na pasta frontend:
+
+```bash
+cp .env.example .env
+nano .env
+```
+```bash
+URL_API='http://api.mydomain.com' # URL do backend
+FACEBOOK_APP_ID='1554345554575413' # id do app criado na console do facebook
 ```
 
 Faça o build do front:

@@ -14,6 +14,8 @@ export default class RabbitmqServer {
   async start(): Promise<void> {
     this.conn = await connect(this.uri);
     this.channel = await this.conn.createChannel();
+    await this.channel.assertQueue("waba360", { durable: true });
+    await this.channel.assertQueue("messenger", { durable: true });
   }
 
   // async createExchange(name: string): Promise<void> {
