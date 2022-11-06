@@ -1,3 +1,11 @@
+## [1.6.1](https://github.com/ldurans/izing.io/compare/v1.6.0...v1.6.1) (2022-11-06)
+
+
+### Bug Fixes
+
+* ajustado docker-compose ([ce39dc9](https://github.com/ldurans/izing.io/commit/ce39dc9f914b5ba6c99e294090b0e30bede0cb3d))
+* retirado key antiga do newrelic. ([8107820](https://github.com/ldurans/izing.io/commit/810782088ba74d6a6fba10b85db9b67659d69568))
+
 # [1.6.0](https://github.com/ldurans/izing.io/compare/v1.5.0...v1.6.0) (2022-11-04)
 
 
