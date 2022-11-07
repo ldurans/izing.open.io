@@ -74,7 +74,7 @@
           <q-card-actions class="q-pa-md q-pt-none"
             align="center">
             <template v-if="item.type !== 'messenger'">
-              <q-btn v-if="item.status == 'DESTROYED' || item.status == 'qrcode'"
+              <q-btn v-if="item.type == 'whatsapp' && (item.status == 'DESTROYED' || item.status == 'qrcode')"
                 color="blue-5"
                 label="Novo QR Code"
                 @click="handleRequestNewQrCode(item, 'btn-qrCode')"
