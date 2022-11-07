@@ -68,6 +68,9 @@ services:
     restart: always
     stdin_open: true
     tty: true
+    ports:
+      - 3100:3100
+      - 3000:3000
     # command: /start_production
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -98,7 +101,6 @@ services:
       - "443:443"
       - "80:80"
       - "8080:8080"
-      - "3100:3100"
     volumes:
       - $HOME/www/izing/media:/opt/services/app/media
     depends_on:
