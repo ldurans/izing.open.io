@@ -62,6 +62,7 @@ senha: 123456
 Instale o postgres;
 Instale o rabbitmq;
 Instale o redis;
+Instale node 14.* via nvm
 ```
  
 Install puppeteer dependencies:

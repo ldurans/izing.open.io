@@ -8,6 +8,7 @@
 /* eslint-env node */
 
 module.exports = function (ctx) {
+  require('dotenv').config()
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     // supportTS: false,
@@ -44,7 +45,10 @@ module.exports = function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      env: require('dotenv').config().parsed,
+      env: {
+        URL_API: process.env.URL_API,
+        FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID
+      },
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
       // transpile: false,
