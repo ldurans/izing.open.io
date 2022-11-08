@@ -92,30 +92,6 @@ const SendMessagesSystemWbot = async (
         });
         logger.info("sendMessage media");
       } else {
-        const btn = new Buttons(
-          "Button body",
-          [{ body: "bt1" }, { body: "bt2" }, { body: "bt3" }],
-          "title",
-          "footer"
-        );
-        const sections = [
-          {
-            title: "sectionTitle",
-            rows: [
-              { title: "ListItem1", description: "desc" },
-              { title: "ListItem2" }
-            ]
-          }
-        ];
-        // const list = new List(
-        //   "List body",
-        //   "btnText",
-        //   sections,
-        //   "Title",
-        //   "footer"
-        // );
-        // await wbot.sendMessage(chatId, list);
-        await wbot.sendMessage(chatId, btn);
         sendedMessage = await wbot.sendMessage(chatId, message.body, {
           quotedMessageId: quotedMsgSerializedId,
           linkPreview: false // fix: send a message takes 2 seconds when there's a link on message body
