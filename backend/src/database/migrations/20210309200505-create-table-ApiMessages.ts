@@ -8,7 +8,7 @@ module.exports = {
           allowNull: false,
           primaryKey: true,
           type: DataTypes.UUID,
-          defaultValue: Sequelize.literal("uuid_generate_v4()")
+          defaultValue: Sequelize.literal("gen_random_uuid()")
         },
         messageId: {
           type: DataTypes.STRING,
