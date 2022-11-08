@@ -56,7 +56,8 @@ const downloadMedia = async (msg: any): Promise<any> => {
       responseType: "stream"
     });
     const cType = request.headers["content-type"];
-    const fileExt = mime.extension(cType);
+    const tMine: any = mime;
+    const fileExt = tMine.extension(cType);
     const mediaName = uuid();
     const dir = join(__dirname, "..", "..", "..", "public");
     const fileName = `${mediaName}.${fileExt}`;
