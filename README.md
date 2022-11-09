@@ -451,5 +451,5 @@ Este projeto não é afiliado, associado, autorizado, endossado por, ou de qualq
 
 
 --------------------------
-### Curtiu? Pague-me um café!! 
-![Doação](donate.png)
+### Curtiu? Pague-me um café!! Segue QR code (PIX)  
+![Doação](donate.jpeg)
