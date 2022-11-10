@@ -1,6 +1,6 @@
 import { Client, LocalAuth, DefaultOptions } from "whatsapp-web.js";
 import path from "path";
-import { rmdir } from "fs/promises";
+import { rm } from "fs/promises";
 import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
 import { logger } from "../utils/logger";
@@ -18,8 +18,12 @@ const checking: any = {};
 export const apagarPastaSessao = async (id: number | string): Promise<void> => {
   const pathRoot = path.resolve(__dirname, "..", "..", ".wwebjs_auth");
   const pathSession = `${pathRoot}/session-wbot_${id}`;
-  const rm = await rmdir(pathSession, { recursive: true });
-  console.log(`apagarPastaSessao:: ${pathSession}`, rm);
+  try {
+    await rm(pathSession, { recursive: true, force: true });
+  } catch (error) {
+    logger.info(`apagarPastaSessao:: ${pathSession}`);
+    logger.error(error);
+  }
 };
 
 const checkMessages = async (wbot: Session, tenantId: number | string) => {
