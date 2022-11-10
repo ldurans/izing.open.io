@@ -14,15 +14,6 @@
     "sourceMap": true,
     "rootDir": "./src",
     "resolveJsonModule": true,
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "./node_modules",
-    "./node_modules/*",
-    "./node_modules/sequelize/types/model.d.ts",
-    "./node_modules/@types/node/index.d.ts"
-  ]
+    "useUnknownInCatchVariables": false
+  }
 }
