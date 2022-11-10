@@ -115,12 +115,13 @@ export const show = async (req: Request, res: Response): Promise<Response> => {
   //     })
   //   );
   // }
+  const where = {
+    contactId: ticket.contactId,
+    scheduleDate: { [Op.not]: null },
+    status: "pending"
+  };
   const scheduledMessages = await Message.findAll({
-    where: {
-      contactId: ticket.contactId,
-      scheduleDate: { [Op.not]: null },
-      status: "pending"
-    }
+    where
     // logging: console.log
   });
 

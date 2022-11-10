@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 import { join } from "path";
-import { Op, where } from "sequelize";
+import { Op } from "sequelize";
 import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 import socketEmit from "../../helpers/socketEmit";
 import Message from "../../models/Message";
@@ -71,25 +71,27 @@ const buildWabaMessage360 = async (
   return newMessage;
 };
 
+const where = {
+  fromMe: true,
+  messageId: { [Op.is]: null },
+  status: "pending",
+  [Op.or]: [
+    {
+      scheduleDate: {
+        [Op.lte]: new Date()
+      }
+    },
+    {
+      scheduleDate: { [Op.is]: null }
+    }
+  ]
+};
+
 const Waba360SendMessagesSystem = async (
   connection: Whatsapp
 ): Promise<void> => {
   const messages = await Message.findAll({
-    where: {
-      fromMe: true,
-      messageId: { [Op.is]: null },
-      status: "pending",
-      [Op.or]: [
-        {
-          scheduleDate: {
-            [Op.lte]: new Date()
-          }
-        },
-        {
-          scheduleDate: { [Op.is]: null }
-        }
-      ]
-    },
+    where,
     include: [
       "contact",
       {

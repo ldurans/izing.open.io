@@ -31,22 +31,24 @@ const SendMessagesSystemWbot = async (
   instaBot: Session,
   tenantId: number | string
 ): Promise<void> => {
-  const messages = await Message.findAll({
-    where: {
-      fromMe: true,
-      messageId: { [Op.is]: null },
-      status: "pending",
-      [Op.or]: [
-        {
-          scheduleDate: {
-            [Op.lte]: new Date()
-          }
-        },
-        {
-          scheduleDate: { [Op.is]: null }
+  const where = {
+    fromMe: true,
+    messageId: { [Op.is]: null },
+    status: "pending",
+    [Op.or]: [
+      {
+        scheduleDate: {
+          [Op.lte]: new Date()
         }
-      ]
-    },
+      },
+      {
+        scheduleDate: { [Op.is]: null }
+      }
+    ]
+  };
+
+  const messages = await Message.findAll({
+    where,
     include: [
       "contact",
       {

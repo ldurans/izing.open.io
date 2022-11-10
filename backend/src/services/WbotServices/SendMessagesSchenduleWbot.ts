@@ -8,15 +8,16 @@ import Contact from "../../models/Contact";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 const SendMessagesSchenduleWbot = async (): Promise<void> => {
+  const where = {
+    fromMe: true,
+    messageId: { [Op.is]: null },
+    status: "pending",
+    scheduleDate: {
+      [Op.lte]: new Date()
+    }
+  };
   const messages = await Message.findAll({
-    where: {
-      fromMe: true,
-      messageId: { [Op.is]: null },
-      status: "pending",
-      scheduleDate: {
-        [Op.lte]: new Date()
-      }
-    },
+    where,
     include: [
       {
         model: Contact,

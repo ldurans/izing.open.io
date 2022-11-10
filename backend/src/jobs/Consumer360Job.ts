@@ -6,7 +6,7 @@ export default {
   key: "VerifyTicketsChatBotInactives",
   options: {
     // attempts: 0,
-    removeOnComplete: false,
+    removeOnComplete: true,
     removeOnFail: false,
     jobId: "VerifyTicketsChatBotInactives",
     repeat: {
