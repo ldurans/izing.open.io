@@ -138,6 +138,11 @@ class Message extends Model<Message> {
 
   @BelongsTo(() => Tenant)
   tenant: Tenant;
+
+  @Default(null)
+  @AllowNull
+  @Column
+  idFront: string;
 }
 
 // Message.sequelize?.define("Message", {
