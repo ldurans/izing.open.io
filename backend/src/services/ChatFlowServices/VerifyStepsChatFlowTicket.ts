@@ -131,9 +131,11 @@ const isRetriesLimit = async (
   flowConfig: any
 ): Promise<boolean> => {
   // verificar o limite de retentativas e realizar ação
+  const maxRetryNumber = flowConfig?.configurations?.maxRetryBotMessage?.number;
   if (
     flowConfig?.configurations?.maxRetryBotMessage &&
-    ticket.botRetries > flowConfig?.configurations?.maxRetryBotMessage?.number
+    maxRetryNumber &&
+    ticket.botRetries >= maxRetryNumber - 1
   ) {
     const destinyType = flowConfig.configurations.maxRetryBotMessage.type;
     const { destiny } = flowConfig.configurations.maxRetryBotMessage;
