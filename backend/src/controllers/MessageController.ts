@@ -29,6 +29,7 @@ type MessageData = {
   sendType?: string;
   scheduleDate?: string | Date;
   quotedMsg?: Message;
+  idFront?: string;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
@@ -78,7 +79,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       userId,
       scheduleDate: messageData.scheduleDate,
       sendType: messageData.sendType || "chat",
-      status: "pending"
+      status: "pending",
+      idFront: messageData.idFront
     });
   } catch (error) {
     console.log("try CreateMessageSystemService", error);

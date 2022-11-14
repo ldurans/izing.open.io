@@ -27,6 +27,7 @@ interface MessageData {
   scheduleDate?: string | Date;
   sendType?: string;
   status?: string;
+  idFront?: string;
   tenantId: string | number;
 }
 
@@ -46,6 +47,7 @@ interface Request {
   medias?: Express.Multer.File[];
   ticket: Ticket;
   userId?: number | string;
+  idFront?: string;
 }
 
 // const writeFileAsync = promisify(writeFile);
@@ -113,7 +115,8 @@ const CreateMessageSystemService = async ({
   userId,
   scheduleDate,
   sendType,
-  status
+  status,
+  idFront
 }: Request): Promise<void> => {
   const messageData: MessageData = {
     ticketId: ticket.id,
@@ -129,7 +132,8 @@ const CreateMessageSystemService = async ({
     scheduleDate,
     sendType,
     status,
-    tenantId
+    tenantId,
+    idFront
   };
 
   try {
@@ -191,15 +195,16 @@ const CreateMessageSystemService = async ({
             lastMessageAt: new Date().getTime()
           });
 
-          if (!scheduleDate) {
-            global.rabbitWhatsapp.publishInQueue(
-              `whatsapp::${tenantId}`,
-              JSON.stringify({
-                ...messageCreated.toJSON(),
-                contact: ticket.contact.toJSON()
-              })
-            );
-          }
+          // Avaliar utilização do rabbitmq
+          // if (!scheduleDate) {
+          //   global.rabbitWhatsapp.publishInQueue(
+          //     `whatsapp::${tenantId}`,
+          //     JSON.stringify({
+          //       ...messageCreated.toJSON(),
+          //       contact: ticket.contact.toJSON()
+          //     })
+          //   );
+          // }
 
           socketEmit({
             tenantId,
@@ -240,15 +245,16 @@ const CreateMessageSystemService = async ({
         answered: true
       });
 
-      if (!scheduleDate) {
-        global.rabbitWhatsapp.publishInQueue(
-          `whatsapp::${tenantId}`,
-          JSON.stringify({
-            ...messageCreated.toJSON(),
-            contact: ticket.contact.toJSON()
-          })
-        );
-      }
+      // Avaliar utilização do rabbitmq
+      // if (!scheduleDate) {
+      //   global.rabbitWhatsapp.publishInQueue(
+      //     `whatsapp::${tenantId}`,
+      //     JSON.stringify({
+      //       ...messageCreated.toJSON(),
+      //       contact: ticket.contact.toJSON()
+      //     })
+      //   );
+      // }
 
       socketEmit({
         tenantId,
