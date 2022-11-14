@@ -8,7 +8,10 @@ import {
   getDay,
   addDays,
   differenceInSeconds,
-  startOfDay
+  startOfDay,
+  isAfter,
+  isBefore,
+  differenceInDays
 } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import Campaign from "../../models/Campaign";
@@ -66,33 +69,56 @@ const mountMessageData = (
 
 const nextDayHoursValid = (date: Date) => {
   let dateVerify = date;
-  const isValidHour = isWithinInterval(dateVerify, {
-    start: parse("08:00", "HH:mm", new Date()),
-    end: parse("18:00", "HH:mm", new Date())
-  });
+  const dateNow = new Date();
+  const diffDays = differenceInDays(dateVerify, new Date());
+  // se dia for menor que o atual
+  if (diffDays < 0) {
+    dateVerify = addDays(dateVerify, diffDays * -1);
+  }
 
-  if (!isValidHour) {
+  // se a hora for menor que a atual ao programar a campanha
+  if (dateVerify.getTime() < dateNow.getTime()) {
+    dateVerify = setMinutes(
+      setHours(dateVerify, dateNow.getHours()),
+      dateNow.getMinutes()
+    );
+  }
+
+  const start = parse("08:00", "HH:mm", dateVerify);
+  const end = parse("20:00", "HH:mm", dateVerify);
+
+  const isValidHour = isWithinInterval(dateVerify, { start, end });
+
+  const isDateBefore = isBefore(start, dateVerify);
+  const isDateAfter = isAfter(end, dateVerify);
+
+  // fora do intervalo e menor que a hora inicial
+  if (!isValidHour && isDateBefore) {
+    dateVerify = setMinutes(setHours(dateVerify, 8), 30);
+  }
+
+  // fora do intervalo, maior que a hora final e no mesmo dia
+  if (!isValidHour && isDateAfter && diffDays === 0) {
+    dateVerify = addDays(setHours(dateVerify, 8), 1);
+  }
+
+  // fora do intervalo, maior que a hora final e dia diferente
+  if (!isValidHour && isDateAfter && diffDays > 0) {
     dateVerify = setHours(dateVerify, 8);
   }
 
-  // Se a data da programação for mario que a
-  // data atual, pular para o proximo dia.
-  if (dateVerify.getTime() < new Date().getTime()) {
-    dateVerify = addDays(dateVerify, 1);
-  }
+  // const isValidDay = getDay(dateVerify) !== 0 && getDay(dateVerify) !== 6;
 
-  const isValidDay = getDay(dateVerify) !== 0 && getDay(dateVerify) !== 6;
-
-  if (!isValidDay) {
-    // Se for domingo add 1 dia para segunda
-    if (getDay(dateVerify) === 0) {
-      dateVerify = addDays(dateVerify, 1);
-    }
-    // SE for Sabado add 2 dias para segunda
-    if (getDay(dateVerify) === 6) {
-      dateVerify = addDays(dateVerify, 2);
-    }
-  }
+  // if (!isValidDay) {
+  //   // Se for domingo add 1 dia para segunda
+  //   if (getDay(dateVerify) === 0) {
+  //     dateVerify = addDays(dateVerify, 1);
+  //   }
+  //   // SE for Sabado add 2 dias para segunda
+  //   if (getDay(dateVerify) === 6) {
+  //     dateVerify = addDays(dateVerify, 2);
+  //   }
+  // }
 
   return dateVerify;
 };
@@ -132,7 +158,7 @@ const StartCampaignService = async ({
     throw new AppError("ERR_CAMPAIGN_CONTACTS_NOT_EXISTS", 404);
   }
 
-  const timeDelay = options?.delay || 15000;
+  const timeDelay = options?.delay || 5000;
   let dateDelay = setHours(
     setMinutes(zonedTimeToUtc(campaign.start, "America/Sao_Paulo"), 30),
     8

@@ -447,6 +447,8 @@ events.getOpenChatWindows = (socket: Socket) => {
 };
 
 function register(socket: Socket): void {
+  if (!socket?.user?.tenantId) return;
+
   events.onSetUserIdle(socket);
   events.onSetUserActive(socket);
   events.onUpdateUsers(socket);

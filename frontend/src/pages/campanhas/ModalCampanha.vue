@@ -340,7 +340,7 @@ export default {
   computed: {
     ...mapGetters(['whatsapps']),
     cSessions () {
-      return this.whatsapps.filter(w => w.type === 'w' && !w.isDeleted)
+      return this.whatsapps.filter(w => w.type === 'whatsapp' && !w.isDeleted)
     },
     cKey () {
       return this.campanha.message1 + this.campanha.message2 + this.campanha.message3

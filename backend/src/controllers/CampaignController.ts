@@ -141,7 +141,7 @@ export const startCampaign = async (
     campaignId,
     tenantId,
     options: {
-      delay: 15000
+      delay: 2000
     }
   });
 

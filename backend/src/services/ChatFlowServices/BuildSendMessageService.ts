@@ -111,13 +111,13 @@ const BuildSendMessageService = async ({
         lastMessageAt: new Date().getTime()
       });
 
-      global.rabbitWhatsapp.publishInQueue(
-        `whatsapp::${tenantId}`,
-        JSON.stringify({
-          ...messageCreated.toJSON(),
-          contact: ticket.contact.toJSON()
-        })
-      );
+      // global.rabbitWhatsapp.publishInQueue(
+      //   `whatsapp::${tenantId}`,
+      //   JSON.stringify({
+      //     ...messageCreated.toJSON(),
+      //     contact: ticket.contact.toJSON()
+      //   })
+      // );
 
       socketEmit({
         tenantId,
@@ -157,13 +157,13 @@ const BuildSendMessageService = async ({
         answered: true
       });
 
-      global.rabbitWhatsapp.publishInQueue(
-        `whatsapp::${tenantId}`,
-        JSON.stringify({
-          ...messageCreated.toJSON(),
-          contact: ticket.contact.toJSON()
-        })
-      );
+      // global.rabbitWhatsapp.publishInQueue(
+      //   `whatsapp::${tenantId}`,
+      //   JSON.stringify({
+      //     ...messageCreated.toJSON(),
+      //     contact: ticket.contact.toJSON()
+      //   })
+      // );
 
       socketEmit({
         tenantId,

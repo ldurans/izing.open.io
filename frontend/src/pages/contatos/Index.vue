@@ -6,7 +6,7 @@
       :data="contacts"
       :columns="columns"
       :loading="loading"
-      row-key="number"
+      row-key="id"
       virtual-scroll
       :virtual-scroll-item-size="48"
       :virtual-scroll-sticky-size-start="48"

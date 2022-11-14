@@ -22,11 +22,8 @@ export default {
       const wbot = getWbot(data.whatsappId);
       let message = {} as WbotMessage;
       if (data.mediaUrl) {
-        const customPath = join(__dirname, "..", "..", "..", "public");
-        const mediaPath = join(
-          process.env.PATH_OFFLINE_MEDIA || customPath,
-          data.mediaName
-        );
+        const customPath = join(__dirname, "..", "..", "public");
+        const mediaPath = join(customPath, data.mediaName);
         const newMedia = MessageMedia.fromFilePath(mediaPath);
         message = await wbot.sendMessage(`${data.number}@c.us`, newMedia, {
           sendAudioAsVoice: true,
