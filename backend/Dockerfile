@@ -38,6 +38,5 @@ RUN chmod +x /start_production
 
 ENTRYPOINT ["dumb-init", "--"]
 
-CMD dockerize -wait tcp://${POSTGRES_HOST}:${DB_PORT} \
-  && npx sequelize db:migrate \
+CMD npx sequelize db:migrate \
   && node dist/server.js

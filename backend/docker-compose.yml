@@ -9,7 +9,8 @@ services:
       - ./.env
     stdin_open: true
     tty: true
-    # command: ./start_production
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ".:/usr/src/app"
       # - "/var/izing-media:/usr/src/app/public/"
@@ -25,14 +26,16 @@ services:
     container_name: "izing-redis"
     image: 'redis:latest'
     restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
-      - "6377:6379"
+      - "6379:6379"
     env_file:
       - ./.env
     volumes:
       - '/var/izing/redis:/data'
     networks:
-      - izing_network
+      - izing_db_network
 
   # database containers, one for each db
   izing-fixPermissionsPostregres:
@@ -46,6 +49,8 @@ services:
     image: 'bitnami/postgresql:14'
     restart: always
     container_name: "izing-db"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - ./.env
     volumes:
@@ -61,6 +66,8 @@ services:
     image: rabbitmq:3-management
     hostname: izing-rabbit
     restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - ./.env
     healthcheck:
@@ -78,7 +85,7 @@ services:
       - 5672:5672
       - 15672:15672
     networks:
-      - izing_network
+      - izing_db_network
 
 networks:
   izing_network:
