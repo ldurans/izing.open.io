@@ -3,6 +3,7 @@ import { Client } from "whatsapp-web.js";
 import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
 import { logger } from "../../utils/logger";
+import { StartWhatsAppSession } from "./StartWhatsAppSession";
 // import { StartWhatsAppSession } from "./StartWhatsAppSession";
 
 interface Session extends Client {
@@ -61,12 +62,16 @@ const wbotMonitor = async (
 
     wbot.on("disconnected", async reason => {
       logger.info(`Disconnected session: ${sessionName} | Reason: ${reason}`);
+      try {
+        await whatsapp.update({ status: "OPENING", session: "" });
+      } catch (err) {
+        logger.error(err);
+      }
       io.emit(`${whatsapp.tenantId}:whatsappSession`, {
         action: "update",
         session: whatsapp
       });
-
-      // setTimeout(() => StartWhatsAppSession(whatsapp), 2000);
+      setTimeout(() => StartWhatsAppSession(whatsapp), 2000);
     });
   } catch (err) {
     logger.error(err);

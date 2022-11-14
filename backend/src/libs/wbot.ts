@@ -89,13 +89,8 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         });
       });
 
-      wbot.on("authenticated", async session => {
+      wbot.on("authenticated", async () => {
         logger.info(`Session: ${sessionName} AUTHENTICATED`);
-        if (session) {
-          await whatsapp.update({
-            session: JSON.stringify(session)
-          });
-        }
       });
 
       wbot.on("auth_failure", async msg => {
@@ -126,10 +121,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
       wbot.on("ready", async () => {
         logger.info(`Session: ${sessionName}-READY`);
 
-        // if (process.env.NODE_ENV === "prod") {
-        //   logger.info("Iniciando sincronização de contatos.");
-        //   syncContacts(wbot, tenantId);
-        // }
         const info: any = wbot?.info;
         await whatsapp.update({
           status: "CONNECTED",
@@ -162,51 +153,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         resolve(wbot);
       });
 
-      wbot.on("disconnected", async reason => {
-        logger.info(`disconnected wbot ${reason}`);
-
-        try {
-          if (reason === "UNPAIRED") {
-            logger.info(
-              `Disconnected(UNPAIRED) session DEstroy: ${sessionName} | ${reason}`
-            );
-            const sessionIndex = sessions.findIndex(s => s.id === whatsapp.id);
-            if (sessionIndex === -1) {
-              wbot.id = whatsapp.id;
-              sessions.push(wbot);
-            } else {
-              wbot.id = whatsapp.id;
-              sessions[sessionIndex] = wbot;
-            }
-            await whatsapp.update({
-              status: "DESTROYED",
-              retries: 0,
-              session: ""
-            });
-            await apagarPastaSessao(whatsapp.id);
-            await wbot.logout();
-            await wbot.destroy();
-          } else if (reason === "CONFLICT") {
-            await whatsapp.update({ status: "DISCONNECTED", retries: 0 });
-          } else {
-            await whatsapp.update({
-              status: "DESTROYED",
-              retries: 0,
-              session: ""
-            });
-            await apagarPastaSessao(whatsapp.id);
-            await wbot.logout();
-            await wbot.destroy();
-          }
-        } catch (err) {
-          logger.error(`wbot: update: disconnected.Error: ${err}`);
-        }
-
-        io.emit(`${whatsapp.tenantId}:whatsappSession`, {
-          action: "update",
-          session: whatsapp
-        });
-      });
       setInterval(
         checkMessages,
         +(process.env.CHECK_INTERVAL || 5000),
