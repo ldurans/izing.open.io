@@ -1,3 +1,33 @@
+# [1.7.0](https://github.com/ldurans/izing.io/compare/v1.6.1...v1.7.0) (2022-11-14)
+
+
+### Bug Fixes
+
+* ajuste de porta do redis para acesso via gateway localhost. ([379cc05](https://github.com/ldurans/izing.io/commit/379cc050a7076722025a9c4460b7be7d0c1df66b))
+* ajuste do qrcode para doações no readme. ([2321405](https://github.com/ldurans/izing.io/commit/2321405a2bc9aa759ad66ce4174e1944de41d930))
+* ajuste do tamanho do qrcode para doações no readme. ([052c806](https://github.com/ldurans/izing.io/commit/052c8064ad934e7a0afd3f6d9feea24f6ac5d30b))
+* ajuste mime-types para forçar reconhecimento do metodo extension. ([a852226](https://github.com/ldurans/izing.io/commit/a852226c4c46ec28e50e517c56c9671de5eca1a0))
+* ajuste no docker para permitir conexão com containers externos ([ee96ffc](https://github.com/ldurans/izing.io/commit/ee96ffca54217011c74c8d5aa2b2db59a3518b9f))
+* ajuste no nome dos arquivo de variáveis de exemplo. ([48bd01a](https://github.com/ldurans/izing.io/commit/48bd01a6ef9840bc616b046cf9f6594ab2fd957a))
+* ajuste no scroll das mensagens ([c05d3c2](https://github.com/ldurans/izing.io/commit/c05d3c28f7db89ce4936c7dc40042378d56b7951))
+* ajuste para exibir o botão do qrcode somente para whatsapp. ([2f99d08](https://github.com/ldurans/izing.io/commit/2f99d08681b5c341c376a33017696909c9c438c8))
+* alterado valor defaul do ID para utilizar UUID do Postgres nas tabelas de configuração da api e mensagens da api. ([b87d567](https://github.com/ldurans/izing.io/commit/b87d567a3fac08eafc792f4bbb792de1cad96f01))
+* alterado valor defaul do ID para utilizar UUID do Postgres nas tabelas de configuração da api e mensagens da api. ([f7ae28e](https://github.com/ldurans/izing.io/commit/f7ae28ea70935a2e4c7e0b76ec6716b055b70856))
+* alterado valor defaul do ID para utilizar UUID do Postgres nas tabelas de configuração da api e mensagens da api. ([bf81d32](https://github.com/ldurans/izing.io/commit/bf81d3258c1065609e2a462323006f009fb14f27))
+* controle de erro ao apagar a pasta da sessão do whatsapp ([b794fb8](https://github.com/ldurans/izing.io/commit/b794fb8dc99602009cb21ece1ddd9e055cbea418))
+* corrigdo fluxo na gestão da sessão ([d9435f3](https://github.com/ldurans/izing.io/commit/d9435f3e6695060720cc6392a99b7a6ea77784bb))
+* corrigido apresentação do QRCode ([64e6067](https://github.com/ldurans/izing.io/commit/64e6067d9d06240d4369001944b6befa29b4bfa9))
+* corrigido o campo idFront no model Message ([c105543](https://github.com/ldurans/izing.io/commit/c105543dd84f59164a077f177c7b0d051cde20e0))
+* corrigido o funcionamento do número máximo de retentativas do bot. ([22d4ba6](https://github.com/ldurans/izing.io/commit/22d4ba65302df50990cfde17dff19f29bd698316)), closes [#41](https://github.com/ldurans/izing.io/issues/41)
+* **docker:** simplificando o docker compose para acesso direto ao backend sem passar pelo nginx. ([96778d9](https://github.com/ldurans/izing.io/commit/96778d94ce439bfd1fcaf8a6b065b61ae1a1ce24))
+* retirado envio de "Button Body" indevido nas mensagem, causado pelo wrapper da class button. ([e189fe7](https://github.com/ldurans/izing.io/commit/e189fe73aac596ab34fa2fa3dfe9bdeb270b9010))
+
+
+### Features
+
+* adicionado identificação para mensagens enviadas ([c8b85a5](https://github.com/ldurans/izing.io/commit/c8b85a5e4c473e1a8c423c99a0b9104f5467a93c))
+* adicionado idFront no backend ([3aaf10d](https://github.com/ldurans/izing.io/commit/3aaf10dafca41220a61d80b4b2cf930eeba94d44))
+
 ## [1.6.1](https://github.com/ldurans/izing.io/compare/v1.6.0...v1.6.1) (2022-11-06)
 
 
