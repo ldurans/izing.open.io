@@ -76,17 +76,10 @@ export default {
       this.$emit('update:abrirModalQR', false)
     },
     async fetchSession (channel) {
+      await RequestNewQrCode(channel.id)
       const { data } = await GetWhatSession(channel.id)
       this.qrCode = data.qrcode
       this.handlerModalQrCode()
-      if (!this.qrCode) {
-        // setTimeout(() => {
-        //   if (!this.qrCode) {
-        //     this.$emit('modalQrCode:qrCodeInexistente')
-        //   }
-        // }, 3000)
-        await RequestNewQrCode(channel.id)
-      }
     },
     handlerModalQrCode () {
       socket.on(`${usuario.tenantId}:whatsappSession`, data => {
