@@ -1,6 +1,6 @@
 {
   "name": "izing.io",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Bot Multiatendimento, multicanais e multiempresas.",
   "main": "index.js",
   "private": false,

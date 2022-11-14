@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/ldurans/izing.io/compare/v1.7.0...v1.7.1) (2022-11-14)
+
+
+### Bug Fixes
+
+* **#45:** ajuste no módulo de campanha para exibir as sessões corretamente. ([007c016](https://github.com/ldurans/izing.io/commit/007c016a616b38be768f4049ac84fb508b2f3153)), closes [#45](https://github.com/ldurans/izing.io/issues/45)
+
 # [1.7.0](https://github.com/ldurans/izing.io/compare/v1.6.1...v1.7.0) (2022-11-14)
 
 
