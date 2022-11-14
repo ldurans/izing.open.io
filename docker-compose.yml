@@ -7,16 +7,16 @@ services:
     user: root
     command: chown -R 1001:1001 /var/lib/postgresql
     volumes:
-      - '$HOME/www/izing/database/pg:/var/lib/postgresql'
+      - 'data/pg:/var/lib/postgresql'
   
-  izing-db:
+  db:
     image: 'postgres:14'
     restart: always
-    container_name: "izing-db"
+    container_name: "db"
     env_file:
       - ./backend/.env
     volumes:
-      - "$HOME/www/izing/database/pg:/var/lib/postgresql"
+      - "data/pg:/var/lib/postgresql"
     ports:
       - "5432:5432"
     networks:
@@ -24,8 +24,8 @@ services:
     depends_on:
       - fixPermissionsPostregres
 
-  izing-redis:
-    container_name: "izing-redis"
+  redis:
+    container_name: "redis"
     image: 'redis:latest'
     restart: always
     ports:
@@ -33,13 +33,13 @@ services:
     env_file:
       - ./backend/.env
     volumes:
-      - '$HOME/www/izing/database/redis:/data'
+      - 'data/redis:/data'
     networks:
       - redis_network
   
   izing-rabbitmq:
     image: rabbitmq:3-management
-    container_name: "izing-rabbitmq"
+    container_name: "rabbitmq"
     restart: always
     env_file:
       - ./backend/.env
@@ -51,16 +51,16 @@ services:
     #   timeout: 10s
     #   retries: 3
     volumes:
-      - $HOME/www/izing/database/rabbitmq/data/:/var/lib/rabbitmq/
-      - $HOME/www/izing/database/rabbitmq/logs/:/var/log/rabbitmq/log
+      - data/rabbitmq/:/var/lib/rabbitmq/
+      - logs/rabbitmq/:/var/log/rabbitmq/log
     ports:
       - 5672:5672
       - 15672:15672
     networks:
       - rabbitmq_network
 
-  izing-backend:
-    container_name: "izing-backend"
+  backend:
+    container_name: "backend"
     build:
       context: ./backend
     env_file:
@@ -69,23 +69,23 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - 3100:3100
-      - 3000:3000
+      - 4100:3100
+      - 4000:3000
     # command: /start_production
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       - "./backend:/usr/src/app"
-      - $HOME/www/izing/media:/usr/src/app/public
+      - media:/usr/src/app/public
     networks:
       - rabbitmq_network
       - redis_network
       - db_network
       - nginx_network
     depends_on:
-      - izing-redis
-      - izing-db
-      - izing-rabbitmq
+      - redis
+      - db
+      - rabbitmq
   
   nginx:
     container_name: nginx-proxy
@@ -98,11 +98,11 @@ services:
     tty: true
     entrypoint: nginx -g "daemon off;"
     ports:
-      - "443:443"
-      - "80:80"
+      - "4443:443"
+      - "880:80"
       - "8080:8080"
     volumes:
-      - $HOME/www/izing/media:/opt/services/app/media
+      - media:/opt/services/app/media
     depends_on:
       - izing-backend
     networks:
