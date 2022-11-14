@@ -10,7 +10,8 @@
     "dev:server": "ts-node-dev --inspect=9229 --respawn --transpile-only --ignore node_modules src/server.ts",
     "pretest": "NODE_ENV=test sequelize db:migrate && NODE_ENV=test sequelize db:seed:all",
     "test": "NODE_ENV=test jest",
-    "posttest": "NODE_ENV=test sequelize db:migrate:undo:all"
+    "posttest": "NODE_ENV=test sequelize db:migrate:undo:all",
+    "db:migrate": "rm -Rf dist && npm run build && npx sequelize db:migrate"
   },
   "author": "",
   "license": "MIT",
@@ -36,8 +37,8 @@
     "fluent-ffmpeg": "^2.1.2",
     "helmet": "^4.4.1",
     "http-graceful-shutdown": "^2.4.0",
-    "instagram-private-api": "^1.45.2",
     "instagram_mqtt": "^1.2.2",
+    "instagram-private-api": "^1.45.2",
     "ioredis": "^5.2.4",
     "is-base64": "^1.1.0",
     "jsonwebtoken": "^8.5.1",
@@ -61,9 +62,8 @@
     "socket.io": "2.3.0",
     "socket.io-redis": "^5.4.0",
     "telegraf": "^4.0.3",
-    "telegraf-session-redis": "^5.1.0",
     "uuid": "^8.3.2",
-    "whatsapp-web.js": "^1.18.2",
+    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#v1.18.3-alpha.0",
     "winston": "^3.3.3",
     "yup": "^0.29.3"
   },
