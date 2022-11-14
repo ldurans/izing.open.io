@@ -282,6 +282,7 @@
 </template>
 
 <script>
+import { uid } from 'quasar'
 import mixinCommon from './mixinCommon'
 import { EnviarMensagemTexto } from 'src/service/tickets'
 import { VEmojiPicker } from 'v-emoji-picker'
@@ -460,6 +461,7 @@ export default {
       this.arquivos.forEach(media => {
         formData.append('medias', media)
         formData.append('body', media.name)
+        formData.append('idFront', uid())
         if (this.isScheduleDate) {
           formData.append('scheduleDate', this.scheduleDate)
         }
@@ -497,7 +499,8 @@ export default {
         mediaUrl: '',
         body: mensagem,
         scheduleDate: this.isScheduleDate ? this.scheduleDate : null,
-        quotedMsg: this.replyingMessage
+        quotedMsg: this.replyingMessage,
+        idFront: uid()
       }
       if (this.isScheduleDate) {
         message.scheduleDate = this.scheduleDate
