@@ -10,7 +10,6 @@ logs/
 WWebJS/
 
 
-package-lock.json
 yarn.lock
 yarn-error.log
 
