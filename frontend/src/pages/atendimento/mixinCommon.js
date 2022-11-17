@@ -15,7 +15,7 @@ export default {
     scrollToBottom () {
       setTimeout(() => {
         this.$root.$emit('scrollToBottomMessageChat')
-      }, 400)
+      }, 200)
     },
     dataInWords (date) {
       return format(parseJSON(date), 'HH:mm', { locale: pt })

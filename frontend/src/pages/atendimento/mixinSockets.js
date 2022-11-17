@@ -32,7 +32,7 @@ export default {
     scrollToBottom () {
       setTimeout(() => {
         this.$root.$emit('scrollToBottomMessageChat')
-      }, 400)
+      }, 200)
     },
     socketMessagesList () {
 
@@ -81,6 +81,7 @@ export default {
       socket.on(`${usuario.tenantId}:ticketList`, data => {
         if (data.type === 'chat:create') {
           this.$store.commit('UPDATE_MESSAGES', data.payload)
+          this.scrollToBottom()
         }
 
         if (data.type === 'chat:ack' || data.type === 'chat:delete') {
