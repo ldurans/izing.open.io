@@ -1,4 +1,5 @@
-[![Doação](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=TZ26S3D3Q4PE6)
+[![Doação](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=TZ26S3D3Q4PE6) 
+[![Discord Chat](https://img.shields.io/discord/1046597742878789663.svg?logo=discord)](https://discord.gg/vThFjJWX)
 
 # Izing
 
