@@ -1,3 +1,11 @@
+## [1.7.2](https://github.com/ldurans/izing.io/compare/v1.7.1...v1.7.2) (2022-11-28)
+
+
+### Bug Fixes
+
+* ajuste scroll para mensagens recebidas ([3c83796](https://github.com/ldurans/izing.io/commit/3c837964dd6de77f9d1de0c2d6ad0e72e2d09ebd)), closes [#47](https://github.com/ldurans/izing.io/issues/47)
+* correção do versionamento do package-lock.json. ([99c9504](https://github.com/ldurans/izing.io/commit/99c9504c52c7de14958628b4b9ad9b660676f647))
+
 ## [1.7.1](https://github.com/ldurans/izing.io/compare/v1.7.0...v1.7.1) (2022-11-14)
 
 
