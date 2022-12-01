@@ -1,3 +1,10 @@
+## [1.7.3](https://github.com/ldurans/izing.io/compare/v1.7.2...v1.7.3) (2022-12-01)
+
+
+### Bug Fixes
+
+* ajuste para assegurar o envio conforme sessão do ticket, corrigindo conflito do contato. ([28d28d1](https://github.com/ldurans/izing.io/commit/28d28d11906d3a6aa4c19533f6b4f8ec45cadb89))
+
 ## [1.7.2](https://github.com/ldurans/izing.io/compare/v1.7.1...v1.7.2) (2022-11-28)
 
 
