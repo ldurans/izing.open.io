@@ -46,7 +46,7 @@ const MessengerSendMessagesSystem = async (
       {
         model: Ticket,
         as: "ticket",
-        where: { tenantId, channel: "messenger" },
+        where: { tenantId, channel: "messenger", whatsappId: messengerBot.id },
         include: ["contact"]
       },
       {

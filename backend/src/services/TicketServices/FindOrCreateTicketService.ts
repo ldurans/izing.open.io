@@ -51,6 +51,7 @@ const FindOrCreateTicketService = async ({
         [Op.or]: ["open", "pending"]
       },
       tenantId,
+      whatsappId,
       contactId: groupContact ? groupContact.id : contact.id
     },
     include: [
@@ -93,7 +94,8 @@ const FindOrCreateTicketService = async ({
     ticket = await Ticket.findOne({
       where: {
         contactId: groupContact.id,
-        tenantId
+        tenantId,
+        whatsappId
       },
       order: [["updatedAt", "DESC"]],
       include: [
@@ -141,8 +143,8 @@ const FindOrCreateTicketService = async ({
         status: {
           [Op.in]: ["open", "pending"]
         },
-        userId: "1212",
         tenantId,
+        whatsappId,
         contactId: contact.id
       },
       order: [["updatedAt", "DESC"]],

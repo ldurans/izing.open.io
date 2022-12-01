@@ -21,7 +21,7 @@ import { sleepRandomTime } from "../../utils/sleepRandomTime";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 interface Session extends IgApiClientMQTT {
-  id?: number;
+  id: number;
   accountLogin?:
   | AccountRepositoryLoginResponseLogged_in_user
   | AccountRepositoryCurrentUserResponseUser;
@@ -54,7 +54,7 @@ const SendMessagesSystemWbot = async (
       {
         model: Ticket,
         as: "ticket",
-        where: { tenantId, channel: "instagram" },
+        where: { tenantId, channel: "instagram", whatsappId: instaBot.id },
         include: ["contact"]
       },
       {

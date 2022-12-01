@@ -63,6 +63,9 @@ export const initIO = (httpServer: Server): SocketIO => {
         message: "Client connected in tenant",
         data: socket.handshake.query
       });
+
+      socket.join(tenantId.toString());
+
       socket.on(`${tenantId}:joinChatBox`, ticketId => {
         console.info({
           message: `Client joined a ticket channel ${tenantId}:${ticketId}`

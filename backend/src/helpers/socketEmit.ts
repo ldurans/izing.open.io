@@ -25,7 +25,7 @@ const emitEvent = ({ tenantId, type, payload }: ObjEvent): void => {
     eventChannel = `${tenantId}:contactList`;
   }
 
-  io.emit(eventChannel, {
+  io.to(tenantId.toString()).emit(eventChannel, {
     type,
     payload
   });

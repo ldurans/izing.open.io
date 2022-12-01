@@ -8,7 +8,7 @@ const GetDefaultWhatsApp = async (
     where: { tenantId, type: "whatsapp", status: "CONNECTED" }
   });
 
-  if (!defaultWhatsapp) {
+  if (!defaultWhatsapp || !tenantId) {
     throw new AppError("ERR_NO_DEF_WAPP_FOUND");
   }
 

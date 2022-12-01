@@ -12,7 +12,7 @@ import { logger } from "../../utils/logger";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 interface Session extends Telegraf {
-  id?: number;
+  id: number;
 }
 
 const SendMessagesSystemWbot = async (
@@ -41,7 +41,7 @@ const SendMessagesSystemWbot = async (
       {
         model: Ticket,
         as: "ticket",
-        where: { tenantId, channel: "telegram" },
+        where: { tenantId, channel: "telegram", whatsappId: tbot.id },
         include: ["contact"]
       },
       {

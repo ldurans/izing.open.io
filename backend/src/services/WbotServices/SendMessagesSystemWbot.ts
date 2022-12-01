@@ -11,7 +11,7 @@ import Contact from "../../models/Contact";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 interface Session extends Client {
-  id?: number;
+  id: number;
 }
 
 const SendMessagesSystemWbot = async (
@@ -52,7 +52,8 @@ const SendMessagesSystemWbot = async (
         where: {
           tenantId,
           status: { [Op.ne]: "closed" },
-          channel: "whatsapp"
+          channel: "whatsapp",
+          whatsappId: wbot.id
         },
         include: ["contact"]
       },

@@ -82,7 +82,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   // se ticket criado pelo próprio usuário, não emitir socket.
   if (!userId) {
     const io = getIO();
-    io.to(`${tenantId}-${ticket.status}`).emit(`${tenantId}-ticket`, {
+    io.to(`${tenantId}:${ticket.status}`).emit(`${tenantId}:ticket`, {
       action: "create",
       ticket
     });
@@ -154,23 +154,6 @@ export const update = async (
     userIdRequest
   });
 
-  // const io = getIO();
-
-  // if (ticket.status !== oldStatus || ticket.user?.id !== oldUserId) {
-  //   io.to(`${tenantId}-${oldStatus}`).emit(`${tenantId}-ticket`, {
-  //     action: "delete",
-  //     ticketId: ticket.id
-  //   });
-  // }
-
-  // io.to(`${tenantId}-${ticket.status}`)
-  //   .to(`${tenantId}-notification`)
-  //   .to(`${tenantId}-${ticketId}`)
-  //   .emit(`${tenantId}-ticket`, {
-  //     action: "updateStatus",
-  //     ticket
-  //   });
-
   return res.status(200).json(ticket);
 };
 
@@ -185,10 +168,10 @@ export const remove = async (
   const ticket = await DeleteTicketService({ id: ticketId, tenantId, userId });
 
   const io = getIO();
-  io.to(`${tenantId}-${ticket.status}`)
-    .to(`${tenantId}-${ticketId}`)
-    .to(`${tenantId}-notification`)
-    .emit(`${tenantId}-ticket`, {
+  io.to(`${tenantId}:${ticket.status}`)
+    .to(`${tenantId}:${ticketId}`)
+    .to(`${tenantId}:notification`)
+    .emit(`${tenantId}:ticket`, {
       action: "delete",
       ticketId: +ticketId
     });
