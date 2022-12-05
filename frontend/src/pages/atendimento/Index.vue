@@ -506,7 +506,6 @@
                     <q-item v-for="(info, idx) in ticketFocado.contact.extraInfo"
                       :key="idx">
                       <q-item-section>
-                        <q-item-label caption> asaasasasa {{ info.name }}</q-item-label>
                         <q-item-label>{{ info.value }}</q-item-label>
                       </q-item-section>
                     </q-item>
