@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/ldurans/izing.io/compare/v1.7.3...v1.8.0) (2022-12-05)
+
+
+### Features
+
+* ativar/desativar assinatura ([fd637e8](https://github.com/ldurans/izing.io/commit/fd637e86331bf9d774f08fb6f71658be06312f09)), closes [#72](https://github.com/ldurans/izing.io/issues/72)
+
 ## [1.7.3](https://github.com/ldurans/izing.io/compare/v1.7.2...v1.7.3) (2022-12-01)
 
 
