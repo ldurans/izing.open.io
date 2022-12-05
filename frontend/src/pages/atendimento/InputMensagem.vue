@@ -97,6 +97,18 @@
             @select="onInsertSelectEmoji" />
         </q-menu>
       </q-btn>
+      <q-checkbox keep-color
+        v-model="sign"
+        size="xl"
+        dense
+        class="q-mx-sm q-ml-md"
+        :color="sign ? 'positive' : 'black'"
+        checked-icon="mdi-draw"
+        unchecked-icon="mdi-draw">
+        <q-tooltip>
+          {{ sign ? 'Desativar' : 'Ativar' }} Assinatura
+        </q-tooltip>
+      </q-checkbox>
       <q-input hide-bottom-space
         :loading="loading"
         :disable="cDisableActions"
@@ -325,6 +337,7 @@ export default {
       visualizarMensagensRapidas: false,
       arquivos: [],
       textChat: '',
+      sign: true,
       scheduleDate: null
     }
   },
@@ -490,7 +503,7 @@ export default {
       }
       let mensagem = this.textChat.trim()
       const username = localStorage.getItem('username')
-      if (username) {
+      if (username && this.sign) {
         mensagem = `*#${username}*:\n ${mensagem}`
       }
       const message = {

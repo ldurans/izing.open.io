@@ -1,8 +1,8 @@
 const token = JSON.parse(localStorage.getItem('token'))
 const usuario = JSON.parse(localStorage.getItem('usuario'))
-// import verifySocketTicketAction from 'src/utils/verifySocketTicketAction'
 import Router from 'src/router/index'
 import openSocket from 'socket.io-client'
+import checkTicketFilter from 'src/utils/checkTicketFilter'
 const socket = openSocket(process.env.URL_API, {
   query: {
     token
@@ -39,8 +39,6 @@ export default {
     },
     socketTicket () {
       socket.on(`${usuario.tenantId}:ticket`, data => {
-        // verifySocketTicketAction(data.ticket, data.action)
-
         if (data.action === 'update' && data.ticket.userId === userId) {
           if (data.ticket.status === 'open' && !data.ticket.isTransference) {
             this.$store.commit('TICKET_FOCADO', data.ticket)
@@ -70,16 +68,17 @@ export default {
       // socket.emit(`${usuario.tenantId}:joinNotification`)
       // }
 
-      // verifySocketTicketAction(data.message.ticket, data.action) // refatorar para verificar corretamente os parametros
-      // if (
-      //   data.action === 'create' &&
-      //   !data.message.read &&
-      //   (data.ticket.userId === userId || !data.ticket.userId)
-      // ) {
-      //   this.$root.$emit('handlerNotifications', data)
-      // }
       socket.on(`${usuario.tenantId}:ticketList`, data => {
         if (data.type === 'chat:create') {
+          if (
+            !data.payload.read &&
+            (data.payload.ticket.userId === userId || !data.payload.ticket.userId) &&
+            data.payload.ticket.id !== this.$store.getters.ticketFocado.id
+          ) {
+            if (checkTicketFilter(data.payload.ticket)) {
+              this.handlerNotifications(data.payload)
+            }
+          }
           this.$store.commit('UPDATE_MESSAGES', data.payload)
           this.scrollToBottom()
         }

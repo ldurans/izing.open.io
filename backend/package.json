@@ -37,8 +37,8 @@
     "fluent-ffmpeg": "^2.1.2",
     "helmet": "^4.4.1",
     "http-graceful-shutdown": "^2.4.0",
-    "instagram_mqtt": "^1.2.2",
     "instagram-private-api": "^1.45.2",
+    "instagram_mqtt": "^1.2.2",
     "ioredis": "^5.2.4",
     "is-base64": "^1.1.0",
     "jsonwebtoken": "^8.5.1",
@@ -63,7 +63,7 @@
     "socket.io-redis": "^5.4.0",
     "telegraf": "^4.0.3",
     "uuid": "^8.3.2",
-    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#v1.18.3-alpha.0",
+    "whatsapp-web.js": "^1.18.4",
     "winston": "^3.3.3",
     "yup": "^0.29.3"
   },

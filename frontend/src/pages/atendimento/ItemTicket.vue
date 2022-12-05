@@ -1,12 +1,10 @@
 <template>
-  <q-list
-    separator
-    class="q-px-sm q-py-none q-pt-sm"
-  >
+  <q-list separator
+    style="max-width: 370px"
+    class="q-px-sm q-py-none q-pt-sm">
     <!-- :clickable="ticket.status !== 'pending' && (ticket.id !== $store.getters['ticketFocado'].id || $route.name !== 'chat')" -->
-    <q-item
-      clickable
-      style="height: 85px;"
+    <q-item clickable
+      style="height: 85px; max-width: 100%;"
       @click="abrirChatContato(ticket)"
       :style="`border-left: 5px solid ${borderColor[ticket.status]}; border-radius: 10px`"
       id="item-ticket-houve"
@@ -15,114 +13,85 @@
         'ticketBorderGrey': !$q.dark.isActive,
         'ticket-active-item': ticket.id === $store.getters['ticketFocado'].id,
         'ticketNotAnswered': ticket.answered == false && ticket.isGroup == false && ticket.status == 'open'
-      }"
-    >
-      <q-item-section
-        avatar
-        class="q-px-none"
-      >
-        <q-btn
-          flat
+      }">
+      <q-item-section avatar
+        class="q-px-none">
+        <q-btn flat
           @click="iniciarAtendimento(ticket)"
           push
           color="primary"
           dense
           round
-          v-if="ticket.status === 'pending' || (buscaTicket && ticket.status === 'pending')"
-        >
-          <q-badge
-            v-if="ticket.unreadMessages"
+          v-if="ticket.status === 'pending' || (buscaTicket && ticket.status === 'pending')">
+          <q-badge v-if="ticket.unreadMessages"
             style="border-radius: 10px;"
             class="text-center text-bold"
             floating
             dense
             text-color="black"
             color="blue-2"
-            :label="ticket.unreadMessages"
-          />
+            :label="ticket.unreadMessages" />
           <q-avatar>
-            <q-icon
-              size="45px"
-              name="mdi-play-circle-outline"
-            />
+            <q-icon size="45px"
+              name="mdi-play-circle-outline" />
           </q-avatar>
           <q-tooltip>
             Atender
           </q-tooltip>
         </q-btn>
-        <q-avatar
-          size="45px"
+        <q-avatar size="45px"
           v-if="ticket.status !== 'pending'"
-          class="relative-position"
-        >
-          <q-badge
-            v-if="ticket.unreadMessages"
+          class="relative-position">
+          <q-badge v-if="ticket.unreadMessages"
             style="border-radius: 10px; z-index: 99"
             class="text-center text-bold"
             floating
             dense
             color="blue-2"
             text-color="black"
-            :label="ticket.unreadMessages"
-          />
-          <img
-            :src="ticket.profilePicUrl"
+            :label="ticket.unreadMessages" />
+          <img :src="ticket.profilePicUrl"
             onerror="this.style.display='none'"
-            v-show="ticket.profilePicUrl"
-          >
-          <q-icon
-            size="45px"
+            v-show="ticket.profilePicUrl">
+          <q-icon size="45px"
             name="mdi-account-circle"
-            color="grey-8"
-          />
+            color="grey-8" />
         </q-avatar>
 
       </q-item-section>
       <q-item-section id="ListItemsTicket">
-        <q-item-label
-          class="text-bold"
-          lines="1"
-        >
-          {{ !ticket.name ? ticket.contact.name : ticket.name}}
-          <q-icon
-            size="20px"
-            :name="`img:${ticket.channel}-logo.png`"
-          />
+        <q-item-label class="text-bold"
+          lines="1">
+          {{ !ticket.name ? ticket.contact.name : ticket.name }}
+          <q-icon size="20px"
+            :name="`img:${ticket.channel}-logo.png`" />
           <span class="absolute-top-right q-pr-xs">
-            <q-badge
-              dense
+            <q-badge dense
               style="font-size: .7em;"
               transparent
               square
               text-color="grey-10"
               color="secondary"
               :label="dataInWords(ticket.lastMessageAt, ticket.updatedAt)"
-              :key="recalcularHora"
-            />
+              :key="recalcularHora" />
           </span>
         </q-item-label>
-        <q-item-label
-          lines="1"
-          caption
-        >
+        <q-item-label lines="1"
+          caption>
           {{ ticket.lastMessage }}
         </q-item-label>
-        <q-item-label
-          lines="1"
-          caption
-        >
+        <q-item-label lines="1"
+          caption>
           #{{ ticket.id }}
           <span class="q-ml-sm">
             {{ `Fila: ${ticket.queue || obterNomeFila(ticket) || ''}` }}
           </span>
           <span class="absolute-bottom-right ">
-            <q-icon
-              v-if="ticket.status === 'closed'"
+            <q-icon v-if="ticket.status === 'closed'"
               name="mdi-check-circle-outline"
               color="positive"
               size="1.8em"
-              class="q-mb-sm"
-            >
+              class="q-mb-sm">
               <q-tooltip>
                 Atendimento Resolvido
               </q-tooltip>
@@ -132,18 +101,15 @@
               name="mdi-robot"
               color="primary"
               size="1.8em"
-              class="q-mb-sm"
-            >
+              class="q-mb-sm">
               <q-tooltip>
                 ChatBot atendendo
               </q-tooltip>
             </q-icon>
           </span>
         </q-item-label>
-        <q-item-label
-          lines="1"
-          caption
-        >
+        <q-item-label lines="1"
+          caption>
           Usuário: {{ ticket.username }}
         </q-item-label>
 
@@ -152,20 +118,17 @@
         </span> -->
       </q-item-section>
     </q-item>
-    <q-separator
-      color="grey-2"
-      inset="item"
-    />
+    <q-separator color="grey-2"
+      inset="item" />
     <!-- <q-separator /> -->
   </q-list>
 </template>
 
 <script>
-import { formatDistance } from 'date-fns'
+import { formatDistance, parseJSON } from 'date-fns'
 import pt from 'date-fns/locale/pt-BR'
 import mixinAtualizarStatusTicket from './mixinAtualizarStatusTicket'
 import { outlinedAccountCircle } from '@quasar/extras/material-icons-outlined'
-import { parseJSON } from 'date-fns/esm'
 
 export default {
   name: 'ItemTicket',
