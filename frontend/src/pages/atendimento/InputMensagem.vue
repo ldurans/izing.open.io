@@ -504,7 +504,7 @@ export default {
       let mensagem = this.textChat.trim()
       const username = localStorage.getItem('username')
       if (username && this.sign) {
-        mensagem = `*#${username}*:\n ${mensagem}`
+        mensagem = `*${username}*:\n ${mensagem}`
       }
       const message = {
         read: 1,
