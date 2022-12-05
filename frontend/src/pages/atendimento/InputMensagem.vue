@@ -103,6 +103,7 @@
         dense
         class="q-mx-sm q-ml-md"
         :color="sign ? 'positive' : 'black'"
+        @input="handleSign"
         checked-icon="mdi-draw"
         unchecked-icon="mdi-draw">
         <q-tooltip>
@@ -294,7 +295,7 @@
 </template>
 
 <script>
-import { uid } from 'quasar'
+import { LocalStorage, uid } from 'quasar'
 import mixinCommon from './mixinCommon'
 import { EnviarMensagemTexto } from 'src/service/tickets'
 import { VEmojiPicker } from 'v-emoji-picker'
@@ -584,12 +585,19 @@ export default {
           color: 'white'
         }]
       })
+    },
+    handleSign (state) {
+      this.sign = state
+      LocalStorage.set('sign', this.sign)
     }
   },
   mounted () {
     this.$root.$on('mensagem-chat:focar-input-mensagem', () => this.$refs.inputEnvioMensagem.focus())
     const self = this
     window.addEventListener('paste', self.handleInputPaste)
+    if (![null, undefined].includes(LocalStorage.getItem('sign'))) {
+      this.handleSign(LocalStorage.getItem('sign'))
+    }
   },
   beforeDestroy () {
     const self = this
