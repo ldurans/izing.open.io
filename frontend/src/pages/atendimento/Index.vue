@@ -756,8 +756,7 @@ export default {
       this.modalContato = true
     },
     contatoEditado (contato) {
-      // this.$store.commit('UPDATE_TICKET_FOCADO_CONTACT', contato)
-      // this.$store.commit('UPDATE_TICKET_CONTACT', contato)
+      this.$store.commit('UPDATE_TICKET_FOCADO_CONTACT', contato)
     },
     async consultarTickets (paramsInit = {}) {
       const params = {
@@ -873,11 +872,12 @@ export default {
       })
     },
     async tagSelecionada (tags) {
-      await EditarEtiquetasContato(this.ticketFocado.contact.id, [...tags])
-      // this.contatoEditado(data)
+      const { data } = await EditarEtiquetasContato(this.ticketFocado.contact.id, [...tags])
+      this.contatoEditado(data)
     },
     async carteiraDefinida (wallets) {
-      await EditarCarteiraContato(this.ticketFocado.contact.id, [...wallets])
+      const { data } = await EditarCarteiraContato(this.ticketFocado.contact.id, [...wallets])
+      this.contatoEditado(data)
     },
     async listarUsuarios () {
       try {
