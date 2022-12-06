@@ -65,11 +65,7 @@ export default {
           this.$q.notify({
             position: 'top',
             icon: 'mdi-wifi-arrow-up-down',
-            message: `
-        < p >
-        Conexão com o whatsapp está pronta.Agora já é possível enviar e receber mensagens!!
-        < p > Nome Conexão: <span class="q-ml-sm "> ${data.session.name} </span>  <span class="q-mx-sm"> || </span> Número: <span class="q-ml-sm"> ${data.session.number} </span> </p >
-        <p>`,
+            message: `A conexão com o WhatsApp está pronta e o mesmo está habilitado para enviar e receber mensagens. Conexão: ${data.session.name}. Número: ${data.session.number}.`,
             type: 'positive',
             color: 'primary',
             html: true,
