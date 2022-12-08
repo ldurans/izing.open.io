@@ -199,8 +199,8 @@
         rounded
         append
         :max-files="5"
-        :max-file-size="5485760"
-        :max-total-size="5485760"
+        :max-file-size="16777216"
+        :max-total-size="16777216"
         accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
         @rejected="onRejectedFiles" />
       <q-btn v-if="textChat || cMostrarEnvioArquivo"
