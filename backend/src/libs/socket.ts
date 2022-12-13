@@ -1,7 +1,6 @@
-import socketIo, { Server as SocketIO } from "socket.io";
+import { Server as SocketIO } from "socket.io";
 import socketRedis from "socket.io-redis";
 import { Server } from "http";
-import { WAState } from "whatsapp-web.js";
 import AppError from "../errors/AppError";
 import decodeTokenSocket from "./decodeTokenSocket";
 import { logger } from "../utils/logger";
@@ -11,22 +10,33 @@ import Chat from "./socketChat/Chat";
 let io: SocketIO;
 
 export const initIO = (httpServer: Server): SocketIO => {
-  io = socketIo(httpServer);
-  io.adapter(
-    socketRedis({
-      host: process.env.IO_REDIS_SERVER,
-      port: Number(process.env.IO_REDIS_PORT)
-    })
-  );
+  io = new SocketIO(httpServer, {
+    cors: {
+      origin: "*"
+    },
+    pingTimeout: 180000,
+    pingInterval: 60000
+  });
+
+  const connRedis = {
+    host: process.env.IO_REDIS_SERVER,
+    port: Number(process.env.IO_REDIS_PORT),
+    username: process.env.IO_REDIS_USERNAME,
+    password: process.env.IO_REDIS_PASSWORD
+  };
+
+  // apresentando problema na assinatura
+  const redis = socketRedis as any;
+  io.adapter(redis(connRedis));
 
   io.use(async (socket, next) => {
     try {
-      const token = socket?.handshake?.query?.token;
+      const token = socket?.handshake?.auth?.token;
       const verify = decodeTokenSocket(token);
       if (verify.isValid) {
-        const query = socket?.handshake?.query;
-        socket.handshake.query = {
-          ...query,
+        const auth = socket?.handshake?.auth;
+        socket.handshake.auth = {
+          ...auth,
           ...verify.data,
           id: String(verify.data.id),
           tenantId: String(verify.data.tenantId)
@@ -44,8 +54,7 @@ export const initIO = (httpServer: Server): SocketIO => {
             "lastOnline"
           ]
         });
-        socket.auth = verify.data;
-        socket.user = user;
+        socket.handshake.auth.user = user;
         next();
       }
       next(new Error("authentication error"));
@@ -57,19 +66,18 @@ export const initIO = (httpServer: Server): SocketIO => {
   });
 
   io.on("connection", socket => {
-    const { tenantId } = socket.handshake.query;
+    const { tenantId } = socket.handshake.auth;
     if (tenantId) {
       logger.info({
         message: "Client connected in tenant",
-        data: socket.handshake.query
+        data: socket.handshake.auth
       });
 
+      // create room to tenant
       socket.join(tenantId.toString());
 
       socket.on(`${tenantId}:joinChatBox`, ticketId => {
-        console.info({
-          message: `Client joined a ticket channel ${tenantId}:${ticketId}`
-        });
+        logger.info(`Client joined a ticket channel ${tenantId}:${ticketId}`);
         socket.join(`${tenantId}:${ticketId}`);
       });
 
@@ -79,6 +87,7 @@ export const initIO = (httpServer: Server): SocketIO => {
         );
         socket.join(`${tenantId}:notification`);
       });
+
       socket.on(`${tenantId}:joinTickets`, status => {
         logger.info(
           `A client joined to ${tenantId}:${status} tickets channel.`
@@ -88,13 +97,15 @@ export const initIO = (httpServer: Server): SocketIO => {
       Chat.register(socket);
     }
 
-    socket.on("disconnect", (reason: WAState) => {
-      logger.info({ message: "Client disconnected", tenantId, reason });
+    socket.on("disconnect", (reason: any) => {
+      logger.info({
+        message: `SOCKET Client disconnected , ${tenantId}, ${reason}`
+      });
     });
   });
-
   return io;
 };
+
 export const getIO = (): SocketIO => {
   if (!io) {
     throw new AppError("Socket IO not initialized");

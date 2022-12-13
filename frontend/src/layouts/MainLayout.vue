@@ -46,14 +46,14 @@
             </q-badge>
             <q-tooltip>Notificações (Em breve)</q-tooltip>
           </q-btn>
-          <q-avatar :color="usuario.status === 'offline' ? 'negative': 'positive'"
+          <q-avatar :color="usuario.status === 'offline' ? 'negative' : 'positive'"
             text-color="white"
             size="25px"
             :icon="usuario.status === 'offline' ? 'mdi-account-off' : 'mdi-account-check'"
             rounded
             class="q-ml-lg">
             <q-tooltip>
-              {{ usuario.status === 'offline' ? 'Usuário Offiline' : 'Usuário Online'}}
+              {{ usuario.status === 'offline' ? 'Usuário Offiline' : 'Usuário Online' }}
             </q-tooltip>
           </q-avatar>
           <q-btn round
@@ -140,7 +140,7 @@
         </q-list>
       </q-scroll-area>
       <div class="absolute-bottom text-center row justify-start"
-        :class="{'bg-grey-3': $q.dark.isActive}"
+        :class="{ 'bg-grey-3': $q.dark.isActive }"
         style="height: 40px">
         <q-toggle size="xl"
           keep-color
@@ -151,7 +151,7 @@
           :color="$q.dark.isActive ? 'grey-3' : 'black'"
           checked-icon="mdi-white-balance-sunny"
           unchecked-icon="mdi-weather-sunny"
-          @input="$setConfigsUsuario({isDark: !$q.dark.isActive})">
+          @input="$setConfigsUsuario({ isDark: !$q.dark.isActive })">
           <q-tooltip content-class="text-body1 hide-scrollbar">
             {{ $q.dark.isActive ? 'Desativar' : 'Ativar' }} Modo Escuro (Dark Mode)
           </q-tooltip>
@@ -185,16 +185,11 @@ const username = localStorage.getItem('username')
 import ModalUsuario from 'src/pages/usuarios/ModalUsuario'
 import { mapGetters } from 'vuex'
 import { ListarConfiguracoes } from 'src/service/configuracoes'
-const token = JSON.parse(localStorage.getItem('token'))
-import openSocket from 'socket.io-client'
 import { RealizarLogout } from 'src/service/login'
 import cStatusUsuario from '../components/cStatusUsuario.vue'
-const socket = openSocket(process.env.URL_API, {
-  query: {
-    token
-  },
-  forceNew: true
-})
+import { socketIO } from 'src/utils/socket'
+
+const socket = socketIO()
 
 const objMenu = [
   {
@@ -412,7 +407,6 @@ export default {
     },
     conectarSocket (usuario) {
       socket.on(`${usuario.tenantId}:chat:updateOnlineBubbles`, data => {
-        console.log('chat:updateOnlineBubbles', data)
         this.$store.commit('SET_USERS_APP', data)
       })
     },

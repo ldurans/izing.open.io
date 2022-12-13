@@ -44,20 +44,6 @@
             @click="deleteWhatsapp(props.row)"
             v-if="$store.getters['isSuporte']"
           /> -->
-              <!-- <q-btn
-            class="q-ml-sm"
-            color="black"
-            icon="person_search"
-            round
-            flat
-            dense
-            @click="sincronizarContatos(props.row)"
-          >
-            <q-tooltip>
-              Sincronizar contatos
-            </q-tooltip>
-
-          </q-btn> -->
             </q-item-section>
           </q-item>
           <q-separator />
@@ -71,34 +57,49 @@
             </template>
           </q-card-section>
           <q-separator />
-          <q-card-actions class="q-pa-md q-pt-none"
+          <q-card-actions class="q-gutter-md q-pa-md q-pt-none"
             align="center">
             <template v-if="item.type !== 'messenger'">
-              <q-btn v-if="item.type == 'whatsapp' && (item.status == 'DESTROYED' || item.status == 'qrcode')"
+              <q-btn v-if="item.type == 'whatsapp' && item.status == 'qrcode'"
                 color="blue-5"
-                label="Novo QR Code"
-                @click="handleRequestNewQrCode(item, 'btn-qrCode')"
+                label="QR Code"
+                @click="handleOpenQrModal(item, 'btn-qrCode')"
                 icon-right="watch_later"
                 :disable="!isAdmin" />
-              <q-btn-group v-if="item.status == 'DISCONNECTED'"
-                outline>
-                <q-btn outline
-                  color="black"
+
+              <div v-if="item.status == 'DISCONNECTED'"
+                class="q-gutter-sm">
+                <q-btn color="positive"
                   label="Conectar"
                   @click="handleStartWhatsAppSession(item.id)" />
-              </q-btn-group>
-              <q-btn v-if="['CONNECTED', 'PAIRING', 'TIMEOUT', 'OPENING'].includes(item.status)"
+                <q-btn v-if="item.status == 'DISCONNECTED' && item.type == 'whatsapp'"
+                  color="blue-5"
+                  label="Novo QR Code"
+                  @click="handleRequestNewQrCode(item, 'btn-qrCode')"
+                  icon-right="watch_later"
+                  :disable="!isAdmin" />
+              </div>
+
+              <div v-if="item.status == 'OPENING'"
+                class="row items-center q-gutter-sm flex flex-inline">
+                <div class="text-bold">
+                  Conectando
+                </div>
+                <q-spinner-radio color="positive"
+                  size="2em" />
+                <q-separator vertical
+                  spaced="" />
+              </div>
+
+              <q-btn v-if="['OPENING', 'CONNECTED', 'PAIRING', 'TIMEOUT'].includes(item.status)"
                 color="negative"
                 label="Desconectar"
-                outline
                 @click="handleDisconectWhatsSession(item.id)"
-                :disable="!isAdmin" />
-              <q-btn v-if="item.status == 'OPENING'"
-                disable
-                :loading="true"
-                color="grey"
-                label="Conectando" />
+                :disable="!isAdmin"
+                class="q-mx-sm" />
+
             </template>
+
             <template v-if="item.type === 'messenger'">
               <VFacebookLogin :app-id="cFbAppId"
                 @sdk-init="handleSdkInit"
@@ -119,7 +120,8 @@
       </template>
     </div>
     <ModalQrCode :abrirModalQR.sync="abrirModalQR"
-      :channel="whatsappSelecionado" />
+      :channel="cDadosWhatsappSelecionado"
+      @gerar-novo-qrcode="v => handleRequestNewQrCode(v, 'btn-qrCode')" />
     <ModalWhatsapp :modalWhatsapp.sync="modalWhatsapp"
       :whatsAppEdit.sync="whatsappSelecionado" />
     <q-inner-loading :showing="loading">
@@ -130,7 +132,8 @@
 </template>
 
 <script>
-import { DeletarWhatsapp, DeleteWhatsappSession, StartWhatsappSession, ListarWhatsapps } from 'src/service/sessoesWhatsapp'
+
+import { DeletarWhatsapp, DeleteWhatsappSession, StartWhatsappSession, ListarWhatsapps, RequestNewQrCode } from 'src/service/sessoesWhatsapp'
 import { format, parseISO } from 'date-fns'
 import pt from 'date-fns/locale/pt-BR/index'
 import ModalQrCode from './ModalQrCode'
@@ -223,6 +226,10 @@ export default {
     ...mapGetters(['whatsapps']),
     cFbAppId () {
       return process.env.FACEBOOK_APP_ID
+    },
+    cDadosWhatsappSelecionado () {
+      const { id } = this.whatsappSelecionado
+      return this.whatsapps.find(w => w.id === id)
     }
   },
   methods: {
@@ -236,7 +243,7 @@ export default {
       // this.FBscope = scope
     },
     async fbLogout (whatsapp) {
-      console.log('fbLogout')
+      console.info('fbLogout')
       await LogoutFacebookPages(whatsapp)
     },
     fbLogin (login, channel) {
@@ -246,14 +253,14 @@ export default {
           login.authResponse.userID,
           channel
         )
-        console.log('fbLogin in connected')
+        console.info('fbLogin in connected')
       } else if (login?.status === 'not_authorized') {
         // The person is logged into Facebook, but not your app.
-        console.log('fbLogin in not_authorized')
+        console.info('fbLogin in not_authorized')
       } else {
         // The person is not logged into Facebook, so we're not sure if
         // they are logged into this app or not.
-        console.log('fbLogin in not logged')
+        console.info('fbLogin in not logged')
       }
     },
     async fbFetchPages (_token, _accountId, channel) {
@@ -301,7 +308,7 @@ export default {
           const whatsapp = this.whatsapps.find(w => w.id === whatsAppId)
           this.$store.commit('UPDATE_WHATSAPPS', {
             ...whatsapp,
-            status: whatsapp.type === 'whatsapp' ? 'DESTROYED' : 'DISCONNECTED'
+            status: 'DISCONNECTED'
           })
         }).finally(f => {
           this.loading = false
@@ -316,21 +323,20 @@ export default {
       }
     },
     async handleRequestNewQrCode (channel, origem) {
-      console.log('origem', origem)
       if (channel.type === 'telegram' && !channel.tokenTelegram) {
         this.$notificarErro('Necessário informar o token para Telegram')
       }
-      this.handleOpenQrModal(channel)
-      // this.loading = true
-      // try {
-      //   await RequestNewQrCode(whatsapp.id)
-      //   setTimeout(() => {
-      //     this.handleOpenQrModal(whatsapp.id)
-      //   }, 3000)
-      // } catch (error) {
-      //   console.error(error)
-      // }
-      // this.loading = false
+      // this.handleOpenQrModal(channel)
+      this.loading = true
+      try {
+        await RequestNewQrCode(channel.id)
+        setTimeout(() => {
+          this.handleOpenQrModal(channel)
+        }, 2000)
+      } catch (error) {
+        console.error(error)
+      }
+      this.loading = false
     },
     async listarWhatsapps () {
       const { data } = await ListarWhatsapps()
@@ -364,17 +370,6 @@ export default {
   mounted () {
     this.isAdmin = localStorage.getItem('profile')
     this.listarWhatsapps()
-    // this.$root.$on('UPDATE_SESSION', (whatsapp) => {
-    //   if (whatsapp.status === 'qrcode') {
-    //     this.handleOpenQrModal(whatsapp)
-    //   } else {
-    //     // if (whatsapp.status === 'qrcode') return
-    //     this.abrirModalQR = false
-    //   }
-    // })
-  },
-  destroyed () {
-    this.$root.$off('UPDATE_SESSION')
   }
 }
 </script>

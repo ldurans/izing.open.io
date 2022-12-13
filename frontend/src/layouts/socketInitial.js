@@ -1,16 +1,8 @@
-const token = JSON.parse(localStorage.getItem('token'))
 const usuario = JSON.parse(localStorage.getItem('usuario'))
 import Router from 'src/router/index'
+import { socketIO } from '../utils/socket'
 
-import openSocket from 'socket.io-client'
-import checkTicketFilter from 'src/utils/checkTicketFilter'
-const socket = openSocket(process.env.URL_API, {
-  query: {
-    token
-  },
-  forceNew: true
-})
-const userId = +localStorage.getItem('userId')
+const socket = socketIO()
 
 socket.on(`tokenInvalid:${socket.id}`, () => {
   socket.disconnect()
@@ -31,19 +23,26 @@ export default {
     socketInitial () {
       socket.emit(`${usuario.tenantId}:joinNotification`)
 
-      socket.on(`${usuario.tenantId}:appMessage`, data => {
-        if (
-          data.action === 'create' &&
-          !data.message.read &&
-          (data.ticket.userId === userId || !data.ticket.userId)
-        ) {
-          if (checkTicketFilter(data.ticket)) {
-            this.handlerNotifications(data)
-          }
-        }
-      })
+      // socket.on(`${ usuario.tenantId }:ticket`, data => {
+      //   if (!verifySocketTicketAction(data.ticket, data.action)) return
+      //   if (data.action === 'updateUnread' || data.action === 'delete') {
 
-      socket.on(`${usuario.tenantId}:whatsapp`, data => {
+      //   }
+      // })
+
+      // socket.on(`${ usuario.tenantId }:appMessage`, data => {
+      //   if (
+      //     data.action === 'create' &&
+      //     !data.message.read &&
+      //     (data.ticket.userId === userId || !data.ticket.userId)
+      //   ) {
+      //     if (isQueueOrUserNotify(data.ticket)) {
+      //       this.handlerNotifications(data)
+      //     }
+      //   }
+      // })
+
+      socket.io.on(`${usuario.tenantId}:whatsapp`, data => {
         if (data.action === 'update') {
           this.$store.commit('UPDATE_WHATSAPPS', data.whatsapp)
         }

@@ -91,7 +91,7 @@ const VerifyMediaMessage = async (
   fromMe: boolean,
   ticket: Ticket,
   contact: Contact
-): Promise<Message> => {
+): Promise<Message | void> => {
   let message;
   let updateMessage: any = {};
   message = ctx?.message;
@@ -106,7 +106,8 @@ const VerifyMediaMessage = async (
   const media = await ctx.telegram.getFile(mediaInfo.fileId);
 
   if (!media) {
-    throw new Error("ERR_WAPP_DOWNLOAD_MEDIA");
+    logger.error(`ERR_DOWNLOAD_MEDIA:: ID: ${message.message_id}`);
+    return;
   }
 
   const ext = mediaInfo.mimeType.split("/")[1].split(";")[0];

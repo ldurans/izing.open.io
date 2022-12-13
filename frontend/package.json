@@ -23,7 +23,7 @@
     "printd": "^1.4.2",
     "qrcode.vue": "^1.7.0",
     "quasar": "^1.22.2",
-    "socket.io-client": "^2.3.1",
+    "socket.io-client": "^3.0.5",
     "v-emoji-picker": "^2.3.1",
     "vdata-parser": "^0.1.5",
     "vue": "^2.6.11",

@@ -1,14 +1,10 @@
-const token = JSON.parse(localStorage.getItem('token'))
 const usuario = JSON.parse(localStorage.getItem('usuario'))
 import Router from 'src/router/index'
-import openSocket from 'socket.io-client'
 import checkTicketFilter from 'src/utils/checkTicketFilter'
-const socket = openSocket(process.env.URL_API, {
-  query: {
-    token
-  },
-  forceNew: true
-})
+import { socketIO } from 'src/utils/socket'
+
+const socket = socketIO()
+
 const userId = +localStorage.getItem('userId')
 
 // localStorage.debug = '*'
@@ -38,12 +34,14 @@ export default {
 
     },
     socketTicket () {
-      socket.on(`${usuario.tenantId}:ticket`, data => {
-        if (data.action === 'update' && data.ticket.userId === userId) {
-          if (data.ticket.status === 'open' && !data.ticket.isTransference) {
-            this.$store.commit('TICKET_FOCADO', data.ticket)
+      socket.on('connect', () => {
+        socket.on(`${usuario.tenantId}:ticket`, data => {
+          if (data.action === 'update' && data.ticket.userId === userId) {
+            if (data.ticket.status === 'open' && !data.ticket.isTransference) {
+              this.$store.commit('TICKET_FOCADO', data.ticket)
+            }
           }
-        }
+        })
       })
 
       // socket.on(`${usuario.tenantId}:contact`, data => {
@@ -68,32 +66,34 @@ export default {
       // socket.emit(`${usuario.tenantId}:joinNotification`)
       // }
 
-      socket.on(`${usuario.tenantId}:ticketList`, data => {
-        if (data.type === 'chat:create') {
-          if (
-            !data.payload.read &&
-            (data.payload.ticket.userId === userId || !data.payload.ticket.userId) &&
-            data.payload.ticket.id !== this.$store.getters.ticketFocado.id
-          ) {
-            if (checkTicketFilter(data.payload.ticket)) {
-              this.handlerNotifications(data.payload)
+      socket.on('connect', () => {
+        socket.on(`${usuario.tenantId}:ticketList`, data => {
+          if (data.type === 'chat:create') {
+            if (
+              !data.payload.read &&
+              (data.payload.ticket.userId === userId || !data.payload.ticket.userId) &&
+              data.payload.ticket.id !== this.$store.getters.ticketFocado.id
+            ) {
+              if (checkTicketFilter(data.payload.ticket)) {
+                this.handlerNotifications(data.payload)
+              }
             }
+            this.$store.commit('UPDATE_MESSAGES', data.payload)
+            this.scrollToBottom()
           }
-          this.$store.commit('UPDATE_MESSAGES', data.payload)
-          this.scrollToBottom()
-        }
 
-        if (data.type === 'chat:ack' || data.type === 'chat:delete') {
-          this.$store.commit('UPDATE_MESSAGE_STATUS', data.payload)
-        }
+          if (data.type === 'chat:ack' || data.type === 'chat:delete') {
+            this.$store.commit('UPDATE_MESSAGE_STATUS', data.payload)
+          }
 
-        if (data.type === 'ticket:update') {
-          this.$store.commit('UPDATE_TICKET', data.payload)
-        }
-      })
+          if (data.type === 'ticket:update') {
+            this.$store.commit('UPDATE_TICKET', data.payload)
+          }
+        })
 
-      socket.on(`${usuario.tenantId}:contactList`, data => {
-        this.$store.commit('UPDATE_CONTACT', data.payload)
+        socket.on(`${usuario.tenantId}:contactList`, data => {
+          this.$store.commit('UPDATE_CONTACT', data.payload)
+        })
       })
     },
     socketDisconnect () {

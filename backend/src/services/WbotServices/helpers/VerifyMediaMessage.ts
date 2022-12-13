@@ -17,13 +17,14 @@ const VerifyMediaMessage = async (
   msg: WbotMessage,
   ticket: Ticket,
   contact: Contact
-): Promise<Message> => {
+): Promise<Message | void> => {
   const quotedMsg = await VerifyQuotedMessage(msg);
 
   const media = await msg.downloadMedia();
 
   if (!media) {
-    throw new Error("ERR_WAPP_DOWNLOAD_MEDIA");
+    logger.error(`ERR_WAPP_DOWNLOAD_MEDIA:: ID: ${msg.id.id}`);
+    return;
   }
 
   if (!media.filename) {

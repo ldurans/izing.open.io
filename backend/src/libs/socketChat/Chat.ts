@@ -25,7 +25,8 @@ import { logger } from "../../utils/logger";
 const events: any = {};
 
 const JoinChatServer = (socket: Socket) => {
-  const { user } = socket;
+  const { user } = socket.handshake.auth;
+
   logger.info(`joinChatServer USER ${user.name}`);
   const { tenantId } = user;
   const socketDataTenant = `socketData_${tenantId}`;
@@ -59,7 +60,8 @@ const JoinChatServer = (socket: Socket) => {
 };
 
 const UpdateUsers = (socket: Socket) => {
-  const { user } = socket;
+  const { user } = socket.handshake.auth;
+
   const socketDataTenant = `socketData_${user.tenantId}`;
   const dataTenant = shared[socketDataTenant];
 
@@ -140,7 +142,8 @@ const UpdateUsers = (socket: Socket) => {
 };
 
 const UpdateOnlineBubbles = (socket: Socket) => {
-  const { user } = socket;
+  const { user } = socket.handshake.auth;
+
   const socketDataTenant = `socketData_${user.tenantId}`;
   const dataTenant = shared[socketDataTenant];
   const sortedUserList = fromPairs(
@@ -165,7 +168,8 @@ const UpdateOnlineBubbles = (socket: Socket) => {
 };
 
 const SpawnOpenChatWindows = (socket: Socket) => {
-  const { user } = socket;
+  const { user } = socket.handshake.auth;
+
   const userSchema = User.findByPk(user.id);
   // const conversationSchema = require("../models/chat/conversation");
   // buscar e devolver a conversa
@@ -183,7 +187,8 @@ const spawnChatWindow = (socket: Socket) => {
 };
 
 const onSetUserIdle = (socket: Socket) => {
-  const { user } = socket;
+  const { user } = socket.handshake.auth;
+
   const socketDataTenant = `socketData_${user.tenantId}`;
   socket.on(`${user.tenantId}:setUserIdle`, () => {
     let dataTenant: any;
@@ -211,7 +216,8 @@ const onSetUserIdle = (socket: Socket) => {
 };
 
 const onSetUserActive = (socket: Socket) => {
-  const { user } = socket;
+  const { user } = socket.handshake.auth;
+
   const socketDataTenant = `socketData_${user.tenantId}`;
 
   socket.on(`${user.tenantId}:setUserActive`, () => {
@@ -247,7 +253,8 @@ const onUpdateUsers = (socket: Socket) => {
 };
 
 const onChatMessage = (socket: Socket) => {
-  const { user } = socket;
+  const { user } = socket.handshake.auth;
+
   const { tenantId } = user;
   const socketDataTenant = `socketData_${tenantId}`;
   socket.on("chatMessage", function (data) {
@@ -288,7 +295,8 @@ const onChatMessage = (socket: Socket) => {
 };
 
 const onChatTyping = (socket: Socket) => {
-  const { user } = socket;
+  const { user } = socket.handshake.auth;
+
   const { tenantId } = user;
   const socketDataTenant = `socketData_${tenantId}`;
 
@@ -329,7 +337,7 @@ const onChatTyping = (socket: Socket) => {
 };
 
 const onChatStopTyping = (socket: Socket) => {
-  const { user } = socket;
+  const { user } = socket.handshake.auth;
   const { tenantId } = user;
   const socketDataTenant = `socketData_${tenantId}`;
   socket.on("chatStopTyping", data => {
@@ -377,7 +385,8 @@ const saveChatWindow = (socket: Socket) => {
 
 const onDisconnect = (socket: Socket) => {
   socket.on("disconnect", async reason => {
-    const { user } = socket;
+    const { user } = socket.handshake.auth;
+
     const { tenantId } = user;
     const socketDataTenant = `socketData_${tenantId}`;
     const dataTenant = shared[socketDataTenant];
@@ -435,7 +444,8 @@ events.onChatStopTyping = onChatStopTyping;
 events.saveChatWindow = saveChatWindow;
 events.onDisconnect = onDisconnect;
 events.updateOnlineBubbles = (socket: Socket) => {
-  const { user } = socket;
+  const { user } = socket.handshake.auth;
+
   socket.on(`${user.tenantId}:chat:updateOnlineBubbles`, () => {
     UpdateOnlineBubbles(user.tenantId);
   });
@@ -447,7 +457,9 @@ events.getOpenChatWindows = (socket: Socket) => {
 };
 
 function register(socket: Socket): void {
-  if (!socket?.user?.tenantId) return;
+  if (!socket.handshake?.auth?.tenantId) {
+    return;
+  }
 
   events.onSetUserIdle(socket);
   events.onSetUserActive(socket);
@@ -462,7 +474,7 @@ function register(socket: Socket): void {
   events.saveChatWindow(socket);
   events.onDisconnect(socket);
 
-  if (socket.user.id) {
+  if (socket.handshake.auth.user.id) {
     JoinChatServer(socket);
   }
 }

@@ -1,6 +1,8 @@
 import { RealizarLogin } from '../../service/login'
 import { Notify, Dark } from 'quasar'
-import openSocket from 'socket.io-client'
+import { socketIO } from 'src/utils/socket'
+
+const socket = socketIO()
 
 const pesquisaTicketsFiltroPadrao = {
   searchParam: '',
@@ -60,10 +62,6 @@ const user = {
         commit('SET_IS_SUPORTE', data)
         commit('SET_IS_ADMIN', data)
 
-        const socket = openSocket(process.env.URL_API, {
-          query: { token: data.token },
-          forceNew: true
-        })
         socket.emit(`${data.tenantId}:setUserActive`)
 
         // chamada deve ser feita após inserir o token no localstorage

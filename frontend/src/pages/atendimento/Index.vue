@@ -764,7 +764,6 @@ export default {
         ...paramsInit
       }
       try {
-        this.socketTicketList()
         const { data } = await ConsultarTickets(params)
         this.countTickets = data.count // count total de tickets no status
         this.$store.commit('LOAD_TICKETS', data.tickets)
@@ -912,11 +911,7 @@ export default {
   async mounted () {
     this.$root.$on('infor-cabecalo-chat:acao-menu', this.setValueMenu)
     this.$root.$on('update-ticket:info-contato', this.setValueMenuContact)
-    // Caso não existam filtros ainda no localstorage, salvar.
-    // const filtros = JSON.parse(localStorage.getItem('filtrosAtendimento'))
-    // if (!filtros?.pageNumber) {
-    //   localStorage.setItem('filtrosAtendimento', JSON.stringify(this.pesquisaTickets))
-    // }
+    this.socketTicketList()
     this.pesquisaTickets = JSON.parse(localStorage.getItem('filtrosAtendimento'))
     this.$root.$on('handlerNotifications', this.handlerNotifications)
     await this.listarWhatsapps()

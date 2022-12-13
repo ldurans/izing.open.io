@@ -144,16 +144,10 @@
 </template>
 
 <script>
-const token = JSON.parse(localStorage.getItem('token'))
-// const userId = +localStorage.getItem('userId')
 const usuario = JSON.parse(localStorage.getItem('usuario'))
-import openSocket from 'socket.io-client'
-const socket = openSocket(process.env.URL_API, {
-  query: {
-    token
-  },
-  forceNew: true
-})
+import { socketIO } from 'src/utils/socket'
+const socket = socketIO()
+
 import ItemTicket from 'src/pages/atendimento/ItemTicket'
 import { ConsultarTicketsQueuesService } from 'src/service/estatisticas.js'
 import { ListarFilas } from 'src/service/filas'

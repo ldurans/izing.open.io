@@ -1,6 +1,5 @@
 <template>
   <q-dialog :value="abrirModalQR"
-    @before-show="fetchSession(channel)"
     @hide="fecharModalQrModal"
     persistent>
     <q-card style="bg-white">
@@ -12,18 +11,29 @@
             color="negative"
             icon="mdi-close"
             @click="fecharModalQrModal" />
-
         </div>
       </q-card-section>
       <q-card-section class="text-center"
         :style="$q.dark.isActive ? 'background: white !important' : ''">
-        <QrcodeVue v-if="qrCode"
-          :value="qrCode"
+        <QrcodeVue v-if="cQrcode"
+          :value="cQrcode"
           :size="300"
           level="H" />
         <span v-else>
           Aguardando o Qr Code
         </span>
+      </q-card-section>
+      <q-card-section>
+        <div class="row">Caso tenha problema com a leitura, solicite um novo Qr Code </div>
+        <div class="row col-12 justify-center">
+          <q-btn color="primary"
+            glossy
+            ripple
+            outline
+            label="Novo QR Code"
+            @click="solicitarQrCode"
+            icon="watch_later" />
+        </div>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -32,24 +42,7 @@
 
 <script>
 
-import { RequestNewQrCode, GetWhatSession } from 'src/service/sessoesWhatsapp'
 import QrcodeVue from 'qrcode.vue'
-import openSocket from 'socket.io-client'
-const token = JSON.parse(localStorage.getItem('token'))
-const socket = openSocket(process.env.URL_API, {
-  query: { token },
-  forceNew: true
-})
-const usuario = JSON.parse(localStorage.getItem('usuario'))
-
-socket.on(`tokenInvalid:${socket.id}`, () => {
-  socket.disconnect()
-  localStorage.removeItem('token')
-  localStorage.removeItem('username')
-  localStorage.removeItem('profile')
-  localStorage.removeItem('userId')
-  localStorage.removeItem('usuario')
-})
 
 export default {
   name: 'ModalQrCode',
@@ -63,35 +56,34 @@ export default {
     },
     channel: {
       type: Object,
-      default: () => { }
+      default: () => ({
+        id: null,
+        qrcode: ''
+      })
     }
   },
-  data () {
-    return {
-      qrCode: null
+  watch: {
+    channel: {
+      handler (v) {
+        if (this.channel.status === 'CONNECTED') {
+          this.fecharModalQrModal()
+        }
+      },
+      deep: true
+    }
+  },
+  computed: {
+    cQrcode () {
+      return this.channel.qrcode
     }
   },
   methods: {
+    solicitarQrCode () {
+      this.$emit('gerar-novo-qrcode', this.channel)
+      this.fecharModalQrModal()
+    },
     fecharModalQrModal () {
       this.$emit('update:abrirModalQR', false)
-    },
-    async fetchSession (channel) {
-      await RequestNewQrCode(channel.id)
-      const { data } = await GetWhatSession(channel.id)
-      this.qrCode = data.qrcode
-      this.handlerModalQrCode()
-    },
-    handlerModalQrCode () {
-      socket.on(`${usuario.tenantId}:whatsappSession`, data => {
-        if (data.action === 'update' && data.session.id === this.channel.id) {
-          this.qrCode = data.session.qrcode
-        }
-
-        if (data.action === 'update' && data.session.status === 'CONNECTED') {
-          this.fecharModalQrModal()
-          this.$store.commit('UPDATE_WHATSAPPS', data.session)
-        }
-      })
     }
   }
 }
