@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/ldurans/izing.io/compare/v1.8.0...v1.8.1) (2022-12-13)
+
+
+### Bug Fixes
+
+* salvar o estado da opção ativação/inativação assinatura. ([d0c8f23](https://github.com/ldurans/izing.io/commit/d0c8f239572dc7d0231211a2296a40baf15db04f))
+
 # [1.8.0](https://github.com/ldurans/izing.io/compare/v1.7.3...v1.8.0) (2022-12-05)
 
 
