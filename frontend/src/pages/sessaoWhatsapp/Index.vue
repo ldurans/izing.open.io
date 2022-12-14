@@ -329,7 +329,7 @@ export default {
       // this.handleOpenQrModal(channel)
       this.loading = true
       try {
-        await RequestNewQrCode(channel.id)
+        await RequestNewQrCode({ id: channel.id, isQrcode: true })
         setTimeout(() => {
           this.handleOpenQrModal(channel)
         }, 2000)

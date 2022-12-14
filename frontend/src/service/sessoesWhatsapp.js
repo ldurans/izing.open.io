@@ -21,10 +21,11 @@ export function DeleteWhatsappSession (whatsAppId) {
   })
 }
 
-export function RequestNewQrCode (whatsAppId) {
+export function RequestNewQrCode (data) {
   return request({
-    url: `/whatsappsession/${whatsAppId}`,
-    method: 'put'
+    url: `/whatsappsession/${data.id}`,
+    method: 'put',
+    data
   })
 }
 
