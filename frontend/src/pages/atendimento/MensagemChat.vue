@@ -5,10 +5,10 @@
       leave-active-class="animated fadeOut">
       <template v-for="(mensagem, index) in mensagens">
         <hr v-if="isLineDate"
-          :key="'hr-'+index"
+          :key="'hr-' + index"
           class="hr-text q-mt-lg q-mb-md"
           :data-content="formatarData(mensagem.createdAt)"
-          v-show="index === 0 || formatarData(mensagem.createdAt) !== formatarData(mensagens[index -1].createdAt)">
+          v-show="index === 0 || formatarData(mensagem.createdAt) !== formatarData(mensagens[index - 1].createdAt)">
         <template v-if="mensagens.length && index === mensagens.length - 1">
           <div :key="`ref-${mensagem.createdAt}`"
             ref="lastMessageRef"
@@ -21,16 +21,16 @@
           :stamp="dataInWords(mensagem.createdAt)"
           :sent="mensagem.fromMe"
           class="text-weight-medium"
-          :bg-color="mensagem.fromMe ? 'grey-2' : $q.dark.isActive ? 'blue-2' : 'blue-1' "
-          :class="{pulseIdentications: identificarMensagem == `chat-message-${mensagem.id}` }">
+          :bg-color="mensagem.fromMe ? 'grey-2' : $q.dark.isActive ? 'blue-2' : 'blue-1'"
+          :class="{ pulseIdentications: identificarMensagem == `chat-message-${mensagem.id}` }">
           <!-- :bg-color="mensagem.fromMe ? 'grey-2' : 'secondary' " -->
           <div style="min-width: 100px; max-width: 350px;"
             :style="mensagem.isDeleted ? 'color: rgba(0, 0, 0, 0.36) !important;' : ''">
             <q-checkbox v-if="ativarMultiEncaminhamento"
               :key="`cheked-chat-message-${mensagem.id}`"
               :class="{
-              'absolute-top-right checkbox-encaminhar-right': !mensagem.fromMe,
-                              'absolute-top-left checkbox-encaminhar-left': mensagem.fromMe
+                'absolute-top-right checkbox-encaminhar-right': !mensagem.fromMe,
+                'absolute-top-left checkbox-encaminhar-left': mensagem.fromMe
               }"
               :ref="`box-chat-message-${mensagem.id}`"
               @click.native="verificarEncaminharMensagem(mensagem)"
@@ -40,8 +40,8 @@
               name="mdi-calendar"
               size="18px"
               :class="{
-  'text-primary': mensagem.scheduleDate && mensagem.status === 'pending',
-                  'text-positive': !['pending', 'canceled'].includes(mensagem.status)
+                'text-primary': mensagem.scheduleDate && mensagem.status === 'pending',
+                'text-positive': !['pending', 'canceled'].includes(mensagem.status)
               }"
               v-if="mensagem.scheduleDate">
               <q-tooltip content-class="bg-secondary text-grey-8">
@@ -52,19 +52,19 @@
                   v-if="mensagem.isDeleted">
                   <q-chip color="red-3"
                     icon="mdi-trash-can-outline">
-                    Envio cancelado: {{ formatarData(mensagem.updatedAt, 'dd/MM/yyyy')}}
+                    Envio cancelado: {{ formatarData(mensagem.updatedAt, 'dd/MM/yyyy') }}
                   </q-chip>
                 </div>
                 <div class="row col">
                   <q-chip color="blue-1"
                     icon="mdi-calendar-import">
-                    Criado em: {{ formatarData(mensagem.createdAt, 'dd/MM/yyyy HH:mm')}}
+                    Criado em: {{ formatarData(mensagem.createdAt, 'dd/MM/yyyy HH:mm') }}
                   </q-chip>
                 </div>
                 <div class="row col">
                   <q-chip color="blue-1"
                     icon="mdi-calendar-start">
-                    Programado para: {{ formatarData(mensagem.scheduleDate, 'dd/MM/yyyy HH:mm')}}
+                    Programado para: {{ formatarData(mensagem.scheduleDate, 'dd/MM/yyyy HH:mm') }}
                   </q-chip>
                 </div>
               </q-tooltip>
@@ -79,7 +79,7 @@
               {{ isGroupLabel(mensagem) }}
             </div>
             <div v-if="mensagem.quotedMsg"
-              :class="{'textContentItem': !mensagem.isDeleted, 'textContentItemDeleted': mensagem.isDeleted }">
+              :class="{ 'textContentItem': !mensagem.isDeleted, 'textContentItemDeleted': mensagem.isDeleted }">
               <MensagemRespondida style="max-width: 240px; max-height: 150px"
                 class="row justify-center"
                 @mensagem-respondida:focar-mensagem="f
@@ -124,11 +124,11 @@
                       <!-- <q-item-label caption>
                         Apagará mensagem: {{ isDesactivatDelete(mensagem) ? 'PARA TODOS' : 'PARAM MIN' }}
                       </q-item-label> -->
-                      <q-tooltip :delay="500"
+                      <!-- <q-tooltip :delay="500"
                         content-class="text-black bg-red-3 text-body1">
                         * Após 5 min do envio, não será possível apagar a mensagem. <br>
                         ** Não está disponível para Messenger.
-                      </q-tooltip>
+                      </q-tooltip> -->
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -163,7 +163,7 @@
             </template>
             <template v-if="mensagem.mediaType === 'image'">
               <!-- @click="buscarImageCors(mensagem.mediaUrl)" -->
-              <q-img @click="urlMedia=mensagem.mediaUrl; abrirModalImagem=true"
+              <q-img @click="urlMedia = mensagem.mediaUrl; abrirModalImagem = true"
                 :src="mensagem.mediaUrl"
                 spinner-color="primary"
                 height="150px"
@@ -224,7 +224,7 @@
                   <div class="row items-center q-ma-xs ">
                     <div class="ellipsis col-grow q-pr-sm"
                       style="max-width: 290px">
-                      {{ farmatarMensagemWhatsapp(mensagem.body || mensagem.mediaName ) }}
+                      {{ farmatarMensagemWhatsapp(mensagem.body || mensagem.mediaName) }}
                     </div>
                     <q-icon name="mdi-download" />
                   </div>
@@ -243,8 +243,8 @@
               </q-btn> -->
             </template>
             <div v-linkified
-              v-if="!['vcard', 'application', 'audio' ].includes(mensagem.mediaType)"
-              :class="{'q-mt-sm': mensagem.mediaType !== 'chat'}"
+              v-if="!['vcard', 'application', 'audio'].includes(mensagem.mediaType)"
+              :class="{ 'q-mt-sm': mensagem.mediaType !== 'chat' }"
               class="q-message-container row items-end no-wrap">
               <div v-html="farmatarMensagemWhatsapp(mensagem.body)">
               </div>
@@ -257,7 +257,6 @@
 </template>
 
 <script>
-import { differenceInMinutes } from 'date-fns'
 import mixinCommon from './mixinCommon'
 import axios from 'axios'
 import VueEasyLightbox from 'vue-easy-lightbox'
@@ -364,9 +363,9 @@ export default {
       return Base64.encode(str)
     },
     isDesactivatDelete (msg) {
-      if (msg) {
-        return (differenceInMinutes(new Date(), new Date(+msg.timestamp)) > 5)
-      }
+      // if (msg) {
+      //   return (differenceInMinutes(new Date(), new Date(+msg.timestamp)) > 5)
+      // }
       return false
     },
     async buscarImageCors (imageUrl) {
