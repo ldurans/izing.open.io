@@ -8,6 +8,7 @@ const queues = Object.values(jobs).map((job: any) => ({
   bull: new Queue(job.key, {
     redis: {
       host: process.env.IO_REDIS_SERVER,
+      password: process.env.IO_REDIS_PASSWORD || undefined,
       port: +(process.env.IO_REDIS_PORT || "6379"),
       db: 3
     }

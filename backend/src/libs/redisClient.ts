@@ -5,6 +5,7 @@ import Redis from "ioredis";
 const redisClient = new Redis({
   port: Number(process.env.IO_REDIS_PORT), // Redis port
   host: process.env.IO_REDIS_SERVER,
+  password: process.env.IO_REDIS_PASSWORD || undefined,
   db: Number(process.env.IO_REDIS_DB_SESSION) || 9
   // host: "127.0.0.1", // Redis host
   // family: 4 // 4 (IPv4) or 6 (IPv6)
