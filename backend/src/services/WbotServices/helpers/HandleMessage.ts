@@ -16,7 +16,7 @@ import VerifyMessage from "./VerifyMessage";
 import VerifyStepsChatFlowTicket from "../../ChatFlowServices/VerifyStepsChatFlowTicket";
 import Queue from "../../../libs/Queue";
 // import isMessageExistsService from "../../MessageServices/isMessageExistsService";
-
+import Setting from "../../../models/Setting";
 interface Session extends Client {
   id: number;
 }
@@ -31,14 +31,27 @@ const HandleMessage = async (
         return;
       }
       let whatsapp;
-
+        whatsapp = await ShowWhatsAppService({ id: wbot.id });
+        const { tenantId } = whatsapp;
+      
+	  //IGNORAR MENSAGENS DE GRUPO       
+    	const Settingdb = await Setting.findOne({
+    	  where: {key: 'ignoreGroupMsg', tenantId: tenantId }
+    	});
+    	if(Settingdb?.value == 'enabled') {
+    		if (
+    		msg.from === "status@broadcast" ||
+    		//msg.type === "location" ||
+    		//msg.type === "call_log" ||
+    		msg.author != null
+    		) {
+    			return;
+    		}
+    	}
+      //IGNORAR MENSAGENS DE GRUPO
       try {
         let msgContact: WbotContact;
         let groupContact: Contact | undefined;
-
-        whatsapp = await ShowWhatsAppService({ id: wbot.id });
-
-        const { tenantId } = whatsapp;
 
         if (msg.fromMe) {
           // media messages sent from me from cell phone, first comes with "hasMedia = false" and type = "image/ptt/etc"
