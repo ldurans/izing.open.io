@@ -1,4 +1,4 @@
-[![Doação](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=TZ26S3D3Q4PE6) 
+[![Doação](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=TZ26S3D3Q4PE6)
 [![Discord Chat](https://img.shields.io/discord/1046597742878789663.svg?logo=discord)](https://discord.gg/vThFjJWX)
 
 # Izing
@@ -6,6 +6,7 @@
 Um sistema para gestão de atendimento multicanais centralizado.
 
 Sistema possui o backend e canais baseado em:
+
 - Whatsapp [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)
 - Telegram [telegraf](github.com/telegraf/telegraf)
 - Instagram [instagram-private-api](https://github.com/dilame/instagram-private-api)
@@ -17,12 +18,11 @@ No front, todas as funcionalidades são baseadas no [vue](https://vuejs.org/) e 
 
 Esse projeto tem inspiração e também é baseado no projeto fantástico [whaticket](https://github.com/canove/whaticket-community).
 
-
-**IMPORTANTE**: não garantimos que a utilização desta ferramenta não irá gerar bloqueio nas contas utilizadas. São bots que em sua maioria utilizam APIs segundarias para comunicação com os fornecedores dos serviços. Use com responsabilidade!
-
+**IMPORTANTE**: não garantimos que a utilização desta ferramenta não irá gerar bloqueio nas contas utilizadas. São bots que em sua maioria utilizam APIs secundarias para comunicação com os fornecedores dos serviços. Use com responsabilidade!
 
 ## Screenshots
->![Doação](screenshots/Bot.gif) 
+
+>![Doação](screenshots/Bot.gif)
 ___  
 >![Doação](screenshots/dashboard.gif)
 ___
@@ -39,23 +39,26 @@ ___
 - Enviar e receber mídias diversas (imagens/áudio/documentos) ✅
 - Multiempresas (abordagem de base compartilhada)
 
-
 ## Docker compose Localhost
 
 Execute comando na pasta raiz do projeto (izing.io)
+
 ```
 docker compose -f "docker-compose.yml" up -d --build
 ```
+
 Após os containers estarem rodando, faça a carga de dados iniciais (apenas na primeira vez)
+
 ```
 docker compose exec -it izing-backend  bash -c 'npx sequelize db:seed:all'    
 ```
+
 > Se tudo correu bem, acesse o sistema e faça login no link: [http://localhost:8080/#/login](http://localhost:8080/#/login).
+
 ```
 usuário: admin@izing.io
 senha: 123456
 ```
-
 
 ## Instalação (Linux Ubuntu - Desenvolvimento)
 
@@ -65,7 +68,7 @@ Instale o rabbitmq;
 Instale o redis;
 Instale node 14.* via nvm
 ```
- 
+
 Install puppeteer dependencies:
 
 ```bash
@@ -141,20 +144,20 @@ Instale as dependências do backend e execute as migrações e carga de dados in
 npm install
 ```
 
-
 Crie o arquivo .env na pasta frontend:
 
 ```bash
 cp .env.example .env
 nano .env
 ```
+
 ```bash
 URL_API='http://api.mydomain.com' # URL do backend
 FACEBOOK_APP_ID='1554345554575413' # id do app criado na console do facebook
 ```
 
-
 Inicie o frontend (suponto que já possua instalado as cli do vue e quasar):
+
 ```bash
 quasar c && quasar d
 ```
@@ -166,7 +169,6 @@ Instale o postgres;
 Instale o rabbitmq;
 Instale o redis;
 ```
- 
 
 As instruções assumem que não está executando como root. Vamos iniciar criando um usuário e as permissões necessárias.
 
@@ -193,6 +195,7 @@ sudo apt update && sudo apt upgrade
 ```
 
 Instale o node:
+
 ```bash
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
@@ -201,7 +204,6 @@ npm -v
 ```
 
 > `Assumiremos que você já possui o Postgres instalado e o banco criado.`
-
 
 Clone o repositório:
 
@@ -266,7 +268,6 @@ npx sequelize db:migrate
 npx sequelize db:seed:all
 ```
 
-
 Instale o pm2 **com sudo**, e inicie o backend com ele:
 
 ```bash
@@ -287,6 +288,7 @@ sudo env PATH=\$PATH:/usr/bin pm2 startup ubuntu -u YOUR_USERNAME --hp /home/YOU
 ```
 
 Agora vamos preparar o frontend.
+
 ```bash
 cd ../frontend
 npm install
@@ -298,12 +300,14 @@ Crie o arquivo .env na pasta frontend:
 cp .env.example .env
 nano .env
 ```
+
 ```bash
 URL_API='http://api.mydomain.com' # URL do backend
 FACEBOOK_APP_ID='1554345554575413' # id do app criado na console do facebook
 ```
 
 Faça o build do front:
+
 ```bash
 quasar build -P -m pwa
 ```
@@ -324,6 +328,7 @@ sudo rm /etc/nginx/sites-enabled/default
 ```
 
 Crie o site para o Backend
+
 ```bash
 sudo nano /etc/nginx/sites-available/izing-backend
 ```
@@ -340,6 +345,7 @@ server {
 ```
 
 Crie o site para o Front
+
 ```bash
 sudo nano /etc/nginx/sites-available/izing-frontend
 ```
@@ -447,10 +453,10 @@ chmod +x updateIzing
 
 A utilização desta ferramenta é feita por sua conta e risco. O código é aberto e todos podem contribuir. Espero que não (rsrrs), mas podem existir bugs e problemas de segurança.
 
-Este projeto não é afiliado, associado, autorizado, endossado por, ou de qualquer forma oficialmente ligado à WhatsApp, ou a qualquer uma das suas filiais ou afiliadas. O website oficial da WhatsApp pode ser encontrado em https://whatsapp.com. "WhatsApp", bem como nomes, marcas, emblemas e imagens relacionadas são marcas registadas dos seus respectivos proprietários.
-
-
+Este projeto não é afiliado, associado, autorizado, endossado por, ou de qualquer forma oficialmente ligado à WhatsApp, ou a qualquer uma das suas filiais ou afiliadas. O website oficial da WhatsApp pode ser encontrado em <https://whatsapp.com>. "WhatsApp", bem como nomes, marcas, emblemas e imagens relacionadas são marcas registadas dos seus respectivos proprietários.
 
 --------------------------
+
 ### Curtiu? Pague-me um café!! Segue QR code (PIX)  
+
 [<img src="donate.jpeg" height="150" width="200"/>](donate.jpeg)
