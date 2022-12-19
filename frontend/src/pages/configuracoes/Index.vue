@@ -105,6 +105,29 @@
         </q-item-section>
       </q-item>
 
+      <q-item
+        tag="label"
+        v-ripple
+      >
+        <q-item-section>
+          <q-item-label>Ignorar Mensagens de Grupo</q-item-label>
+          <q-item-label caption>Habilitando esta opção o sistema não abrirá ticket para grupos</q-item-label>
+        </q-item-section>
+        <q-item-section avatar>
+          <q-toggle
+            v-model="ignoreGroupMsg"
+            false-value="disabled"
+            true-value="enabled"
+            checked-icon="check"
+            keep-color
+            :color="ignoreGroupMsg === 'enabled' ? 'green' : 'negative'"
+            size="md"
+            unchecked-icon="clear"
+            @input="atualizarConfiguracao('ignoreGroupMsg')"
+          />
+        </q-item-section>
+      </q-item>
+
     </q-list>
 
   </div>
@@ -122,7 +145,8 @@ export default {
       NotViewAssignedTickets: null,
       NotViewTicketsChatBot: null,
       DirectTicketsToWallets: null,
-      botTicketActive: null
+      botTicketActive: null,
+      ignoreGroupMsg: null
     }
   },
   methods: {
