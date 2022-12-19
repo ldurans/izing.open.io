@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Redis from "ioredis";
-// import { logger } from "../utils/logger";
 
 const redisClient = new Redis({
   port: Number(process.env.IO_REDIS_PORT), // Redis port
   host: process.env.IO_REDIS_SERVER,
-  db: Number(process.env.IO_REDIS_DB_SESSION) || 9
-  // host: "127.0.0.1", // Redis host
-  // family: 4 // 4 (IPv4) or 6 (IPv6)
+  db: Number(process.env.IO_REDIS_DB_SESSION) || 9,
+  password: process.env.IO_REDIS_PASSWORD || undefined
 });
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
