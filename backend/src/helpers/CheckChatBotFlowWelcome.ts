@@ -30,7 +30,7 @@ const CheckChatBotFlowWelcome = async (instance: Ticket): Promise<void> => {
   const { celularTeste } = chatFlow;
   const celularContato = contato?.number;
 
-  if (await IsContactTest(celularContato, celularTeste /* instance.channel */))
+  if (await IsContactTest(celularContato, celularTeste, instance.channel))
     return;
 
   const lineFlow = chatFlow.flow.lineList.find(

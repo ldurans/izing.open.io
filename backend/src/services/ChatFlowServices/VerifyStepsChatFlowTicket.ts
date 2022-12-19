@@ -274,8 +274,8 @@ const VerifyStepsChatFlowTicket = async (
         if (
           await IsContactTest(
             ticket.contact.number,
-            celularTeste
-            // ticket.channel
+            celularTeste,
+            ticket.channel
           )
         )
           return;
@@ -303,8 +303,8 @@ const VerifyStepsChatFlowTicket = async (
         if (
           await IsContactTest(
             ticket.contact.number,
-            celularTeste
-            // ticket.channel
+            celularTeste,
+            ticket.channel
           )
         )
           return;
