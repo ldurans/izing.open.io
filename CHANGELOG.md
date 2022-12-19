@@ -1,3 +1,19 @@
+# [1.9.0](https://github.com/ldurans/izing.io/compare/v1.8.1...v1.9.0) (2022-12-19)
+
+
+### Bug Fixes
+
+* ajuste no funcionamento do fluxo chatbot para todos os canais como esperando ([ef36938](https://github.com/ldurans/izing.io/commit/ef369382166312504abcba764c1e5918c03c358d))
+* Ajuste no tratamento do horário de atendimento > Necessário que o usuário para a sincronização do timezone no servidor e banco de dados, atualmente isso não é suportado pela aplicação. ([f5500d4](https://github.com/ldurans/izing.io/commit/f5500d4bdb5bfa070b9bcd787990c28b4c4fe118)), closes [#87](https://github.com/ldurans/izing.io/issues/87)
+* text in readme segundarias to secundarias ([683792b](https://github.com/ldurans/izing.io/commit/683792b133495de37277e9f7332dc06e4462dd3b))
+* tratado erro ao pegar o token de acesso definitivo do messenger. ([9941e23](https://github.com/ldurans/izing.io/commit/9941e23fe40467590c4e22e2d7600c027f3861a0))
+
+
+### Features
+
+* Adicionado suporte para utilização do redis com autenticação ([9e04814](https://github.com/ldurans/izing.io/commit/9e0481491ef5fd6551b158586f6f26bd2422e80b))
+* lógica de desconexão, com tentativa de restauração ([ef74480](https://github.com/ldurans/izing.io/commit/ef74480e44abbd629e8ea62c15b533bc5375ca52))
+
 ## [1.8.1](https://github.com/ldurans/izing.io/compare/v1.8.0...v1.8.1) (2022-12-13)
 
 
