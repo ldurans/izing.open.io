@@ -58,48 +58,53 @@ const GetTokenAndLinkedPage = async ({
   userToken,
   tenantId
 }: Request): Promise<void> => {
-  const io = getIO();
+  try {
+    const io = getIO();
 
-  const pages = await getPageInfo(accountId, userToken);
+    const pages = await getPageInfo(accountId, userToken);
 
-  if (pages.length > 1) {
-    throw new AppError(
-      "Escolha apenas 1 página. Refaça o processo e selecione apenas 1 página.",
-      403
+    if (pages.length > 1) {
+      throw new AppError(
+        "Escolha apenas 1 página. Refaça o processo e selecione apenas 1 página.",
+        403
+      );
+    }
+
+    // caso não existam pages vinculadas, limpar dados do FB.
+    if (pages.length === 0) {
+      await SetLogoutLinkedPage({ whatsapp, tenantId });
+      return;
+    }
+
+    // gerar token página
+    const long_lived_access_token = await getLongLivedAccessToken(userToken);
+    const permanent_page_access_token = await getPermanentPageAccessToken(
+      long_lived_access_token,
+      accountId
     );
+
+    const dataUpdated = {
+      status: "CONNECTED",
+      fbPageId: permanent_page_access_token.id,
+      fbObject: {
+        ...permanent_page_access_token,
+        accountId,
+        long_lived_access_token
+      },
+      tokenAPI: permanent_page_access_token.access_token
+    };
+
+    // vincular a pagina ao channel e salvar o objeto do facebook
+    Whatsapp.update(dataUpdated, { where: { id: whatsapp.id, tenantId } });
+
+    io.emit(`${tenantId}:whatsappSession`, {
+      action: "update",
+      session: { ...whatsapp, ...dataUpdated }
+    });
+  } catch (error) {
+    console.log(error);
+    throw new AppError(error, 403);
   }
-
-  // caso não existam pages vinculadas, limpar dados do FB.
-  if (pages.length === 0) {
-    await SetLogoutLinkedPage({ whatsapp, tenantId });
-    return;
-  }
-
-  // gerar token página
-  const long_lived_access_token = await getLongLivedAccessToken(userToken);
-  const permanent_page_access_token = await getPermanentPageAccessToken(
-    long_lived_access_token,
-    accountId
-  );
-
-  const dataUpdated = {
-    status: "CONNECTED",
-    fbPageId: permanent_page_access_token.id,
-    fbObject: {
-      ...permanent_page_access_token,
-      accountId,
-      long_lived_access_token
-    },
-    tokenAPI: permanent_page_access_token.access_token
-  };
-
-  // vincular a pagina ao channel e salvar o objeto do facebook
-  Whatsapp.update(dataUpdated, { where: { id: whatsapp.id, tenantId } });
-
-  io.emit(`${tenantId}:whatsappSession`, {
-    action: "update",
-    session: { ...whatsapp, ...dataUpdated }
-  });
 };
 
 export default GetTokenAndLinkedPage;
