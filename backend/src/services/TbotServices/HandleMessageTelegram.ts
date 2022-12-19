@@ -31,7 +31,7 @@ const HandleMessage = async (ctx: Context, tbot: Session): Promise<void> => {
   const messageData = {
     ...message,
     // compatibilizar timestamp com js
-    timestamp: +message.timestamp * 1000
+    timestamp: +message.date * 1000
   };
 
   const contact = await VerifyContact(ctx, channel.tenantId);

@@ -8,6 +8,7 @@ import MessengerVerifyMediaMessage from "./MessengerVerifyMediaMessage";
 import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
 import MessengerMarkRead from "./MessengerMarkRead";
 import MessengerShowChannel from "./MessengerShowChannel";
+import verifyBusinessHours from "../WbotServices/helpers/VerifyBusinessHours";
 
 // eslint-disable-next-line consistent-return
 const getMessageType = (message: any) => {
@@ -81,7 +82,7 @@ const MessengerHandleMessage = async (
         }
         await VerifyStepsChatFlowTicket(msgData, ticket);
 
-        // await verifyBusinessHours(msgData, ticket);
+        await verifyBusinessHours(msgData, ticket);
         resolve();
       } catch (error) {
         logger.error(error);

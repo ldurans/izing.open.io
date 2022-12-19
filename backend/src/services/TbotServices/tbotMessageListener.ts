@@ -11,7 +11,6 @@ const tbotMessageListener = (tbot: Session): void => {
   });
 
   tbot.on("edited_message", async ctx => {
-    console.log("edited_message", ctx);
     HandleMessageTelegram(ctx, tbot);
 
     // HandleMessageTelegram(ctx, tbot);

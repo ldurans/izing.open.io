@@ -12,7 +12,7 @@ import IsValidMsg from "./IsValidMsg";
 import VerifyContact from "./VerifyContact";
 import VerifyMediaMessage from "./VerifyMediaMessage";
 import VerifyMessage from "./VerifyMessage";
-// import verifyBusinessHours from "./VerifyBusinessHours";
+import verifyBusinessHours from "./VerifyBusinessHours";
 import VerifyStepsChatFlowTicket from "../../ChatFlowServices/VerifyStepsChatFlowTicket";
 import Queue from "../../../libs/Queue";
 // import isMessageExistsService from "../../MessageServices/isMessageExistsService";
@@ -118,7 +118,7 @@ const HandleMessage = async (
           });
         }
 
-        // await verifyBusinessHours(msg, ticket);
+        await verifyBusinessHours(msg, ticket);
         resolve();
       } catch (err) {
         logger.error(err);

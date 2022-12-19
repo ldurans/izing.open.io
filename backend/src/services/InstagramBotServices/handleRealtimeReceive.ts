@@ -6,6 +6,7 @@ import {
 import { IgApiClientMQTT, MessageSyncMessageWrapper } from "instagram_mqtt";
 import VerifyStepsChatFlowTicket from "../ChatFlowServices/VerifyStepsChatFlowTicket";
 import FindOrCreateTicketService from "../TicketServices/FindOrCreateTicketService";
+import verifyBusinessHours from "../WbotServices/helpers/VerifyBusinessHours";
 import ShowWhatsAppService from "../WhatsappService/ShowWhatsAppService";
 import InstagramVerifyContact from "./InstagramVerifyContact";
 import VerifyMediaMessage from "./InstagramVerifyMediaMessage";
@@ -22,7 +23,6 @@ const handleRealtimeReceive = async (
   ctx: MessageSyncMessageWrapper | any,
   instaBot: Session
 ) => {
-  console.log(ctx);
   const channel = await ShowWhatsAppService({ id: instaBot.id });
   const threadData = await instaBot.feed
     .directThread({ thread_id: ctx.message.thread_id, oldest_cursor: "" })
@@ -64,13 +64,13 @@ const handleRealtimeReceive = async (
     ticket
   );
 
-  // await verifyBusinessHours(
-  //   {
-  //     fromMe,
-  //     timestamp: message.date
-  //   },
-  //   ticket
-  // );
+  await verifyBusinessHours(
+    {
+      fromMe,
+      timestamp: ctx.message.timestamp / 1000 // adequar horário node
+    },
+    ticket
+  );
 };
 
 export default handleRealtimeReceive;
