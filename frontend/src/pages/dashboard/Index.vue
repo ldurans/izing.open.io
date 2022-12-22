@@ -88,7 +88,7 @@
               style="min-width: 200px"
             >
               <q-card-section class="text-center">
-                <p class="text-h4 text-bold text-center"> {{ ticketsAndTimes.qtd_demanda_ativa }} </p>
+                <p class="text-h4 text-bold text-center"> {{ ticketsAndTimes.qtd_demanda_receptiva }} </p>
                 Receptivo
               </q-card-section>
             </q-card>
@@ -101,7 +101,7 @@
               style="min-width: 200px"
             >
               <q-card-section class="text-center">
-                <p class="text-h4 text-bold text-center"> {{ ticketsAndTimes.qtd_demanda_receptiva }} </p>
+                <p class="text-h4 text-bold text-center"> {{ ticketsAndTimes.qtd_demanda_ativa }} </p>
                 Ativo
               </q-card-section>
             </q-card>
