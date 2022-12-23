@@ -7,6 +7,7 @@ import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import UserMessagesLog from "../../models/UserMessagesLog";
 import { logger } from "../../utils/logger";
+import { generateMessage } from "../../utils/mustache";
 // import { StartWhatsAppSessionVerify } from "./StartWhatsAppSessionVerify";
 
 interface Request {
@@ -33,7 +34,7 @@ const SendWhatsAppMessage = async ({
   try {
     const sendMessage = await wbot.sendMessage(
       `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`,
-      body,
+      generateMessage(body, ticket),
       {
         quotedMessageId: quotedMsgSerializedId,
         linkPreview: false // fix: send a message takes 2 seconds when there's a link on message body

@@ -6,6 +6,7 @@ import Message from "../../models/Message";
 import { logger } from "../../utils/logger";
 // import { sleepRandomTime } from "../../utils/sleepRandomTime";
 import { getWbot } from "../../libs/wbot";
+import { generateMessage } from "../../utils/mustache";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 const SendMessage = async (message: Message): Promise<void> => {
@@ -37,10 +38,14 @@ const SendMessage = async (message: Message): Promise<void> => {
       sendAudioAsVoice: true
     });
   } else {
-    sendedMessage = await wbot.sendMessage(chatId, message.body, {
-      quotedMessageId: quotedMsgSerializedId,
-      linkPreview: false // fix: send a message takes 2 seconds when there's a link on message body
-    });
+    sendedMessage = await wbot.sendMessage(
+      chatId,
+      generateMessage(message.body, ticket),
+      {
+        quotedMessageId: quotedMsgSerializedId,
+        linkPreview: false // fix: send a message takes 2 seconds when there's a link on message body
+      }
+    );
   }
 
   // enviar old_id para substituir no front a mensagem corretamente

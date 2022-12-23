@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { logger } from "../utils/logger";
 import { getWbot } from "../libs/wbot";
+import { generateMessage } from "../utils/mustache";
 
 export default {
   key: "SendMessageWhatsappBusinessHours",
@@ -18,7 +19,7 @@ export default {
       const wbot = getWbot(data.ticket.whatsappId);
       const message = await wbot.sendMessage(
         `${data.ticket.contact.number}@c.us`,
-        data.tenant.messageBusinessHours,
+        generateMessage(data.tenant.messageBusinessHours, data.ticket),
         {
           linkPreview: false
         }
