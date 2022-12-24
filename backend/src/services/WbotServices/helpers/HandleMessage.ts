@@ -83,6 +83,7 @@ const HandleMessage = async (
         }
 
         const unreadMessages = msg.fromMe ? 0 : chat.unreadCount;
+		 if(unreadMessages === 0 && whatsapp.farewellMessage === msg.body) return;
 
         // const profilePicUrl = await msgContact.getProfilePicUrl();
         const contact = await VerifyContact(msgContact, tenantId);

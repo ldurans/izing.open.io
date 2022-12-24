@@ -132,6 +132,39 @@
             label="Padrão"
           /> -->
         </div>
+        <div class="row q-my-md">
+            <div class="col-12">
+                <label class="text-caption">Mensagem de Saudação do Atendimento:</label>
+                <textarea
+                  ref="inputGreetingMessage"
+                  style="min-height: 15vh; max-height: 15vh;"
+                  class="q-pa-sm bg-white full-width"
+                  placeholder="Digite a mensagem"
+                  autogrow
+                  dense
+                  outlined
+                  @input="(v) => whatsapp.greetingMessage = v.target.value"
+                  :value="whatsapp.greetingMessage"
+                />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <label class="text-caption">Mensagem de Despedida do Atendimento:</label>
+                <textarea
+                  ref="inputFarewellMessage"
+                  style="min-height: 15vh; max-height: 15vh;"
+                  class="q-pa-sm bg-white full-width"
+                  placeholder="Digite a mensagem"
+                  autogrow
+                  dense
+                  outlined
+                  @input="(v) => whatsapp.farewellMessage = v.target.value"
+                  :value="whatsapp.farewellMessage"
+                />
+            </div>
+            <div v-html="' Variáveis: <br>{{nomecontato}}  {{nomeatendente}}  {{atendimentonumero}}  {{saudacao}}'" />
+        </div>
       </q-card-section>
       <q-card-actions
         align="center"
@@ -190,7 +223,9 @@ export default {
         tokenTelegram: '',
         instagramUser: '',
         instagramKey: '',
-        tokenAPI: ''
+        tokenAPI: '',
+        greetingMessage: '',
+        farewellMessage: ''
       }
     }
   },
@@ -215,6 +250,8 @@ export default {
     fecharModal () {
       this.whatsapp = {
         name: '',
+        greetingMessage: '',
+        farewellMessage: '',
         isDefault: false
       }
       this.$emit('update:whatsAppEdit', {})

@@ -141,6 +141,12 @@ class Whatsapp extends Model<Whatsapp> {
   @AllowNull
   @Column(DataType.TEXT)
   tokenHook: string;
+  
+  @Column(DataType.TEXT)
+  greetingMessage: string;
+  
+  @Column(DataType.TEXT)
+  farewellMessage: string;
 
   @Column(DataType.VIRTUAL)
   get UrlWabaWebHook(): string | null {

@@ -166,6 +166,7 @@
               @input="(v) => messageBusinessHours = v.target.value"
               :value="messageBusinessHours"
             />
+            <div v-html="' Variáveis: <br>{{nomecontato}}  {{atendimentonumero}}  {{saudacao}}'" />
           </div>
         </div>
       </q-card-section>

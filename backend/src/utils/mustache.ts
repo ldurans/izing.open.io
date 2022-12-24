@@ -20,8 +20,10 @@ const getGreeting = (): string => {
 
 export const generateMessage = (body: string, ticket: Ticket): string => {
   const view = {
-    name: ticket ? ticket.contact.name : "",
-    greeting: getGreeting()
+    nomecontato: ticket ? ticket.contact.name : "",
+    nomeatendente: ticket ? ticket?.user?.name : "",
+    atendimentonumero: ticket ? ticket.id : "",
+    saudacao: getGreeting()
   };
   return Mustache.render(body, view);
 };

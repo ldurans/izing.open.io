@@ -13,6 +13,8 @@ interface Request {
   wabaBSP?: string;
   tokenAPI?: string;
   fbPageId?: string;
+  greetingMessage?: string;
+  farewellMessage?: string;
   type: "waba" | "instagram" | "telegram" | "whatsapp" | "messenger";
 }
 
@@ -32,7 +34,9 @@ const CreateWhatsAppService = async ({
   wabaBSP,
   tokenAPI,
   fbPageId,
-  isDefault = false
+  isDefault = false,
+  greetingMessage,
+  farewellMessage
 }: Request): Promise<Response> => {
   if (type === "waba" && (!tokenAPI || !wabaBSP)) {
     throw new AppError("WABA: favor informar o Token e a BSP");
@@ -73,7 +77,9 @@ const CreateWhatsAppService = async ({
     type,
     wabaBSP,
     tokenAPI,
-    fbPageId
+    fbPageId,
+    greetingMessage,
+    farewellMessage
   });
 
   const io = getIO();
