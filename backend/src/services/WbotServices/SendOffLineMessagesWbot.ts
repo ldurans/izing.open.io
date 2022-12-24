@@ -7,6 +7,7 @@ import { logger } from "../../utils/logger";
 import SendWhatsAppMessage from "./SendWhatsAppMessage";
 import { getIO } from "../../libs/socket";
 import UserMessagesLog from "../../models/UserMessagesLog";
+import { generateMessage } from "../../utils/mustache";
 
 interface Session extends Client {
   id?: number;
@@ -64,7 +65,7 @@ const SendOffLineMessagesWbot = async (
           }
         } else {
           await SendWhatsAppMessage({
-            body: message.body,
+            body: generateMessage(message.body, message.ticket),
             ticket: message.ticket,
             quotedMsg: message.quotedMsg,
             userId: message.userId

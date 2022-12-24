@@ -4,6 +4,7 @@ import { MessageMedia, Message as WbotMessage } from "whatsapp-web.js";
 import { logger } from "../utils/logger";
 import { getWbot } from "../libs/wbot";
 import CampaignContacts from "../models/CampaignContacts";
+import { generateMessage } from "../utils/mustache";
 
 export default {
   key: "SendMessageWhatsappCampaign",
@@ -30,9 +31,13 @@ export default {
           caption: data.message
         });
       } else {
-        message = await wbot.sendMessage(`${data.number}@c.us`, data.message, {
-          linkPreview: false
-        });
+        message = await wbot.sendMessage(
+          `${data.number}@c.us`,
+          generateMessage(data.message, data.ticket),
+          {
+            linkPreview: false
+          }
+        );
       }
 
       await CampaignContacts.update(
