@@ -13,6 +13,7 @@ import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
 import { sleepRandomTime } from "../../utils/sleepRandomTime";
+import { generateMessage } from "../../utils/mustache";
 // import { sleepRandomTime } from "../../utils/sleepRandomTime";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
@@ -113,7 +114,7 @@ const MessengerSendMessagesSystem = async (
         }
       }
       if (["chat", "text"].includes(message.mediaType) && !message.mediaName) {
-        sendedMessage = await messengerBot.sendText(chatId, message.body);
+        sendedMessage = await messengerBot.sendText(chatId, generateMessage(message.body, message.ticket));
       }
 
       // enviar old_id para substituir no front a mensagem corretamente
