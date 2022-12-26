@@ -17,6 +17,7 @@ import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
 import { sleepRandomTime } from "../../utils/sleepRandomTime";
+import { generateMessage } from "../../utils/mustache";
 // import { sleepRandomTime } from "../../utils/sleepRandomTime";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
@@ -116,7 +117,7 @@ const SendMessagesSystemWbot = async (
         logger.info("sendMessage media");
       }
       if (["chat", "text"].includes(message.mediaType) && !message.mediaName) {
-        sendedMessage = await threadEntity.broadcastText(message.body);
+        sendedMessage = await threadEntity.broadcastText(generateMessage(message.body, message.ticket));
         logger.info("sendMessage text");
       }
 
