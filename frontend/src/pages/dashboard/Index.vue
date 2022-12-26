@@ -89,7 +89,7 @@
             >
               <q-card-section class="text-center">
                 <p class="text-h4 text-bold text-center"> {{ ticketsAndTimes.qtd_demanda_ativa }} </p>
-                Receptivo
+                Ativo
               </q-card-section>
             </q-card>
           </div>
@@ -102,7 +102,7 @@
             >
               <q-card-section class="text-center">
                 <p class="text-h4 text-bold text-center"> {{ ticketsAndTimes.qtd_demanda_receptiva }} </p>
-                Ativo
+                Receptivo
               </q-card-section>
             </q-card>
           </div>
