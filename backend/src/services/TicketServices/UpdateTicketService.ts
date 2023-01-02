@@ -6,6 +6,9 @@ import Ticket from "../../models/Ticket";
 import User from "../../models/User";
 import socketEmit from "../../helpers/socketEmit";
 import CreateLogTicketService from "./CreateLogTicketService";
+import GetTicketWbot from "../../helpers/GetTicketWbot";
+import { generateMessage } from "../../utils/mustache";
+import Whatsapp from "../../models/Whatsapp";
 
 interface TicketData {
   status?: string;
@@ -66,6 +69,8 @@ const UpdateTicketService = async ({
 
   await SetTicketMessagesAsRead(ticket);
 
+  const wbot = await GetTicketWbot(ticket);
+  
   const oldStatus = ticket.status;
   const oldUserId = ticket.user?.id;
 
@@ -81,6 +86,10 @@ const UpdateTicketService = async ({
     queueId,
     userId
   };
+
+  const whatsapp = await Whatsapp.findOne({
+    where: { id: ticket.whatsappId, tenantId }
+  });
 
   // se atendimento for encerrado, informar data da finalização
   if (statusData === "closed") {
@@ -144,6 +153,15 @@ const UpdateTicketService = async ({
 
   if (isTransference) {
     await ticket.setDataValue("isTransference", true);
+  }
+  
+  //enviar mensagem de saudação ao iniciar o atendimento
+  if (statusData === "open") {
+    if(whatsapp?.greetingMessage){
+        await wbot.sendMessage(`${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`,
+            generateMessage(`${whatsapp?.greetingMessage}`, ticket),
+        )    
+    }
   }
 
   socketEmit({
