@@ -1,5 +1,3 @@
-// import AppError from "../../errors/AppError";
-// import socketEmit from "../../helpers/socketEmit";
 import LogTicket from "../../models/LogTicket";
 
 type logType =
@@ -37,12 +35,6 @@ const CreateLogTicketService = async ({
     type,
     queueId
   });
-
-  // socketEmit({
-  //   tenantId,
-  //   type: "ticket:update",
-  //   payload: ticket
-  // });
 };
 
 export default CreateLogTicketService;

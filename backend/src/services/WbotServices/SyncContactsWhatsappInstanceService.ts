@@ -38,28 +38,19 @@ const SyncContactsWhatsappInstanceService = async (
     );
     if (dataArray.length) {
       const d = "2022-07-15 14:48:04";
-      const query = `INSERT INTO Contacts (number, name, tenantId, createdAt, updatedAt) VALUES
+      const query = `INSERT INTO "Contacts" ("name", "number", "tenantId") VALUES
         ${dataArray
           .map((e: any) => {
-            return `('${e.number}',
-              '${e.name}',
-              '${e.tenantId}',
-              '${d}'::timestamp,
-              '${d}'::timestamp)`;
+            return `('${e.name}',
+              '${e.number}',
+              ${e.tenantId})`;
           })
-          .join(",")}
-        ON CONFLICT (number, tenantId) DO UPDATE SET name = EXCLUDED.name, number = EXCLUDED.number;`;
+          .join(",")}`;
 
       await Contact.sequelize?.query(query, {
         type: QueryTypes.INSERT,
         logging: console.log
       });
-      // await Contact.bulkCreate(dataArray, {
-      //   fields: ["number", "name", "tenantId"],
-      //   updateOnDuplicate: ["number", "name"],
-      //   logging: console.log
-      // });
-      console.log("sql contact");
     }
   } catch (error) {
     console.error(error);

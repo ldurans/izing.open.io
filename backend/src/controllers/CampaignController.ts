@@ -62,10 +62,10 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const { tenantId } = req.user;
-  const tags = await ListCampaignService({
+  const campaing = await ListCampaignService({
     tenantId
   });
-  return res.status(200).json(tags);
+  return res.status(200).json(campaing);
 };
 
 export const update = async (
