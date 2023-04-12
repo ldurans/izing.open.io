@@ -5,9 +5,11 @@ dist
 !public/.gitkeep
 .env
 .env.test
+.env.exemple
 .cache
 logs/
 WWebJS/
+.vscode/
 
 
 yarn.lock
