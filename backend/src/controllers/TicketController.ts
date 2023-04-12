@@ -156,14 +156,13 @@ export const update = async (
     isTransference,
     userIdRequest
   });
-  
-  //enviar mensagem de despedida ao encerrar atendimento
+    //enviar mensagem de despedida ao encerrar atendimento
   if (ticket.status === "closed") {
 	const whatsapp = await Whatsapp.findOne({
 		where: { id: ticket.whatsappId, tenantId }
-	});	
+	});
 	if(whatsapp?.farewellMessage){
-        await SendWhatsAppMessage({body: generateMessage(`${whatsapp?.farewellMessage}`, ticket), ticket});    
+        await SendWhatsAppMessage({body: generateMessage(`${whatsapp?.farewellMessage}`, ticket), ticket});
     }
   };
 

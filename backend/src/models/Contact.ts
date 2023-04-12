@@ -92,9 +92,6 @@ class Contact extends Model<Contact> {
   @HasMany(() => ContactCustomField)
   extraInfo: ContactCustomField[];
 
-  // @HasMany(() => ContactTag)
-  // tags: ContactTag[];
-
   @BelongsToMany(() => Tags, () => ContactTag, "contactId", "tagId")
   tags: Tags[];
 
@@ -128,23 +125,4 @@ class Contact extends Model<Contact> {
     instance.profilePicUrl = profilePicUrl;
   }
 }
-
-// Contact.sequelize?.define("Contact", {
-//   scheduledMessages: {
-//     type: DataTypes.VIRTUAL,
-//     async get() {
-//       const contactId = 4077;
-//       const messages = await Message.findAll({
-//         where: {
-//           contactId,
-//           scheduleDate: { [Op.not]: null },
-//           status: "pending"
-//         },
-//         logging: console.log
-//       });
-//       return messages;
-//     }
-//   }
-// });
-
 export default Contact;
