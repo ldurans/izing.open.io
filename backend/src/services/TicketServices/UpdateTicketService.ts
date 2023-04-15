@@ -1,14 +1,9 @@
 import AppError from "../../errors/AppError";
 import CheckContactOpenTickets from "../../helpers/CheckContactOpenTickets";
 import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
-import Contact from "../../models/Contact";
 import Ticket from "../../models/Ticket";
-import User from "../../models/User";
 import socketEmit from "../../helpers/socketEmit";
 import CreateLogTicketService from "./CreateLogTicketService";
-import GetTicketWbot from "../../helpers/GetTicketWbot";
-import { generateMessage } from "../../utils/mustache";
-import Whatsapp from "../../models/Whatsapp";
 
 interface TicketData {
   status?: string;
@@ -41,26 +36,7 @@ const UpdateTicketService = async ({
   const { status, userId, tenantId, queueId } = ticketData;
 
   const ticket = await Ticket.findOne({
-    where: { id: ticketId, tenantId },
-    include: [
-      {
-        model: Contact,
-        as: "contact",
-        include: [
-          "extraInfo",
-          "tags",
-          {
-            association: "wallets",
-            attributes: ["id", "name"]
-          }
-        ]
-      },
-      {
-        model: User,
-        as: "user",
-        attributes: ["id", "name"]
-      }
-    ]
+    where: { id: ticketId, tenantId }
   });
 
   if (!ticket) {
@@ -68,12 +44,8 @@ const UpdateTicketService = async ({
   }
 
   await SetTicketMessagesAsRead(ticket);
-
-  const wbot = await GetTicketWbot(ticket);
-  
   const oldStatus = ticket.status;
   const oldUserId = ticket.user?.id;
-
   if (oldStatus === "closed") {
     await CheckContactOpenTickets(ticket.contact.id);
   }
@@ -86,10 +58,6 @@ const UpdateTicketService = async ({
     queueId,
     userId
   };
-
-  const whatsapp = await Whatsapp.findOne({
-    where: { id: ticket.whatsappId, tenantId }
-  });
 
   // se atendimento for encerrado, informar data da finalização
   if (statusData === "closed") {
@@ -142,9 +110,9 @@ const UpdateTicketService = async ({
     // recebeu o atendimento tansferido
     if (userId) {
       await CreateLogTicketService({
+        type: "receivedTransfer",
         userId,
-        ticketId,
-        type: "receivedTransfer"
+        ticketId
       });
     }
   }
@@ -153,15 +121,6 @@ const UpdateTicketService = async ({
 
   if (isTransference) {
     await ticket.setDataValue("isTransference", true);
-  }
-  
-  //enviar mensagem de saudação ao iniciar o atendimento
-  if (statusData === "open") {
-    if(whatsapp?.greetingMessage){
-        await wbot.sendMessage(`${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`,
-            generateMessage(`${whatsapp?.greetingMessage}`, ticket),
-        )    
-    }
   }
 
   socketEmit({
