@@ -10,7 +10,8 @@ import GetTicketWbot from "../../helpers/GetTicketWbot";
 import { generateMessage } from "../../utils/mustache";
 import Whatsapp from "../../models/Whatsapp";
 import { getInstaBot } from "../../libs/InstaBot";
-import { getTbot } from "../../libs/tbot";
+import GetTicketTbot from "../../helpers/GetTicketTbot";
+//import { getTbot } from "../../libs/tbot";
 import { Telegraf, session } from "telegraf";
 
 interface TicketData {
@@ -80,6 +81,7 @@ const UpdateTicketService = async ({
   await SetTicketMessagesAsRead(ticket);
 
   const wbot = await GetTicketWbot(ticket);
+  const tbot = await GetTicketTbot(ticket);
   const oldStatus = ticket.status;
   const oldUserId = ticket.user?.id;
 
@@ -182,13 +184,11 @@ const UpdateTicketService = async ({
        if (whatsapp?.type === "telegram"){
         const chatId = ticket.contact.telegramId + '';
         const extraInfo: any = {};
-        let sendedMessage: any;
-        const sessionSndex = await getTbot(ticket.whatsappId, true);
-        sendedMessage = await sessionSndex.telegram.sendMessage(
-          chatId,
-          generateMessage(`${whatsapp?.greetingMessage}`, ticket),
-          extraInfo
-         );
+        await tbot.telegram.sendMessage(
+          chatId, generateMessage(`${whatsapp?.greetingMessage}`, ticket),
+         extraInfo);
+
+
        } 
     }
   }
