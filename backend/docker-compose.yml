@@ -21,7 +21,12 @@ services:
       - izing-redis
       - izing-db
       - izing-rabbitmq
-
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
   izing-redis:
     container_name: "izing-redis"
     image: 'redis:latest'

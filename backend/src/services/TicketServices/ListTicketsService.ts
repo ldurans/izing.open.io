@@ -186,39 +186,37 @@ const ListTicketsService = async ({
   //   "Ticket"."updatedAt" desc;
   // `;
 
-  const query = `
-  select
-  count(*) OVER ( ) as count,
-  c."profilePicUrl",
-  c."name",
-  u."name" as username,
-  q.queue,
-  t.*
-  from "Tickets" t
-  left join "Contacts" c on (t."contactId" = c.id)
-  left join "Users" u on (u.id = t."userId")
-  left join "Queues" q on (t."queueId" = q.id)
-  where t."tenantId" = :tenantId
-  and c."tenantId" = :tenantId
-  and t.status in ( :status )
-  and (( :isShowAll = 'N' and  (
-    (:isExistsQueueTenant = 'S' and t."queueId" in ( :queuesIdsUser ))
-    or t."userId" = :userId or exists (select 1 from "ContactWallets" cw where cw."walletId" = :userId and cw."contactId" = t."contactId") )
-  ) OR (:isShowAll = 'S') OR (t."isGroup" = true) OR (:isExistsQueueTenant = 'N') )
-  and (( :isUnread = 'S'  and t."unreadMessages" > 0) OR (:isUnread = 'N'))
-  and ((:isNotAssigned = 'S' and t."userId" is null) OR (:isNotAssigned = 'N'))
-  and ((:isSearchParam = 'S' and ( /*exists (
-    select 1 from "Messages" m where m."ticketId" = t.id
-    and upper(m.body) like upper(:searchParam)
-    ) or */ (t.id::varchar like :searchParam) or (exists (select 1 from "Contacts" c where c.id = t."contactId" and (upper(c."name") like upper(:searchParam) or c."number" like :searchParam)))) OR (:isSearchParam = 'N'))
-  )
-  order by t."updatedAt" desc
-  limit :limit offset :offset ;
-`;
-
   const limit = 30;
   const offset = limit * (+pageNumber - 1);
-
+  const query = `
+  select
+  (SELECT COUNT(*) FROM Tickets) as count,
+  c.profilePicUrl,
+  c.name,
+  u.name as username,
+  q.queue,
+  t.*
+  from Tickets t
+  left join Contacts c on t.contactId = c.id
+  left join Users u on u.id = t.userId
+  left join Queues q on t.queueId = q.id
+  where t.tenantId = @tenantId
+  and c.tenantId = @tenantId
+  and t.status IN ( @status )
+  AND ((@isShowAll = 'N' and  (
+    (@isExistsQueueTenant = 'S' and t.queueId IN ( @queuesIdsUser ))
+    or t.userId = @userId or exists (select 1 from ContactWallets cw where cw.walletId = @userId and cw.contactId = t.contactId) )
+  ) OR (@isShowAll = 'S') OR (t.isGroup = true) OR (@isExistsQueueTenant = 'N') )
+  AND (( @isUnread = 'S'  and t.unreadMessages > 0) OR (@isUnread = 'N'))
+  AND ((@isNotAssigned = 'S' and t.userId is null) OR (@isNotAssigned = 'N'))
+  AND ((@isSearchParam = 'S' 
+  AND ((CONVERT(t.id,CHAR) LIKE @searchParam) 
+  OR (exists (select 1 from Contacts c where c.id = t.contactId and (upper(c.name) like UPPER(@searchParam) or c.number LIKE @searchParam)))) OR (@isSearchParam = 'N'))
+  )
+  order by t.updatedAt desc
+  LIMIT ${limit}
+  OFFSET ${offset};
+`;
   const tickets: any = await Ticket.sequelize?.query(query, {
     replacements: {
       tenantId,
@@ -253,5 +251,4 @@ const ListTicketsService = async ({
     hasMore
   };
 };
-
 export default ListTicketsService;
