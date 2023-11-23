@@ -3,7 +3,6 @@
     @show="fetchContact"
     @hide="$emit('update:modalContato', false)"
     :value="modalContato"
-    persistent
   >
     <q-card
       class="q-pa-lg"
@@ -52,9 +51,8 @@
         Informações adicionais
       </q-card-section>
       <q-card-section class="q-pa-sm q-pl-md row q-col-gutter-md justify-center">
-        <template v-for="(extraInfo, index) in contato.extraInfo">
+        <div v-for="(extraInfo, index) in contato.extraInfo" :key="index">
           <div
-            :key="index"
             class="col-12 row justify-center q-col-gutter-sm"
           >
             <q-input
@@ -80,7 +78,7 @@
               />
             </div>
           </div>
-        </template>
+        </div>
         <div class="col-6">
           <q-btn
             class="full-width"
@@ -108,6 +106,7 @@
           label="Salvar"
           color="primary"
           @click="saveContact"
+          :disable="disableButton"
         />
       </q-card-actions>
     </q-card>
@@ -136,7 +135,8 @@ export default {
         number: null,
         email: '',
         extraInfo: []
-      }
+      },
+      disableButton: false
     }
   },
   validations: {
@@ -185,8 +185,8 @@ export default {
         ...this.contato,
         number: '55' + this.contato.number // inserir o DDI do brasil para consultar o número
       }
-
       try {
+        this.disableButton = true
         if (this.contactId) {
           const { data } = await EditarContato(this.contactId, contato)
           this.$emit('contatoModal:contato-editado', data)
@@ -202,6 +202,7 @@ export default {
               color: 'white'
             }]
           })
+          this.disableButton = false
         } else {
           const { data } = await CriarContato(contato)
           this.$q.notify({
@@ -216,10 +217,13 @@ export default {
             }]
           })
           this.$emit('contatoModal:contato-criado', data)
+          this.disableButton = false
         }
+        this.disableButton = false
         this.$emit('update:modalContato', false)
       } catch (error) {
         console.error(error)
+        this.disableButton = false
         this.$notificarErro('Ocorreu um erro ao criar o contato', error)
       }
     }
