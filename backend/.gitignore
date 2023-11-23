@@ -3,7 +3,6 @@ node_modules
 public/*
 dist
 !public/.gitkeep
-.env
 .env.test
 .cache
 logs/
