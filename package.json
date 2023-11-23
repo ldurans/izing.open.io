@@ -14,7 +14,9 @@
   },
   "author": "lumardyelson@gmail.com",
   "license": "@izing.io",
-  "dependencies": {},
+  "dependencies": {
+    "quasar": "^2.14.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^16.0.1",
     "@commitlint/config-conventional": "^16.0.0",
