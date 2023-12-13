@@ -1,5 +1,6 @@
 [![Doação](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=TZ26S3D3Q4PE6)
 [![Discord Chat](https://img.shields.io/discord/1046597742878789663.svg?logo=discord)](https://discord.gg/vThFjJWX)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fldurans%2Fizing.open.io.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fldurans%2Fizing.open.io?ref=badge_shield)
 
 # Izing
 
@@ -460,3 +461,7 @@ Este projeto não é afiliado, associado, autorizado, endossado por, ou de qualq
 ### Curtiu? Pague-me um café!! Segue QR code (PIX)  
 
 [<img src="donate.jpeg" height="150" width="200"/>](donate.jpeg)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fldurans%2Fizing.open.io.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fldurans%2Fizing.open.io?ref=badge_large)
