@@ -5,6 +5,7 @@
   "productName": "IZING",
   "author": "Durans <lumardyelson@gmail.com>",
   "private": false,
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0"
