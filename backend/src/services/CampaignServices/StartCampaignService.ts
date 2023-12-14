@@ -26,11 +26,11 @@ interface Request {
   options?: JobOptions;
 }
 
-const isValidDate = (date: Date) => {
-  return (
-    startOfDay(new Date(date)).getTime() >= startOfDay(new Date()).getTime()
-  );
-};
+// const isValidDate = (date: Date) => {
+//   return (
+//     startOfDay(new Date(date)).getTime() >= startOfDay(new Date()).getTime()
+//   );
+// };
 
 const cArquivoName = (url: string | null) => {
   if (!url) return "";
@@ -107,19 +107,6 @@ const nextDayHoursValid = (date: Date) => {
     dateVerify = setHours(dateVerify, 8);
   }
 
-  // const isValidDay = getDay(dateVerify) !== 0 && getDay(dateVerify) !== 6;
-
-  // if (!isValidDay) {
-  //   // Se for domingo add 1 dia para segunda
-  //   if (getDay(dateVerify) === 0) {
-  //     dateVerify = addDays(dateVerify, 1);
-  //   }
-  //   // SE for Sabado add 2 dias para segunda
-  //   if (getDay(dateVerify) === 6) {
-  //     dateVerify = addDays(dateVerify, 2);
-  //   }
-  // }
-
   return dateVerify;
 };
 
@@ -145,9 +132,9 @@ const StartCampaignService = async ({
     throw new AppError("ERROR_CAMPAIGN_NOT_EXISTS", 404);
   }
 
-  if (!isValidDate(campaign.start)) {
-    throw new AppError("ERROR_CAMPAIGN_DATE_NOT_VALID", 404);
-  }
+  // if (!isValidDate(campaign.start)) {
+  //   throw new AppError("ERROR_CAMPAIGN_DATE_NOT_VALID", 404);
+  // }
 
   const campaignContacts = await CampaignContacts.findAll({
     where: { campaignId },
@@ -158,13 +145,18 @@ const StartCampaignService = async ({
     throw new AppError("ERR_CAMPAIGN_CONTACTS_NOT_EXISTS", 404);
   }
 
-  const timeDelay = options?.delay || 5000;
-  let dateDelay = setHours(
-    setMinutes(zonedTimeToUtc(campaign.start, "America/Sao_Paulo"), 30),
-    8
-  );
+  const timeDelay = campaign.delay ? campaign.delay * 1000 : 20000;
+  // const today = zonedTimeToUtc(new Date(), "America/Sao_Paulo");
+  // let dateDelay = setHours(
+  //   setMinutes(
+  //     zonedTimeToUtc(campaign.start, "America/Sao_Paulo"),
+  //     today.getMinutes() + 1
+  //   ),
+  //   today.getHours()
+  // );
+  let dateDelay = zonedTimeToUtc(campaign.start, "America/Sao_Paulo");
   const data = campaignContacts.map((campaignContact: CampaignContacts) => {
-    dateDelay = addSeconds(nextDayHoursValid(dateDelay), timeDelay / 1000);
+    dateDelay = addSeconds(dateDelay, timeDelay / 1000);
     return mountMessageData(campaign, campaignContact, {
       ...options,
       jobId: `campaginId_${campaign.id}_contact_${campaignContact.contactId}_id_${campaignContact.id}`,

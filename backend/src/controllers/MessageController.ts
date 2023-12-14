@@ -44,15 +44,11 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
       tenantId
     });
 
-  // verificar rotina para sync das mensagens.
-  // const wbot = await GetTicketWbot(ticket);
-  // const wbotChat = await wbot.getChatById(
-  //   `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`
-  // );
-  // const wbotMessages = await wbotChat.fetchMessages({ limit: 100 });
-  // const mf = messages.filter
-  // console.log(wbotMessages);
-  SetTicketMessagesAsRead(ticket);
+  try {
+    SetTicketMessagesAsRead(ticket);
+  } catch (error) {
+    console.log("SetTicketMessagesAsRead", error);
+  }
 
   return res.json({ count, messages, messagesOffLine, ticket, hasMore });
 };
@@ -70,21 +66,17 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     console.log("SetTicketMessagesAsRead", error);
   }
 
-  try {
-    await CreateMessageSystemService({
-      msg: messageData,
-      tenantId,
-      medias,
-      ticket,
-      userId,
-      scheduleDate: messageData.scheduleDate,
-      sendType: messageData.sendType || "chat",
-      status: "pending",
-      idFront: messageData.idFront
-    });
-  } catch (error) {
-    console.log("try CreateMessageSystemService", error);
-  }
+  await CreateMessageSystemService({
+    msg: messageData,
+    tenantId,
+    medias,
+    ticket,
+    userId,
+    scheduleDate: messageData.scheduleDate,
+    sendType: messageData.sendType || "chat",
+    status: "pending",
+    idFront: messageData.idFront
+  });
 
   return res.send();
 };
@@ -111,9 +103,6 @@ export const forward = async (
 ): Promise<Response> => {
   const data = req.body;
   const { user } = req;
-  console.log(data);
-  // await Promise.all(
-  // )
 
   for (const message of data.messages) {
     await CreateForwardMessageService({

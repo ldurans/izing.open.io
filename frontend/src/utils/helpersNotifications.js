@@ -12,7 +12,6 @@ export const notificarErro = (msg, error = null) => {
   if (error && findErro.error) {
     message = `
       <p class="text-bold">
-      Ops...<br>
       <span class="text-bold">${findErro.description}.</span>
       </p>
       <p>${findErro.detail}</p>
@@ -20,7 +19,6 @@ export const notificarErro = (msg, error = null) => {
   } else {
     message = `
     <p class="text-bold">
-      Ops...<br>
       <span class="text-bold">${msg}</span>
     </p>
     <p>Detail: ${erro}</p>
@@ -31,7 +29,7 @@ export const notificarErro = (msg, error = null) => {
     type: 'negative',
     progress: true,
     position: 'top',
-    timeout: 2500,
+    timeout: 500,
     message,
     actions: [{
       icon: 'close',
@@ -50,7 +48,7 @@ export const notificarSucesso = (msg) => {
     progress: true,
     position: 'top',
     message,
-    timeout: 2500,
+    timeout: 500,
     actions: [{
       icon: 'close',
       round: true,

@@ -10,27 +10,13 @@ import { getIO } from "../../libs/socket";
 import Whatsapp from "../../models/Whatsapp";
 import { logger } from "../../utils/logger";
 import { InstaBotMessageListener } from "./InstaBotMessageListener";
-import InstagramSendMessagesSystem from "./InstagramSendMessagesSystem";
 
 interface Session extends IgApiClientMQTT {
   id: number;
   accountLogin?:
-  | AccountRepositoryLoginResponseLogged_in_user
-  | AccountRepositoryCurrentUserResponseUser;
+    | AccountRepositoryLoginResponseLogged_in_user
+    | AccountRepositoryCurrentUserResponseUser;
 }
-
-const checkingInstagram: any = {};
-
-const checkMessages = async (instaBot: Session, tenantId: number | string) => {
-  if (checkingInstagram[tenantId]) return;
-  checkingInstagram[tenantId] = true;
-  try {
-    await InstagramSendMessagesSystem(instaBot, tenantId);
-  } catch (error) {
-    logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
-  }
-  checkingInstagram[tenantId] = false;
-};
 
 export const StartInstaBotSession = async (
   connection: Whatsapp
@@ -45,12 +31,6 @@ export const StartInstaBotSession = async (
   try {
     const instaBot = await initInstaBot(connection);
     InstaBotMessageListener(instaBot);
-    setInterval(
-      checkMessages,
-      +(process.env.CHECK_INTERVAL || 5000),
-      instaBot,
-      connection.tenantId
-    );
     logger.info(`Conexão Instagram iniciada | Empresa: ${connection.tenantId}`);
     await connection.update({ status: "CONNECTED" });
     io.emit(`${connection.tenantId}:whatsappSession`, {

@@ -1,5 +1,5 @@
 <template>
-  <q-layout style="background: #f8f8f8">
+  <q-layout class="vertical-center">
     <q-page-container>
       <q-page class="flex justify-center items-center">
         <q-ajax-bar
@@ -10,14 +10,13 @@
         <q-card
           bordered
           class="card q-pa-md shadow-10"
-          style="border-top: 5px solid #3E72AF"
+          style="border-top: 5px solid #3E72AF; background-color: rgba(255,255,255,0.75); border-radius: 20px"
         >
-
           <q-card-section class="text-primary text-center">
             <q-img
               src="/izing-logo_5_transparent.png"
               spinner-color="white"
-              style="height: 110px; max-width: 300px"
+              style="height: 120px; max-width: 300px"
               class="q-mb-lg q-px-md"
             />
             <q-separator spaced />
@@ -31,6 +30,7 @@
             <q-input
               class="q-mb-md"
               clearable
+              rounded
               v-model="form.email"
               placeholder="meu@email.com"
               @blur="$v.form.email.$touch"
@@ -50,6 +50,7 @@
 
             <q-input
               outlined
+              rounded
               v-model="form.password"
               :type="isPwd ? 'password' : 'text'"
               @keypress.enter="fazerLogin"
@@ -76,6 +77,7 @@
               class="q-mr-sm q-my-lg"
               style="width: 150px"
               color="primary"
+              rounded
               :loading="loading"
               @click="fazerLogin"
             >
@@ -163,6 +165,7 @@ export default {
 #login-app {
   background: none;
 }
+
 .index {
   width: 100%;
   position: absolute;
@@ -211,8 +214,14 @@ export default {
   width: 100%;
   height: 100%;
 }
+
 .card {
   width: 100%;
   max-width: 430px;
+}
+
+.q-img__image {
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 </style>

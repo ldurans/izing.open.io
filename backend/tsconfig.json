@@ -15,5 +15,9 @@
     "rootDir": "./src",
     "resolveJsonModule": true,
     "useUnknownInCatchVariables": false
-  }
+  },
+  "exclude": [
+    "dist",
+    "public"
+  ]
 }

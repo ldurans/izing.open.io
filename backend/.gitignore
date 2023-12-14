@@ -25,7 +25,11 @@ yarn-error.log
 ./.wwebjs_auth/*
 .wwebjs*/
 WWebJS/
-/home/durans/Projetos/izing.io/backend/.wwebjs_auth
+.wwebjs_auth/
 
 backend/newrelic_agent.log
 newrelic_agent.log
+
+.data/
+reports/report.json
+reports/report.html

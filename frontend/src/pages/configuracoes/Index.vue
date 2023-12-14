@@ -94,6 +94,7 @@
             style="width: 300px"
             outlined
             dense
+            rounded
             v-model="botTicketActive"
             :options="listaChatFlow"
             map-options
@@ -128,6 +129,48 @@
         </q-item-section>
       </q-item>
 
+      <q-item
+        tag="label"
+        v-ripple
+      >
+        <q-item-section>
+          <q-item-label>Recusar chamadas no Whatsapp</q-item-label>
+          <q-item-label caption>Quando ativo, as ligações de aúdio e vídeo serão recusadas, automaticamente.</q-item-label>
+        </q-item-section>
+        <q-item-section avatar>
+          <q-toggle
+            v-model="rejectCalls"
+            false-value="disabled"
+            true-value="enabled"
+            checked-icon="check"
+            keep-color
+            :color="rejectCalls === 'enabled' ? 'green' : 'negative'"
+            size="md"
+            unchecked-icon="clear"
+            @input="atualizarConfiguracao('rejectCalls')"
+          />
+        </q-item-section>
+      </q-item>
+
+      <div
+        class="row q-px-md"
+        v-if="rejectCalls === 'enabled'"
+      >
+        <div class="col-12">
+          <q-input
+            rounded
+            v-model="callRejectMessage"
+            type="textarea"
+            autogrow
+            dense
+            outlined
+            label="Mensagem ao rejeitar ligação:"
+            input-style="min-height: 6vh; max-height: 9vh;"
+            debounce="700"
+            @input="atualizarConfiguracao('callRejectMessage')"
+          />
+        </div>
+      </div>
     </q-list>
 
   </div>
@@ -146,7 +189,9 @@ export default {
       NotViewTicketsChatBot: null,
       DirectTicketsToWallets: null,
       botTicketActive: null,
-      ignoreGroupMsg: null
+      ignoreGroupMsg: null,
+      rejectCalls: null,
+      callRejectMessage: ''
     }
   },
   methods: {

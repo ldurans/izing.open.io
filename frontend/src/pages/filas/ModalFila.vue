@@ -9,14 +9,13 @@
       style="width: 500px"
       class="q-pa-lg"
     >
-      <q-card-section>
-        <div class="text-h6">{{ filaEdicao.id ? 'Editar': 'Criar' }} Fila</div>
-      </q-card-section>
+      <div class="text-h6">{{ filaEdicao.id ? 'Editar': 'Criar' }} Fila</div>
       <q-card-section>
         <q-input
           class="row col"
-          square
+          rounded
           outlined
+          dense
           v-model="fila.queue"
           label="Nome da Fila"
         />
@@ -30,16 +29,16 @@
         class="q-mt-md"
       >
         <q-btn
-          flat
+          rounded
           label="Cancelar"
           color="negative"
           v-close-popup
           class="q-mr-md"
         />
         <q-btn
-          flat
+          rounded
           label="Salvar"
-          color="primary"
+          color="positive"
           @click="handleFila"
         />
       </q-card-actions>

@@ -1,66 +1,57 @@
 <template>
-  <div v-if="easyFlowVisible"
+  <div
+    v-if="easyFlowVisible"
     :class="{
       'fullscreen bg-white': isFullScreen,
       'flowHeightDefault': !isFullScreen
-    }">
+    }"
+  >
     <q-toolbar class="text-grey-8 ">
       <q-toolbar-title>
         <div class="text-h6">{{ data.name }}</div>
       </q-toolbar-title>
-      <q-btn round
+      <q-btn
+        round
         flat
         icon="mdi-delete"
         @click="deleteElement"
-        :disabled="!this.activeElement.type || ['start', 'exception'].includes(this.activeElement.type)"></q-btn>
-      <q-separator inset
+        :disabled="!this.activeElement.type || ['start', 'exception'].includes(this.activeElement.type)"
+      ></q-btn>
+      <q-separator
+        inset
         spaced
-        vertical />
-      <!-- <q-btn
+        vertical
+      />
+
+      <q-btn
         round
         flat
-        icon="mdi-download"
-        @click="downloadData"
-      ></q-btn> -->
-      <q-btn round
-        flat
         :icon="isFullScreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen'"
-        @click="isFullScreen = !isFullScreen" />
-      <!-- <div class="q-gutter-md q-mx-md">
-        <q-btn
-          type="info"
-          @click="dataInfo"
-          size="mini"
-        >Informação</q-btn>
-        <q-btn
-          type="primary"
-          @click="dataReloadA"
-          size="mini"
-          icon="mdi-refresh"
-        >Processo A</q-btn>
-      </div> -->
+        @click="isFullScreen = !isFullScreen"
+      />
+
     </q-toolbar>
     <q-separator color="text-grey-3" />
-    <div class="q-mt-sm"
-      style="display: flex; height: calc(100% - 60px);">
-      <!-- <div style="width: 230px;border-right: 1px solid #dce3e8;">
-        <node-menu
-          @addNode="addNode"
-          ref="nodeMenu"
-        ></node-menu>
-      </div> -->
-      <div id="efContainer"
+    <div
+      class="q-mt-sm"
+      style="display: flex; height: calc(100% - 60px);"
+    >
+      <div
+        id="efContainer"
         ref="efContainer"
         class="container"
-        v-flowDrag>
+        v-flowDrag
+      >
         <template v-for="node in data.nodeList">
-          <flow-node :id="node.id"
+          <flow-node
+            :id="node.id"
             :key="node.id"
             :node="node"
             :activeElement="activeElement"
             @changeNodeSite="changeNodeSite"
             @nodeRightMenu="nodeRightMenu"
-            @clickNode="clickNode">
+            @clickNode="clickNode"
+          >
           </flow-node>
         </template>
         <!-- Forçar área de construção -->
@@ -68,7 +59,8 @@
       </div>
       <!-- Configuração node -->
       <div style="width: 500px; border-left: 1px solid #dce3e8;">
-        <flow-node-form ref="nodeForm"
+        <flow-node-form
+          ref="nodeForm"
           @setLineLabel="setLineLabel"
           @repaintEverything="repaintEverything"
           :filas="cDataFlow.filas"
@@ -77,24 +69,27 @@
           @addNode="addNode"
           @deleteLine="deleteLine"
           @addNewLineCondition="addNewLineCondition"
-          @saveFlow="saveFlow">
+          @saveFlow="saveFlow"
+        >
         </flow-node-form>
       </div>
     </div>
     <!-- Visualização Resultado -->
-    <flow-info v-if="flowInfoVisible"
+    <flow-info
+      v-if="flowInfoVisible"
       ref="flowInfo"
-      :data="data"></flow-info>
-    <flow-help v-if="flowHelpVisible"
-      ref="flowHelp"></flow-help>
+      :data="data"
+    ></flow-info>
+    <flow-help
+      v-if="flowHelpVisible"
+      ref="flowHelp"
+    ></flow-help>
   </div>
 
 </template>
 
 <script>
 import draggable from 'vuedraggable'
-// import jsPlumb from './jsplumb.js'
-// 使用修改后的jsplumb
 import './jsplumb'
 import { easyFlowMixin } from './mixins'
 import flowNode from './node'
@@ -112,20 +107,13 @@ export default {
   data () {
     return {
       isFullScreen: false,
-      // jsPlumb 实例
       jsPlumb: null,
-      // 控制画布销毁
       easyFlowVisible: true,
-      // 控制流程数据显示与隐藏
       flowInfoVisible: false,
-      // 是否加载完毕标志位
       loadEasyFlowFinish: false,
       flowHelpVisible: false,
-      // 数据
       data: {},
-      // Elemento ativo para modificação
       activeElement: {
-        // node, line
         type: undefined,
         nodeId: undefined,
         sourceId: undefined,
@@ -144,7 +132,6 @@ export default {
       default: () => []
     }
   },
-  // 一些基础配置移动该文件中
   mixins: [easyFlowMixin],
   components: {
     // eslint-disable-next-line vue/no-unused-components
@@ -158,16 +145,13 @@ export default {
         }
         el.onmousedown = (e) => {
           if (e.button == 2) {
-            // 右键不管
             return
           }
-          //  鼠标按下，计算当前原始距离可视区的高度
           let disX = e.clientX
           let disY = e.clientY
           el.style.cursor = 'move'
 
           document.onmousemove = function (e) {
-            // 移动时禁止默认事件
             e.preventDefault()
             const left = e.clientX - disX
             disX = e.clientX
@@ -196,9 +180,6 @@ export default {
     getUUID () {
       return uid()
     },
-    // updateLineNodes (node) {
-    //   this.jsPlumb.repaintEverything()
-    // },
     addNewLineCondition (from, to, oldTo) {
       if (!this.jsPlumpConsist({ sourceId: from, targetId: to })) {
         return
@@ -285,13 +266,9 @@ export default {
     },
     jsPlumbInit () {
       this.jsPlumb.ready(() => {
-        // 导入默认配置
         this.jsPlumb.importDefaults(this.jsplumbSetting)
-        // 会使整个jsPlumb立即重绘。
         this.jsPlumb.setSuspendDrawing(false, true)
-        // 初始化节点
         this.loadEasyFlow()
-        // 单点击了连接线, https://www.cnblogs.com/ysx215/p/7615677.html
         this.jsPlumb.bind('click', (conn, originalEvent) => {
           this.activeElement.type = 'line'
           this.activeElement.sourceId = conn.sourceId
@@ -302,7 +279,6 @@ export default {
             label: conn.getLabel()
           })
         })
-        // 连线
         this.jsPlumb.bind('connection', (evt) => {
           if (!this.jsPlumpConsist(evt)) {
             return
@@ -311,7 +287,6 @@ export default {
           const to = evt.target.id
           if (this.loadEasyFlowFinish) {
             this.data.lineList.push({ from: from, to: to, label: 'Valor' })
-            // const label = 'Chave'
             const label = null
             this.$refs.nodeForm.lineInit({
               from,
@@ -322,27 +297,22 @@ export default {
           }
         })
 
-        // 删除连线回调
         this.jsPlumb.bind('connectionDetached', (evt) => {
           this.deleteLine(evt.sourceId, evt.targetId)
         })
 
-        // 改变线的连接节点
         this.jsPlumb.bind('connectionMoved', (evt) => {
           this.changeLine(evt.originalSourceId, evt.originalTargetId)
         })
 
-        // 连线右击
         this.jsPlumb.bind('contextmenu', (evt) => {
           console.log('contextmenu', evt)
         })
 
-        // 连线
         this.jsPlumb.bind('beforeDrop', (evt) => {
           return this.jsPlumpConsist(evt)
         })
 
-        // beforeDetach
         this.jsPlumb.bind('beforeDetach', (evt) => {
           console.log('beforeDetach', evt)
         })
@@ -351,24 +321,19 @@ export default {
     },
 
     loadEasyFlow () {
-      // 初始化节点
       for (var i = 0; i < this.data.nodeList.length; i++) {
         const node = this.data.nodeList[i]
-        // 设置源点，可以拖出线连接其他节点
         this.jsPlumb.makeSource(node.id, merge(this.jsplumbSourceOptions, {}))
-        // // 设置目标点，其他源点拖出的线可以连接该节点
         this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions)
         if (!node.viewOnly) {
           this.jsPlumb.draggable(node.id, {
             containment: 'parent',
             stop: function (el) {
-              // 拖拽节点结束后的对调
               console.log('arraste para o final: ', el)
             }
           })
         }
       }
-      // 初始化连线
       for (let i = 0; i < this.data.lineList.length; i++) {
         const line = this.data.lineList[i]
         var connParam = {
@@ -377,7 +342,6 @@ export default {
           label: line.label ? line.label : '',
           connector: line.connector ? line.connector : '',
           anchors: line.anchors ? line.anchors : undefined,
-          // paintStyle: line.paintStyle ? line.paintStyle : undefined
           paintStyle: { strokeWidth: 3, stroke: '#8db1dd' }
         }
         this.jsPlumb.connect(connParam, this.jsplumbConnectOptions)
@@ -467,18 +431,15 @@ export default {
       const efContainer = this.$refs.efContainer
       var containerRect = efContainer.getBoundingClientRect()
       var left = screenX, top = screenY
-      // Verifica se deseja arrastar para o container
       if (left < containerRect.x || left > containerRect.width + containerRect.x || top < containerRect.y || containerRect.y > containerRect.y + containerRect.height) {
         this.$notificarErro('Arraste o elemento para a tela.')
         return
       }
       left = left - containerRect.x + efContainer.scrollLeft
       top = top - containerRect.y + efContainer.scrollTop
-      // Centralizar
       left -= 85
       top -= 16
       var nodeId = this.getUUID()
-      // Gerar nome dinâmico
       var origName = nodeMenu.name
       var nodeName = origName
       var index = 1
@@ -509,9 +470,6 @@ export default {
         conditions: nodeMenu?.conditions,
         interactions: nodeMenu?.interactions
       }
-      /**
-               * 这里可以进行业务判断、是否能够添加该节点
-               */
       this.data.nodeList.push(node)
       this.$nextTick(function () {
         this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions)
@@ -519,7 +477,6 @@ export default {
         this.jsPlumb.draggable(nodeId, {
           containment: 'parent',
           stop: function (el) {
-            // 拖拽节点结束后的对调
             console.log('arastado para o final: ', el)
           }
         })
@@ -553,8 +510,6 @@ export default {
 
     clickNode (nodeId) {
       const node = this.data.nodeList.find(n => n.id === nodeId)
-      // this.activeElement.type = 'node'
-      // this.activeElement.id = nodeId
       this.activeElement = node
       this.$refs.nodeForm.nodeInit(this.data, nodeId)
     },
@@ -568,7 +523,6 @@ export default {
       }
       return false
     },
-    // 是否含有相反的线
     hashOppositeLine (from, to) {
       return this.hasLine(to, from)
     },
@@ -620,7 +574,6 @@ export default {
       this.$refs.efContainer.style.transform = `scale(${this.zoom})`
       this.jsPlumb.setZoom(this.zoom)
     },
-    // 下载数据
     downloadData () {
       this.$q.dialog({
         title: 'Oi!!',
@@ -657,7 +610,6 @@ export default {
     // eslint-disable-next-line no-undef
     this.jsPlumb = jsPlumb.getInstance()
     this.$nextTick(() => {
-      // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
       this.dataReload(this.cDataFlow.flow.flow)
     })
   }

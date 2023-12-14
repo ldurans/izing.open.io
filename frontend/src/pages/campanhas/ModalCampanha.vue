@@ -1,121 +1,168 @@
 <template>
-  <q-dialog persistent
-    maximized
+  <q-dialog
+    persistent
     :value="modalCampanha"
     @hide="fecharModal"
-    @show="abrirModal">
-    <q-card class="q-pa-sm">
+    @show="abrirModal"
+  >
+    <q-card
+      class="q-pa-sm"
+      style="min-width: 70vw;"
+    >
       <q-card-section class="q-pa-none q-px-md">
         <div class="text-h6 text-bold">{{ campanhaEdicao.id ? 'Editar' : 'Criar' }} Campanha</div>
         <div class="row">
           As mensagens sempre serão enviadas em horário comercial e dias úteis.
         </div>
       </q-card-section>
-      <q-card-section>
+      <q-card-section class="q-pb-none">
         <div class="row q-gutter-sm">
-          <div class="col-xs-12 col-md-5">
-            <q-input class="required"
-              outlined
-              v-model="campanha.name"
-              label="Nome da Campanha"
-              @blur="$v.campanha.name.$touch"
-              :error="$v.campanha.name.$error"
-              error-message="Obrigatório" />
-          </div>
-          <div class="col-xs-12 col-md-3">
-            <DatePick hint="Data início de envio"
-              v-model="campanha.start"
-              @blur="$v.campanha.start.$touch"
-              :error="$v.campanha.start.$error"
-              error-message="Não pode ser inferior ao dia atual" />
-          </div>
-          <div class="col-xs-12 col-md-4">
-            <q-select class="required"
-              outlined
-              emit-value
-              map-options
-              label="Enviar por"
-              color="primary"
-              v-model="campanha.sessionId"
-              :options="cSessions"
-              :input-debounce="700"
-              option-value="id"
-              option-label="name"
-              input-style="width: 280px; max-width: 280px;"
-              @blur="$v.campanha.sessionId.$touch"
-              :error="$v.campanha.sessionId.$error"
-              error-message="Obrigatório" />
-          </div>
-          <div class="col-xs-12 col-md-4">
-            <q-file v-if="!campanha.mediaUrl"
-              :loading="loading"
-              label="Mídia composição mensagem"
-              ref="PickerFileMessage"
-              v-model="arquivos"
-              class="col-grow"
-              bg-color="blue-grey-1"
-              input-style="max-height: 30vh"
-              outlined
-              clearable
-              autogrow
-              append
-              :max-files="5"
-              counter
-              :max-file-size="10485760"
-              :max-total-size="30485760"
-              accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
-              @rejected="onRejectedFiles" />
-            <q-input v-if="campanha.mediaUrl"
-              readonly
-              label="Mídia composição mensagem"
-              :value="cArquivoName"
-              class=" col-grow "
-              bg-color="blue-grey-1"
-              input-style="max-height: 30vh"
-              outlined
-              autogrow
-              append
-              counter>
-              <template v-slot:append>
-                <q-btn round
-                  dense
-                  flat
-                  icon="close"
-                  @click="campanha.mediaUrl = null; arquivos = []" />
-              </template>
-            </q-input>
-          </div>
+          <q-input
+            outlined
+            dense
+            rounded
+            style="width: 500px"
+            v-model="campanha.name"
+            label="Nome da Campanha"
+            @blur="$v.campanha.name.$touch"
+            :error="$v.campanha.name.$error"
+            error-message="Obrigatório"
+          />
+          <q-datetime-picker
+            style="width: 200px"
+            dense
+            rounded
+            hide-bottom-space
+            outlined
+            stack-label
+            bottom-slots
+            label="Data/Hora início"
+            mode="datetime"
+            color="primary"
+            format24h
+            v-model="campanha.start"
+            @blur="$v.campanha.start.$touch"
+            :error="$v.campanha.start.$error"
+            error-message="Não pode ser inferior ao dia atual"
+          />
+          <q-select
+            rounded
+            dense
+            outlined
+            emit-value
+            map-options
+            label="Enviar por"
+            color="primary"
+            v-model="campanha.sessionId"
+            :options="cSessions"
+            :input-debounce="700"
+            option-value="id"
+            option-label="name"
+            input-style="width: 280px; max-width: 280px;"
+            @blur="$v.campanha.sessionId.$touch"
+            :error="$v.campanha.sessionId.$error"
+            error-message="Obrigatório"
+            style="width: 250px"
+          />
+          <q-input
+            rounded
+            outlined
+            dense
+            style="width: 160px"
+            v-model="campanha.delay"
+            input-class="text-right"
+            suffix="segundos"
+            label="Delay"
+            error-message="Obrigatório"
+          />
+          <q-file
+            dense
+            rounded
+            v-if="!campanha.mediaUrl"
+            :loading="loading"
+            label="Mídia composição mensagem"
+            ref="PickerFileMessage"
+            v-model="arquivos"
+            class="col-grow"
+            bg-color="blue-grey-1"
+            input-style="max-height: 30vh"
+            outlined
+            clearable
+            autogrow
+            append
+            :max-files="1"
+            counter
+            :max-file-size="10485760"
+            :max-total-size="30485760"
+            accept=".jpg, .png, image/jpeg, .pdf, .doc, .docx, .mp4, .xls, .xlsx, .jpeg, .zip, .ppt, .pptx, image/*"
+            @rejected="onRejectedFiles"
+            style="width: 350px"
+          />
+          <q-input
+            v-if="campanha.mediaUrl"
+            readonly
+            rounded
+            label="Mídia composição mensagem"
+            :value="cArquivoName"
+            class=" col-grow "
+            bg-color="blue-grey-1"
+            input-style="max-height: 30vh"
+            outlined
+            autogrow
+            append
+            counter
+            style="width: 350px"
+          >
+            <template v-slot:append>
+              <q-btn
+                round
+                dense
+                flat
+                icon="close"
+                @click="campanha.mediaUrl = null; arquivos = []"
+              />
+            </template>
+          </q-input>
         </div>
       </q-card-section>
-      <q-card-section class="row">
-        <div class="col-xs-12 col-sm-4">
+      <q-card-section class="row q-pt-sm q-gutter-sm justify-center">
+        <div style="min-width: 400px;">
           <div class="row items-center q-pt-none">
             <label class="text-heading text-bold">1ª Mensagem</label>
             <div class="col-xs-3 col-sm-2 col-md-1">
-              <q-btn round
+              <q-btn
+                round
                 flat
-                class="q-ml-sm">
-                <q-icon size="2em"
-                  name="mdi-emoticon-happy-outline" />
+                class="q-ml-sm"
+              >
+                <q-icon
+                  size="2em"
+                  name="mdi-emoticon-happy-outline"
+                />
                 <q-tooltip>
                   Emoji
                 </q-tooltip>
-                <q-menu anchor="top right"
+                <q-menu
+                  anchor="top right"
                   self="bottom middle"
-                  :offset="[5, 40]">
-                  <VEmojiPicker style="width: 40vw"
+                  :offset="[5, 40]"
+                >
+                  <VEmojiPicker
+                    style="width: 40vw"
                     :showSearch="false"
                     :emojisByRow="20"
                     labelSearch="Localizar..."
                     lang="pt-BR"
-                    @select="(v) => onInsertSelectEmoji(v, 'message1')" />
+                    @select="(v) => onInsertSelectEmoji(v, 'message1')"
+                  />
                 </q-menu>
               </q-btn>
             </div>
             <div class="col-xs-8 col-sm-10 col-md-11 q-pl-sm">
-              <textarea ref="message1"
-                style="min-height: 9vh; max-height: 9vh;"
-                class="q-pa-sm bg-white full-width rounded-borders"
+              <textarea
+                ref="message1"
+                style="min-height: 12.5vh; max-height: 12.5vh;"
+                class="q-pa-sm bg-white full-width rounded-all"
                 :class="{
                   'bg-red-1': $v.campanha.message1.$error
                 }"
@@ -125,37 +172,47 @@
                 dense
                 outlined
                 @input="(v) => campanha.message1 = v.target.value"
-                :value="campanha.message1" />
+                :value="campanha.message1"
+              />
               <q-separator class="q-my-md" />
             </div>
           </div>
           <div class="row items-center q-pt-none">
             <label class="text-heading text-bold">2ª Mensagem</label>
             <div class="col-xs-3 col-sm-2 col-md-1">
-              <q-btn round
+              <q-btn
+                round
                 flat
-                class="q-ml-sm">
-                <q-icon size="2em"
-                  name="mdi-emoticon-happy-outline" />
+                class="q-ml-sm"
+              >
+                <q-icon
+                  size="2em"
+                  name="mdi-emoticon-happy-outline"
+                />
                 <q-tooltip>
                   Emoji
                 </q-tooltip>
-                <q-menu anchor="top right"
+                <q-menu
+                  anchor="top right"
                   self="bottom middle"
-                  :offset="[5, 40]">
-                  <VEmojiPicker style="width: 40vw"
+                  :offset="[5, 40]"
+                >
+                  <VEmojiPicker
+                    style="width: 40vw"
                     :showSearch="false"
                     :emojisByRow="20"
                     labelSearch="Localizar..."
                     lang="pt-BR"
-                    @select="(v) => onInsertSelectEmoji(v, 'message2')" />
+                    @select="(v) => onInsertSelectEmoji(v, 'message2')"
+                  />
                 </q-menu>
               </q-btn>
             </div>
             <div class="col-xs-8 col-sm-10 col-md-11 q-pl-sm">
-              <textarea ref="message2"
-                style="min-height: 9vh; max-height: 9vh;"
-                class="q-pa-sm bg-white full-width rounded-borders"
+              <textarea
+                ref="message2"
+                style="min-height: 12.5vh; max-height: 12.5vh;"
+                class="q-pa-sm bg-white full-width rounded-all"
                 placeholder="Digite a mensagem"
                 autogrow
                 dense
@@ -165,38 +222,47 @@
                 }"
                 @blur="$v.campanha.message2.$touch"
                 @input="(v) => campanha.message2 = v.target.value"
-                :value="campanha.message2" />
+                :value="campanha.message2"
+              />
               <q-separator class="q-my-md" />
             </div>
           </div>
-
           <div class="row items-center q-pt-none">
             <label class="text-heading text-bold">3ª Mensagem</label>
             <div class="col-xs-3 col-sm-2 col-md-1">
-              <q-btn round
+              <q-btn
+                round
                 flat
-                class="q-ml-sm">
-                <q-icon size="2em"
-                  name="mdi-emoticon-happy-outline" />
+                class="q-ml-sm"
+              >
+                <q-icon
+                  size="2em"
+                  name="mdi-emoticon-happy-outline"
+                />
                 <q-tooltip>
                   Emoji
                 </q-tooltip>
-                <q-menu anchor="top right"
+                <q-menu
+                  anchor="top right"
                   self="bottom middle"
-                  :offset="[5, 40]">
-                  <VEmojiPicker style="width: 40vw"
+                  :offset="[5, 40]"
+                >
+                  <VEmojiPicker
+                    style="width: 40vw"
                     :showSearch="false"
                     :emojisByRow="20"
                     labelSearch="Localizar..."
                     lang="pt-BR"
-                    @select="(v) => onInsertSelectEmoji(v, 'message3')" />
+                    @select="(v) => onInsertSelectEmoji(v, 'message3')"
+                  />
                 </q-menu>
               </q-btn>
             </div>
             <div class="col-xs-8 col-sm-10 col-md-11 q-pl-sm">
-              <textarea ref="message3"
-                style="min-height: 9vh; max-height: 9vh;"
-                class="q-pa-sm bg-white full-width rounded-borders"
+              <textarea
+                ref="message3"
+                style="min-height: 12.5vh; max-height: 12.5vh;"
+                class="q-pa-sm bg-white full-width rounded-all"
                 placeholder="Digite a mensagem"
                 autogrow
                 dense
@@ -206,43 +272,61 @@
                 }"
                 @blur="$v.campanha.message3.$touch"
                 @input="(v) => campanha.message3 = v.target.value"
-                :value="campanha.message3" />
+                :value="campanha.message3"
+              />
             </div>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-6 col-md-4">
-          <q-card bordered
+        <div style="width: 500px;">
+          <q-card
+            bordered
             flat
-            class="full-width">
+            class="full-width"
+          >
             <div class="text-body1 text-bold q-pa-sm full-width text-center bg-grey-3">
               Visualização
             </div>
             <q-card-section class="row justify-center">
-              <q-option-group class="q-mb-sm"
+              <q-option-group
+                class="q-mb-sm"
                 inline
+                dense
                 v-model="messagemPreview"
                 :options="optRadio"
-                color="primary" />
-              <cMolduraCelular class="row justify-center"
-                :key="cKey">
-                <MensagemChat :isLineDate="false"
+                color="primary"
+              />
+              <cMolduraCelular
+                class="row justify-center"
+                :key="cKey"
+              >
+                <MensagemChat
+                  :isLineDate="false"
                   size="8"
-                  class="full-width"
-                  :mensagens="cMessages" />
+                  class="full-width rounded-all"
+                  :mensagens="cMessages"
+                />
               </cMolduraCelular>
             </q-card-section>
           </q-card>
-
         </div>
-        <div class="col-xs-12 col-sm-6 col-md-4 self-end text-right">
-          <q-btn label="Cancelar"
+
+      </q-card-section>
+      <q-card-section>
+        <div class="row justify-center">
+          <q-btn
+            label="Cancelar"
             color="negative"
             v-close-popup
-            class="q-mr-md" />
-          <q-btn label="Salvar"
+            class="q-mr-md"
+            rounded
+          />
+          <q-btn
+            rounded
+            label="Salvar"
             color="positive"
             icon="save"
-            @click="handleCampanha" />
+            @click="handleCampanha"
+          />
         </div>
       </q-card-section>
     </q-card>
@@ -264,7 +348,7 @@ const isValidDate = (v) => {
 }
 
 const downloadImageCors = axios.create({
-  baseURL: process.env.URL_API,
+  baseURL: process.env.VUE_URL_API,
   timeout: 20000,
   headers: {
     responseType: 'blob'
@@ -289,9 +373,9 @@ export default {
   data () {
     return {
       optRadio: [
-        { label: 'Mensagem 1', value: 'message1' },
-        { label: 'Mensagem 2', value: 'message2' },
-        { label: 'Mensagem 3', value: 'message3' }
+        { label: 'Msg.1', value: 'message1' },
+        { label: 'Msg. 2', value: 'message2' },
+        { label: 'Msg. 3', value: 'message3' }
       ],
       messagemPreview: 'message1',
       loading: false,
@@ -304,7 +388,8 @@ export default {
         message1: null,
         message2: null,
         message3: null,
-        sessionId: null
+        sessionId: null,
+        delay: 20
       },
       messageTemplate: {
         mediaUrl: null,
@@ -318,6 +403,7 @@ export default {
         createdAt: '2021-02-20T20:09:04.736Z',
         updatedAt: '2021-02-20T23:26:24.311Z',
         quotedMsgId: null,
+        delay: 20,
         ticketId: 0,
         contactId: null,
         userId: null,
@@ -418,6 +504,7 @@ export default {
         message4: null,
         mediaUrl: null,
         userId: null,
+        delay: 20,
         sessionId: null
       }
     },

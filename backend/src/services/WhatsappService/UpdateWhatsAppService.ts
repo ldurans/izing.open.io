@@ -17,8 +17,8 @@ interface WhatsappData {
   wabaBSP?: string;
   tokenAPI?: string;
   fbPageId?: string;
-  greetingMessage?: string;
   farewellMessage?: string;
+  chatFlowId?: number;
 }
 
 interface Request {
@@ -55,8 +55,8 @@ const UpdateWhatsAppService = async ({
     wabaBSP,
     tokenAPI,
     fbPageId,
-    greetingMessage,
-    farewellMessage
+    farewellMessage,
+    chatFlowId
   } = whatsappData;
 
   try {
@@ -93,8 +93,8 @@ const UpdateWhatsAppService = async ({
       wabaBSP,
       tokenAPI,
       fbPageId,
-      greetingMessage,
-      farewellMessage
+      farewellMessage,
+      chatFlowId
     };
 
     if (instagramKey) {

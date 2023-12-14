@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "8f2a4a01-fa51-46c9-b663-20e3f513c6a7",
-    "name": "API WChats",
-    "description": "Teste API WCHATS",
+    "name": "API IZING",
+    "description": "Teste API IZING",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -36,7 +36,7 @@
             },
             {
               "key": "number",
-              "value": "5598991191708",
+              "value": "5598999...",
               "type": "text"
             },
             {
@@ -47,12 +47,12 @@
           ]
         },
         "url": {
-          "raw": "http://localhost:3030/v1/api/external/999ab3a2-9f1f-4ffb-969a-bfb72234ece1",
+          "raw": "http://localhost:3100/v1/api/external/999ab3a2-9f1f-4ffb-969a-bfb72234ece1",
           "protocol": "http",
           "host": [
             "localhost"
           ],
-          "port": "3030",
+          "port": "3100",
           "path": [
             "v1",
             "api",
@@ -80,7 +80,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"body\": \"A mensagem desejada\",\n    \"number\": \"DDI+DDD+CELUAR === 5598991199469\",\n    \"externalKey\": \"ID_UNICA_DO_SISTEMA_CLIENTE_PARA_EXECUTAR_UMA_ACAO_COM_WEBHOOK\"\n}",
+          "raw": "{\n    \"body\": \"A mensagem desejada\",\n    \"number\": \"DDI+DDD+CELUAR === 55989...\",\n    \"externalKey\": \"ID_UNICA_DO_SISTEMA_CLIENTE_PARA_EXECUTAR_UMA_ACAO_COM_WEBHOOK\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -88,12 +88,12 @@
           }
         },
         "url": {
-          "raw": "http://localhost:3030/v1/api/external/999ab3a2-9f1f-4ffb-969a-bfb72234ece1",
+          "raw": "http://localhost:3100/v1/api/external/999ab3a2-9f1f-4ffb-969a-bfb72234ece1",
           "protocol": "http",
           "host": [
             "localhost"
           ],
-          "port": "3030",
+          "port": "3100",
           "path": [
             "v1",
             "api",

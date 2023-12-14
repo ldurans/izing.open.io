@@ -37,6 +37,10 @@ const HandleMessage360 = async (
           resolve();
           return;
         }
+        if (ticket?.isFarewellMessage) {
+          resolve();
+          return;
+        }
         if (msgData.type !== "text") {
           await VerifyMediaMessage360(channel, msgData, ticket, contact);
         } else {

@@ -18,6 +18,7 @@ interface CampaignData {
   mediaUrl?: string;
   mediaType?: string;
   userId: string;
+  delay: string;
   sessionId: string;
 }
 

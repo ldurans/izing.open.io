@@ -1,31 +1,11 @@
-version: '3'
+version: "3"
 
 services:
-  izing-backend:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    env_file:
-      - ./.env
-    stdin_open: true
-    tty: true
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - ".:/usr/src/app"
-      # - "/var/izing-media:/usr/src/app/public/"
-    networks:
-      - izing_network
-      - izing_db_network
-    depends_on:
-      - izing-redis
-      - izing-db
-      - izing-rabbitmq
-
-  izing-redis:
-    container_name: "izing-redis"
-    image: 'redis:latest'
+  redis:
+    container_name: "redis"
+    image: "redis:alpine"
     restart: always
+    command: redis-server --appendonly yes --replica-read-only no
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -33,62 +13,63 @@ services:
     env_file:
       - ./.env
     volumes:
-      - '/var/izing/redis:/data'
-    networks:
-      - izing_db_network
+      - ".data/redis:/data"
 
   # database containers, one for each db
-  izing-fixPermissionsPostregres:
-    image: 'bitnami/postgresql:14'
+  pg_fixPermissions:
+    image: "bitnami/postgresql:14"
     user: root
     command: chown -R 1001:1001 /bitnami/postgresql
     volumes:
-      - "/var/izing/pg:/bitnami/postgresql/data"
+      - ".data/pg:/bitnami/postgresql/data"
 
-  izing-db:
-    image: 'bitnami/postgresql:14'
+  postgres:
+    image: "bitnami/postgresql:14"
     restart: always
-    container_name: "izing-db"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    container_name: "pg"
     env_file:
       - ./.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
-      - "/var/izing/pg:/bitnami/postgresql/data"
+      - ".data/pg:/bitnami/postgresql/data"
     ports:
       - "5432:5432"
     depends_on:
-      - izing-fixPermissionsPostregres
-    networks:
-      - izing_db_network
+      - pg_fixPermissions
 
-  izing-rabbitmq:
+  rabbitmq:
     image: rabbitmq:3-management
-    hostname: izing-rabbit
+    hostname: rabbitmq
+    container_name: "rabbitmq"
     restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     env_file:
       - ./.env
-    healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
-      interval: 5s
-      timeout: 10s
-      retries: 3
     volumes:
-      # - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
-      # - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      # - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
-      - /var/izing/rabbitmq/data/:/var/lib/rabbitmq/
-      - /var/izing/rabbitmq/logs/:/var/log/rabbitmq/log
+      - .data/rabbitmq/data/:/var/lib/rabbitmq/
+      - .data/rabbitmq/logs/:/var/log/rabbitmq/log
     ports:
       - 5672:5672
       - 15672:15672
-    networks:
-      - izing_db_network
 
-networks:
-  izing_network:
-    driver: bridge
-  izing_db_network:
-    driver: bridge
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    container_name: "api"
+    env_file:
+      - ./.env
+    stdin_open: true
+    tty: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - redis
+      - postgres
+      - rabbitmq
+    ports:
+      - "3100:3100"
+    volumes:
+      - .data/.wwebjs_auth:/app/.wwebjs_auth
+      - .data/medias:/app/public

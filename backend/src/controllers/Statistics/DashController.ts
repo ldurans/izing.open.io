@@ -19,11 +19,15 @@ export const getDashTicketsAndTimes = async (
 ): Promise<Response> => {
   const { tenantId } = req.user;
   const { startDate, endDate } = req.query as IndexQuery;
+  const userId = req.user.id;
+  const userProfile = req.user.profile;
 
   const data = await DashTicketsAndTimes({
     startDate,
     endDate,
-    tenantId
+    tenantId,
+    userId,
+    userProfile
   });
 
   return res.json(data);
@@ -35,11 +39,15 @@ export const getDashTicketsChannels = async (
 ): Promise<Response> => {
   const { tenantId } = req.user;
   const { startDate, endDate } = req.query as IndexQuery;
+  const userId = req.user.id;
+  const userProfile = req.user.profile;
 
   const data = await DashTicketsChannels({
     startDate,
     endDate,
-    tenantId
+    tenantId,
+    userId,
+    userProfile
   });
 
   return res.json(data);
@@ -51,11 +59,15 @@ export const getDashTicketsEvolutionChannels = async (
 ): Promise<Response> => {
   const { tenantId } = req.user;
   const { startDate, endDate } = req.query as IndexQuery;
+  const userId = req.user.id;
+  const userProfile = req.user.profile;
 
   const data = await DashTicketsEvolutionChannels({
     startDate,
     endDate,
-    tenantId
+    tenantId,
+    userId,
+    userProfile
   });
 
   return res.json(data);
@@ -67,11 +79,15 @@ export const getDashTicketsEvolutionByPeriod = async (
 ): Promise<Response> => {
   const { tenantId } = req.user;
   const { startDate, endDate } = req.query as IndexQuery;
+  const userId = req.user.id;
+  const userProfile = req.user.profile;
 
   const data = await DashTicketsEvolutionByPeriod({
     startDate,
     endDate,
-    tenantId
+    tenantId,
+    userId,
+    userProfile
   });
 
   return res.json(data);
@@ -83,11 +99,15 @@ export const getDashTicketsPerUsersDetail = async (
 ): Promise<Response> => {
   const { tenantId } = req.user;
   const { startDate, endDate } = req.query as IndexQuery;
+  const userId = req.user.id;
+  const userProfile = req.user.profile;
 
   const data = await DashTicketsPerUsersDetail({
     startDate,
     endDate,
-    tenantId
+    tenantId,
+    userId,
+    userProfile
   });
 
   return res.json(data);
@@ -99,11 +119,15 @@ export const getDashTicketsQueue = async (
 ): Promise<Response> => {
   const { tenantId } = req.user;
   const { startDate, endDate } = req.query as IndexQuery;
+  const userId = req.user.id;
+  const userProfile = req.user.profile;
 
   const data = await DashTicketsQueue({
     startDate,
     endDate,
-    tenantId
+    tenantId,
+    userId,
+    userProfile
   });
 
   return res.json(data);

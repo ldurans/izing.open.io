@@ -1,9 +1,0 @@
-#!/bin/bash
-
-set -o errexit
-set -o pipefail
-set -o nounset
-
-
-# bash -c "npx sequelize db:migrate && node dist/server.js"
-bash -c "node dist/server.js"

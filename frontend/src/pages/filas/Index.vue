@@ -18,6 +18,7 @@
         <q-btn
           color="primary"
           label="Adicionar"
+          rounded
           @click="filaEdicao = {}; modalFila = true"
         />
       </template>

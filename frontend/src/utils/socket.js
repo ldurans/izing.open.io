@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client'
 
 export const socketIO = () => {
-  return io(process.env.URL_API, {
+  return io(process.env.VUE_URL_API, {
     reconnection: true,
     autoConnect: true,
     transports: ['websocket'],

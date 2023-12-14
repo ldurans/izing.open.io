@@ -21,6 +21,7 @@
               class="q-ml-md"
               color="primary"
               label="Adicionar"
+              rounded
               @click="chatFlowSelecionado = {}; modalChatFlow = true"
             />
           </template>
@@ -73,6 +74,18 @@
                   Abrir Fluxo
                 </q-tooltip>
               </q-btn>
+              <q-btn
+                color="blue-3"
+                icon="delete"
+                flat
+                round
+                class="bg-padrao"
+                @click="deletarFluxo(props.row)"
+              >
+                <q-tooltip>
+                  Excluir
+                </q-tooltip>
+              </q-btn>
             </q-td>
           </template>
 
@@ -85,12 +98,41 @@
       @chatFlow:criada="novoFluxoCriado"
       @chatFlow:editado="fluxoEditado"
     />
+    <q-dialog
+      v-model="confirmDelete"
+      persistent
+    >
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">Você tem certeza que dessa escluir esse fluxo?</div>
+          <div>{{ chatFlowSelecionado.name }}</div>
+        </q-card-section>
+        <q-card-actions
+          align="right"
+          class="text-primary"
+        >
+          <q-btn
+            flat
+            label="Cancelar"
+            v-close-popup
+            class="q-mr-md"
+          />
+          <q-btn
+            flat
+            label="Excluir"
+            color="negative"
+            v-close-popup
+            @click="confirmDeleteFoo()"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script>
 import { ListarFilas } from 'src/service/filas'
-import { ListarChatFlow } from 'src/service/chatFlow'
+import { ListarChatFlow, DeletarChatFlow } from 'src/service/chatFlow'
 import { ListarUsuarios } from 'src/service/user'
 import ModalChatFlow from './ModalChatFlow.vue'
 
@@ -99,6 +141,7 @@ export default {
   components: { ModalChatFlow },
   data () {
     return {
+      confirmDelete: false,
       listachatFlow: [],
       modalChatFlow: false,
       chatFlowSelecionado: {},
@@ -161,6 +204,14 @@ export default {
         flow
       })
       this.$router.push({ name: 'chat-flow-builder' })
+    },
+    deletarFluxo (flow) {
+      this.chatFlowSelecionado = flow
+      this.confirmDelete = true
+    },
+    async confirmDeleteFoo (flow) {
+      await DeletarChatFlow(this.chatFlowSelecionado)
+      await this.listarChatFlow()
     }
   },
   async mounted () {

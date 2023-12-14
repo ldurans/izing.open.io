@@ -38,12 +38,14 @@
           label="Sair"
           class="q-px-md q-mr-sm"
           color="negative"
+          rounded
           v-close-popup
         />
         <q-btn
           label="Salvar"
           class="q-px-md"
           color="primary"
+          rounded
           @click="handleFilaUsuario"
         />
       </q-card-actions>

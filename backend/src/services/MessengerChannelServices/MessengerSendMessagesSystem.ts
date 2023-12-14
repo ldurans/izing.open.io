@@ -13,7 +13,6 @@ import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
 import { sleepRandomTime } from "../../utils/sleepRandomTime";
-import { generateMessage } from "../../utils/mustache";
 // import { sleepRandomTime } from "../../utils/sleepRandomTime";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
@@ -47,7 +46,15 @@ const MessengerSendMessagesSystem = async (
       {
         model: Ticket,
         as: "ticket",
-        where: { tenantId, channel: "messenger", whatsappId: messengerBot.id },
+        where: {
+          tenantId,
+          [Op.or]: {
+            status: { [Op.ne]: "closed" },
+            isFarewellMessage: true
+          },
+          channel: "messenger",
+          whatsappId: messengerBot.id
+        },
         include: ["contact"]
       },
       {
@@ -81,7 +88,6 @@ const MessengerSendMessagesSystem = async (
         const customPath = join(__dirname, "..", "..", "..", "public");
         const mediaPath = join(customPath, message.mediaName);
         const file: Buffer = await readFile(mediaPath);
-        console.log(mediaPath);
         if (message.mediaType === "audio" || message.mediaType === "ptt") {
           const splitName = message.mediaName.split(".");
           const newAudioPath = join(customPath, `${splitName[0]}.mp4`);
@@ -114,7 +120,7 @@ const MessengerSendMessagesSystem = async (
         }
       }
       if (["chat", "text"].includes(message.mediaType) && !message.mediaName) {
-        sendedMessage = await messengerBot.sendText(chatId, generateMessage(message.body, message.ticket));
+        sendedMessage = await messengerBot.sendText(chatId, message.body);
       }
 
       // enviar old_id para substituir no front a mensagem corretamente
@@ -152,8 +158,8 @@ const MessengerSendMessagesSystem = async (
 
       // delay para processamento da mensagem
       await sleepRandomTime({
-        minMilliseconds: Number(2000),
-        maxMilliseconds: Number(3000)
+        minMilliseconds: Number(500),
+        maxMilliseconds: Number(1500)
       });
 
       // logger.info("sendMessage", sendedMessage.id.id);

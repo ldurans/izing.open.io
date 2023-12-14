@@ -1,9 +1,9 @@
 {
-  "name": "izing.io",
-  "version": "1.9.0",
-  "description": "Bot Multiatendimento, multicanais e multiempresas.",
+  "name": "izing.open.io",
+  "version": "2.0.0",
+  "description": "izing.open.io - sistema de atendimentos multicanal",
   "main": "index.js",
-  "private": false,
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git@github.com:ldurans/izing.io.git"
@@ -12,8 +12,8 @@
     "release": "semantic-release --no-ci",
     "husk": "husky install"
   },
-  "author": "lumardyelson@gmail.com",
-  "license": "@izing.io",
+  "author": "Durans (lumardyelson@gmail.com)",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {},
   "devDependencies": {
     "@commitlint/cli": "^16.0.1",

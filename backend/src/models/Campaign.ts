@@ -89,6 +89,9 @@ class Campaign extends Model<Campaign> {
   @UpdatedAt
   updatedAt: Date;
 
+  @Column
+  delay: number;
+
   @AfterFind
   static async updatedInstances(instances: any): Promise<void | any> {
     if (!Array.isArray(instances)) return instances;

@@ -2,13 +2,11 @@
   <div class="q-pa-sm">
     <q-card class="q-my-md">
       <q-card-section class="row justify-between items-center">
-        <div class="col-xs-12 col-md-3 text-h4 text-bold">
-          DashBoard
-        </div>
-        <div class="col-xs-12 col-md-9 justify-end flex q-gutter-sm">
+        <div class="col-12 justify-center flex q-gutter-sm">
           <q-datetime-picker
             style="width: 200px"
             dense
+            rounded
             hide-bottom-space
             outlined
             stack-label
@@ -22,6 +20,7 @@
           <q-datetime-picker
             style="width: 200px"
             dense
+            rounded
             hide-bottom-space
             outlined
             stack-label
@@ -32,9 +31,10 @@
             format24h
             v-model="params.endDate"
           />
-          <!-- <q-select
+          <q-select
             style="width: 300px"
             dense
+            rounded
             outlined
             hide-bottom-space
             emit-value
@@ -50,20 +50,18 @@
             option-value="id"
             option-label="queue"
             input-style="width: 280px; max-width: 280px;"
-          /> -->
+          />
           <q-btn
-            class="bg-padrao"
-            flat
+            rounded
             color="primary"
             icon="refresh"
             label="Atualizar"
             @click="getDashData"
           />
-
         </div>
+
       </q-card-section>
     </q-card>
-
     <q-card class="q-my-md q-pa-sm">
       <q-card-section class="q-pa-md">
         <div class="row q-gutter-md justify-center">

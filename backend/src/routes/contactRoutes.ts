@@ -1,8 +1,12 @@
 import express from "express";
+import multer from "multer";
 import isAuth from "../middleware/isAuth";
 
 import * as ContactController from "../controllers/ContactController";
 import * as ImportPhoneContactsController from "../controllers/ImportPhoneContactsController";
+import uploadConfig from "../config/upload";
+
+const upload = multer(uploadConfig);
 
 const contactRoutes = express.Router();
 
@@ -10,6 +14,19 @@ contactRoutes.post(
   "/contacts/import",
   isAuth,
   ImportPhoneContactsController.store
+);
+
+contactRoutes.post(
+  "/contacts/upload",
+  isAuth,
+  upload.array("file"),
+  ContactController.upload
+);
+
+contactRoutes.post(
+  "/contacts/export",
+  isAuth,
+  ContactController.exportContacts
 );
 
 contactRoutes.get("/contacts", isAuth, ContactController.index);

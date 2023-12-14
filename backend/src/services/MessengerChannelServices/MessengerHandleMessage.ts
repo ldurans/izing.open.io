@@ -74,6 +74,10 @@ const MessengerHandleMessage = async (
           resolve();
           return;
         }
+        if (ticket?.isFarewellMessage) {
+          resolve();
+          return;
+        }
         if (msgData.type !== "text") {
           await MessengerVerifyMediaMessage(channel, msgData, ticket, contact);
           // await VerifyMediaMessage360(channel, msgData, ticket, contact);

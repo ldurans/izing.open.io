@@ -13,7 +13,8 @@ const DeleteWhatsApprService = async (
     throw new AppError("ERR_NO_WAPP_FOUND", 404);
   }
 
-  await whatsapp.update({ isDeleted: true });
+  // await whatsapp.update({ isDeleted: true });
+  await whatsapp.destroy();
 };
 
 export default DeleteWhatsApprService;

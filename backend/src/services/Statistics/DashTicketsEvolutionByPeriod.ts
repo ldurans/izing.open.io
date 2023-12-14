@@ -5,7 +5,29 @@ interface Request {
   startDate: string;
   endDate: string;
   tenantId: string | number;
+  userId: string | number;
+  userProfile: string;
 }
+
+const queryAdmin = `
+  select
+  dt_ref,
+  to_char(dt_ref, 'DD/MM/YYYY') as label,
+  qtd
+  --ROUND(100.0*(qtd/sum(qtd) over ()), 2) pertentual
+  from (
+  select
+  date_trunc('day', t."createdAt") dt_ref,
+  count(1) as qtd
+  from "Tickets" t
+  INNER JOIN "LogTickets" lt ON lt."ticketId" = t."id"
+  where t."tenantId" = :tenantId
+  and (lt."type" LIKE 'open' OR lt."type" LIKE 'receivedTransfer')
+  and date_trunc('day', t."createdAt") between :startDate and :endDate
+  group by date_trunc('day', t."createdAt")
+  ) a
+  order by 1
+`;
 
 const query = `
   select
@@ -18,7 +40,9 @@ const query = `
   date_trunc('day', t."createdAt") dt_ref,
   count(1) as qtd
   from "Tickets" t
-  where t."tenantId" = :tenantId
+  INNER JOIN "LogTickets" lt ON lt."ticketId" = t."id"
+  where t."tenantId" = :tenantId and lt."userId" = :userId
+  and (lt."type" LIKE 'open' OR lt."type" LIKE 'receivedTransfer')
   and date_trunc('day', t."createdAt") between :startDate and :endDate
   group by date_trunc('day', t."createdAt")
   ) a
@@ -28,17 +52,23 @@ const query = `
 const DashTicketsEvolutionByPeriod = async ({
   startDate,
   endDate,
-  tenantId
+  tenantId,
+  userId,
+  userProfile
 }: Request): Promise<any[]> => {
-  const data = await sequelize.query(query, {
-    replacements: {
-      tenantId,
-      startDate,
-      endDate
-    },
-    type: QueryTypes.SELECT
-    // logging: console.log
-  });
+  const data = await sequelize.query(
+    userProfile == "admin" ? queryAdmin : query,
+    {
+      replacements: {
+        tenantId,
+        startDate,
+        endDate,
+        userId
+      },
+      type: QueryTypes.SELECT
+      // logging: console.log
+    }
+  );
   return data;
 };
 

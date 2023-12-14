@@ -1,42 +1,34 @@
-FROM node:14 as build-deps
+FROM node:18-bookworm-slim as global-deps-stage
 
-RUN apt-get update && apt-get install -y wget
-
-ENV DOCKERIZE_VERSION v0.6.1
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-  && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-  && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+WORKDIR /app
 
 RUN apt-get update \
-  && apt-get install -y wget gnupg \
+  && apt-get install -y wget gnupg nano ffmpeg=7:5.1.4-0+deb12u1 \
   && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   && apt-get update \
   && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
   --no-install-recommends \
-  && rm -rf /var/lib/apt/lists/*
-
-ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.1/dumb-init_1.2.1_amd64 /usr/local/bin/dumb-init
-RUN chmod +x /usr/local/bin/dumb-init
+  && rm -rf /var/lib/apt/lists/* && npm install pm2@latest -g
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+ENV NODE_ENV=dev
+ENV CHROME_BIN=google-chrome-stable
 
-WORKDIR /usr/src/app
+FROM global-deps-stage as develop-stage
 COPY package*.json ./
 RUN npm install
 
+FROM develop-stage as build-stage
 COPY . .
 RUN npm run build
 
+FROM build-stage as development-stage
+ENV NODE_ENV=development
+ENTRYPOINT ["npm", "run", "dev:server"]
+
+FROM build-stage as production-stage
 ENV NODE_ENV=production
-ENV CHROME_BIN=google-chrome-stable
-
-COPY ./start_production /start_production
-RUN sed -i 's/\r$//g' /start_production
-RUN chmod +x /start_production
-
-
-ENTRYPOINT ["dumb-init", "--"]
-
-CMD npx sequelize db:migrate \
-  && node dist/server.js
+COPY docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
+ENTRYPOINT ["./docker-entrypoint.sh"]

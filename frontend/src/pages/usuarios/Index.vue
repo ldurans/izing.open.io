@@ -13,7 +13,8 @@
       <template v-slot:top-right>
         <q-input
           style="width: 300px"
-          filled
+          outlined
+          rounded
           dense
           class="col-grow"
           debounce="500"
@@ -26,7 +27,9 @@
             <q-icon name="search" />
           </template>
         </q-input>
+        <q-space />
         <q-btn
+          rounded
           class="q-ml-md col"
           :class="{
             'q-ml-none q-mt-md q-mr-md': $q.screen.width < 500

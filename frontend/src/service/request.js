@@ -8,7 +8,7 @@ import backendErrors from './erros'
 import { RefreshToken } from './login'
 
 const service = axios.create({
-  baseURL: process.env.URL_API,
+  baseURL: process.env.VUE_URL_API,
   timeout: 20000
 })
 
@@ -27,7 +27,7 @@ const handlerError = err => {
     type: 'negative',
     html: true,
     progress: true,
-    message: `Ops... <br>${JSON.stringify(error)}`
+    message: `${JSON.stringify(error)}`
   })
 }
 
@@ -110,9 +110,9 @@ service.interceptors.response.use(
       handlerError(error)
     } else if (error.message.indexOf('timeout') > -1) {
       Notify.create({
-        message: 'Esperamos muito tempo por uma resposta. Será que está tudo "Ok" com a internet?',
+        message: 'Processando informações de estatisticas',
         position: 'top',
-        type: 'negative',
+        type: 'positive',
         progress: true,
         html: true
       })

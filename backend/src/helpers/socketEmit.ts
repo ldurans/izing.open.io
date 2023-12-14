@@ -8,7 +8,8 @@ type Events =
   | "ticket:update"
   | "ticket:create"
   | "contact:update"
-  | "contact:delete";
+  | "contact:delete"
+  | "notification:new";
 
 interface ObjEvent {
   tenantId: number | string;

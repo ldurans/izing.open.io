@@ -6,11 +6,11 @@ export const ReceivedRequest360 = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const message = {
-      token: req.params.token,
-      messages: req.body
-    };
-    await req.app.rabbit.publishInQueue("waba360", JSON.stringify(message));
+    // const message = {
+    //   token: req.params.token,
+    //   messages: req.body
+    // };
+    // await req.app.rabbit.publishInQueue("waba360", JSON.stringify(message));
   } catch (error) {
     throw new AppError(error.message);
   }
@@ -33,11 +33,11 @@ export const ReceivedRequestMessenger = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const message = {
-      token: req.params.token,
-      messages: req.body
-    };
-    await req.app.rabbit.publishInQueue("messenger", JSON.stringify(message));
+    // const message = {
+    //   token: req.params.token,
+    //   messages: req.body
+    // };
+    // await req.app.rabbit.publishInQueue("messenger", JSON.stringify(message));
   } catch (error) {
     throw new AppError(error.message);
   }

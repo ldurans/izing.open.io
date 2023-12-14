@@ -15,8 +15,8 @@ import VerifyMessage from "./InstagramVerifyMessage";
 interface Session extends IgApiClientMQTT {
   id: number;
   accountLogin?:
-  | AccountRepositoryLoginResponseLogged_in_user
-  | AccountRepositoryCurrentUserResponseUser;
+    | AccountRepositoryLoginResponseLogged_in_user
+    | AccountRepositoryCurrentUserResponseUser;
 }
 
 const handleRealtimeReceive = async (
@@ -45,6 +45,10 @@ const handleRealtimeReceive = async (
     msg: { ...ctx.message, fromMe },
     channel: "instagram"
   });
+
+  if (ticket?.isFarewellMessage) {
+    return;
+  }
 
   if (ctx.message.item_type !== "text") {
     await VerifyMediaMessage(ctx, fromMe, ticket, contact);

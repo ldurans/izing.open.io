@@ -4,13 +4,14 @@ import { MessageMedia, Message as WbotMessage } from "whatsapp-web.js";
 import { logger } from "../utils/logger";
 import { getWbot } from "../libs/wbot";
 import CampaignContacts from "../models/CampaignContacts";
-import { generateMessage } from "../utils/mustache";
 
 export default {
   key: "SendMessageWhatsappCampaign",
   options: {
     delay: 15000,
     attempts: 10,
+    removeOnComplete: true,
+    // removeOnFail: true,
     backoff: {
       type: "fixed",
       delay: 60000 * 5 // 5 min
@@ -31,13 +32,9 @@ export default {
           caption: data.message
         });
       } else {
-        message = await wbot.sendMessage(
-          `${data.number}@c.us`,
-          generateMessage(data.message, data.ticket),
-          {
-            linkPreview: false
-          }
-        );
+        message = await wbot.sendMessage(`${data.number}@c.us`, data.message, {
+          linkPreview: false
+        });
       }
 
       await CampaignContacts.update(

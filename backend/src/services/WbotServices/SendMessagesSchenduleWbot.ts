@@ -5,6 +5,8 @@ import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import { logger } from "../../utils/logger";
 import Contact from "../../models/Contact";
+import SendMessage from "./SendMessage";
+import SendMessageSystemProxy from "../../helpers/SendMessageSystemProxy";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 const SendMessagesSchenduleWbot = async (): Promise<void> => {
@@ -21,18 +23,13 @@ const SendMessagesSchenduleWbot = async (): Promise<void> => {
     include: [
       {
         model: Contact,
-        as: "contact",
-        where: {
-          number: {
-            [Op.notIn]: ["", "null"]
-          }
-        }
+        as: "contact"
       },
       {
         model: Ticket,
         as: "ticket",
         where: {
-          channel: "whatsapp"
+          status: ["open", "pending"]
         },
         include: ["contact"]
       },
@@ -47,16 +44,35 @@ const SendMessagesSchenduleWbot = async (): Promise<void> => {
 
   for (const message of messages) {
     logger.info(
-      `Message Schendule Queue: ${message.id} | Tenant: ${message.tenantId} `
+      `Message Schendule SendMessage: ${message.id} | Tenant: ${message.tenantId} `
     );
-    global.rabbitWhatsapp.publishInQueue(
-      `whatsapp::${message.tenantId}`,
-      JSON.stringify({
-        ...message.toJSON(),
-        contact: message.ticket.contact.toJSON()
-      })
-    );
-    message.update({ status: "queue" });
+
+    if (message.ticket.channel !== "whatsapp") {
+      try {
+        const sent = await SendMessageSystemProxy({
+          ticket: message.ticket,
+          messageData: message.toJSON(),
+          media: null,
+          userId: message.userId
+        });
+
+        message.update({
+          messageId: sent.id?.id || sent.messageId,
+          status: "sended",
+          ack: 2,
+          userId: message.userId
+        });
+      } catch (error) {
+        logger.error(
+          "SendMessagesSchenduleWbot > SendMessageSystemProxy",
+          error
+        );
+      }
+    } else {
+      await SendMessage(message).catch(e => {
+        logger.error("SendMessagesSchenduleWbot > SendMessage", e);
+      });
+    }
   }
 };
 

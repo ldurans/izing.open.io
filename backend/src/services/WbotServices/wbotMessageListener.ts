@@ -2,6 +2,7 @@ import { Client } from "whatsapp-web.js";
 
 import HandleMessage from "./helpers/HandleMessage";
 import HandleMsgAck from "./helpers/HandleMsgAck";
+import VerifyCall from "./VerifyCall";
 
 interface Session extends Client {
   id: number;
@@ -23,6 +24,10 @@ const wbotMessageListener = (wbot: Session): void => {
 
   wbot.on("message_ack", async (msg, ack) => {
     HandleMsgAck(msg, ack);
+  });
+
+  wbot.on("call", async call => {
+    VerifyCall(call, wbot);
   });
 };
 

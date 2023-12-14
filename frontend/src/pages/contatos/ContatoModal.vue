@@ -19,7 +19,7 @@
       </q-card-section>
       <q-card-section class="q-pa-sm q-pl-md row q-col-gutter-md">
         <c-input
-          class="col-6"
+          class="col-12"
           outlined
           v-model="contato.name"
           :validator="$v.contato.name"
@@ -27,21 +27,23 @@
           label="Nome"
         />
         <c-input
-          class="col-6"
+          class="col-12"
           outlined
           v-model="contato.number"
           :validator="$v.contato.number"
           @blur="$v.contato.number.$touch"
-          mask="(##) ##### - ####"
-          placeholder="(DDD) 99999 - 9999"
+          mask="+#############"
+          placeholder="+DDI DDD 99999 9999"
           fill-mask
           unmasked-value
-          hint="Número do celular deverá conter 9 dígitos e ser precedido do DDD. "
+          hint="Informe número com DDI e DDD"
           label="Número"
         />
         <c-input
           class="col-12"
           outlined
+          dense
+          rounded
           :validator="$v.contato.email"
           @blur="$v.contato.email.$touch"
           v-model="contato.email"
@@ -60,12 +62,16 @@
             <q-input
               class="col-6"
               outlined
+              dense
+              rounded
               v-model="extraInfo.name"
               label="Descrição"
             />
             <q-input
               class="col-5"
               outlined
+              dense
+              rounded
               label="Informação"
               v-model="extraInfo.value"
             />
@@ -86,6 +92,7 @@
             class="full-width"
             color="primary"
             outline
+            rounded
             label="Adicionar Informação"
             @click="contato.extraInfo.push({name: null, value: null})"
           />
@@ -96,7 +103,7 @@
         class="q-mt-lg"
       >
         <q-btn
-          flat
+          rounded
           label="Sair"
           color="negative"
           v-close-popup
@@ -104,9 +111,9 @@
         />
         <q-btn
           class="q-ml-lg q-px-md"
-          flat
+          rounded
           label="Salvar"
-          color="primary"
+          color="positive"
           @click="saveContact"
         />
       </q-card-actions>
@@ -117,6 +124,7 @@
 <script>
 import { required, email, minLength, maxLength } from 'vuelidate/lib/validators'
 import { ObterContato, CriarContato, EditarContato } from 'src/service/contatos'
+import { ListarUsuarios } from 'src/service/user'
 export default {
   name: 'ContatoModal',
   props: {
@@ -135,8 +143,10 @@ export default {
         name: null,
         number: null,
         email: '',
-        extraInfo: []
-      }
+        extraInfo: [],
+        wallets: []
+      },
+      usuarios: []
     }
   },
   validations: {
@@ -148,12 +158,13 @@ export default {
   },
   methods: {
     async fetchContact () {
-      if (!this.contactId) return
       try {
+        await this.listarUsuarios()
+        if (!this.contactId) return
         const { data } = await ObterContato(this.contactId)
         this.contato = data
         if (data.number.substring(0, 2) === '55') {
-          this.contato.number = data.number.substring(2)
+          this.contato.number = data.number.substring(0)
         }
       } catch (error) {
         console.error(error)
@@ -183,7 +194,7 @@ export default {
 
       const contato = {
         ...this.contato,
-        number: '55' + this.contato.number // inserir o DDI do brasil para consultar o número
+        number: '' + this.contato.number // inserir o DDI do brasil para consultar o número
       }
 
       try {
@@ -221,6 +232,15 @@ export default {
       } catch (error) {
         console.error(error)
         this.$notificarErro('Ocorreu um erro ao criar o contato', error)
+      }
+    },
+    async listarUsuarios () {
+      try {
+        const { data } = await ListarUsuarios()
+        this.usuarios = data.users
+      } catch (error) {
+        console.error(error)
+        this.$notificarErro('Problema ao carregar usuários', error)
       }
     }
 

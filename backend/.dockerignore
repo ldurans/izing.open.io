@@ -7,3 +7,15 @@
 .readthedocs.yml
 venv
 node_modules
+.data
+.dockerignore
+npm-debug.log
+Dockerfile
+DockerfileARM
+.git
+.gitignore
+.data
+.vscode
+logs
+public
+.wwebjs_auth

@@ -39,7 +39,9 @@ const CreateOrUpdateContactService = async ({
   extraInfo = [],
   origem = "whatsapp"
 }: Request): Promise<Contact> => {
-  const number = isGroup ? rawNumber : rawNumber.replace(/[^0-9]/g, "");
+  const number = isGroup
+    ? String(rawNumber)
+    : String(rawNumber).replace(/[^0-9]/g, "");
 
   let contact: Contact | null = null;
 

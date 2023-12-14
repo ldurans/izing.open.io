@@ -11,7 +11,14 @@ const ShowContactService = async ({
   tenantId
 }: Request): Promise<Contact> => {
   const contact = await Contact.findByPk(id, {
-    include: ["extraInfo", "tags"]
+    include: [
+      "extraInfo",
+      "tags",
+      {
+        association: "wallets",
+        attributes: ["id", "name"]
+      }
+    ]
   });
 
   if (!contact || contact.tenantId !== tenantId) {

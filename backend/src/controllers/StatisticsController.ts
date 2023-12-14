@@ -17,6 +17,7 @@ type tContactReport = {
   endDate: string;
   tags?: number[] | string[];
   ddds?: number[] | string[];
+  searchParam?: string;
 };
 
 export const DashTicketsQueues = async (
@@ -45,17 +46,21 @@ export const ContactsReport = async (
   res: Response
 ): Promise<Response> => {
   const { tenantId } = req.user;
-  if (req.user.profile !== "admin") {
-    throw new AppError("ERR_NO_PERMISSION", 403);
-  }
-  const { startDate, endDate, tags, ddds } = req.query as tContactReport;
+  // if (req.user.profile !== "admin") {
+  //   throw new AppError("ERR_NO_PERMISSION", 403);
+  // }
+  const { startDate, endDate, tags, ddds, searchParam } =
+    req.query as tContactReport;
 
   const tickets = await ContactsReportService({
     startDate,
     endDate,
     tags,
     ddds,
-    tenantId
+    tenantId,
+    profile: req.user.profile,
+    userId: +req.user.id,
+    searchParam
   });
 
   return res.status(200).json(tickets);

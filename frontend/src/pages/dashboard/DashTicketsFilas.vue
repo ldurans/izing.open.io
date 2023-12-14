@@ -156,7 +156,7 @@ import { groupBy } from 'lodash'
 const profile = localStorage.getItem('profile')
 import { format, sub } from 'date-fns'
 export default {
-  name: 'DashBoard',
+  name: 'Painel De Controle',
   components: { ItemTicket },
   data () {
     return {

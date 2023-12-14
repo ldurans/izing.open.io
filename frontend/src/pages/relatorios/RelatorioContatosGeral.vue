@@ -5,13 +5,14 @@
         <div class="text-h6 q-px-sm"> Relatório de Contatos </div>
       </q-card-section>
       <q-card-section class="q-pt-none">
-        <fieldset>
+        <fieldset class="rounded-all">
           <legend class="q-px-sm">Filtros (Data criação do contato)</legend>
           <div class="row q-gutter-md items-end">
             <div class="col-grow">
               <label>Início</label>
               <DatePick
                 dense
+                rounded
                 v-model="pesquisa.startDate"
               />
             </div>
@@ -19,13 +20,15 @@
               <label>Final</label>
               <DatePick
                 dense
+                rounded
                 v-model="pesquisa.endDate"
               />
             </div>
             <div class="col-grow text-center">
               <q-btn
+                rounded
                 class="q-mr-sm"
-                color="info"
+                color="primary"
                 label="Gerar"
                 icon="refresh"
                 @click="gerarRelatorio"
@@ -33,6 +36,7 @@
               <q-btn
                 class="q-mr-sm"
                 color="black"
+                rounded
                 icon="print"
                 label="Imprimir"
                 @click="printReport('tRelatorioContatos')"
@@ -40,6 +44,7 @@
               <q-btn
                 color="warning"
                 label="Excel"
+                rounded
                 @click="exportTable('tRelatorioContatos')"
               />
             </div>

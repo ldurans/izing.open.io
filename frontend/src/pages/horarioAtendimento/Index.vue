@@ -25,7 +25,8 @@
         </q-icon>
 
         <q-btn
-          color="primary"
+          rounded
+          color="positive"
           label="Salvar"
           class="float-right"
           @click="salvarHorariosAtendimento"
@@ -61,6 +62,7 @@
                   <q-input
                     :disable="dia.type !== 'H'"
                     dense
+                    rounded
                     outlined
                     class="col-grow"
                     error-message="Obrigatório"
@@ -72,6 +74,7 @@
                   <q-input
                     :disable="dia.type !== 'H'"
                     dense
+                    rounded
                     outlined
                     class="col-grow"
                     error-message="Obrigatório"
@@ -84,6 +87,7 @@
                   <q-input
                     :disable="dia.type !== 'H'"
                     dense
+                    rounded
                     outlined
                     class="col-grow"
                     error-message="Obrigatório"
@@ -96,6 +100,7 @@
                     :disable="dia.type !== 'H'"
                     dense
                     outlined
+                    rounded
                     class="col-grow"
                     error-message="Obrigatório"
                     hide-underline
@@ -109,16 +114,13 @@
         </div>
       </q-card-section>
     </q-card>
-    <q-card
-      square
-      bordered
-      class="q-ma-sm full-full-height"
-    >
+    <q-card class="q-ma-sm q-mt-md full-full-height">
       <div class="text-h6 q-pa-sm q-ma-sm">
         Mensagem de Ausência
         <q-btn
           color="positive"
           label="Salvar"
+          rounded
           class="float-right"
           @click="salvarMensagemAusencia"
         />
@@ -158,7 +160,7 @@
             <textarea
               ref="inputEnvioMensagem"
               style="min-height: 9vh; max-height: 9vh;"
-              class="q-pa-sm bg-white full-width"
+              class="q-pa-sm bg-white rounded-all full-width"
               placeholder="Digite a mensagem"
               autogrow
               dense
@@ -166,7 +168,6 @@
               @input="(v) => messageBusinessHours = v.target.value"
               :value="messageBusinessHours"
             />
-            <div v-html="' Variáveis: <br>{{nomecontato}}  {{atendimentonumero}}  {{saudacao}}'" />
           </div>
         </div>
       </q-card-section>

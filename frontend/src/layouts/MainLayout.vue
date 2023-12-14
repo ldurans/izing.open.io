@@ -1,93 +1,154 @@
 <template>
   <q-layout view="hHh Lpr lFf">
 
-    <q-header class="bg-white text-grey-8 q-py-xs "
+    <q-header
+      class="bg-white text-grey-8 q-py-xs "
       height-hint="58"
-      bordered>
+      bordered
+    >
       <q-toolbar>
-        <q-btn flat
+        <q-btn
+          flat
           dense
           round
           @click="leftDrawerOpen = !leftDrawerOpen"
           aria-label="Menu"
-          icon="menu">
+          icon="menu"
+        >
           <q-tooltip>Menu</q-tooltip>
         </q-btn>
 
-        <q-btn flat
+        <q-btn
+          flat
           no-caps
           no-wrap
           dense
           class="q-ml-sm"
-          v-if="$q.screen.gt.xs">
-          <q-img src="/izing-logo_5_transparent.png"
+          v-if="$q.screen.gt.xs"
+        >
+          <q-img
+            src="/izing-logo_5_transparent.png"
             spinner-color="primary"
-            style="height: 50px; width: 120px" />
-          <!-- <q-toolbar-title
-            shrink
-            class="text-bold text-grey-7"
-          >
-            IZING
-          </q-toolbar-title> -->
+            style="height: 50px; width: 140px"
+          />
         </q-btn>
 
         <q-space />
 
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn round
+          <q-btn
+            round
             dense
             flat
             color="grey-8"
-            icon="notifications">
-            <q-badge color="red"
+            icon="notifications"
+          >
+            <q-badge
+              color="red"
               text-color="white"
-              floating>
-              2
+              floating
+              v-if="(parseInt(notifications.count) + parseInt(notifications_p.count)) > 0"
+            >
+              {{ parseInt(notifications.count) + parseInt(notifications_p.count) }}
             </q-badge>
-            <q-tooltip>Notificações (Em breve)</q-tooltip>
+            <q-menu>
+              <q-list style="min-width: 300px">
+
+                <q-item v-if="(parseInt(notifications.count) + parseInt(notifications_p.count)) == 0">
+                  <q-item-section style="cursor: pointer;">
+                    Nada de novo por aqui!
+                  </q-item-section>
+                </q-item>
+                <q-item v-if="parseInt(notifications_p.count) > 0">
+                  <q-item-section
+                    avatar
+                    @click="() => $router.push({ name: 'atendimento' })"
+                    style="cursor: pointer;"
+                  >
+                    <q-avatar
+                      style="width: 60px; height: 60px"
+                      color="blue"
+                      text-color="white"
+                    >
+                      {{ notifications_p.count }}
+                    </q-avatar>
+                  </q-item-section>
+                  <q-item-section
+                    @click="() => $router.push({ name: 'atendimento' })"
+                    style="cursor: pointer;"
+                  >
+                    Clientes pendentes na fila
+                  </q-item-section>
+                </q-item>
+                <q-item
+                  v-for="ticket in notifications.tickets"
+                  :key="ticket.id"
+                  style="border-bottom: 1px solid #ddd; margin: 5px;"
+                >
+                  <q-item-section
+                    avatar
+                    @click="abrirAtendimentoExistente(ticket.name, ticket)"
+                    style="cursor: pointer;"
+                  >
+                    <q-avatar style="width: 60px; height: 60px">
+                      <img :src="ticket.profilePicUrl">
+                    </q-avatar>
+                  </q-item-section>
+                  <q-item-section
+                    @click="abrirAtendimentoExistente(ticket.name, ticket)"
+                    style="cursor: pointer;"
+                  >
+                    <q-list>
+                      <q-item style="text-align:center; font-size: 17px; font-weight: bold; min-height: 0">{{ ticket.name
+                      }}</q-item>
+                      <q-item style="min-height: 0; padding-top: 0"><b>Mensagem: </b> {{ ticket.lastMessage }}</q-item>
+                    </q-list>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+            <q-tooltip>Notificações</q-tooltip>
           </q-btn>
-          <q-avatar :color="usuario.status === 'offline' ? 'negative' : 'positive'"
+          <q-avatar
+            :color="usuario.status === 'offline' ? 'negative' : 'positive'"
             text-color="white"
             size="25px"
             :icon="usuario.status === 'offline' ? 'mdi-account-off' : 'mdi-account-check'"
             rounded
-            class="q-ml-lg">
+            class="q-ml-lg"
+          >
             <q-tooltip>
               {{ usuario.status === 'offline' ? 'Usuário Offiline' : 'Usuário Online' }}
             </q-tooltip>
           </q-avatar>
-          <q-btn round
+          <q-btn
+            round
             flat
-            class="bg-padrao text-bold q-mx-sm q-ml-lg">
+            class="bg-padrao text-bold q-mx-sm q-ml-lg"
+          >
             <q-avatar size="26px">
               {{ $iniciaisString(username) }}
             </q-avatar>
             <q-menu>
               <q-list style="min-width: 100px">
                 <q-item-label header> Olá! <b> {{ username }} </b> </q-item-label>
-                <!-- <q-item
+
+                <cStatusUsuario
+                  @update:usuario="atualizarUsuario"
+                  :usuario="usuario"
+                />
+                <q-item
                   clickable
                   v-close-popup
+                  @click="abrirModalUsuario"
                 >
-                  <q-item-section>
-                    <q-toggle
-                      color="blue"
-                      :value="$q.dark.isActive"
-                      label="Modo escuro"
-                      @input="$setConfigsUsuario({isDark: !$q.dark.isActive})"
-                    />
-                  </q-item-section>
-                </q-item> -->
-                <cStatusUsuario @update:usuario="atualizarUsuario"
-                  :usuario="usuario" />
-                <q-item clickable
-                  v-close-popup
-                  @click="abrirModalUsuario">
                   <q-item-section>Perfil</q-item-section>
                 </q-item>
-                <q-item clickable
+                <q-item
+                  clickable
                   v-close-popup
-                  @click="efetuarLogout">
+                  @click="efetuarLogout"
+                >
                   <q-item-section>Sair</q-item-section>
                 </q-item>
                 <q-separator />
@@ -106,43 +167,47 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen"
+    <q-drawer
+      v-model="leftDrawerOpen"
       show-if-above
       bordered
       :mini="miniState"
       @mouseover="miniState = false"
       @mouseout="miniState = true"
       mini-to-overlay
-      content-class="bg-white text-grey-9">
+      content-class="bg-white text-grey-9"
+    >
       <q-scroll-area class="fit">
-        <q-list padding
-          :key="userProfile">
-          <!-- <q-item-label
-            header
-            class="text-grey-8"
-          >
-            Menu
-          </q-item-label> -->
-          <EssentialLink v-for="item in menuData"
+        <q-list
+          padding
+          :key="userProfile"
+        >
+          <EssentialLink
+            v-for="item in menuData"
             :key="item.title"
-            v-bind="item" />
+            v-bind="item"
+          />
           <div v-if="userProfile === 'admin'">
             <q-separator spaced />
             <div class="q-mb-lg"></div>
-            <!-- <q-item-label header>Administração</q-item-label> -->
             <template v-for="item in menuDataAdmin">
-              <EssentialLink v-if="exibirMenuBeta(item)"
+              <EssentialLink
+                v-if="exibirMenuBeta(item)"
                 :key="item.title"
-                v-bind="item" />
+                v-bind="item"
+              />
             </template>
           </div>
 
         </q-list>
       </q-scroll-area>
-      <div class="absolute-bottom text-center row justify-start"
+      <div
+        class="absolute-bottom text-center row justify-start"
         :class="{ 'bg-grey-3': $q.dark.isActive }"
-        style="height: 40px">
-        <q-toggle size="xl"
+        style="height: 40px"
+      >
+        <q-toggle
+          size="xl"
           keep-color
           dense
           class="text-bold q-ml-xs"
@@ -151,7 +216,8 @@
           :color="$q.dark.isActive ? 'grey-3' : 'black'"
           checked-icon="mdi-white-balance-sunny"
           unchecked-icon="mdi-weather-sunny"
-          @input="$setConfigsUsuario({ isDark: !$q.dark.isActive })">
+          @input="$setConfigsUsuario({ isDark: !$q.dark.isActive })"
+        >
           <q-tooltip content-class="text-body1 hide-scrollbar">
             {{ $q.dark.isActive ? 'Desativar' : 'Ativar' }} Modo Escuro (Dark Mode)
           </q-tooltip>
@@ -165,12 +231,16 @@
       </q-page>
     </q-page-container>
     <audio ref="audioNotification">
-      <source :src="alertSound"
-        type="audio/mp3">
+      <source
+        :src="alertSound"
+        type="audio/mp3"
+      >
     </audio>
-    <ModalUsuario :isProfile="true"
+    <ModalUsuario
+      :isProfile="true"
       :modalUsuario.sync="modalUsuario"
-      :usuarioEdicao.sync="usuario" />
+      :usuarioEdicao.sync="usuario"
+    />
   </q-layout>
 </template>
 
@@ -188,6 +258,7 @@ import { ListarConfiguracoes } from 'src/service/configuracoes'
 import { RealizarLogout } from 'src/service/login'
 import cStatusUsuario from '../components/cStatusUsuario.vue'
 import { socketIO } from 'src/utils/socket'
+import { ConsultarTickets } from 'src/service/tickets'
 
 const socket = socketIO()
 
@@ -274,20 +345,17 @@ const objMenuAdmin = [
     icon: 'mdi-cog',
     routeName: 'configuracoes'
   },
-  /// / criar rotina para liberar pelo backend
   {
     title: 'Campanha',
     caption: 'Campanhas de envio',
     icon: 'mdi-message-bookmark-outline',
-    routeName: 'campanhas',
-    isBeta: true
+    routeName: 'campanhas'
   },
   {
     title: 'API',
     caption: 'Integração sistemas externos',
     icon: 'mdi-call-split',
-    routeName: 'api-service',
-    isBeta: true
+    routeName: 'api-service'
   }
 ]
 
@@ -298,7 +366,7 @@ export default {
   data () {
     return {
       username,
-      domainExperimentalsMenus: ['@izing.io'],
+      domainExperimentalsMenus: ['@'],
       miniState: true,
       userProfile: 'user',
       modalUsuario: false,
@@ -306,11 +374,13 @@ export default {
       alertSound,
       leftDrawerOpen: false,
       menuData: objMenu,
-      menuDataAdmin: objMenuAdmin
+      menuDataAdmin: objMenuAdmin,
+      countTickets: 0,
+      ticketsList: []
     }
   },
   computed: {
-    ...mapGetters(['whatsapps']),
+    ...mapGetters(['notifications', 'notifications_p', 'whatsapps']),
     cProblemaConexao () {
       const idx = this.whatsapps.findIndex(w =>
         ['PAIRING', 'TIMEOUT', 'DISCONNECTED'].includes(w.status)
@@ -374,8 +444,6 @@ export default {
         window.focus()
         this.$store.dispatch('AbrirChatMensagens', ticket)
         this.$router.push({ name: 'atendimento' })
-
-        // history.push(`/tickets/${ticket.id}`);
       }
       this.$nextTick(() => {
         // utilizar refs do layout
@@ -418,12 +486,88 @@ export default {
       if (this.usuario.status === 'online') {
         socket.emit(`${this.usuario.tenantId}:setUserActive`)
       }
+    },
+    async consultarTickets () {
+      const params = {
+        searchParam: '',
+        pageNumber: 1,
+        status: ['open'],
+        showAll: false,
+        count: null,
+        queuesIds: [],
+        withUnreadMessages: true,
+        isNotAssignedUser: false,
+        includeNotQueueDefined: true
+      }
+      try {
+        const { data } = await ConsultarTickets(params)
+        this.countTickets = data.count // count total de tickets no status
+        this.$store.commit('UPDATE_NOTIFICATIONS', data)
+      } catch (err) {
+        this.$notificarErro('Algum problema', err)
+        console.error(err)
+      }
+      const params2 = {
+        searchParam: '',
+        pageNumber: 1,
+        status: ['pending'],
+        showAll: false,
+        count: null,
+        queuesIds: [],
+        withUnreadMessages: false,
+        isNotAssignedUser: false,
+        includeNotQueueDefined: true
+      }
+      try {
+        const { data } = await ConsultarTickets(params2)
+        this.countTickets = data.count // count total de tickets no status
+        this.$store.commit('UPDATE_NOTIFICATIONS_P', data)
+      } catch (err) {
+        this.$notificarErro('Algum problema', err)
+        console.error(err)
+      }
+    },
+    abrirChatContato (ticket) {
+      // caso esteja em um tamanho mobile, fechar a drawer dos contatos
+      if (this.$q.screen.lt.md && ticket.status !== 'pending') {
+        this.$root.$emit('infor-cabecalo-chat:acao-menu')
+      }
+      if (!(ticket.status !== 'pending' && (ticket.id !== this.$store.getters.ticketFocado.id || this.$route.name !== 'chat'))) return
+      this.$store.commit('SET_HAS_MORE', true)
+      this.$store.dispatch('AbrirChatMensagens', ticket)
+    },
+    abrirAtendimentoExistente (contato, ticket) {
+      this.$q.dialog({
+        title: 'Atenção!!',
+        message: `${contato} possui um atendimento em curso (Atendimento: ${ticket.id}). Deseja abrir o atendimento?`,
+        cancel: {
+          label: 'Não',
+          color: 'primary',
+          push: true
+        },
+        ok: {
+          label: 'Sim',
+          color: 'negative',
+          push: true
+        },
+        persistent: true
+      }).onOk(async () => {
+        try {
+          this.abrirChatContato(ticket)
+        } catch (error) {
+          this.$notificarErro(
+            'Não foi possível atualizar o token',
+            error
+          )
+        }
+      })
     }
   },
   async mounted () {
     this.atualizarUsuario()
     await this.listarWhatsapps()
     await this.listarConfiguracoes()
+    await this.consultarTickets()
     if (!('Notification' in window)) {
     } else {
       Notification.requestPermission()
@@ -437,3 +581,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.q-img__image {
+  background-size: contain;
+}
+</style>

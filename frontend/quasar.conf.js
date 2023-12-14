@@ -46,8 +46,8 @@ module.exports = function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: {
-        URL_API: process.env.URL_API,
-        FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID
+        VUE_URL_API: process.env.VUE_URL_API,
+        VUE_FACEBOOK_APP_ID: process.env.VUE_FACEBOOK_APP_ID
       },
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 

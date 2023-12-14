@@ -11,6 +11,7 @@
         <q-file
           style="display: none"
           :loading="loading"
+          rounded
           label="Mídia composição mensagem"
           ref="PickerFileMessage"
           v-model="file"
@@ -23,9 +24,9 @@
           append
           :max-files="1"
           counter
-          :max-file-size="5242880"
-          :max-total-size="5242880"
-          accept=".jpg, .png, image/jpeg, .jpeg, image/*, .pdf, .doc, .docx, .xls, .xlsx, .zip, .ppt, .pptx, .mp4, .mp3"
+          :max-file-size="10242880"
+          :max-total-size="10242880"
+          accept=".txt, .jpg, .png, image/jpeg, .jpeg, image/*, .pdf, .doc, .docx, .xls, .xlsx, .zip, .ppt, .pptx, .mp4, .mp3"
           @rejected="onRejectedFiles"
           @input="getMediaUrl"
         />
@@ -66,9 +67,10 @@
                   borderTopLeftRadius: 8px;
                   borderTopRightRadius: 8px;
                   borderBottomLeftRadius: 8px;
-                  borderBottomRightRadius: 8px;
-                "
-          />
+                  borderBottomRightRadius: 8px;"
+            type="video/mp4"
+          >
+          </video>
           <audio
             v-if="cMediaUrl && $attrs.element.data.type.indexOf('audio') != -1"
             class="q-mt-md full-width"
@@ -133,21 +135,6 @@
             </q-tooltip>
           </q-btn>
         </div>
-        <!-- <q-input
-          v-if="cMediaUrl && $attrs.element.data.type.indexOf('audio') == -1"
-          dense
-          outlined
-          label="Subtítulo"
-          v-model="$attrs.element.data.caption"
-          color="black"
-          class="z-max q-pa-none q-mt-sm"
-        >
-
-          <template
-            slot="after"
-          >
-          </template>
-        </q-input> -->
 
       </q-card-section>
     </q-card>

@@ -5,13 +5,13 @@
         <div class="text-h6 q-px-sm"> Relatório de Contatos por Etiquetas </div>
       </q-card-section>
       <q-card-section class="q-pt-none">
-        <fieldset>
+        <fieldset class="rounded-all">
           <legend class="q-px-sm">Filtros</legend>
           <div class="row q-gutter-md items-end">
             <div class="col-xs-12 col-sm-7 grow text-center">
               <q-select
-                square
                 outlined
+                rounded
                 v-model="pesquisa.tags"
                 multiple
                 :options="etiquetas"
@@ -41,7 +41,7 @@
                 <template v-slot:selected-item="{opt}">
                   <q-chip
                     dense
-                    square
+                    rounded
                     color="white"
                     text-color="primary"
                     class="q-ma-xs text-body1"
@@ -60,7 +60,8 @@
             <div class="col-grow text-center">
               <q-btn
                 class="q-mr-sm"
-                color="info"
+                color="primary"
+                rounded
                 label="Gerar"
                 icon="refresh"
                 @click="gerarRelatorio"
@@ -69,12 +70,14 @@
                 class="q-mr-sm"
                 color="black"
                 icon="print"
+                rounded
                 label="Imprimir"
                 @click="printReport('tRelatorioContatosEtiquetas')"
               />
               <q-btn
                 color="warning"
                 label="Excel"
+                rounded
                 @click="exportTable('tRelatorioContatosEtiquetas')"
               />
             </div>

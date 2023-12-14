@@ -4,6 +4,7 @@ import Setting from "../models/Setting";
 import ChatFlow from "../models/ChatFlow";
 import CreateLogTicketService from "../services/TicketServices/CreateLogTicketService";
 import IsContactTest from "../services/ChatFlowServices/IsContactTest";
+import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService";
 
 const CheckChatBotFlowWelcome = async (instance: Ticket): Promise<void> => {
   if (instance.userId || instance.isGroup) return;
@@ -15,12 +16,21 @@ const CheckChatBotFlowWelcome = async (instance: Ticket): Promise<void> => {
     }
   });
 
-  if (!setting || !setting.value) return;
+  const channel = await ShowWhatsAppService({
+    id: instance.whatsappId,
+    tenantId: instance.tenantId
+  });
+
+  const chatFlowId = channel?.chatFlowId || setting?.value;
+
+  if (!chatFlowId) return;
 
   const chatFlow = await ChatFlow.findOne({
     where: {
-      id: +setting?.value,
-      tenantId: instance.tenantId
+      id: +chatFlowId,
+      tenantId: instance.tenantId,
+      isActive: true,
+      isDeleted: false
     }
   });
 

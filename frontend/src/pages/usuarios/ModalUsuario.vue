@@ -11,7 +11,7 @@
       </q-card-section>
       <q-card-section class="q-col-gutter-sm">
         <div class="row q-col-gutter-sm">
-          <div class="col-5">
+          <div class="col-12">
             <c-input
               outlined
               v-model.trim="usuario.name"
@@ -20,7 +20,7 @@
               label="Nome"
             />
           </div>
-          <div class="col-7">
+          <div class="col-12">
             <c-input
               outlined
               :validator="$v.usuario.email"
@@ -31,7 +31,7 @@
           </div>
         </div>
         <div class="row q-col-gutter-sm">
-          <div class="col-5">
+          <div class="col-12">
             <c-input
               outlined
               v-model="usuario.password"
@@ -49,10 +49,12 @@
               </template>
             </c-input>
           </div>
-          <div class="col-7">
+          <div class="col-12">
             <q-select
               :disable="isProfile"
               outlined
+              rounded
+              dense
               v-model="usuario.profile"
               :options="optionsProfile"
               option-value="value"
@@ -66,12 +68,14 @@
       </q-card-section>
       <q-card-actions align="right">
         <q-btn
+          rounded
           label="Sair"
           class="q-px-md q-mr-sm"
           color="negative"
           v-close-popup
         />
         <q-btn
+          rounded
           label="Salvar"
           class="q-px-md"
           color="primary"
@@ -86,6 +90,7 @@
 <script>
 import { required, email, minLength, maxLength } from 'vuelidate/lib/validators'
 import { CriarUsuario, UpdateUsuarios } from 'src/service/user'
+import { Notify } from 'quasar'
 export default {
   name: 'ModalUsuario',
   props: {
@@ -219,7 +224,16 @@ export default {
         }
         this.$emit('update:modalUsuario', false)
       } catch (error) {
-        console.error(error)
+        console.error(error, error.data.error === 'ERR_USER_LIMIT_USER_CREATION')
+        if (error.data.error === 'ERR_USER_LIMIT_USER_CREATION') {
+          Notify.create({
+            type: 'negative',
+            message: 'Limite de usuario atingido.',
+            caption: 'ERR_USER_LIMIT_USER_CREATION',
+            position: 'top',
+            progress: true
+          })
+        }
       }
     }
   }

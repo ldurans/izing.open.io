@@ -10,7 +10,7 @@ export default {
     removeOnFail: false,
     jobId: "SendMessageSchenduled",
     repeat: {
-      every: 10 * 60 * 1000
+      every: 1 * 60 * 1000
     }
   },
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

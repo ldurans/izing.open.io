@@ -1,104 +1,120 @@
 <template>
   <div class="q-px-md q-py-sm">
     <div class="row justify-between col q-mb-sm">
-      <q-btn class="bg-padrao"
-        flat
+      <q-btn
+        rounded
         color="primary"
         icon="mdi-plus"
         label="Nova Etapa"
-        @click="addNode" />
-      <q-btn class="bg-padrao"
-        flat
+        @click="addNode"
+      />
+      <q-btn
+        rounded
         color="positive"
         icon="mdi-content-save-outline"
         label="Salvar"
-        @click="$emit('saveFlow')" />
+        @click="$emit('saveFlow')"
+      />
     </div>
-    <q-card bordered
+    <q-card
+      bordered
       flat
-      class="fit">
+      class="fit"
+    >
       <div class="ef-node-form-header">
         Configuração Fluxo
       </div>
       <div class="q-pa-sm">
-        <q-input outlined
-          filled
+        <q-input
+          outlined
+          rounded
           label="Nome"
           v-model="node.name"
           class="q-my-sm"
-          :disable="['start', 'configurations'].includes(node.type)" />
+          :disable="['start', 'configurations'].includes(node.type)"
+        />
         <q-separator inset="" />
       </div>
-      <q-card-section class="q-pa-none"
-        v-if="node.type === 'node'">
+      <q-card-section
+        class="q-pa-sm"
+        v-if="node.type === 'node'"
+      >
         <div>
-          <q-tabs v-model="tabNodeForm"
+          <q-tabs
+            v-model="tabNodeForm"
             narrow-indicator
-            class="text-grey-8 bg-">
-            <q-tab name="interacoes"
-              label="Interações" />
-            <q-tab name="condicoes"
-              label="Condições" />
-            <!-- <q-tab
-              name="acoes"
-              label="Ações"
-            /> -->
+            class="text-grey-8 bg-grey-3 rounded-all"
+          >
+            <q-tab
+              name="interacoes"
+              label="Interações"
+            />
+            <q-tab
+              name="condicoes"
+              label="Condições"
+            />
+
           </q-tabs>
-          <q-tab-panels v-model="tabNodeForm"
+          <q-tab-panels
+            v-model="tabNodeForm"
             animated
             keep-alive
             infinite
-            class="q-pa-none rounded-borders">
-            <q-tab-panel class="q-pa-none"
-              name="interacoes">
+            class="q-pa-none rounded-borders"
+          >
+            <q-tab-panel
+              class="q-pa-none"
+              name="interacoes"
+            >
               <div class="text-center ">
                 <div class="row q-mt-sm col justify-center">
-                  <q-btn flat
+                  <q-btn
+                    flat
                     icon="mdi-message-text-outline"
                     class="bg-padrao btn-rounded q-mx-xs"
                     :color="$q.dark.isActive ? 'white' : ''"
-                    @click="addMessage">
+                    @click="addMessage"
+                  >
                     <q-tooltip content-class="text-bold">
                       Enviar Mensagem
                     </q-tooltip>
                   </q-btn>
-                  <!-- <q-btn
-                    flat
-                    icon="mdi-message-settings-outline"
-                    class="bg-padrao btn-rounded q-mx-xs"
-                    :color="$q.dark.isActive ? 'white' : ''"
-                    @click="addMessageOptions"
-                  >
-                    <q-tooltip content-class="text-bold">
-                      Enviar Mensagem (Botões | Listas)
-                    </q-tooltip>
-                  </q-btn> -->
-                  <q-btn @click="addMediaField"
+
+                  <q-btn
+                    @click="addMediaField"
                     flat
                     icon="mdi-file-document-outline"
                     class="bg-padrao btn-rounded q-mx-xs"
-                    :color="$q.dark.isActive ? 'white' : ''">
+                    :color="$q.dark.isActive ? 'white' : ''"
+                  >
                     <q-tooltip content-class="text-bold">
                       Enviar documentos, vídeo, aúdio e outros arquivos.
                     </q-tooltip>
                   </q-btn>
                 </div>
-                <div class="row bg-grey-3 q-pa-sm q-my-md justify-center scroll"
-                  style="height: calc(100vh - 495px)">
+                <div
+                  class="row bg-grey-3 q-pa-sm q-my-md justify-center scroll"
+                  style="height: calc(100vh - 495px)"
+                >
                   <div class="col-xs-12">
-                    <div v-for="(element, idx) in node.interactions"
+                    <div
+                      v-for="(element, idx) in node.interactions"
                       :key="element.id"
-                      v-bind="element">
+                      v-bind="element"
+                    >
                       <div class="q-my-md">
-                        <div class="bg-white full-width row col justify-between ">
-                          <q-btn round
+                        <div class="bg-white rounded-all full-width row col justify-between ">
+                          <q-btn
+                            round
                             dense
                             disable
                             :color="$q.dark.isActive ? 'grey-3' : 'black'"
                             :label="idx + 1"
-                            style="z-index: 999; " />
+                            style="z-index: 999; "
+                          />
                           <q-space />
-                          <q-btn round
+                          <q-btn
+                            round
                             dense
                             icon="mdi-arrow-up-bold"
                             flat
@@ -106,34 +122,41 @@
                             class="bg-padrao q-mr-md"
                             style="z-index: 999"
                             :disable="idx === 0"
-                            @click="changePosition(node.interactions, idx, idx - 1)">
+                            @click="changePosition(node.interactions, idx, idx - 1)"
+                          >
                             <q-tooltip>
                               Reordenar
                             </q-tooltip>
                           </q-btn>
-                          <q-btn round
+                          <q-btn
+                            round
                             dense
                             icon="mdi-arrow-down-bold"
                             flat
                             :color="$q.dark.isActive ? 'grey-3' : 'black'"
                             class="bg-padrao q-mr-md"
                             style="z-index: 999"
-                            @click="changePosition(node.interactions, idx, idx + 1)">
+                            @click="changePosition(node.interactions, idx, idx + 1)"
+                          >
                             <q-tooltip>
                               Reordenar
                             </q-tooltip>
                           </q-btn>
-                          <q-btn round
+                          <q-btn
+                            round
                             dense
                             icon="mdi-close"
                             flat
                             color="negative"
                             class="bg-padrao"
                             style="z-index: 999;"
-                            @click="removeItem(element, idx + 1)" />
+                            @click="removeItem(element, idx + 1)"
+                          />
                         </div>
-                        <component :is="element.type"
-                          :element="element">
+                        <component
+                          :is="element.type"
+                          :element="element"
+                        >
                         </component>
                       </div>
                     </div>
@@ -141,36 +164,49 @@
                 </div>
               </div>
             </q-tab-panel>
-            <q-tab-panel class="q-pa-none"
-              name="condicoes">
+            <q-tab-panel
+              class="q-pa-none"
+              name="condicoes"
+            >
               <div v-show="type === 'node'">
                 <div class="row q-mt-md col justify-end">
-                  <q-btn flat
+                  <q-btn
+                    flat
                     icon="mdi-vector-polyline-plus"
                     class="bg-padrao btn-rounded q-mx-xs"
                     :color="$q.dark.isActive ? 'white' : ''"
-                    @click="addCondiction">
+                    @click="addCondiction"
+                    label="Nova"
+                    rounded
+                  >
                     <q-tooltip content-class="text-bold">
                       Nova condição
                     </q-tooltip>
                   </q-btn>
                 </div>
-                <div style="height: calc(100vh - 490px)"
-                  class="row bg-grey-3 q-pa-sm scroll q-mt-md col justify-start">
+                <div
+                  style="height: calc(100vh - 490px)"
+                  class="row bg-grey-3 q-pa-sm scroll q-mt-md col justify-start"
+                >
                   <template v-for="(condition, idx) in node.conditions">
-                    <q-card bordered
+                    <q-card
+                      bordered
                       flat
                       :key="condition.id"
                       class="full-width q-my-sm"
-                      style="min-height: 250px;">
+                      style="min-height: 250px;"
+                    >
                       <div class="full-width row col justify-between text-left q-pa-xs">
-                        <q-btn round
+                        <q-btn
+                          round
                           dense
                           disable
                           :color="$q.dark.isActive ? 'grey-3' : 'black'"
-                          :label="idx + 1" />
+                          :label="idx + 1"
+                        />
                         <q-space />
-                        <q-btn round
+                        <q-btn
+                          round
                           dense
                           icon="mdi-arrow-up-bold"
                           flat
@@ -178,42 +214,52 @@
                           class="bg-padrao q-mr-md"
                           style="z-index: 999"
                           :disable="idx === 0"
-                          @click="changePosition(node.conditions, idx, idx - 1)">
+                          @click="changePosition(node.conditions, idx, idx - 1)"
+                        >
                           <q-tooltip>
                             Reordenar: Aumentar prioridade da regra de condição
                           </q-tooltip>
                         </q-btn>
-                        <q-btn round
+                        <q-btn
+                          round
                           dense
                           icon="mdi-arrow-down-bold"
                           flat
                           :color="$q.dark.isActive ? 'grey-3' : 'black'"
                           class="bg-padrao q-mr-md"
                           style="z-index: 999"
-                          @click="changePosition(node.conditions, idx, idx + 1)">
+                          @click="changePosition(node.conditions, idx, idx + 1)"
+                        >
                           <q-tooltip>
                             Reordenar: Diminuir prioridade da regra de condição
                           </q-tooltip>
                         </q-btn>
-                        <q-btn round
+                        <q-btn
+                          round
                           dense
                           icon="mdi-close"
                           flat
                           color="negative"
                           class="bg-padrao"
                           style="z-index: 999"
-                          @click="removeConditionItem(condition, idx)" />
+                          @click="removeConditionItem(condition, idx)"
+                        />
                       </div>
                       <q-card-section class="q-pa-sm q-gutter-sm">
-                        <q-select outlined
+                        <q-select
+                          outlined
                           dense
+                          rounded
                           v-model="condition.type"
                           :options="optionsSe"
                           label="Se"
                           map-options
-                          emit-value />
-                        <q-select v-if="condition.type === 'R'"
+                          emit-value
+                        />
+                        <q-select
+                          v-if="condition.type === 'R'"
                           dense
+                          rounded
                           label="Respostas"
                           outlined
                           v-model="condition.condition"
@@ -223,21 +269,28 @@
                           hide-dropdown-icon
                           input-debounce="0"
                           new-value-mode="add-unique"
-                          hint="Digite o valor e aperte enter" />
+                          hint="Digite o valor e aperte enter"
+                        />
                       </q-card-section>
-                      <q-separator inset
-                        spaced />
+                      <q-separator
+                        inset
+                        spaced
+                      />
                       <q-card-section class="q-pa-sm">
                         <div class="text-bold q-px-sm"> Rotear para: </div>
-                        <q-option-group class="text-center"
+                        <q-option-group
+                          class="text-center"
                           inline
                           v-model="condition.action"
                           :options="optionsAcao"
-                          color="primary" />
+                          color="primary"
+                        />
                         <div class="row q-mt-sm">
                           <div class="col">
-                            <q-select v-if="condition.action === 0"
+                            <q-select
+                              v-if="condition.action === 0"
                               dense
+                              rounded
                               outlined
                               class="full-width"
                               :value="condition.nextStepId || ''"
@@ -248,10 +301,13 @@
                               map-options
                               emit-value
                               clearable
-                              @input="nextStepId => addLineStep(nextStepId, idx)" />
-                            <q-select v-if="condition.action === 1"
+                              @input="nextStepId => addLineStep(nextStepId, idx)"
+                            />
+                            <q-select
+                              v-if="condition.action === 1"
                               dense
                               outlined
+                              rounded
                               class="full-width"
                               v-model="condition.queueId"
                               :options="filas"
@@ -262,10 +318,13 @@
                               map-options
                               emit-value
                               clearable
-                              @input="condition.nextStepId = null; condition.userIdDestination = null" />
-                            <q-select v-if="condition.action === 2"
+                              @input="condition.nextStepId = null; condition.userIdDestination = null"
+                            />
+                            <q-select
+                              v-if="condition.action === 2"
                               dense
                               outlined
+                              rounded
                               class="full-width"
                               v-model="condition.userIdDestination"
                               :options="usuarios"
@@ -275,7 +334,8 @@
                               map-options
                               emit-value
                               clearable
-                              @input="condition.nextStepId = null; condition.queueId = null" />
+                              @input="condition.nextStepId = null; condition.queueId = null"
+                            />
                           </div>
                         </div>
                       </q-card-section>
@@ -287,27 +347,38 @@
             </q-tab-panel>
           </q-tab-panels>
 
-          <div class="q-pa-sm q-gutter-md"
-            v-show="type === 'line'">
-            <q-input outlined
+          <div
+            class="q-pa-sm q-gutter-md"
+            v-show="type === 'line'"
+          >
+            <q-input
+              outlined
               label="Chave"
-              v-model="line.label" />
-            <q-btn icon="mdi-close"
-              label="Redefinir" />
-            <q-btn type="primary"
+              v-model="line.label"
+            />
+            <q-btn
+              icon="mdi-close"
+              label="Redefinir"
+            />
+            <q-btn
+              type="primary"
               icon="mdi-content-save"
               @click="saveLine"
-              label="Salvar" />
+              label="Salvar"
+            />
           </div>
-          <!--            <div class="el-node-form-tag"></div>-->
         </div>
       </q-card-section>
 
-      <q-card-section style="height: calc(100vh - 380px)"
+      <q-card-section
+        style="height: calc(100vh - 380px)"
         class="row bg-grey-3 q-pa-sm scroll col justify-start"
-        v-if="node.type === 'configurations'">
-        <q-card class="full-width q-my-sm"
-          style="height: 280px;">
+        v-if="node.type === 'configurations'"
+      >
+        <q-card
+          class="full-width q-my-sm"
+          style="height: 280px;"
+        >
           <div class="full-width bg-grey-3 text-bold row col justify-between text-left q-pa-md">
             Mensagem de saudação (Fila/Usuário)
             <div class="row text-subtitle2">
@@ -318,49 +389,65 @@
           <q-card-section class="q-pa-sm">
             <div class="row ">
               <div class="col">
-                <label class="text-subtitle1 text-bold q-mb-sm"
-                  for="inputEnvioMensagem"> Mensagem: </label>
+                <label
+                  class="text-subtitle1 text-bold q-mb-sm"
+                  for="inputEnvioMensagem"
+                > Mensagem: </label>
                 <div class="flex flex-inline full-width items-center">
-                  <div class="flex flex-inline text-left"
-                    style="width: 40px">
-                    <q-btn round
+                  <div
+                    class="flex flex-inline text-left"
+                    style="width: 40px"
+                  >
+                    <q-btn
+                      round
                       flat
-                      dense>
-                      <q-icon size="2em"
-                        name="mdi-emoticon-happy-outline" />
+                      dense
+                    >
+                      <q-icon
+                        size="2em"
+                        name="mdi-emoticon-happy-outline"
+                      />
                       <q-tooltip>
                         Emoji
                       </q-tooltip>
-                      <q-menu anchor="top right"
+                      <q-menu
+                        anchor="top right"
                         self="bottom middle"
-                        :offset="[5, 40]">
-                        <VEmojiPicker style="width: 40vw"
+                        :offset="[5, 40]"
+                      >
+                        <VEmojiPicker
+                          style="width: 40vw"
                           :showSearch="false"
                           :emojisByRow="20"
                           labelSearch="Localizar..."
                           lang="pt-BR"
-                          @select="onInsertSelectEmojiSaudacao" />
+                          @select="onInsertSelectEmojiSaudacao"
+                        />
                       </q-menu>
                     </q-btn>
                   </div>
-                  <textarea ref="inputEnvioMensagemSaudacao"
+                  <textarea
+                    ref="inputEnvioMensagemSaudacao"
                     id="inputEnvioMensagem"
                     style="min-height: 10vh; max-height: 15vh; flex: auto"
-                    class="q-pa-sm bg-white"
+                    class="q-pa-sm bg-white rounded-all"
                     placeholder="Digite a mensagem"
                     autogrow
                     dense
                     outlined
                     @input="(v) => node.configurations.welcomeMessage.message = v.target.value"
-                    :value="node.configurations.welcomeMessage.message" />
+                    :value="node.configurations.welcomeMessage.message"
+                  />
                 </div>
               </div>
             </div>
           </q-card-section>
         </q-card>
 
-        <q-card class="full-width q-my-sm"
-          style="height: 300px;">
+        <q-card
+          class="full-width q-my-sm"
+          style="height: 300px;"
+        >
           <div class="full-width bg-grey-3 text-bold row col justify-between text-left q-pa-md">
             Se nenhuma resposta esperada for enviada
             <div class="row text-subtitle2">
@@ -371,68 +458,66 @@
           <q-card-section class="q-pa-sm">
             <div class="row ">
               <div class="col">
-                <label class="text-subtitle1 text-bold q-mb-sm"
-                  for="inputEnvioMensagem"> Mensagem de feedback: </label>
+                <label
+                  class="text-subtitle1 text-bold q-mb-sm"
+                  for="inputEnvioMensagem"
+                > Mensagem de feedback: </label>
                 <div class="flex flex-inline full-width items-center">
-                  <div class="flex flex-inline text-left"
-                    style="width: 40px">
-                    <q-btn round
+                  <div
+                    class="flex flex-inline text-left"
+                    style="width: 40px"
+                  >
+                    <q-btn
+                      round
                       flat
-                      dense>
-                      <q-icon size="2em"
-                        name="mdi-emoticon-happy-outline" />
+                      dense
+                    >
+                      <q-icon
+                        size="2em"
+                        name="mdi-emoticon-happy-outline"
+                      />
                       <q-tooltip>
                         Emoji
                       </q-tooltip>
-                      <q-menu anchor="top right"
+                      <q-menu
+                        anchor="top right"
                         self="bottom middle"
-                        :offset="[5, 40]">
-                        <VEmojiPicker style="width: 40vw"
+                        :offset="[5, 40]"
+                      >
+                        <VEmojiPicker
+                          style="width: 40vw"
                           :showSearch="false"
                           :emojisByRow="20"
                           labelSearch="Localizar..."
                           lang="pt-BR"
-                          @select="onInsertSelectEmojiNotOptionsSelectMessage" />
+                          @select="onInsertSelectEmojiNotOptionsSelectMessage"
+                        />
                       </q-menu>
                     </q-btn>
                   </div>
-                  <textarea ref="inputEnvioMensagemnotOptionsSelectMessage"
+                  <textarea
+                    ref="inputEnvioMensagemnotOptionsSelectMessage"
                     id="inputEnvioMensagem"
                     style="min-height: 10vh; max-height: 15vh; flex: auto"
-                    class="q-pa-sm bg-white"
+                    class="q-pa-sm bg-white rounded-all"
                     placeholder="Digite a mensagem"
                     autogrow
                     dense
                     outlined
                     @input="(v) => node.configurations.notOptionsSelectMessage.message = v.target.value"
-                    :value="node.configurations.notOptionsSelectMessage.message" />
+                    :value="node.configurations.notOptionsSelectMessage.message"
+                  />
                 </div>
               </div>
             </div>
-            <!-- <div class="row q-mt-md">
-              <div class="col">
-                <label
-                  class="text-subtitle1 text-bold q-mb-sm "
-                  for="inputEnvioMensagem"
-                > Enviar para: </label>
 
-                <q-option-group
-                  class="text-center"
-                  inline
-                  v-model="node.configurations.notOptionsSelectMessage.stepReturn"
-                  :options="[
-                  {label: 'Etapa atual', value: 'A'},
-                  {label: 'Etapa inicial', value: 'S'}
-                  ]"
-                  color="primary"
-                />
-              </div>
-            </div> -->
           </q-card-section>
         </q-card>
 
-        <q-card class="full-width q-my-sm"
-          style="height: 290px;">
+        <q-card
+          class="full-width q-my-sm"
+          style="height: 290px;"
+        >
           <div class="full-width bg-grey-3 text-bold text-body1 row col justify-between text-left q-pa-md">
             Ausência de resposta
             <div class="row text-subtitle2">
@@ -443,30 +528,37 @@
           <q-card-section class="q-pa-sm">
             <div class="row q-mt-sm">
               <div class="col">
-                <q-input dense
+                <q-input
+                  dense
                   outlined
                   mask="###"
+                  rounded
                   v-model.number="node.configurations.notResponseMessage.time"
-                  label="Tempo (minutos)" />
+                  label="Tempo (minutos)"
+                />
               </div>
             </div>
             <div class="row q-mt-sm">
               <div class="col">
-                <q-option-group class="text-center"
+                <q-option-group
+                  class="text-center"
                   inline
                   v-model="node.configurations.notResponseMessage.type"
                   :options="[
                     { value: 1, label: 'Fila' },
                     { value: 2, label: 'Usuário' }
                   ]"
-                  color="primary" />
+                  color="primary"
+                />
               </div>
             </div>
             <div class="row q-mt-sm">
               <div class="col">
-                <q-select v-if="node.configurations.notResponseMessage.type === 1"
+                <q-select
+                  v-if="node.configurations.notResponseMessage.type === 1"
                   dense
                   outlined
+                  rounded
                   class="full-width"
                   v-model="node.configurations.notResponseMessage.destiny"
                   :options="filas"
@@ -475,10 +567,13 @@
                   label="Fila"
                   map-options
                   emit-value
-                  clearable />
-                <q-select v-if="node.configurations.notResponseMessage.type === 2"
+                  clearable
+                />
+                <q-select
+                  v-if="node.configurations.notResponseMessage.type === 2"
                   dense
                   outlined
+                  rounded
                   class="full-width"
                   v-model="node.configurations.notResponseMessage.destiny"
                   :options="usuarios"
@@ -487,14 +582,17 @@
                   label="Usuário"
                   map-options
                   emit-value
-                  clearable />
+                  clearable
+                />
               </div>
             </div>
           </q-card-section>
         </q-card>
 
-        <q-card class="full-width q-my-sm"
-          style="height: 330px;">
+        <q-card
+          class="full-width q-my-sm"
+          style="height: 330px;"
+        >
           <div class="full-width bg-grey-3 text-bold text-body1 row col justify-between text-left q-pa-md">
             Máximo de Tentativas do Bot
             <div class="row text-subtitle2">
@@ -506,30 +604,37 @@
           <q-card-section class="q-pa-sm">
             <div class="row q-mt-sm">
               <div class="col">
-                <q-input dense
+                <q-input
+                  dense
+                  rounded
                   outlined
                   mask="##"
                   v-model.number="node.configurations.maxRetryBotMessage.number"
-                  label="Número de tentativas" />
+                  label="Número de tentativas"
+                />
               </div>
             </div>
             <div class="row q-mt-sm">
               <div class="col">
-                <q-option-group class="text-center"
+                <q-option-group
+                  class="text-center"
                   inline
                   v-model="node.configurations.maxRetryBotMessage.type"
                   :options="[
                     { value: 1, label: 'Fila' },
                     { value: 2, label: 'Usuário' }
                   ]"
-                  color="primary" />
+                  color="primary"
+                />
               </div>
             </div>
             <div class="row q-mt-sm">
               <div class="col">
-                <q-select v-if="node.configurations.maxRetryBotMessage.type === 1"
+                <q-select
+                  v-if="node.configurations.maxRetryBotMessage.type === 1"
                   dense
                   outlined
+                  rounded
                   class="full-width"
                   v-model="node.configurations.maxRetryBotMessage.destiny"
                   :options="filas"
@@ -538,10 +643,13 @@
                   label="Fila"
                   map-options
                   emit-value
-                  clearable />
-                <q-select v-if="node.configurations.maxRetryBotMessage.type === 2"
+                  clearable
+                />
+                <q-select
+                  v-if="node.configurations.maxRetryBotMessage.type === 2"
                   dense
                   outlined
+                  rounded
                   class="full-width"
                   v-model="node.configurations.maxRetryBotMessage.destiny"
                   :options="usuarios"
@@ -550,14 +658,17 @@
                   label="Usuário"
                   map-options
                   emit-value
-                  clearable />
+                  clearable
+                />
               </div>
             </div>
           </q-card-section>
         </q-card>
 
-        <q-card class="full-width q-my-sm"
-          style="height: 330px;">
+        <q-card
+          class="full-width q-my-sm"
+          style="height: 330px;"
+        >
           <div class="full-width bg-grey-3 text-bold text-body1 row col justify-between text-left q-pa-md">
             Auto Distribuir Atendimento
             <div class="row text-subtitle2">
@@ -570,7 +681,8 @@
           <q-card-section class="q-pa-sm">
             <div class="row q-mt-sm">
               <div class="col">
-                <q-option-group class="text-center"
+                <q-option-group
+                  class="text-center"
                   inline
                   v-model="node.configurations.autoDistributeTickets"
                   :options="[
@@ -578,14 +690,17 @@
                     { value: 'R', label: 'Aleatória' },
                     { value: 'B', label: 'Balanceada' }
                   ]"
-                  color="primary" />
+                  color="primary"
+                />
               </div>
             </div>
           </q-card-section>
         </q-card>
 
-        <q-card class="full-width q-my-sm"
-          style="height: 330px;">
+        <q-card
+          class="full-width q-my-sm"
+          style="height: 330px;"
+        >
           <div class="full-width bg-grey-3 text-bold text-body1 row col justify-between text-left q-pa-md">
             Encerrar Atendimento
             <div class="row text-subtitle2">
@@ -595,9 +710,11 @@
           <q-card-section class="q-pa-sm">
             <div class="row q-mt-sm">
               <div class="col">
-                <q-select dense
+                <q-select
+                  dense
                   label="Parâmetros"
                   outlined
+                  rounded
                   v-model="node.configurations.answerCloseTicket"
                   use-input
                   use-chips
@@ -605,7 +722,8 @@
                   hide-dropdown-icon
                   input-debounce="0"
                   new-value-mode="add-unique"
-                  hint="Digite o valor e aperte enter" />
+                  hint="Digite o valor e aperte enter"
+                />
               </div>
             </div>
           </q-card-section>
@@ -613,9 +731,11 @@
 
       </q-card-section>
 
-      <q-card-section style="height: calc(100vh - 380px)"
+      <q-card-section
+        style="height: calc(100vh - 380px)"
         class="row bg-grey-3 q-pa-sm scroll col justify-start"
-        v-if="node.type === 'start'">
+        v-if="node.type === 'start'"
+      >
         <q-card class="full-width q-my-sm">
           <div class="full-width bg-grey-3 text-bold row col justify-between text-left q-pa-md">
             Etapa representa o contato inicial.
@@ -639,16 +759,13 @@
 
 <script>
 import { uid } from 'quasar'
-// import { cloneDeep } from 'lodash'
 import MessageField from './messageField'
-// import MessageOptionsField from './messageOptionsField.vue'
 import MediaField from './mediaField.vue'
 import { VEmojiPicker } from 'v-emoji-picker'
 export default {
   components: {
     MessageField,
     VEmojiPicker,
-    // MessageOptionsField,
     MediaField
   },
   props: {
@@ -679,7 +796,6 @@ export default {
         { label: 'Qualquer resposta', value: 'US' },
         { label: 'Respostas', value: 'R' }
       ],
-      // node 或 line
       type: 'node',
       node: {},
       line: {},
@@ -710,16 +826,6 @@ export default {
         id: this.gerarUID()
       })
     },
-    // addMessageOptions () {
-    //   this.node.interactions.push({
-    //     type: 'MessageOptionsField',
-    //     data: {
-    //       message: '',
-    //       values: []
-    //     },
-    //     id: this.gerarUID()
-    //   })
-    // },
     addMediaField () {
       this.node.interactions.push({
         type: 'MediaField',
@@ -756,7 +862,6 @@ export default {
         interactions: [],
         conditions: [],
         actions: []
-        // ico: 'el-icon-present'
       }
       const evt = {
         originalEvent: {
@@ -790,20 +895,16 @@ export default {
     onInsertSelectEmojiSaudacao (emoji) {
       const self = this
       var tArea = this.$refs.inputEnvioMensagemSaudacao
-      // get cursor's position:
       var startPos = tArea.selectionStart,
         endPos = tArea.selectionEnd,
         cursorPos = startPos,
         tmpStr = tArea.value
-      // filter:
       if (!emoji.data) {
         return
       }
-      // insert:
       self.txtContent = this.node.configurations.welcomeMessage.message
       self.txtContent = tmpStr.substring(0, startPos) + emoji.data + tmpStr.substring(endPos, tmpStr.length)
       this.node.configurations.welcomeMessage.message = self.txtContent
-      // move cursor:
       setTimeout(() => {
         tArea.selectionStart = tArea.selectionEnd = cursorPos + emoji.data.length
       }, 10)
@@ -811,20 +912,16 @@ export default {
     onInsertSelectEmojiNotOptionsSelectMessage (emoji) {
       const self = this
       var tArea = this.$refs.inputEnvioMensagemnotOptionsSelectMessage
-      // get cursor's position:
       var startPos = tArea.selectionStart,
         endPos = tArea.selectionEnd,
         cursorPos = startPos,
         tmpStr = tArea.value
-      // filter:
       if (!emoji.data) {
         return
       }
-      // insert:
       self.txtContent = this.node.configurations.notOptionsSelectMessage.message
       self.txtContent = tmpStr.substring(0, startPos) + emoji.data + tmpStr.substring(endPos, tmpStr.length)
       this.node.configurations.notOptionsSelectMessage.message = self.txtContent
-      // move cursor:
       setTimeout(() => {
         tArea.selectionStart = tArea.selectionEnd = cursorPos + emoji.data.length
       }, 10)
@@ -838,7 +935,6 @@ export default {
       }
       const oldToLine = this.node.conditions[idx].nextStepId
       this.node.conditions[idx].nextStepId = nextStepId
-      // emitir evento somente se etapa destino mudar
       if (oldToLine != nextStepId) {
         this.$emit('addNewLineCondition', this.node.id, nextStepId, oldToLine)
       }
@@ -868,7 +964,6 @@ export default {
       this.data = data
       data.nodeList.filter((node) => {
         if (node.id === id) {
-          // this.node = cloneDeep(node)
           this.node = node
         }
       })
@@ -877,7 +972,6 @@ export default {
       this.type = 'line'
       this.line = line
     },
-    // 修改连线
     saveLine () {
       this.$emit('setLineLabel', this.line.from, this.line.to, this.line.label)
     },
@@ -892,7 +986,6 @@ export default {
           node.state = this.node.actions
           node.state = this.node.conditions
           node.state = this.node.interactions
-          // node
           this.$emit('repaintEverything')
         }
       })

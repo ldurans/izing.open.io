@@ -18,7 +18,7 @@ export const initMessengerBot = async (
     // const io = getIO();
 
     const accessToken = connection.tokenAPI;
-    const appId = process.env.FACEBOOK_APP_ID;
+    const appId = process.env.VUE_FACEBOOK_APP_ID;
     // const appSecret = "3266b8c98ac59f3e957a5efeaaa13500";
     // const password = "";
     if (!accessToken) {

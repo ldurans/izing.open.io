@@ -43,6 +43,9 @@ const HandleMessage = async (ctx: Context, tbot: Session): Promise<void> => {
     msg: { ...messageData, fromMe },
     channel: "telegram"
   });
+  if (ticket?.isFarewellMessage) {
+    return;
+  }
 
   if (!messageData?.text && chat?.id) {
     await VerifyMediaMessage(ctx, fromMe, ticket, contact);

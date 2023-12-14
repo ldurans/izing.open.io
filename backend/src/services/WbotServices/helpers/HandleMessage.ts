@@ -31,25 +31,23 @@ const HandleMessage = async (
       if (!IsValidMsg(msg)) {
         return;
       }
-      let whatsapp;
-	  
-	  whatsapp = await ShowWhatsAppService({ id: wbot.id });
 
-	  const { tenantId } = whatsapp;
+      const whatsapp = await ShowWhatsAppService({ id: wbot.id });
 
-	  //IGNORAR MENSAGENS DE GRUPO       
-	  const Settingdb = await Setting.findOne({
-		where: {key: 'ignoreGroupMsg', tenantId: tenantId }
-	  });
-	  if(Settingdb?.value == 'enabled') {
-		if (
-		  msg.from === "status@broadcast" ||
-		  msg.author != null
-		) {
-		  return;
-		}
-	  }
-	  //IGNORAR MENSAGENS DE GRUPO
+      const { tenantId } = whatsapp;
+      const chat = await msg.getChat();
+      // IGNORAR MENSAGENS DE GRUPO
+      const Settingdb = await Setting.findOne({
+        where: { key: "ignoreGroupMsg", tenantId }
+      });
+
+      if (
+        Settingdb?.value === "enabled" &&
+        (chat.isGroup || msg.from === "status@broadcast")
+      ) {
+        return;
+      }
+      // IGNORAR MENSAGENS DE GRUPO
 
       try {
         let msgContact: WbotContact;
@@ -68,8 +66,6 @@ const HandleMessage = async (
           msgContact = await msg.getContact();
         }
 
-        const chat = await msg.getChat();
-
         if (chat.isGroup) {
           let msgGroupContact;
 
@@ -83,7 +79,6 @@ const HandleMessage = async (
         }
 
         const unreadMessages = msg.fromMe ? 0 : chat.unreadCount;
-		 if(unreadMessages === 0 && whatsapp.farewellMessage === msg.body) return;
 
         // const profilePicUrl = await msgContact.getProfilePicUrl();
         const contact = await VerifyContact(msgContact, tenantId);
@@ -102,13 +97,21 @@ const HandleMessage = async (
           return;
         }
 
+        if (ticket?.isFarewellMessage) {
+          resolve();
+          return;
+        }
+
         if (msg.hasMedia) {
           await VerifyMediaMessage(msg, ticket, contact);
         } else {
           await VerifyMessage(msg, ticket, contact);
         }
+
+        const isBusinessHours = await verifyBusinessHours(msg, ticket);
+
         // await VerifyAutoReplyActionTicket(msg, ticket);
-        await VerifyStepsChatFlowTicket(msg, ticket);
+        if (isBusinessHours) await VerifyStepsChatFlowTicket(msg, ticket);
 
         const apiConfig: any = ticket.apiConfig || {};
         if (
@@ -134,7 +137,6 @@ const HandleMessage = async (
           });
         }
 
-        await verifyBusinessHours(msg, ticket);
         resolve();
       } catch (err) {
         logger.error(err);
