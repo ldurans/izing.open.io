@@ -1,3 +1,28 @@
+# [2.0.0](https://github.com/ldurans/izing.io/compare/v1.9.0...v2.0.0) (2023-12-14)
+
+
+### Bug Fixes
+
+* ajuste card Ativo/Receptivo ([79f485b](https://github.com/ldurans/izing.io/commit/79f485b74f40dfd261ce3865f1f40679b4ae0259))
+
+
+### Styles
+
+* reestruturação do estilo da aplicação, modernizando a interface. ([8289c48](https://github.com/ldurans/izing.io/commit/8289c486d89c01a36e9a17fd95a1df9f3a4f742a))
+
+
+### BREAKING CHANGES
+
+* o suporte ao messenger não está mais disponível
+chore: melhorado o suporte à utilização de carteira
+
+chore!: mudança na licença do software
+- buscando garantir o objetivo pelo qual criamos o projeto, a licença passou a ser AGPLv3
+
+perf: foram feitos inúmeras outras otimizações para melhorar a performance e controle do fluxo da aplicação, melhorando a manutenibilidade.
+
+Estamos felizes com esse grande lançamento e esperamos que a comunidade possa apoiar a continudade e sua evolução.
+
 # [1.9.0](https://github.com/ldurans/izing.io/compare/v1.8.1...v1.9.0) (2022-12-19)
 
 
