@@ -1,5 +1,29 @@
 # [2.0.0](https://github.com/ldurans/izing.io/compare/v1.9.0...v2.0.0) (2023-12-14)
 
+### Notas Gerais:
+- style: reestruturação do estilo da aplicação, modernizando a interface.
+- feat: adicionado configuração de bot por conexão
+- feat: agora é possível cadastrar as conexões
+- feat: adicionado delay na campanha
+- feat: adicionado configuração para rejeição de chamada do Whatsapp
+- feat: adicionado importação de contatos via CSV
+- feat: adicionado importação de contatos via histórico de conversas do whatsapp
+- feat: adicionado exportação de contatos
+- feat: otimizado fluxo de envio de mensagens
+- feat: novo mecânismo para inicio do atendimento, melhorando a experiência do usuário
+- feat: adicionado botão para integração com o jitsi, gerando link para meet diretamente no chat
+
+- fix: comunicação do socket melhorada
+- fix: ajuste para utilização da opção de "qualquer resposta" no chatbot.
+
+- chore!: retirada do messenger
+>BREAKING CHANGE: o suporte ao messenger não está mais disponível
+- chore: melhorado o suporte à utilização de carteira
+
+- chore!: mudança na licença do software
+>buscando garantir o objetivo pelo qual criamos o projeto, a licença passou a ser AGPLv3 
+
+- perf: foram feitos inúmeras outras otimizações para melhorar a performance e controle do fluxo da aplicação, melhorando a manutenibilidade.    
 
 ### Bug Fixes
 
