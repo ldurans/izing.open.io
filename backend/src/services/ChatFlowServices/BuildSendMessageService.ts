@@ -1,10 +1,13 @@
+import { join } from "path";
 import { pupa } from "../../utils/pupa";
 import { logger } from "../../utils/logger";
 import Ticket from "../../models/Ticket";
 import Message from "../../models/Message";
 import socketEmit from "../../helpers/socketEmit";
+import SendMessageSystemProxy from "../../helpers/SendMessageSystemProxy";
 
 interface MessageData {
+  id?: string;
   ticketId: number;
   body: string;
   contactId?: number;
@@ -76,13 +79,34 @@ const BuildSendMessageService = async ({
       const message = {
         ...messageData,
         body: msg.data.name,
+        mediaName: urlSplit[urlSplit.length - 1],
         mediaUrl: urlSplit[urlSplit.length - 1],
         mediaType: msg.data.type
           ? msg.data?.type.substr(0, msg.data.type.indexOf("/"))
           : "chat"
       };
 
-      const msgCreated = await Message.create(message);
+      const customPath = join(__dirname, "..", "..", "..", "public");
+      const mediaPath = join(customPath, message.mediaUrl);
+
+      const media = {
+        path: mediaPath,
+        filename: message.mediaName
+      };
+
+      const messageSent = await SendMessageSystemProxy({
+        ticket,
+        messageData: message,
+        media,
+        userId
+      });
+
+      const msgCreated = await Message.create({
+        ...message,
+        ...messageSent,
+        id: messageData.id,
+        messageId: messageSent.id?.id || messageSent.messageId || null
+      });
 
       const messageCreated = await Message.findByPk(msgCreated.id, {
         include: [
@@ -109,14 +133,6 @@ const BuildSendMessageService = async ({
         lastMessageAt: new Date().getTime()
       });
 
-      // global.rabbitWhatsapp.publishInQueue(
-      //   `whatsapp::${tenantId}`,
-      //   JSON.stringify({
-      //     ...messageCreated.toJSON(),
-      //     contact: ticket.contact.toJSON()
-      //   })
-      // );
-
       socketEmit({
         tenantId,
         type: "chat:create",
@@ -130,10 +146,22 @@ const BuildSendMessageService = async ({
         name: ticket.contact.name
       });
 
+      const messageSent = await SendMessageSystemProxy({
+        ticket,
+        messageData: {
+          ...messageData,
+          body: msg.data.message
+        },
+        media: null,
+        userId: null
+      });
+
       const msgCreated = await Message.create({
         ...messageData,
-        body: msg.data.message,
-        mediaType: "chat"
+        ...messageSent,
+        id: messageData.id,
+        messageId: messageSent.id?.id || messageSent.messageId || null,
+        mediaType: "bot"
       });
 
       const messageCreated = await Message.findByPk(msgCreated.id, {
@@ -153,7 +181,6 @@ const BuildSendMessageService = async ({
       });
 
       if (!messageCreated) {
-        // throw new AppError("ERR_CREATING_MESSAGE", 501);
         throw new Error("ERR_CREATING_MESSAGE_SYSTEM");
       }
 
@@ -162,14 +189,6 @@ const BuildSendMessageService = async ({
         lastMessageAt: new Date().getTime(),
         answered: true
       });
-
-      // global.rabbitWhatsapp.publishInQueue(
-      //   `whatsapp::${tenantId}`,
-      //   JSON.stringify({
-      //     ...messageCreated.toJSON(),
-      //     contact: ticket.contact.toJSON()
-      //   })
-      // );
 
       socketEmit({
         tenantId,
