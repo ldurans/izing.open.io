@@ -1,6 +1,6 @@
 {
   "name": "izing.open.io",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "izing.open.io - sistema de atendimentos multicanal",
   "main": "index.js",
   "private": true,

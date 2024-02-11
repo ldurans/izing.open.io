@@ -1,3 +1,12 @@
+## [2.0.1](https://github.com/ldurans/izing.io/compare/v2.0.0...v2.0.1) (2024-02-11)
+
+
+### Bug Fixes
+
+* correção para envio de mensagens via bot ([be7851e](https://github.com/ldurans/izing.io/commit/be7851e33b1a84c80c343a12ed8ba36f3db2099c))
+* evitar propagação de erro na marcação de mensagens lidas. ([43d8aaf](https://github.com/ldurans/izing.io/commit/43d8aaf62f2fd74be101d3593564426154d56a7b))
+* evitar redirecionamento para fila/usuário quando ausente na configuração do bot ([4d16262](https://github.com/ldurans/izing.io/commit/4d16262935c6b388d672349b8f88fb4c93e1baae))
+
 # [2.0.0](https://github.com/ldurans/izing.io/compare/v1.9.0...v2.0.0) (2023-12-14)
 
 ### Notas Gerais:
