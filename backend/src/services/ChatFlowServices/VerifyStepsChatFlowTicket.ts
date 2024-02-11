@@ -162,12 +162,12 @@ const isRetriesLimit = async (
     };
 
     // enviar para fila
-    if (destinyType === 1) {
+    if (destinyType === 1 && destiny) {
       updatedValues.queueId = destiny;
       logsRetry.queueId = destiny;
     }
     // enviar para usuario
-    if (destinyType === 2) {
+    if (destinyType === 2 && destiny) {
       updatedValues.userId = destiny;
       logsRetry.userId = destiny;
     }
