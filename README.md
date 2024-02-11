@@ -1,3 +1,5 @@
+[![Grupo do WhatsApp](https://img.shields.io/badge/WhatsApp-Grupo%20IZING-brightgreen.svg)](https://chat.whatsapp.com/IIReEheixAx27ZbneHpskP)
+
 # Izing
 
 Um sistema para gestão de atendimento multicanais centralizado.
