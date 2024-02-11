@@ -10,12 +10,18 @@ import SendMessageSystemProxy from "../../helpers/SendMessageSystemProxy";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 const SendMessagesSchenduleWbot = async (): Promise<void> => {
+  const currentDate = new Date();
+  const twentyFourHoursAgo = new Date(
+    currentDate.getTime() - 24 * 60 * 60 * 1000
+  );
+
   const where = {
     fromMe: true,
     messageId: { [Op.is]: null },
     status: "pending",
     scheduleDate: {
-      [Op.lte]: new Date()
+      [Op.lte]: currentDate, // Menor ou igual à data atual
+      [Op.gte]: twentyFourHoursAgo
     }
   };
   const messages = await Message.findAll({
