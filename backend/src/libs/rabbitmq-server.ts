@@ -4,9 +4,9 @@ import { logger } from "../utils/logger";
 import { sleepRandomTime } from "../utils/sleepRandomTime";
 
 export default class RabbitmqServer {
-  private conn: Connection;
+  private conn!: Connection;
 
-  private channel: Channel;
+  private channel!: Channel;
 
   // eslint-disable-next-line prettier/prettier
   constructor(private uri: string) { }
