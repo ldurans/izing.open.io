@@ -27,8 +27,13 @@ const DeleteUserService = async (
       userIdRequest
     );
   }
-
-  await user.destroy();
+  
+    try {
+    await user.destroy();
+  } catch (error) {
+    throw new AppError("ERROR_USER_MESSAGES_NOT_EXISTS", 404);
+  }
+  
 };
 
 export default DeleteUserService;

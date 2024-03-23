@@ -205,6 +205,11 @@ const errors = [
     detail: 'Valide o status de conexão com o whatsapp.'
   },
   {
+    error: 'ERROR_USER_MESSAGES_NOT_EXISTS',
+    description: 'Não foi possivel apagar Usuário.',
+    detail: 'Usuários que possuem conversas não são possiveis de apagar.'
+  },
+  {
     error: 'ERR_NO_PERMISSION',
     description: 'Usuário sem permissão.',
     detail: 'Seu usuário não possui permissão para executar a ação.'
