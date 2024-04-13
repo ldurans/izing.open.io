@@ -104,7 +104,7 @@
                 style="min-width: 350px; max-width: 350px"
               >
                 <div class="q-ma-sm">
-                  <div class="text-h6 q-mb-md">Filtros Avançados</div>
+                  <div class="text-h6 q-mb-md">Filtros AvanÃ§ados</div>
                   <q-toggle
                     v-if="profile === 'admin'"
                     class="q-ml-lg"
@@ -199,12 +199,12 @@
                     <q-separator class="q-mb-md" />
                     <q-toggle
                       v-model="pesquisaTickets.withUnreadMessages"
-                      label="Somente Tickets com mensagens não lidas"
+                      label="Somente Tickets com mensagens nÃ£o lidas"
                       @input="debounce(BuscarTicketFiltro(), 700)"
                     />
                     <q-toggle
                       v-model="pesquisaTickets.isNotAssignedUser"
-                      label="Somente Tickets não atribuidos (sem usuário definido)"
+                      label="Somente Tickets nÃ£o atribuidos (sem usuÃ¡rio definido)"
                       @input="debounce(BuscarTicketFiltro(), 700)"
                     />
                   </div>
@@ -225,7 +225,7 @@
               </div>
             </q-menu>
             <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
-              Filtro Avançado
+              Filtro AvanÃ§ado
             </q-tooltip>
           </q-btn>
           <q-input
@@ -553,7 +553,7 @@
                           Ops... Sem etiquetas criadas!
                         </q-item-label>
                         <q-item-label caption>
-                          Cadastre novas etiquetas na administração de sistemas.
+                          Cadastre novas etiquetas na administraÃ§Ã£o de sistemas.
                         </q-item-label>
                       </q-item-section>
                     </q-item>
@@ -623,7 +623,7 @@
                     >
                       <q-item-section>
                         <q-item-label class="text-negative text-bold">
-                          Ops... Sem carteiras disponíveis!!
+                          Ops... Sem carteiras disponÃ­veis!!
                         </q-item-label>
                       </q-item-section>
                     </q-item>
@@ -686,7 +686,7 @@
               :key="ticketFocado.id + $uuid()"
             >
               <q-card-section class="text-bold q-pb-none">
-                Outras Informações
+                Outras InformaÃ§Ãµes
               </q-card-section>
               <q-card-section class="q-pa-none">
                 <template v-if="cIsExtraInfo">
@@ -1057,7 +1057,7 @@ export default {
         this.$router.go({ name: 'login', replace: true })
       } catch (error) {
         this.$notificarErro(
-          'Não foi possível realizar logout',
+          'NÃ£o foi possÃ­vel realizar logout',
           error
         )
       }
@@ -1066,20 +1066,20 @@ export default {
       navigator.clipboard.writeText(content)
         .then(() => {
           // Copiado com sucesso
-          console.log('Conteúdo copiado: ', content)
+          console.log('ConteÃºdo copiado: ', content)
         })
         .catch((error) => {
           // Ocorreu um erro ao copiar
-          console.error('Erro ao copiar o conteúdo: ', error)
+          console.error('Erro ao copiar o conteÃºdo: ', error)
         })
     },
     deletarMensagem (mensagem) {
       const data = { ...mensagem }
       this.$q.dialog({
-        title: 'Atenção!! Deseja realmente deletar a mensagem? ',
-        message: 'Mensagens antigas não serão apagadas no cliente.',
+        title: 'AtenÃ§Ã£o!! Deseja realmente deletar a mensagem? ',
+        message: 'Mensagens antigas nÃ£o serÃ£o apagadas no cliente.',
         cancel: {
-          label: 'Não',
+          label: 'NÃ£o',
           color: 'primary',
           push: true
         },
@@ -1098,7 +1098,7 @@ export default {
           .catch(error => {
             this.loading = false
             console.error(error)
-            this.$notificarErro('Não foi possível apagar a mensagem', error)
+            this.$notificarErro('NÃ£o foi possÃ­vel apagar a mensagem', error)
           })
       }).onCancel(() => {
       })
@@ -1117,7 +1117,7 @@ export default {
         this.usuarios = data.users
       } catch (error) {
         console.error(error)
-        this.$notificarErro('Problema ao carregar usuários', error)
+        this.$notificarErro('Problema ao carregar usuÃ¡rios', error)
       }
     },
     setValueMenu () {
