@@ -104,7 +104,7 @@
                 style="min-width: 350px; max-width: 350px"
               >
                 <div class="q-ma-sm">
-                  <div class="text-h6 q-mb-md">Filtros AvanÃ§ados</div>
+                  <div class="text-h6 q-mb-md">Filtros Avançados</div>
                   <q-toggle
                     v-if="profile === 'admin'"
                     class="q-ml-lg"
@@ -199,12 +199,12 @@
                     <q-separator class="q-mb-md" />
                     <q-toggle
                       v-model="pesquisaTickets.withUnreadMessages"
-                      label="Somente Tickets com mensagens nÃ£o lidas"
+                      label="Somente Tickets com mensagens não lidas"
                       @input="debounce(BuscarTicketFiltro(), 700)"
                     />
                     <q-toggle
                       v-model="pesquisaTickets.isNotAssignedUser"
-                      label="Somente Tickets nÃ£o atribuidos (sem usuÃ¡rio definido)"
+                      label="Somente Tickets não atribuidos (sem usuário definido)"
                       @input="debounce(BuscarTicketFiltro(), 700)"
                     />
                   </div>
@@ -225,7 +225,7 @@
               </div>
             </q-menu>
             <q-tooltip content-class="bg-padrao text-grey-9 text-bold">
-              Filtro AvanÃ§ado
+              Filtro Avançado
             </q-tooltip>
           </q-btn>
           <q-input
@@ -261,12 +261,60 @@
           @scroll="onScroll"
         >
           <!-- <q-separator /> -->
-          <ItemTicket
-            v-for="(ticket, key) in tickets"
-            :key="key"
-            :ticket="ticket"
-            :filas="filas"
-          />
+          <div>
+            <div class="tab-container">
+              <q-tabs v-model="selectedTab" class="tab-scroll">
+                <q-tab name="open">
+                  Abertos
+                  <q-badge v-if="openTickets.length > 0" color="red" textColor="white">{{ openTickets.length }}</q-badge>
+                </q-tab>
+                <q-tab name="pending">
+                  Pendentes
+                  <q-badge v-if="pendingTickets.length > 0" color="red" textColor="white">{{ pendingTickets.length }}</q-badge>
+                </q-tab>
+                <q-tab name="closed">
+                  Fechados
+                  <q-badge v-if="closedTickets.length > 0" color="red" textColor="white">{{ closedTickets.length }}</q-badge>
+                </q-tab>
+                <q-tab name="group">
+                  Grupos
+                  <q-badge v-if="groupTickets.length > 0" color="red" textColor="white">{{ groupTickets.length }}</q-badge>
+                </q-tab>
+              </q-tabs>
+            </div>
+            <div v-if="selectedTab === 'open'">
+              <ItemTicket
+                v-for="(ticket, key) in openTickets"
+                :key="key"
+                :ticket="ticket"
+                :filas="filas"
+              />
+            </div>
+            <div v-if="selectedTab === 'pending'">
+              <ItemTicket
+                v-for="(ticket, key) in pendingTickets"
+                :key="key"
+                :ticket="ticket"
+                :filas="filas"
+              />
+            </div>
+            <div v-if="selectedTab === 'closed'">
+              <ItemTicket
+                v-for="(ticket, key) in closedTickets"
+                :key="key"
+                :ticket="ticket"
+                :filas="filas"
+              />
+            </div>
+            <div v-if="selectedTab === 'group'">
+              <ItemTicket
+                v-for="(ticket, key) in groupTickets"
+                :key="key"
+                :ticket="ticket"
+                :filas="filas"
+              />
+            </div>
+          </div>
           <div v-if="loading">
             <div class="row justify-center q-my-md">
               <q-spinner
@@ -505,7 +553,7 @@
                           Ops... Sem etiquetas criadas!
                         </q-item-label>
                         <q-item-label caption>
-                          Cadastre novas etiquetas na administraÃ§Ã£o de sistemas.
+                          Cadastre novas etiquetas na administração de sistemas.
                         </q-item-label>
                       </q-item-section>
                     </q-item>
@@ -575,7 +623,7 @@
                     >
                       <q-item-section>
                         <q-item-label class="text-negative text-bold">
-                          Ops... Sem carteiras disponÃ­veis!!
+                          Ops... Sem carteiras disponíveis!!
                         </q-item-label>
                       </q-item-section>
                     </q-item>
@@ -638,7 +686,7 @@
               :key="ticketFocado.id + $uuid()"
             >
               <q-card-section class="text-bold q-pb-none">
-                Outras InformaÃ§Ãµes
+                Outras Informações
               </q-card-section>
               <q-card-section class="q-pa-none">
                 <template v-if="cIsExtraInfo">
@@ -786,6 +834,7 @@ export default {
       alertSound,
       usuario,
       usuarios: [],
+      selectedTab: 'open',
       username,
       modalUsuario: false,
       toolbarSearch: true,
@@ -870,6 +919,19 @@ export default {
     },
     cIsExtraInfo () {
       return this.ticketFocado?.contact?.extraInfo?.length > 0
+    },
+    openTickets () {
+      console.log(this.tickets)
+      return this.tickets.filter(ticket => ticket.status === 'open' && !ticket.isGroup)
+    },
+    pendingTickets () {
+      return this.tickets.filter(ticket => ticket.status === 'pending' && !ticket.isGroup)
+    },
+    closedTickets () {
+      return this.tickets.filter(ticket => ticket.status === 'closed' && !ticket.isGroup)
+    },
+    groupTickets () {
+      return this.tickets.filter(ticket => ticket.isGroup === 'true')
     }
   },
   methods: {
@@ -995,7 +1057,7 @@ export default {
         this.$router.go({ name: 'login', replace: true })
       } catch (error) {
         this.$notificarErro(
-          'NÃ£o foi possÃ­vel realizar logout',
+          'Não foi possível realizar logout',
           error
         )
       }
@@ -1004,20 +1066,20 @@ export default {
       navigator.clipboard.writeText(content)
         .then(() => {
           // Copiado com sucesso
-          console.log('ConteÃºdo copiado: ', content)
+          console.log('Conteúdo copiado: ', content)
         })
         .catch((error) => {
           // Ocorreu um erro ao copiar
-          console.error('Erro ao copiar o conteÃºdo: ', error)
+          console.error('Erro ao copiar o conteúdo: ', error)
         })
     },
     deletarMensagem (mensagem) {
       const data = { ...mensagem }
       this.$q.dialog({
-        title: 'AtenÃ§Ã£o!! Deseja realmente deletar a mensagem? ',
-        message: 'Mensagens antigas nÃ£o serÃ£o apagadas no cliente.',
+        title: 'Atenção!! Deseja realmente deletar a mensagem? ',
+        message: 'Mensagens antigas não serão apagadas no cliente.',
         cancel: {
-          label: 'NÃ£o',
+          label: 'Não',
           color: 'primary',
           push: true
         },
@@ -1036,7 +1098,7 @@ export default {
           .catch(error => {
             this.loading = false
             console.error(error)
-            this.$notificarErro('NÃ£o foi possÃ­vel apagar a mensagem', error)
+            this.$notificarErro('Não foi possível apagar a mensagem', error)
           })
       }).onCancel(() => {
       })
@@ -1055,7 +1117,7 @@ export default {
         this.usuarios = data.users
       } catch (error) {
         console.error(error)
-        this.$notificarErro('Problema ao carregar usuÃ¡rios', error)
+        this.$notificarErro('Problema ao carregar usuários', error)
       }
     },
     setValueMenu () {
