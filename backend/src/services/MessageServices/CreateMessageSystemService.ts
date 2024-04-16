@@ -204,6 +204,7 @@ const CreateMessageSystemService = async ({
           const msgCreated = await Message.create({
             ...messageData,
             ...message,
+            id: messageData.id,
             userId,
             messageId: message.id?.id || message.messageId || null,
             body: media.originalname,
