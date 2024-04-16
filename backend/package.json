@@ -14,6 +14,9 @@
     "db:migrate": "rm -Rf dist && npm run build && npx sequelize db:migrate",
     "db:seed": "npx sequelize db:seed:all"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "author": "Durans (lumardyelson@gmail.com)",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -65,7 +68,7 @@
     "socket.io-redis": "^6.1.1",
     "telegraf": "^4.0.3",
     "uuid": "^8.3.2",
-    "whatsapp-web.js": "github:ldurans/whatsapp-web.js",
+    "whatsapp-web.js": "github:ldurans/whatsapp-web.js#webpack-exodus",
     "winston": "^3.3.3",
     "xlsx": "^0.18.5",
     "yup": "^0.29.3"
