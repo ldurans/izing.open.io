@@ -548,7 +548,14 @@ Senha:
 Problemas conexão?
 
 Na pasta backend execute
+```bash
 npm r whatsapp-web.js
+```
+```bash
 npm i whatsapp-web.js@^1.23.1-alpha.5
+```
+```bash
+pm2 restart all
+```
 
-Para reinstalar o whatsappjs.. verifique versao para verificar se nao tem alguma mais atual
+Para reinstalar o whatsapp.js.. verifique no repositorio se não tem alguma mais atual
