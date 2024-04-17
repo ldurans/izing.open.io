@@ -78,7 +78,7 @@ wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dear
 12. adicionar repositorio
 
 ```bash
-sudo sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list' 
+sudo sh -c 'echo "deb [arch=amd64,arm64,ppc64el signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list'' 
 ```
 
 13. update apt
