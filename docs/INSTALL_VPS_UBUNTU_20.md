@@ -60,7 +60,7 @@ apt install -y docker-ce
 9. Instalar POSTGRESQL no Docker
 
 ```bash
-docker run --name postgresql -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=123@mudar -e TZ="America/Sao_Paulo" -p 5432:5432 --restart=always -v /data:/var/lib/postgresql/data -d postgres
+docker run --name postgresql -e POSTGRES_USER=izing -e POSTGRES_PASSWORD=123@mudar -e TZ="America/Sao_Paulo" -p 5432:5432 --restart=always -v /data:/var/lib/postgresql/data -d postgres
 ```
 
 10. Instalar Redis no Docker
@@ -197,7 +197,7 @@ DB_DIALECT=postgres
 DB_TIMEZONE=-03:00
 DB_PORT=5432
 POSTGRES_HOST=localhost
-POSTGRES_USER=postgres
+POSTGRES_USER=izing
 POSTGRES_PASSWORD=123@mudar
 POSTGRES_DB=postgres
 
