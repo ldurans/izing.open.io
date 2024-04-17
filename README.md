@@ -37,7 +37,7 @@ ___
 ## Instalando
 Seguem links sugerimos:
 -  [Como Instalar o IZING - Método 2023](https://www.youtube.com/watch?v=0j1v6m4Nk74&t=379s)
-
+-  [Como Instalar o IZING VPS - Método 2024 - UBUNTU 22](https://github.com/cleitonme/izing.open.io/blob/main/docs/INSTALL_VPS_UBUNTU_22.md)
 <br/>
 
 ## Atualizando
