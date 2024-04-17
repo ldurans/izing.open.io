@@ -2,7 +2,8 @@
 
 ### Observação:
 - Antes de começar a instalação é necessário ter criado antecipadamente os subdomínios e já estarem apontados para o IP da VPS.
-- Feito ubuntu 22
+- Feito ubuntu 20
+- Nesse modelo vamos usar docker porque versão Postgresql do repositorio UBUNTU 20 ta dando erro com izing
 - Senha usada 123@mudar
 - Dominio Frontend: bot.seusite.com.br
 - Dominio backend: api.bot.seusite.com.br
@@ -35,39 +36,50 @@ sudo su root
 5. Intalar pacotes necessários
 
 ```bash
-apt install -y libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils python2-minimal build-essential postgresql redis-server libxshmfence-dev
+apt install -y apt-transport-https ca-certificates software-properties-common curl libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils python2-minimal build-essential libxshmfence-dev nginx
 ```
 
-6. Intalar rabbitmq
+6. Baixar chave repositorio Docker
 
 ```bash
-apt install -y rabbitmq-server
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 ```
 
-7. Habilitar rabbitmq
+7. Adicionar repositorio docker
 
 ```bash
-rabbitmq-plugins enable rabbitmq_management
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
 ```
 
-8. Criar usuario
+8. Instalar Docker
 
 ```bash
-rabbitmqctl add_user admin 123@mudar
+apt install -y docker-ce
 ```
 
-9. Configurar privilegio
+9. Instalar POSTGRESQL no Docker
 
 ```bash
-rabbitmqctl set_user_tags admin administrator
+docker run --name postgresql -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=123@mudar -e TZ="America/Sao_Paulo" -p 5432:5432 --restart=always -v /data:/var/lib/postgresql/data -d postgres
 ```
 
-10. Configurar permissoes
+10. Instalar Redis no Docker
 
 ```bash
-rabbitmqctl set_permissions -p / admin "." "." ".*"
+docker run --name redis-izing -e TZ="America/Sao_Paulo" -p 6379:6379 --restart=always -d redis:latest redis-server --appendonly yes --requirepass "123@mudar"
 ```
 
+11. Instalar Rabbitmq no Docker
+
+```bash
+docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 --restart=always --hostname rabbitmq -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=123@mudar -v /data:/var/lib/rabbitmq rabbitmq:3-management-alpine
+```
+
+12. Instalar Portainer no Docker
+
+```bash
+docker run -d --name portainer -p 9000:9000 -p 9443:9443 --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
+```
 
 11. baixar chave repositorio google crome
 
@@ -93,11 +105,7 @@ sudo apt update
 sudo apt install google-chrome-stable 
 ```
 
-15. Instalar nginx
 
-```bash
-apt install -y nginx
-```
 
 16. remover arquivo padrao nginx
 
@@ -105,45 +113,8 @@ apt install -y nginx
 rm /etc/nginx/sites-enabled/default
 ```
 
-17. Acessar para configurar o PostgreSQL
 
-```bash
-sudo -u postgres psql
-```
 
-18. Alterar senha do PostgreSQL
-
-```bash
-ALTER USER postgres PASSWORD '123@mudar';
-```
-
-19. Criar banco de dados PostgreSQL
-
-```bash
-CREATE DATABASE izing;
-```
-
-20. Sair do PostgreSQL
-
-```bash
-\q
-```
-
-21. Editar arquivo  /etc/redis/redis.conf Descomentar e deixar a linha como abaixo:
-
-```bash
-nano /etc/redis/redis.conf
-```
-
-```bash
-requirepass 123@mudar
-```
-
-22. Reniciar Redis
-
-```bash
-service redis restart
-```
 
 23. Criar o usário deploy
 
@@ -151,9 +122,14 @@ service redis restart
 adduser deploy
 ```
 
-24. 
+24. Permisão sudo deploy
 ```bash
 usermod -aG sudo deploy
+```
+
+24. Permisão docker deploy
+```bash
+usermod -aG docker deploy
 ```
 
 25. Alterar para o novo usuário
@@ -223,7 +199,7 @@ DB_PORT=5432
 POSTGRES_HOST=localhost
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=123@mudar
-POSTGRES_DB=izing
+POSTGRES_DB=postgres
 
 
 # Chaves para criptografia do token jwt
@@ -533,6 +509,26 @@ sudo snap install --classic certbot
 sudo certbot --nginx
 ```
 
+69. reniciar serviços docker
+```bash
+docker container restart portainer
+```
+
+70. reniciar serviços docker
+```bash
+docker container restart postgresql
+```
+
+71. reniciar serviços docker
+```bash
+docker container restart redis-izing
+```
+
+72. reniciar serviços docker
+```bash
+docker container restart rabbitmq
+```
+
 Pronto sistema instalado so acessar frontend
 
 Usuário padrão para acesso
@@ -544,6 +540,26 @@ admin@izing.io
 Senha:
 
 123456
+
+Acessar Acesso ao Portainer: http://ip.da.vps:9000
+
+Comandos reniciar docker caso de erros
+
+```bash
+docker container restart portainer
+```
+
+```bash
+docker container restart postgresql
+```
+
+```bash
+docker container restart redis-izing
+```
+
+```bash
+docker container restart rabbitmq
+```
 
 Problemas conexão?
 
