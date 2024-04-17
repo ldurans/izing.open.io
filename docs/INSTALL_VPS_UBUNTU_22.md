@@ -547,12 +547,37 @@ Senha:
 
 Problemas conexão?
 
+1. Versão ldurans
+Na pasta backend execute
+```bash
+npm r whatsapp-web.js
+```
+```bash
+execute: npm install github:pedroslopez/whatsapp-web.js#webpack-exodus
+```
+```bash
+rm .wwebjs_auth -Rf
+```
+```bash
+rm .wwebjs_cache -Rf
+```
+```bash
+pm2 restart all
+```
+
+2. Outra versão js pode se tentar
 Na pasta backend execute
 ```bash
 npm r whatsapp-web.js
 ```
 ```bash
 npm i whatsapp-web.js@^1.23.1-alpha.5
+```
+```bash
+rm .wwebjs_auth -Rf
+```
+```bash
+rm .wwebjs_cache -Rf
 ```
 ```bash
 pm2 restart all
