@@ -553,7 +553,7 @@ Na pasta backend execute
 npm r whatsapp-web.js
 ```
 ```bash
-execute: npm install github:pedroslopez/whatsapp-web.js#webpack-exodus
+npm install github:pedroslopez/whatsapp-web.js#webpack-exodus
 ```
 ```bash
 rm .wwebjs_auth -Rf
