@@ -60,16 +60,16 @@ export class MissingValueError extends Error {
 
 const greeting = (() => {
   const hours = getHours(new Date());
-  if (hours >= 6 && hours <= 11) {
+  if (hours >= 6 && hours <= 12) {
     return "Bom dia!";
   }
-  if (hours > 11 && hours <= 17) {
+  if (hours > 12 && hours <= 18) {
     return "Boa Tarde!";
   }
-  if (hours > 17 && hours <= 23) {
+  if (hours > 18 && hours <= 23) {
     return "Boa Noite!";
   }
-  return "Olá!";
+  return "Boa Madrugada!";
 })();
 
 export const pupa = function pupa(
