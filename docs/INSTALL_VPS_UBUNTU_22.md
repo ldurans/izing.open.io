@@ -213,7 +213,7 @@ FRONTEND_URL=https://bot.seusite.com.br
 PROXY_PORT=443
 
 # Porta que o serviço do backend deverá ouvir
-PORT=3098
+PORT=3000
 
 
 # conexão com o banco de dados
@@ -267,6 +267,15 @@ ADMIN_DOMAIN=izing.io
 # Dados para utilização do canal do facebook
 VUE_FACEBOOK_APP_ID=3237415623048660
 FACEBOOK_APP_SECRET_KEY=3266214132b8c98ac59f3e957a5efeaaa13500
+
+# Forçar utilizar versão definida via cache (https://wppconnect.io/pt-BR/whatsapp-versions/)
+WEB_VERSION=2.2413.51
+
+# Customizar opções do pool de conexões DB
+#POSTGRES_POOL_MAX=100
+#POSTGRES_POOL_MIN=10
+#POSTGRES_POOL_ACQUIRE=30000
+#POSTGRES_POOL_IDLE=10000
 
 # Limitar Uso do Izing Usuario e Conexões
 USER_LIMIT=99
@@ -451,7 +460,7 @@ server {
   server_name api.bot.seusite.com.br;
 
   location / {
-    proxy_pass http://127.0.0.1:3098;
+    proxy_pass http://127.0.0.1:3000;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection 'upgrade';
