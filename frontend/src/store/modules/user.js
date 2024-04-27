@@ -7,7 +7,7 @@ const socket = socketIO()
 const pesquisaTicketsFiltroPadrao = {
   searchParam: '',
   pageNumber: 1,
-  status: ['open', 'pending'],
+  status: ['open', 'pending', 'closed'],
   showAll: false,
   count: null,
   queuesIds: [],

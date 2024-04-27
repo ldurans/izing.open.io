@@ -852,7 +852,7 @@ export default {
       pesquisaTickets: {
         searchParam: '',
         pageNumber: 1,
-        status: ['open', 'pending'],
+        status: ['open', 'pending', 'closed'],
         showAll: false,
         count: null,
         queuesIds: [],
