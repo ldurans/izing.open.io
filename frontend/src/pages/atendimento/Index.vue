@@ -1243,4 +1243,11 @@ export default {
 .conversation__more
   margin-top: 0!important
   font-size: 1.4rem
+
+.tab-container
+  overflow-x: auto
+  font-size: 0.75rem
+
+.tab-scroll
+  white-space: nowrap
 </style>
