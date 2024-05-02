@@ -2,7 +2,8 @@
 
 ### Observação:
 - Antes de começar a instalação é necessário ter criado antecipadamente os subdomínios e já estarem apontados para o IP da VPS.
-- Feito ubuntu 22
+- Feito ubuntu 20
+- Nesse modelo vamos usar docker porque versão Postgresql do repositorio UBUNTU 20 ta dando erro com izing
 - Senha usada 123@mudar
 - Dominio Frontend: bot.seusite.com.br
 - Dominio backend: api.bot.seusite.com.br
@@ -35,169 +36,152 @@ sudo su root
 5. Intalar pacotes necessários
 
 ```bash
-apt install -y libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils python2-minimal build-essential postgresql redis-server libxshmfence-dev
+apt install -y ffmpeg fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 apt-transport-https ca-certificates software-properties-common curl libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils python2-minimal build-essential libxshmfence-dev nginx
 ```
 
-6. Intalar rabbitmq
+6. Adicionar repositorio Docker
 
 ```bash
-apt install -y rabbitmq-server
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
 ```
 
-7. Habilitar rabbitmq
+7. Instalar docker
 
 ```bash
-rabbitmq-plugins enable rabbitmq_management
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
-8. Criar usuario
+8. Instalar Docker
 
 ```bash
-rabbitmqctl add_user admin 123@mudar
+apt install -y docker-ce
 ```
 
-9. Configurar privilegio
+9. Instalar POSTGRESQL no Docker
 
 ```bash
-rabbitmqctl set_user_tags admin administrator
+docker run --name postgresql -e POSTGRES_USER=izing -e POSTGRES_PASSWORD=123@mudar -e TZ="America/Sao_Paulo" -p 5432:5432 --restart=always -v /data:/var/lib/postgresql/data -d postgres
 ```
 
-10. Configurar permissoes
+10. Instalar Redis no Docker
 
 ```bash
-rabbitmqctl set_permissions -p / admin "." "." ".*"
+docker run --name redis-izing -e TZ="America/Sao_Paulo" -p 6379:6379 --restart=always -d redis:latest redis-server --appendonly yes --requirepass "123@mudar"
 ```
 
+11. Instalar Rabbitmq no Docker
 
-11. baixar chave repositorio google crome
+```bash
+docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 --restart=always --hostname rabbitmq -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=123@mudar -v /data:/var/lib/rabbitmq rabbitmq:3-management-alpine
+```
+
+12. Instalar Portainer no Docker
+
+```bash
+docker run -d --name portainer -p 9000:9000 -p 9443:9443 --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
+```
+
+13. baixar chave repositorio google crome
 
 ```bash
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmour -o /usr/share/keyrings/chrome-keyring.gpg 
 ```
 
-12. adicionar repositorio
+14. adicionar repositorio
 
 ```bash
 sudo sh -c 'echo "deb [arch=amd64,arm64,ppc64el signed-by=/usr/share/keyrings/chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list'
 ```
 
-13. update apt
+15. update apt
 
 ```bash
 sudo apt update 
 ```
 
-14. instalar google crome
+16. instalar google crome
 
 ```bash
 sudo apt install google-chrome-stable 
 ```
 
-15. Instalar nginx
-
-```bash
-apt install -y nginx
-```
-
-16. remover arquivo padrao nginx
+17. remover arquivo padrao nginx
 
 ```bash
 rm /etc/nginx/sites-enabled/default
 ```
 
-17. Acessar para configurar o PostgreSQL
 
-```bash
-sudo -u postgres psql
-```
-
-18. Alterar senha do PostgreSQL
-
-```bash
-ALTER USER postgres PASSWORD '123@mudar';
-```
-
-19. Criar banco de dados PostgreSQL
-
-```bash
-CREATE DATABASE izing;
-```
-
-20. Sair do PostgreSQL
-
-```bash
-\q
-```
-
-21. Editar arquivo  /etc/redis/redis.conf Descomentar e deixar a linha como abaixo:
-
-```bash
-nano /etc/redis/redis.conf
-```
-
-```bash
-requirepass 123@mudar
-```
-
-22. Reniciar Redis
-
-```bash
-service redis restart
-```
-
-23. Criar o usário deploy
+18. Criar o usário deploy
 
 ```bash
 adduser deploy
 ```
 
-24. 
+19. Permisão sudo deploy
 ```bash
 usermod -aG sudo deploy
 ```
 
-25. Alterar para o novo usuário
+20. Permisão docker deploy
+```bash
+usermod -aG docker deploy
+```
+
+21. Alterar para o novo usuário
 
 ```bash
 su deploy
 ```
 
-26. Realizar o download do node 20.x
+22. Realizar o download do node 20.x
 
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 ```
 
-27. Instalar o node
+23. Instalar o node
 
 ```bash
 sudo apt-get install -y nodejs
 ```
 
-28. Acessar o diretório raiz
+24. Acessar o diretório raiz
 
 ```bash
 cd ~
 ```
 
-29. baixar o repositório do izing.open.io
+25. baixar o repositório do izing.open.io
 
 ```bash
 git clone https://github.com/ldurans/izing.io.git izing.io
 ```
 
-30. Copiar o env de exemplo para o backend
+26. Copiar o env de exemplo para o backend
 ```bash 
 cp izing.io/backend/.env.example izing.io/backend/.env
 ```
 
-31. Rodar o comando abaixo 2x para gerar JWT_SECRET e JWT_REFRESH_SECRET
+27. Rodar o comando abaixo 2x para gerar JWT_SECRET e JWT_REFRESH_SECRET
 
 ```bash
 openssl rand -base64 32
 ```
 
-31. Editar os dados abaixo e colar os valores gerados no item 31.
+28. Editar os dados abaixo e colar os valores gerados no item 31.
 
 ```bash
 # ambiente
@@ -221,9 +205,9 @@ DB_DIALECT=postgres
 DB_TIMEZONE=-03:00
 DB_PORT=5432
 POSTGRES_HOST=localhost
-POSTGRES_USER=postgres
+POSTGRES_USER=izing
 POSTGRES_PASSWORD=123@mudar
-POSTGRES_DB=izing
+POSTGRES_DB=postgres
 
 
 # Chaves para criptografia do token jwt
@@ -282,98 +266,98 @@ USER_LIMIT=99
 CONNECTIONS_LIMIT=99
 ```
 
-32. Abrir para edição o arquivo .env com o comando abaixo e prencher com os dados acima.
+29. Abrir para edição o arquivo .env com o comando abaixo e prencher com os dados acima. Para salvar se usa Ctrl + x
 
 ```bash
 nano izing.io/backend/.env
 ```
 
-33. Acessando o backend
+30. Acessando o backend
 
 ```bash
 cd izing.io/backend
 ```
 
-34. Instalando as dependências
+31. Instalando as dependências
 
 ```bash
 npm install --force
 ```
 
-35. Buildando o backend
+32. Buildando o backend
 
 ```bash
 npm run build
 ```
 
-36. Criando as tabelas no BD
+33. Criando as tabelas no BD
 
 ```bash
 npx sequelize db:migrate
 ```
 
-37. Inserindo dados em algumas tabelas do BD
+34. Inserindo dados em algumas tabelas do BD
 
 ```bash
 npx sequelize db:seed:all
 ```
 
-38. Instalando o PM2
+35. Instalando o PM2
 
 ```bash
 sudo npm install -g pm2
 ```
 
-39. Iniciando o backend com PM2
+36. Iniciando o backend com PM2
 
 ```bash
 pm2 start dist/server.js --name izing-backend
 ```
 
-40. Gerar Startup
+37. Gerar Startup
 
 ```bash
 pm2 startup ubuntu -u deploy
 ```
 
-41. Gerar status parte 2
+38. Gerar status parte 2
 
 ```bash
 sudo env PATH=$PATH:/usr/bin pm2 startup ubuntu -u deploy --hp /home/deploy
 ```
 
-42. Acessando o frontend
+39. Acessando o frontend
 
 ```bash
 cd ../frontend
 ```
 
-43. copiando .env do example
+40. copiando .env do example
 
 ```bash
 cp .env.example .env
 ```
 
-44. Editando o arquivo .env com o comando abaixo e prencher com os dados do item 45.
+41. Editando o arquivo .env com o comando abaixo e prencher com os dados do item 45.
 
 ```bash
 nano .env
 ```
 
-45. Dados env frontend
+42. Dados env frontend
 
 ```bash
 VUE_URL_API='https://api.bot.seusite.com.br'
 VUE_FACEBOOK_APP_ID='23156312477653241'
 ```
 
-46. Criar arquivo server.js com dados do item 47
+43. Criar arquivo server.js com dados do item 47
 
 ```bash
 nano server.js
 ```
 
-47. Dados para gerar server.js
+44. Dados para gerar server.js
 ```bash
 // simple express server to run frontend production build;
 const express = require('express')
@@ -386,47 +370,47 @@ app.get('/*', function (req, res) {
 app.listen(4444)
 ```
 
-48. Instalando as dependências
+45. Instalando as dependências
 ```bash
 npm install --force
 ```
 
-49. Instalando Quasar
+46. Instalando Quasar
 
 ```bash
 npm i @quasar/cli
 ```
 
-50. Mudar configuracao SSL para compilar
+47. Mudar configuracao SSL para compilar
 
 ```bash
 export NODE_OPTIONS=--openssl-legacy-provider
 ```
 
-51. Buildando o frontend
+48. Buildando o frontend
 
 ```bash
 npx quasar build -P -m pwa
 ```
 
-52. Iniciando o frontend com PM2
+49. Iniciando o frontend com PM2
 ```bash
 pm2 start server.js --name izing-frontend
 ```
 
-53. Salvando os serviços iniciados pelo PM2
+50. Salvando os serviços iniciados pelo PM2
 
 ```bash
 pm2 save
 ```
 
-54. Listar os serviços iniciados pelo PM2
+51. Listar os serviços iniciados pelo PM2
 
 ```bash
 pm2 list
 ```
 
-55. Editar os dados abaixo com a URL que será usada para acessar o frontend.
+52. Editar os dados abaixo com a URL que será usada para acessar o frontend.
 
 ```bash
 server {
@@ -447,13 +431,13 @@ server {
 }
 ```
 
-56. Criar e editar o arquivo izing-frontend com o comando abaixo e prencher com os dados do item 55.
+53. Criar e editar o arquivo izing-frontend com o comando abaixo e prencher com os dados do item 55.
 
 ```bash
 sudo nano /etc/nginx/sites-available/izing-frontend
 ```
 
-57. Editar os dados abaixo com a URL que será usada para acessar o backend.
+54. Editar os dados abaixo com a URL que será usada para acessar o backend.
 
 ```bash
 server {
@@ -474,72 +458,92 @@ server {
 }
 ```
 
-58. Criar e editar o arquivo izing-frontend com o comando abaixo e prencher com os dados do item 57.
+55. Criar e editar o arquivo izing-frontend com o comando abaixo e prencher com os dados do item 57.
 
 ```bash
 sudo nano /etc/nginx/sites-available/izing-backend
 ```
 
-59. Criar link simbólico para o arquivo izing-frontend
+56. Criar link simbólico para o arquivo izing-frontend
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/izing-frontend /etc/nginx/sites-enabled/
 ```
 
 
-60. Criar link simbólico para o arquivo izing-backend
+57. Criar link simbólico para o arquivo izing-backend
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/izing-backend /etc/nginx/sites-enabled/
 ```
 
-61. Editar o arquivo de configuração do nginx com o comando abaixo e prencher com os dados do item 62. adicionar antes# server_tokens off;
+58. Editar o arquivo de configuração do nginx com o comando abaixo e prencher com os dados do item 62. adicionar antes# server_tokens off;
 
 ```bash
 sudo nano /etc/nginx/nginx.conf
 ```
 
-62. adicionar antes# server_tokens off;
+59. adicionar antes# server_tokens off;
 
 ```bash
 underscores_in_headers on;	
 client_max_body_size 100M;
 ```
 
-63. Testar as configurações do nginx
+60. Testar as configurações do nginx
 
 ```bash
 sudo nginx -t
 ```
 
-64. Restartar o nginx
+61. Restartar o nginx
 
 ```bash
 sudo service nginx restart
 ```
 
-65. Instalar o suporte a pacotes Snap
+62. Instalar o suporte a pacotes Snap
 
 ```bash
 sudo apt-get install snapd
 ```
 
-66. Instalar o pacote do notes
+63. Instalar o pacote do notes
 
 ```bash
 sudo snap install notes
 ```
 
-67. Instalar o pacote do certbot(SSL)
+64. Instalar o pacote do certbot(SSL)
 
 ```bash
 sudo snap install --classic certbot
 ```
 
-68. Gerar certificado
+65. Gerar certificado
 
 ```bash
 sudo certbot --nginx
+```
+
+66. reniciar serviços docker
+```bash
+docker container restart portainer
+```
+
+67. reniciar serviços docker
+```bash
+docker container restart postgresql
+```
+
+68. reniciar serviços docker
+```bash
+docker container restart redis-izing
+```
+
+69. reniciar serviços docker
+```bash
+docker container restart rabbitmq
 ```
 
 Pronto sistema instalado so acessar frontend
@@ -553,6 +557,26 @@ admin@izing.io
 Senha:
 
 123456
+
+Acessar Acesso ao Portainer: http://ip.da.vps:9000
+
+Comandos reniciar docker caso de erros
+
+```bash
+docker container restart portainer
+```
+
+```bash
+docker container restart postgresql
+```
+
+```bash
+docker container restart redis-izing
+```
+
+```bash
+docker container restart rabbitmq
+```
 
 Problemas conexão?
 
