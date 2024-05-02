@@ -60,13 +60,13 @@ sudo apt-get update
 7. Instalar docker
 
 ```bash
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
-8. Instalar Docker
+8. limpar pacotes não são mais usados
 
 ```bash
-apt install -y docker-ce
+apt autoremove -y
 ```
 
 9. Instalar POSTGRESQL no Docker
@@ -114,7 +114,7 @@ sudo apt update
 16. instalar google crome
 
 ```bash
-sudo apt install google-chrome-stable 
+sudo apt install -y google-chrome-stable 
 ```
 
 17. remover arquivo padrao nginx
@@ -338,7 +338,7 @@ cd ../frontend
 cp .env.example .env
 ```
 
-41. Editando o arquivo .env com o comando abaixo e prencher com os dados do item 45.
+41. Editando o arquivo .env com o comando abaixo e prencher com os dados do item 42. Para salvar se usa Ctrl + x
 
 ```bash
 nano .env
@@ -351,7 +351,7 @@ VUE_URL_API='https://api.bot.seusite.com.br'
 VUE_FACEBOOK_APP_ID='23156312477653241'
 ```
 
-43. Criar arquivo server.js com dados do item 47
+43. Criar arquivo server.js com dados do item 44. Para salvar se usa Ctrl + x
 
 ```bash
 nano server.js
@@ -431,7 +431,7 @@ server {
 }
 ```
 
-53. Criar e editar o arquivo izing-frontend com o comando abaixo e prencher com os dados do item 55.
+53. Criar e editar o arquivo izing-frontend com o comando abaixo e prencher com os dados do item 52. Para salvar se usa Ctrl + x
 
 ```bash
 sudo nano /etc/nginx/sites-available/izing-frontend
@@ -458,7 +458,7 @@ server {
 }
 ```
 
-55. Criar e editar o arquivo izing-frontend com o comando abaixo e prencher com os dados do item 57.
+55. Criar e editar o arquivo izing-frontend com o comando abaixo e prencher com os dados do item 54. Para salvar se usa Ctrl + x
 
 ```bash
 sudo nano /etc/nginx/sites-available/izing-backend
@@ -477,7 +477,7 @@ sudo ln -s /etc/nginx/sites-available/izing-frontend /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/izing-backend /etc/nginx/sites-enabled/
 ```
 
-58. Editar o arquivo de configuração do nginx com o comando abaixo e prencher com os dados do item 62. adicionar antes# server_tokens off;
+58. Editar o arquivo de configuração do nginx com o comando abaixo e prencher com os dados do item 59. adicionar antes# server_tokens off;. Para salvar se usa Ctrl + x
 
 ```bash
 sudo nano /etc/nginx/nginx.conf
