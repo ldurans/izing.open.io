@@ -290,6 +290,14 @@ npm install --force
 npm run build
 ```
 
+. Reniciando docker
+```bash
+docker container restart portainer
+docker container restart postgresql
+docker container restart redis-izing
+docker container restart rabbitmq
+```
+
 33. Criando as tabelas no BD
 
 ```bash
