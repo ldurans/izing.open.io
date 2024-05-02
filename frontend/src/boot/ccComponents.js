@@ -67,7 +67,7 @@ const setConfigsUsuario = ({ isDark }) => {
   const filtroPadrao = {
     searchParam: '',
     pageNumber: 1,
-    status: ['open', 'pending'],
+    status: ['open', 'pending', 'closed'],
     showAll: false,
     count: null,
     queuesIds: [],
