@@ -58,20 +58,6 @@ export class MissingValueError extends Error {
   }
 }
 
-const greeting = (() => {
-  const hours = getHours(new Date());
-  if (hours >= 6 && hours <= 12) {
-    return "Bom dia!";
-  }
-  if (hours > 12 && hours <= 18) {
-    return "Boa Tarde!";
-  }
-  if (hours > 18 && hours <= 23) {
-    return "Boa Noite!";
-  }
-  return "Boa Madrugada!";
-})();
-
 export const pupa = function pupa(
   template,
   data,
@@ -88,6 +74,20 @@ export const pupa = function pupa(
       `Expected an \`object\` or \`Array\` in the second argument, got \`${typeof data}\``
     );
   }
+
+  const hours = getHours(new Date());
+  const greeting = (() => {
+    if (hours >= 6 && hours <= 11) {
+      return "Bom dia!";
+    }
+    if (hours > 11 && hours <= 17) {
+      return "Boa Tarde!";
+    }
+    if (hours > 17 && hours <= 23) {
+      return "Boa Noite!";
+    }
+    return "Olá!";
+  })();
 
   data = { ...data, greeting };
 
@@ -111,8 +111,8 @@ export const pupa = function pupa(
 
   const composeHtmlEscape =
     replacer =>
-    (...args: any) =>
-      htmlEscape(replacer(...args));
+      (...args: any) =>
+        htmlEscape(replacer(...args));
 
   // The regex tries to match either a number inside `{{ }}` or a valid JS identifier or key path.
   const doubleBraceRegex = /{{(\d+|[a-z$_][\w\-$]*?(?:\.[\w\-$]*?)*?)}}/gi;
