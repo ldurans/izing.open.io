@@ -23,9 +23,10 @@ const CancelCampaignService = async ({
   try {
     await BullQueues("SendMessageWhatsappCampaign", {
       redis: {
-        host: process.env.IO_REDIS_SERVER,
-        port: +(process.env.IO_REDIS_PORT || "6379"),
-        db: 3
+      port: Number(process.env.IO_REDIS_PORT),
+      host: process.env.IO_REDIS_SERVER,
+      db: Number(process.env.IO_REDIS_DB_SESSION) || 2,
+      password: process.env.IO_REDIS_PASSWORD || undefined
       }
     }).removeJobs(`campaginId_${campaign.id}*`);
 
