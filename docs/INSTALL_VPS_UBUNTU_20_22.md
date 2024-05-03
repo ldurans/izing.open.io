@@ -253,7 +253,7 @@ VUE_FACEBOOK_APP_ID=3237415623048660
 FACEBOOK_APP_SECRET_KEY=3266214132b8c98ac59f3e957a5efeaaa13500
 
 # Forçar utilizar versão definida via cache (https://wppconnect.io/pt-BR/whatsapp-versions/)
-WEB_VERSION=2.2413.51
+#WEB_VERSION=2.2409.2
 
 # Customizar opções do pool de conexões DB
 #POSTGRES_POOL_MAX=100
