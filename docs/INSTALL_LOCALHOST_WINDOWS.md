@@ -4,7 +4,7 @@
 Site baixar docker para windows
 https://docs.docker.com/desktop/install/windows-install/
 
-Site baixar Node 20 para windows
+Site baixar Node 18 para windows
 https://nodejs.org/en/download
 
 Link para baixar codigo izing

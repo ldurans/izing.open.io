@@ -146,10 +146,10 @@ usermod -aG docker deploy
 su deploy
 ```
 
-22. Realizar o download do node 20.x
+22. Realizar o download do node 18.x
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 ```
 
 23. Instalar o node
