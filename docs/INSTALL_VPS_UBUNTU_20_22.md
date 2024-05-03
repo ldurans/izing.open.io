@@ -588,7 +588,25 @@ docker container restart rabbitmq
 
 Problemas conexão?
 
-1. Versão ldurans
+1. Outra versão js pode se tentar
+Na pasta backend execute
+```bash
+npm r whatsapp-web.js
+```
+```bash
+npm i npm i whatsapp-web.js@^1.23.1-alpha.6
+```
+```bash
+rm .wwebjs_auth -Rf
+```
+```bash
+rm .wwebjs_cache -Rf
+```
+```bash
+pm2 restart all
+```
+
+2. Versão ldurans
 Na pasta backend execute
 ```bash
 npm r whatsapp-web.js
@@ -606,22 +624,6 @@ rm .wwebjs_cache -Rf
 pm2 restart all
 ```
 
-2. Outra versão js pode se tentar
-Na pasta backend execute
-```bash
-npm r whatsapp-web.js
-```
-```bash
-npm i whatsapp-web.js@^1.23.1-alpha.5
-```
-```bash
-rm .wwebjs_auth -Rf
-```
-```bash
-rm .wwebjs_cache -Rf
-```
-```bash
-pm2 restart all
-```
+
 
 Para reinstalar o whatsapp.js.. verifique no repositorio oficial se não tem alguma mais atual
