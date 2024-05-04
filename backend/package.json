@@ -68,7 +68,7 @@
     "socket.io-redis": "^6.1.1",
     "telegraf": "^4.0.3",
     "uuid": "^8.3.2",
-    "whatsapp-web.js": "github:ldurans/whatsapp-web.js#webpack-exodus",
+    "whatsapp-web.js": "^1.23.1-alpha.6",
     "winston": "^3.3.3",
     "xlsx": "^0.18.5",
     "yup": "^0.29.3"
