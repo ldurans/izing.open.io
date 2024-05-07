@@ -76,7 +76,7 @@ export const pupa = function pupa(
   }
 
   const hours = getHours(new Date());
-  const greeting = (() => {
+  const getGreeting = () => {
     if (hours >= 6 && hours <= 11) {
       return "Bom dia!";
     }
@@ -87,9 +87,9 @@ export const pupa = function pupa(
       return "Boa Noite!";
     }
     return "Olá!";
-  })();
+  };
 
-  data = { ...data, greeting };
+  data = { ...data, greeting: getGreeting() };
 
   const replace = (placeholder, key) => {
     let value = data;
