@@ -193,6 +193,14 @@ docker run --name redis-izing -e TZ="America/Sao_Paulo" -p 6379:6379 --restart=a
 ```bash
 docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 --restart=always --hostname rabbitmq -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=123@mudar -v /data:/var/lib/rabbitmq rabbitmq:3-management-alpine
 ```
+. Reniciando docker
+
+```bash
+docker container restart portainer
+docker container restart postgresql
+docker container restart redis-izing
+docker container restart rabbitmq
+```
 
 18. Criando as tabelas no BD
 
