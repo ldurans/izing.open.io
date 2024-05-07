@@ -10,7 +10,11 @@ import SendMessageSystemProxy from "../../helpers/SendMessageSystemProxy";
 // import SetTicketMessagesAsRead from "../../helpers/SetTicketMessagesAsRead";
 
 const SendMessagesSchenduleWbot = async (): Promise<void> => {
-  const currentDate = new Date();
+  const currentDate = new Date(
+    new Date().toLocaleString("en-US", {
+      timeZone: process.env.TIMEZONE || "America/Sao_Paulo"
+    })
+  );
   const twentyFourHoursAgo = new Date(
     currentDate.getTime() - 24 * 60 * 60 * 1000
   );
