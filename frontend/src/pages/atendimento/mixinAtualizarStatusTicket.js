@@ -29,6 +29,32 @@ export default {
           this.$notificarErro('Não foi possível atualizar o status', error)
         })
     },
+    espiarAtendimento (ticket) {
+      this.loading = true
+      AtualizarStatusTicket(ticket.id, 'pending')
+        .then(res => {
+          this.loading = false
+          this.$q.notify({
+            message: `Espiando || ${ticket.name} - Ticket: ${ticket.id}`,
+            type: 'positive',
+            progress: true,
+            position: 'top',
+            actions: [{
+              icon: 'close',
+              round: true,
+              color: 'white'
+            }]
+          })
+          this.$store.commit('TICKET_FOCADO', {})
+          this.$store.commit('SET_HAS_MORE', true)
+          this.$store.dispatch('AbrirChatMensagens', ticket)
+        })
+        .catch(error => {
+          this.loading = false
+          console.error(error)
+          this.$notificarErro('Não foi possível atualizar o status', error)
+        })
+    },
     atualizarStatusTicket (status) {
       const contatoName = this.ticketFocado.contact.name || ''
       const ticketId = this.ticketFocado.id
