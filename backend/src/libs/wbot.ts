@@ -6,14 +6,17 @@ import { getIO } from "./socket";
 import Whatsapp from "../models/Whatsapp";
 import { logger } from "../utils/logger";
 import SyncUnreadMessagesWbot from "../services/WbotServices/SyncUnreadMessagesWbot";
+import Queue from "./Queue";
 import AppError from "../errors/AppError";
 
 interface Session extends Client {
   id: number;
+  checkMessages: any;
 }
 
 const sessions: Session[] = [];
 
+const checking: any = {};
 const minimal_args = [
   "--autoplay-policy=user-gesture-required",
   "--disable-background-networking",
@@ -50,6 +53,25 @@ const minimal_args = [
   "--no-zygote",
   "--password-store=basic",
   "--use-gl=swiftshader",
+  "--disable-site-isolation-trials",
+  "--no-experiments",
+  "--ignore-certificate-errors",
+  "--ignore-certificate-errors-spki-list",
+  "--enable-features=NetworkService",
+  "--disable-webgl",
+  "--disable-threaded-animation",
+  "--disable-threaded-scrolling",
+  "--disable-in-process-stack-traces",
+  "--disable-histogram-customizer",
+  "--disable-gl-extensions",
+  "--disable-composited-antialiasing",
+  "--disable-canvas-aa",
+  "--disable-3d-apis",
+  "--disable-accelerated-2d-canvas",
+  "--disable-accelerated-jpeg-decoding",
+  "--disable-accelerated-mjpeg-decode",
+  "--disable-app-list-dismiss-on-blur",
+  "--disable-accelerated-video-decode",
   "--use-mock-keychain"
 ];
 
@@ -81,6 +103,34 @@ const args: string[] = process.env.CHROME_ARGS
   : minimal_args;
 
 args.unshift(`--user-agent=${DefaultOptions.userAgent}`);
+const checkMessages = async (wbot: Session, tenantId: number | string) => {
+  try {
+    const isConnectStatus = wbot && (await wbot.getState()) === "CONNECTED"; // getValue(`wbotStatus-${tenantId}`);
+    logger.info(
+      "wbot:checkMessages:status",
+      wbot.id,
+      tenantId,
+      isConnectStatus
+    );
+
+    if (isConnectStatus) {
+      logger.info("wbot:connected:checkMessages", wbot, tenantId);
+      Queue.add("SendMessages", { sessionId: wbot.id, tenantId });
+    }
+  } catch (error) {
+    const strError = String(error);
+    // se a sessão tiver sido fechada, limpar a checagem de mensagens e bot
+    if (strError.indexOf("Session closed.") !== -1) {
+      logger.error(
+        `BOT Whatsapp desconectado. Tenant: ${tenantId}:: BOT ID: ${wbot.id}`
+      );
+      clearInterval(wbot.checkMessages);
+      removeWbot(wbot.id);
+      return;
+    }
+    logger.error(`ERROR: checkMessages Tenant: ${tenantId}::`, error);
+  }
+};
 
 export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
   return new Promise((resolve, reject) => {
@@ -199,6 +249,14 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         SyncUnreadMessagesWbot(wbot, tenantId);
         resolve(wbot);
       });
+
+      wbot.checkMessages = setInterval(
+        checkMessages,
+        +(process.env.CHECK_INTERVAL || 5000),
+        wbot,
+        tenantId
+      );
+      // WhatsappConsumer(tenantId);
     } catch (err) {
       logger.error(`initWbot error | Error: ${err}`);
     }
