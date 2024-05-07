@@ -197,9 +197,12 @@ docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 --restart=always --hos
 
 ```bash
 docker container restart postgresql
-
+```
+```bash
 docker container restart redis-izing
+```
 
+```bash
 docker container restart rabbitmq
 ```
 
