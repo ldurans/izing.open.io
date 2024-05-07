@@ -24,7 +24,7 @@ const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
       const wbot = await GetTicketWbot(ticket);
       wbot
         .sendSeen(`${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`)
-        .catch(e => console.error("não foi possível marcar como lifo", e));
+        .catch(e => console.error("não foi possível marcar como lido", e));
     }
     if (ticket.channel === "messenger") {
       const messengerBot = getMessengerBot(ticket.whatsappId);
