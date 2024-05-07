@@ -180,6 +180,7 @@ pm2 start server.js --name izing-frontend
 
 ```bash
 docker run --name postgresql -e POSTGRES_USER=izing -e POSTGRES_PASSWORD=123@mudar -e TZ="America/Sao_Paulo" -p 5432:5432 --restart=always -v /data:/var/lib/postgresql/data -d postgres```
+```
 
 16. Instalar Redis no Docker
 
