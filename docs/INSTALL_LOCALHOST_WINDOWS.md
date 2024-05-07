@@ -196,9 +196,10 @@ docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 --restart=always --hos
 . Reniciando docker
 
 ```bash
-docker container restart portainer
 docker container restart postgresql
+
 docker container restart redis-izing
+
 docker container restart rabbitmq
 ```
 
