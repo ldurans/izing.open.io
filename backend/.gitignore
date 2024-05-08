@@ -23,7 +23,7 @@ yarn-error.log
 .wwebjs_auth/*
 */.wwebjs_auth/
 ./.wwebjs_auth/*
-.wwebjs*/
+
 WWebJS/
 .wwebjs_auth/
 
