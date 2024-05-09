@@ -152,7 +152,6 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
           args
         },
         webVersion: process.env.WEB_VERSION || "2.2409.2",
-        webVersionCache: {
         webVersionCache: { type: "local" },
         qrMaxRetries: 5
       }) as Session;
