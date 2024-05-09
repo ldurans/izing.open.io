@@ -36,7 +36,8 @@ ___
 
 ## Instalando
 Seguem links sugerimos:
--  [Como Instalar o IZING - Método 2023](https://www.youtube.com/watch?v=0j1v6m4Nk74&t=379s)
+-  [Como Instalar o IZING - Método 2024 Video](https://youtu.be/bZ-jXRtcGyc?si=B8oQxv0V0V36fgrF)
+-  [Como Instalar o IZING - Método 2023 Video](https://www.youtube.com/watch?v=0j1v6m4Nk74&t=379s)
 
 -  [Como Instalar o IZING VPS - Método 2024 - UBUNTU 20, 22](docs/INSTALL_VPS_UBUNTU_20_22.md)
 -  [Como Instalar o IZING WINDOWS LOCALHOST - Método 2024](docs/INSTALL_LOCALHOST_WINDOWS.md)
