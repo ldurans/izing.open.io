@@ -90,7 +90,7 @@ export const remove = async (
   try {
     await DeleteMessageSystem(req.body.id, messageId, tenantId);
   } catch (error) {
-    logger.error(`ERR_DELETE_SYSTEM_MSG: ${error}`);
+    console.error("ERR_DELETE_SYSTEM_MSG", error.message);
     throw new AppError("ERR_DELETE_SYSTEM_MSG");
   }
 

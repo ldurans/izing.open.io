@@ -29,13 +29,21 @@ const DeleteMessageSystem = async (
       new Date(),
       parseJSON(message?.createdAt)
     );
+
     if (diffHoursDate > 2) {
-      throw new AppError("No delete message afeter 2h sended");
+      console.log("Error: Cannot delete message after 2 hours");
+      throw new AppError("Cannot delete message after 2 hours of being sent");
     }
   }
 
   if (!message) {
     throw new AppError("No message found with this ID.");
+  }
+  
+    if (message.messageId === null && message.status === "pending") {
+    await message.destroy();
+    console.log("Scheduled message deleted from the database.");
+    return;
   }
 
   const { ticket } = message;
@@ -57,23 +65,18 @@ const DeleteMessageSystem = async (
   }
 
   if (ticket.channel === "instagram") {
-    // const chatId = ticket.contact.instagramPK;
-    // const instaBot = await getInstaBot(ticket.whatsappId);
-    // const threadEntity = await instaBot.entity.directThread([chatId]);
-    // if (!threadEntity.threadId) return;
-    // await threadEntity.deleteItem(message.messageId);
+    // Instagram deletion logic here
     return;
   }
 
-  // não possui suporte para apagar mensagem
   if (ticket.channel === "messenger") {
     return;
   }
 
   await message.update({ isDeleted: true });
+  console.log("Message marked as deleted");
 
   const io = getIO();
-  // .to(`tenant:${tenantId}:notification`)
   io.to(`tenant:${tenantId}:${ticket.id}`).emit(
     `tenant:${tenantId}:appMessage`,
     {

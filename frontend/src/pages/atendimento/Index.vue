@@ -646,11 +646,7 @@
               <q-card-section class="q-pa-none">
                 <template v-if="ticketFocado.scheduledMessages">
                   <q-list>
-                    <q-item
-                      v-for="(message, idx) in ticketFocado.scheduledMessages"
-                      :key="idx"
-                      clickable
-                    >
+                    <q-item v-for="(message, idx) in ticketFocado.scheduledMessages.filter((msg) => !msg.isDeleted)" :key="idx" clickable>
                       <q-item-section>
                         <q-item-label caption>
                           <b>Agendado para:</b> {{ $formatarData(message.scheduleDate, 'dd/MM/yyyy HH:mm') }}
@@ -1092,8 +1088,9 @@ export default {
       }).onOk(() => {
         this.loading = true
         DeletarMensagem(data)
-          .then(res => {
+          .then((res) => {
             this.loading = false
+            mensagem.isDeleted = true
           })
           .catch(error => {
             this.loading = false
