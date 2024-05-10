@@ -5,8 +5,8 @@
 - Feito ubuntu 20
 - Nesse modelo vamos usar docker porque versão Postgresql do repositorio UBUNTU 20 ta dando erro com izing
 - Senha usada 123@mudar
-- Dominio Frontend: bot.seusite.com.br
-- Dominio backend: api.bot.seusite.com.br
+- Dominio Frontend: izing.seusite.com.br
+- Dominio backend: backend.seusite.com.br
   
 ================================================
 
@@ -189,10 +189,10 @@ openssl rand -base64 32
 NODE_ENV=dev
 
 # URL do backend para construção dos hooks
-BACKEND_URL=https://api.bot.seusite.com.br
+BACKEND_URL=https://backend.seusite.com.br
 
 # URL do front para liberação do cors
-FRONTEND_URL=https://bot.seusite.com.br
+FRONTEND_URL=https://izing.seusite.com.br
 
 # Porta utilizada para proxy com o serviço do backend
 PROXY_PORT=443
@@ -356,7 +356,7 @@ nano .env
 42. Dados env frontend
 
 ```bash
-VUE_URL_API='https://api.bot.seusite.com.br'
+VUE_URL_API='https://backend.seusite.com.br'
 VUE_FACEBOOK_APP_ID='23156312477653241'
 ```
 
@@ -423,7 +423,7 @@ pm2 list
 
 ```bash
 server {
-  server_name bot.seusite.com.br;
+  server_name izing.seusite.com.br;
 
   location / {
     proxy_pass http://127.0.0.1:4444;
@@ -450,7 +450,7 @@ sudo nano /etc/nginx/sites-available/izing-frontend
 
 ```bash
 server {
-  server_name api.bot.seusite.com.br;
+  server_name backend.seusite.com.br;
 
   location / {
     proxy_pass http://127.0.0.1:3000;
