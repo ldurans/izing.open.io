@@ -7,7 +7,7 @@
 - Senha usada 123@mudar
 - Dominio Frontend: bot.seusite.com.br
 - Dominio backend: api.bot.seusite.com.br
-- 
+  
 ================================================
 
 1. Alterando para root
