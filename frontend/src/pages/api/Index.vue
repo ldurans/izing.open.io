@@ -4,11 +4,18 @@
       <q-card-section>
         <div class="text-h6">
           Configurações API
+          <q-btn class="float-right"
+            color="primary"
+            rounded
+            label="POSTMAN"
+            style="margin: 2px;"
+            @click="download" />
           <q-btn
             class="float-right"
             color="primary"
             rounded
             label="Adicionar"
+            style="margin: 2px;"
             @click="apiEdicao = {}; modalApi = !modalApi;"
           />
         </div>
@@ -172,6 +179,14 @@ export default {
     }
   },
   methods: {
+    download () {
+      const link = document.createElement('a')
+      link.href = 'apiizing.json'
+      link.download = 'apiizing.json'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    },
     montarUrlIntegração (id) {
       return `${this.cBaseUrlIntegração}/${id}`
     },
