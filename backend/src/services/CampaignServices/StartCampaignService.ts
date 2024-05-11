@@ -1,4 +1,5 @@
 import { JobOptions } from "bull";
+import { pupa } from "../../utils/pupa";
 import {
   setHours,
   setMinutes,
@@ -26,12 +27,6 @@ interface Request {
   options?: JobOptions;
 }
 
-// const isValidDate = (date: Date) => {
-//   return (
-//     startOfDay(new Date(date)).getTime() >= startOfDay(new Date()).getTime()
-//   );
-// };
-
 const cArquivoName = (url: string | null) => {
   if (!url) return "";
   const split = url.split("/");
@@ -47,7 +42,8 @@ const mountMessageData = (
   campaign: Campaign,
   campaignContact: CampaignContacts,
   // eslint-disable-next-line @typescript-eslint/ban-types
-  options: object | undefined
+  options: object | undefined,
+//  ticket: { protocol: string, contact: { name: string } } // Adicione o parâmetro do ticket aqui
 ) => {
   const messageRandom = randomInteger(1, 3);
   let bodyMessage = "";
@@ -55,7 +51,14 @@ const mountMessageData = (
   if (messageRandom === 2) bodyMessage = campaign.message2;
   if (messageRandom === 3) bodyMessage = campaign.message3;
 
-  return {
+  // Use a função pupa para substituir partes da mensagem
+  bodyMessage = pupa(bodyMessage || "", {
+    // greeting: será considerado conforme data/hora da mensagem internamente na função pupa
+//    protocol: ticket.protocol,
+    name: campaignContact.contact.name
+  });
+  
+return {
     whatsappId: campaign.sessionId,
     message: bodyMessage,
     number: campaignContact.contact.number,
@@ -71,12 +74,10 @@ const nextDayHoursValid = (date: Date) => {
   let dateVerify = date;
   const dateNow = new Date();
   const diffDays = differenceInDays(dateVerify, new Date());
-  // se dia for menor que o atual
   if (diffDays < 0) {
     dateVerify = addDays(dateVerify, diffDays * -1);
   }
 
-  // se a hora for menor que a atual ao programar a campanha
   if (dateVerify.getTime() < dateNow.getTime()) {
     dateVerify = setMinutes(
       setHours(dateVerify, dateNow.getHours()),
@@ -92,17 +93,14 @@ const nextDayHoursValid = (date: Date) => {
   const isDateBefore = isBefore(start, dateVerify);
   const isDateAfter = isAfter(end, dateVerify);
 
-  // fora do intervalo e menor que a hora inicial
   if (!isValidHour && isDateBefore) {
     dateVerify = setMinutes(setHours(dateVerify, 8), 30);
   }
 
-  // fora do intervalo, maior que a hora final e no mesmo dia
   if (!isValidHour && isDateAfter && diffDays === 0) {
     dateVerify = addDays(setHours(dateVerify, 8), 1);
   }
 
-  // fora do intervalo, maior que a hora final e dia diferente
   if (!isValidHour && isDateAfter && diffDays > 0) {
     dateVerify = setHours(dateVerify, 8);
   }
@@ -112,9 +110,7 @@ const nextDayHoursValid = (date: Date) => {
 
 const calcDelay = (nextDate: Date, delay: number) => {
   const diffSeconds = differenceInSeconds(nextDate, new Date());
-  // se a diferença for negativa, a hora em que a tarefa está sendo
-  // programada é menor que a
-  // if (diffSeconds < 0)
+
   return diffSeconds * 1000 + delay;
 };
 
@@ -132,9 +128,6 @@ const StartCampaignService = async ({
     throw new AppError("ERROR_CAMPAIGN_NOT_EXISTS", 404);
   }
 
-  // if (!isValidDate(campaign.start)) {
-  //   throw new AppError("ERROR_CAMPAIGN_DATE_NOT_VALID", 404);
-  // }
 
   const campaignContacts = await CampaignContacts.findAll({
     where: { campaignId },
@@ -146,14 +139,7 @@ const StartCampaignService = async ({
   }
 
   const timeDelay = campaign.delay ? campaign.delay * 1000 : 20000;
-  // const today = zonedTimeToUtc(new Date(), "America/Sao_Paulo");
-  // let dateDelay = setHours(
-  //   setMinutes(
-  //     zonedTimeToUtc(campaign.start, "America/Sao_Paulo"),
-  //     today.getMinutes() + 1
-  //   ),
-  //   today.getHours()
-  // );
+
   let dateDelay = zonedTimeToUtc(campaign.start, "America/Sao_Paulo");
   const data = campaignContacts.map((campaignContact: CampaignContacts) => {
     dateDelay = addSeconds(dateDelay, timeDelay / 1000);
