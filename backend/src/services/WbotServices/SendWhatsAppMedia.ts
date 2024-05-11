@@ -43,7 +43,7 @@ const SendWhatsAppMedia = async ({
     } catch (error) {
       logger.error(`Error criar log mensagem ${error}`);
     }
-    fs.unlinkSync(media.path);
+ //   fs.unlinkSync(media.path);
 
     return sendMessage;
   } catch (err) {
