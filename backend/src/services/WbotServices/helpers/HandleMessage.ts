@@ -22,6 +22,13 @@ interface Session extends Client {
   id: number;
 }
 
+const farewellMessageEqualsBody = (
+  farewellMessage: string,
+  body: string
+): boolean => {
+  if (!farewellMessage || farewellMessage.trim().length === 0) return false;
+  return farewellMessage === body;
+};
 const HandleMessage = async (
   msg: WbotMessage,
   wbot: Session
@@ -40,12 +47,14 @@ const HandleMessage = async (
       const Settingdb = await Setting.findOne({
         where: { key: "ignoreGroupMsg", tenantId }
       });
-
-      if (
-        Settingdb?.value === "enabled" &&
-        (chat.isGroup || msg.from === "status@broadcast")
-      ) {
-        return;
+      if (Settingdb?.value == "enabled") {
+        if (
+          msg.from === "status@broadcast" ||
+          msg.to.endsWith("@g.us") ||
+          msg.from.endsWith("@g.us")
+        ) {
+          return;
+        }
       }
       // IGNORAR MENSAGENS DE GRUPO
 
@@ -79,6 +88,11 @@ const HandleMessage = async (
         }
 
         const unreadMessages = msg.fromMe ? 0 : chat.unreadCount;
+        if (
+          unreadMessages === 0 &&
+          farewellMessageEqualsBody(whatsapp.farewellMessage, msg.body)
+        )
+          return;
 
         // const profilePicUrl = await msgContact.getProfilePicUrl();
         const contact = await VerifyContact(msgContact, tenantId);
@@ -108,10 +122,10 @@ const HandleMessage = async (
           await VerifyMessage(msg, ticket, contact);
         }
 
-        const isBusinessHours = await verifyBusinessHours(msg, ticket);
+
 
         // await VerifyAutoReplyActionTicket(msg, ticket);
-        if (isBusinessHours) await VerifyStepsChatFlowTicket(msg, ticket);
+        await VerifyStepsChatFlowTicket(msg, ticket);
 
         const apiConfig: any = ticket.apiConfig || {};
         if (
@@ -137,6 +151,7 @@ const HandleMessage = async (
           });
         }
 
+        await verifyBusinessHours(msg, ticket);
         resolve();
       } catch (err) {
         logger.error(err);
