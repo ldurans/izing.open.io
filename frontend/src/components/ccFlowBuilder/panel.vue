@@ -270,7 +270,7 @@ export default {
         this.jsPlumb.setSuspendDrawing(false, true)
         this.loadEasyFlow()
         this.jsPlumb.bind('click', (conn, originalEvent) => {
-          this.activeElement.type = 'line'
+          // this.activeElement.type = 'line'
           this.activeElement.sourceId = conn.sourceId
           this.activeElement.targetId = conn.targetId
           this.$refs.nodeForm.lineInit({
