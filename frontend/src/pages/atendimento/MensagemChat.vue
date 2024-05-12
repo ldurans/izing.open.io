@@ -489,8 +489,9 @@ export default {
       }).onOk(() => {
         this.loading = true
         DeletarMensagem(data)
-          .then(res => {
+          .then((res) => {
             this.loading = false
+            mensagem.isDeleted = true
           })
           .catch(error => {
             this.loading = false
